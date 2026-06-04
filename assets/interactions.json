@@ -1,0 +1,23 @@
+[
+  {
+    "primary": "hierro",
+    "interacting_with": ["alkantin", "antiácido", "calcio", "zinc"],
+    "type": "warning",
+    "severity": "Alta",
+    "message": "⚠️ BLOQUEO DE ABSORCIÓN: Los antiácidos y minerales (Calcio/Zinc) impiden la captación de hierro. Espaciar al menos 2 a 8 horas."
+  },
+  {
+    "primary": "duloxetina",
+    "interacting_with": ["ibuprofeno", "acemetacina", "aine", "aspirina"],
+    "type": "severe",
+    "severity": "Alta",
+    "message": "🚨 ALERTA HEMORRÁGICA: Duloxetina + AINEs agotan la serotonina plaquetaria y potencian el riesgo de diátesis hemorrágica en SED."
+  },
+  {
+    "primary": "hierro",
+    "interacting_with": ["vitamina c", "ácido ascórbico"],
+    "type": "positive",
+    "severity": "Baja",
+    "message": "💡 SINERGIA ÓPTIMA: La Vitamina C potencia la absorción del hierro al reducirlo a su forma ferrosa (Fe2+)."
+  }
+]

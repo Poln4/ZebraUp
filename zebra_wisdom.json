@@ -1,19 +1,79 @@
 {
   "facts": [
     {
-      "condition": "EDS",
-      "fact": "Did you know? Strengthening your core (like the Hybrid Calisthenics bridges) helps your nerves improve proprioception!",
-      "tone": "Optimistic"
-    },
-    {
-      "condition": "General",
-      "fact": "Rest is productive. Your body builds muscle and repairs tissue specifically during the 'Potato Days' (Rest Days).",
+      "condition": "EDS & Exercise",
+      "fact": "Hypermobile bodies often experience more intense and prolonged Delayed-Onset Muscle Soreness (DOMS). It's perfectly normal to need 48 to 72 hours to recover after resistance training!",
       "tone": "Supportive"
     },
     {
-      "condition": "Doctor Visit",
-      "fact": "When asking about bleeding, mention the TNXB gene. It helps doctors understand the structural nature of your bruising.",
+      "condition": "POTS / Dysautonomia",
+      "fact": "Increasing your fluid intake and adding extra sodium can help prevent blood pooling in your legs and improve your orthostatic tolerance.",
+      "tone": "Optimistic"
+    },
+    {
+      "condition": "Myofascial Pain Syndrome",
+      "fact": "Because your ligaments are lax, your muscles work overtime to stabilize your joints. Correcting iron deficiency gives these overworked muscles the oxygen they desperately need to relax and heal.",
       "tone": "Neutral"
+    },
+    {
+      "condition": "Doctor Visit",
+      "fact": "Standard coagulation tests (like PT/INR) often appear normal in EDS because the easy bruising is structural and platelet-driven. Mentioning the TNXB gene can help explain this unique bleeding profile.",
+      "tone": "Empowering"
+    },
+    {
+      "condition": "EDS & Exercise",
+      "fact": "Using a slow 2-1-2-1 tempo during calisthenics (2 seconds down, 1-second pause, 2 seconds up, 1-second pause) eliminates momentum and forces your muscles to do the active work of safely stabilizing the joint.",
+      "tone": "Optimistic"
+    },
+    {
+      "condition": "Iron Deficiency",
+      "fact": "Many labs still use outdated reference ranges for iron. For highly metabolic tissues managing conditions like POTS and MPS, modern clinical standards suggest ferritin should ideally be above 30 to 50 ng/mL.",
+      "tone": "Neutral"
+    },
+    {
+      "condition": "Mental Health",
+      "fact": "Kinesiophobia (fear of movement) is a completely valid and normal response to chronic pain and joint instability. Be kind to yourself and focus on safe, modified movements within your pain-free range.",
+      "tone": "Supportive"
+    },
+    {
+      "condition": "General",
+      "fact": "Chronic pain and instability trigger a constant 'fight-or-flight' response, which can severely impair gastrointestinal motility and worsen IBS or GERD symptoms. Managing stress directly helps your gut!",
+      "tone": "Informative"
+    },
+    {
+      "condition": "Myofascial Pain Syndrome & Iron Deficiency",
+      "fact": "There is a direct biological link between low iron and chronic muscle knots. Research indicates that iron deficiency reduces muscle oxygenation and increases muscle fatigue, which acts as a systemic perpetuating factor for the formation of hyperirritable myofascial trigger points. (Steen et al., 2025) [4, 5]",
+      "tone": "Educational"
+    },
+    {
+      "condition": "Bleeding Diathesis & Platelets",
+      "fact": "If your doctor says your bleeding labs are 'normal,' show them the research! The American Society of Hematology (2023) demonstrated that bleeding in EDS is driven by cellular platelet defects—specifically reduced GPVI receptor levels and impaired integrin signaling—not standard coagulation issues. [6, 7]",
+      "tone": "Validating"
+    },
+    {
+      "condition": "Fascial Densification & Joint Instability",
+      "fact": "Why do your muscles feel so stiff when your joints are so loose? Research reveals that in EDS, fascia undergoes 'densification' as extra myofibroblasts try to overcompensate for weak ligaments. This causes tissue stiffness, impaired gliding, and chronic pain. (Wang et al., 2025) [8-10]",
+      "tone": "Informative"
+    },
+    {
+      "condition": "Gastrointestinal Issues & The Nervous System",
+      "fact": "Your gut issues are deeply connected to your nervous system. Studies link EDS chronic pain to sympathetic nervous system overactivation (fight-or-flight), which drastically reduces vagal nerve activity, severely impairing gastrointestinal motility and worsening IBS and GERD. (Fikree et al., 2017; Wang et al., 2025) [11-13]",
+      "tone": "Supportive"
+    },
+    {
+      "condition": "Tendon Elongation & Strength Training",
+      "fact": "Tendons in hypermobile EDS can stretch 10% to 21.8% more than normal under load! This means your muscles have to work much harder to transmit force. Slow, controlled resistance training helps safely build strength without overstretching these fragile tissues. (Wang et al., 2025) [14, 15]",
+      "tone": "Empowering"
+    },
+    {
+      "condition": "Chronic Fatigue & Inflammation (TGF-β1)",
+      "fact": "Chronic fatigue in EDS has a biological footprint. Researchers have found that chronic emotional and mechanical stress triggers the release of TGF-β1, a cytokine that drives systemic inflammation, tissue stiffening, and profound exhaustion. (Wang et al., 2025) [16-18]",
+      "tone": "Validating"
+    },
+    {
+      "condition": "Adenomyosis & Functional Iron Deficiency",
+      "fact": "Heavy bleeding from conditions like adenomyosis creates a chronic inflammatory state that restricts iron availability. This leads to low Transferrin Saturation (TSAT), meaning your body is starved of iron even if standard ferritin tests sometimes look falsely normal due to inflammation. (Kawamata et al., 2026) [19, 20]",
+      "tone": "Educational"
     }
   ]
 }
