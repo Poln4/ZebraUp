@@ -39,13 +39,12 @@ class _ZebraTrackerAppState extends State<ZebraTrackerApp> {
   }
 }
 
-// Simple Mock Database Representation
 class Profile {
   final String id;
-  final String name;
-  final String dob;
-  final List<String> conditions;
-  final List<String> medications;
+  String name;
+  String dob;
+  List<String> conditions;
+  List<String> medications;
   List<String> activeSymptoms;
   List<String> inactiveVault;
 
@@ -79,7 +78,6 @@ class MainTrackingScreen extends StatefulWidget {
 }
 
 class _MainTrackingScreenState extends State<MainTrackingScreen> {
-  // Hardcoded Data Profiles for immediate testing
   final List<Profile> _profiles = [
     Profile(
       id: '1',
@@ -103,23 +101,35 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
 
   late Profile _activeProfile;
   bool _showReport = false;
+  bool _isEditingMode = false;
+
+  // Text fields controllers for inputs
+  final _profileNameController = TextEditingController();
+  final _profileDobController = TextEditingController();
+  final _newSymptomController = TextEditingController();
+  final _newMedicationController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _activeProfile = _profiles[0];
+    _updateControllers();
   }
 
-  // Pure logic interaction check layer
+  void _updateControllers() {
+    _profileNameController.text = _activeProfile.name;
+    _profileDobController.text = _activeProfile.dob;
+  }
+
   List<String> _generateClinicalFlags() {
     List<String> flags = [];
     final meds = _activeProfile.medications;
     final symptoms = _activeProfile.activeSymptoms;
 
-    if (meds.contains('Alkantin') && meds.contains('Iron')) {
+    if (meds.any((m) => m.toLowerCase().contains('alkantin')) && meds.any((m) => m.toLowerCase().contains('iron'))) {
       flags.add("⚠️ BLOQUEO DE ABSORCIÓN: Alkantin impide que tu cuerpo absorba el Hierro de forma correcta. Espacia estas tomas por al menos 2 horas.");
     }
-    if (meds.contains('Duloxetine') && symptoms.contains('Moratones')) {
+    if (meds.any((m) => m.toLowerCase().contains('duloxetine')) && symptoms.any((s) => s.toLowerCase().contains('moratones') || s.toLowerCase().contains('hematoma') || s.toLowerCase().contains('bruis'))) {
       flags.add("⚠️ SEGUIMIENTO CLÍNICO: La Duloxetina puede influir en la agregación de plaquetas. Monitorea si tus moratones aumentan desde que inicias o subes dosis.");
     }
     return flags;
@@ -132,7 +142,6 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
     List<String> activeFlags = _generateClinicalFlags();
 
     return Scaffold(
-      // --- LAYER 1: GLOBAL NAVIGATION & ACCESSIBILITY HEADER ---
       appBar: AppBar(
         backgroundColor: widget.isDarkMode ? Colors.black : Colors.white,
         elevation: 0,
@@ -144,13 +153,14 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
           value: _activeProfile,
           dropdownColor: inverseContrastColor,
           icon: Icon(Icons.arrow_drop_down, color: contrastColor),
-          style: Theme.of(context).textTheme.titleLarge,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(letterSpacing: 1),
           underline: Container(),
           onChanged: (Profile? newProfile) {
             if (newProfile != null) {
               setState(() {
                 _activeProfile = newProfile;
                 _showReport = false;
+                _updateControllers();
               });
             }
           },
@@ -162,6 +172,16 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
           }).toList(),
         ),
         actions: [
+          // Edit Mode Toggle Button
+          IconButton(
+            icon: Icon(_isEditingMode ? Icons.playlist_add_check_rounded : Icons.edit_note_rounded, color: contrastColor, size: 28),
+            onPressed: () {
+              setState(() {
+                _isEditingMode = !_isEditingMode;
+                _showReport = false;
+              });
+            },
+          ),
           IconButton(
             icon: Icon(Icons.text_fields, color: contrastColor),
             onPressed: () {
@@ -175,18 +195,19 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
           ),
         ],
       ),
-      body: _showReport ? _buildReportView(contrastColor) : _buildMainTrackingView(contrastColor, activeFlags),
+      body: _showReport 
+          ? _buildReportView(contrastColor) 
+          : (_isEditingMode ? _buildConfigurationView(contrastColor) : _buildMainTrackingView(contrastColor, activeFlags)),
     );
   }
 
-  // --- LAYER 2: THE DYNAMIC CONTENT LAYER ---
+  // --- STANDARD TRACKING DASHBOARD ---
   Widget _buildMainTrackingView(Color contrastColor, List<String> flags) {
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
-        // Real-time clinical feedback engine flags
         if (flags.isNotEmpty) ...[
-          Text("ALERTAS INFORMATIVAS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale, color: contrastColor)),
+          Text("ALERTAS INFORMATIVAS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
           const SizedBox(height: 8),
           ...flags.map((flag) => Container(
                 margin: const EdgeInsets.only(bottom: 8),
@@ -198,8 +219,7 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
           const SizedBox(height: 12),
         ],
 
-        // Active Symptoms
-        Text("MIS SÍNTOMAS ACTIVOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor)),
+        Text("SÍNTOMAS ACTIVOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
         const SizedBox(height: 8),
         _activeProfile.activeSymptoms.isEmpty
             ? Text("No hay síntomas activos seleccionados.", style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14 * widget.fontScale))
@@ -208,6 +228,7 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
                 runSpacing: 8,
                 children: _activeProfile.activeSymptoms.map((symptom) {
                   return InputChip(
+                    backgroundColor: widget.isDarkMode ? Colors.grey[900] : Colors.grey[200],
                     label: Text(symptom, style: TextStyle(fontSize: 14 * widget.fontScale)),
                     deleteIconColor: contrastColor,
                     onDeleted: () {
@@ -221,8 +242,7 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
               ),
         const SizedBox(height: 24),
 
-        // Inactive Vault
-        Text("BAÚL DE SÍNTOMAS INACTIVOS (+)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor)),
+        Text("BAÚL DE SÍNTOMAS INACTIVOS (+)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
         const SizedBox(height: 8),
         _activeProfile.inactiveVault.isEmpty
             ? Text("El baúl está vacío.", style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14 * widget.fontScale))
@@ -231,6 +251,8 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
                 runSpacing: 8,
                 children: _activeProfile.inactiveVault.map((symptom) {
                   return ActionChip(
+                    backgroundColor: widget.isDarkMode ? Colors.black : Colors.white,
+                    side: BorderSide(color: contrastColor, width: 1),
                     label: Text(symptom, style: TextStyle(fontSize: 14 * widget.fontScale)),
                     onPressed: () {
                       setState(() {
@@ -241,9 +263,22 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
                   );
                 }).toList(),
               ),
-        const SizedBox(height: 40),
+        const SizedBox(height: 24),
 
-        // Go to Report View Button
+        Text("MEDICAMENTOS Y SUPLEMENTOS ACTUALES", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
+        const SizedBox(height: 8),
+        ..._activeProfile.medications.map((med) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Row(
+            children: [
+              Icon(Icons.check_box_outlined, color: contrastColor),
+              const SizedBox(width: 8),
+              Text(med, style: TextStyle(fontSize: 15 * widget.fontScale)),
+            ],
+          ),
+        )),
+
+        const SizedBox(height: 40),
         OutlinedButton(
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: contrastColor, width: 2),
@@ -256,7 +291,160 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
     );
   }
 
-  // --- LAYER 3: MINIMAL COMPACT REPORT VIEW ---
+  // --- NEW: CONFIGURATION & EDIT VIEW LAYER ---
+  Widget _buildConfigurationView(Color contrastColor) {
+    return ListView(
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        Text("CONFIGURACIÓN Y EDICIÓN", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
+        const SizedBox(height: 16),
+
+        // Section A: Edit Active Profile Attributes
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("EDITAR PERFIL SELECCIONADO", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _profileNameController,
+                decoration: InputDecoration(labelText: "Nombre Completo", labelStyle: TextStyle(color: contrastColor), enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: contrastColor))),
+                onChanged: (val) => setState(() => _activeProfile.name = val),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: _profileDobController,
+                decoration: InputDecoration(labelText: "Fecha de Nacimiento (AAAA-MM-DD)", labelStyle: TextStyle(color: contrastColor), enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: contrastColor))),
+                onChanged: (val) => setState(() => _activeProfile.dob = val),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Section B: Add/Delete Symptoms
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("AÑADIR NUEVO SÍNTOMA", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _newSymptomController,
+                      decoration: InputDecoration(hintText: "Ej. Migraña Cervical", hintStyle: const TextStyle(color: Colors.grey), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: contrastColor))),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_box_rounded, color: contrastColor, size: 32),
+                    onPressed: () {
+                      if (_newSymptomController.text.trim().isNotEmpty) {
+                        setState(() {
+                          _activeProfile.activeSymptoms.add(_newSymptomController.text.trim());
+                          _newSymptomController.clear();
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Section C: Manage Medications list
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("GESTIONAR MEDICAMENTOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _newMedicationController,
+                      decoration: InputDecoration(hintText: "Ej. Suplemento Vitamina C", hintStyle: const TextStyle(color: Colors.grey), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: contrastColor))),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_box_rounded, color: contrastColor, size: 32),
+                    onPressed: () {
+                      if (_newMedicationController.text.trim().isNotEmpty) {
+                        setState(() {
+                          _activeProfile.medications.add(_newMedicationController.text.trim());
+                          _newMedicationController.clear();
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ..._activeProfile.medications.map((med) => ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(med, style: TextStyle(fontSize: 14 * widget.fontScale)),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete_outline, color: Colors.red),
+                      onPressed: () => setState(() => _activeProfile.medications.remove(med)),
+                    ),
+                  )),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        // Section D: Create a Completely New Profile Block
+        OutlinedButton.icon(
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(color: contrastColor, width: 2),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+          ),
+          icon: Icon(Icons.person_add_alt_1_rounded, color: contrastColor),
+          label: Text("CREAR NUEVO PERFIL DE PACIENTE", style: TextStyle(color: contrastColor, fontWeight: FontWeight.bold)),
+          onPressed: () {
+            setState(() {
+              final newId = (_profiles.length + 1).toString();
+              final newProfile = Profile(
+                id: newId,
+                name: "NUEVO PACIENTE $newId",
+                dob: "2000-01-01",
+                conditions: [],
+                medications: [],
+                activeSymptoms: [],
+                inactiveVault: [],
+              );
+              _profiles.add(newProfile);
+              _activeProfile = newProfile;
+              _updateControllers();
+            });
+          },
+        ),
+        const SizedBox(height: 24),
+        
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: contrastColor, 
+            foregroundColor: widget.isDarkMode ? Colors.black : Colors.white, 
+            padding: const EdgeInsets.symmetric(vertical: 16)
+          ),
+          onPressed: () => setState(() => _isEditingMode = false),
+          child: const Text("GUARDAR CAMBIOS Y VOLVER", style: TextStyle(fontWeight: FontWeight.bold)),
+        )
+      ],
+    );
+  }
+
+  // --- COMPACT TEXT MEDICAL REPORT VIEW ---
   Widget _buildReportView(Color contrastColor) {
     return ListView(
       padding: const EdgeInsets.all(16.0),
@@ -282,13 +470,19 @@ class _MainTrackingScreenState extends State<MainTrackingScreen> {
               Text("FECHA DE NACIMIENTO: ${_activeProfile.dob}", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale)),
               const SizedBox(height: 12),
               Text("DIAGNÓSTICOS ACTIVOS:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              ..._activeProfile.conditions.map((c) => Text(" • $c", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))),
+              _activeProfile.conditions.isEmpty 
+                  ? Text(" • Ninguno registrado", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))
+                  : Column(crossAxisAlignment: CrossAxisAlignment.start, children: _activeProfile.conditions.map((c) => Text(" • $c", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))).toList()),
               const SizedBox(height: 12),
               Text("TRATAMIENTOS Y SUPLEMENTOS:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              ..._activeProfile.medications.map((m) => Text(" • $m", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))),
+              _activeProfile.medications.isEmpty 
+                  ? Text(" • Ninguno registrado", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))
+                  : Column(crossAxisAlignment: CrossAxisAlignment.start, children: _activeProfile.medications.map((m) => Text(" • $m", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))).toList()),
               const SizedBox(height: 12),
               Text("SÍNTOMAS RELEVANTES REPORTADOS:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              ..._activeProfile.activeSymptoms.map((s) => Text(" • $s (ACTIVO)", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))),
+              _activeProfile.activeSymptoms.isEmpty 
+                  ? Text(" • Ninguno activo hoy", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))
+                  : Column(crossAxisAlignment: CrossAxisAlignment.start, children: _activeProfile.activeSymptoms.map((s) => Text(" • $s (ACTIVO)", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))).toList()),
               const SizedBox(height: 12),
               Text("=========================================", style: TextStyle(fontFamily: 'Courier', fontSize: 12 * widget.fontScale)),
             ],
