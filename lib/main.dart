@@ -1,21 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:math';
+import 'dart:convert';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox('zebraBox');
   runApp(const ZebraUppApp());
 }
 
-class ZebraUppApp extends StatefulWidget {
+// FIX: Changed from StatefulWidget to StatelessWidget
+class ZebraUppApp extends StatelessWidget {
   const ZebraUppApp({super.key});
-
-  @override
-  State<ZebraUppApp> createState() => _ZebraUppAppState();
-}
-
-class _ZebraUppAppState extends State<ZebraUppApp> {
-  bool isDarkMode = true;
-  double fontScale = 1.0;
 
   @override
   Widget build(BuildContext context) {
@@ -23,20 +21,15 @@ class _ZebraUppAppState extends State<ZebraUppApp> {
       title: 'Zebra Upp',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: isDarkMode ? Brightness.dark : Brightness.light,
-        scaffoldBackgroundColor: isDarkMode ? Colors.black : Colors.white,
-        textTheme: TextTheme(
-          bodyLarge: TextStyle(color: isDarkMode ? Colors.white : Colors.black, fontSize: 16 * fontScale),
-          bodyMedium: TextStyle(color: isDarkMode ? Colors.white : Colors.black, fontSize: 14 * fontScale),
-          titleLarge: TextStyle(color: isDarkMode ? Colors.white : Colors.black, fontSize: 22 * fontScale, fontWeight: FontWeight.bold),
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: Colors.black,
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.white, fontSize: 16),
+          bodyMedium: TextStyle(color: Colors.white, fontSize: 14),
+          titleLarge: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
         ),
       ),
-      home: MainAppScreen(
-        isDarkMode: isDarkMode,
-        onToggleTheme: () => setState(() => isDarkMode = !isDarkMode),
-        fontScale: fontScale,
-        onScaleFont: (value) => setState(() => fontScale = value),
-      ),
+      home: const MainAppScreen(),
     );
   }
 }
@@ -58,6 +51,11 @@ class Medication {
     int currentDose = getDoseForDate(date);
     if (currentDose + delta >= 0) dailyHistory[key] = currentDose + delta;
   }
+
+  Map<String, dynamic> toMap() => {'name': name, 'doseDetails': doseDetails, 'dailyHistory': dailyHistory};
+  factory Medication.fromMap(Map<String, dynamic> map) => Medication(
+    name: map['name'], doseDetails: map['doseDetails'], history: Map<String, int>.from(map['dailyHistory'] ?? {})
+  );
 }
 
 class StructuralEvent {
@@ -66,15 +64,18 @@ class StructuralEvent {
   String dateKey;
 
   StructuralEvent({required this.zone, required this.type, required this.dateKey});
+
+  Map<String, dynamic> toMap() => {'zone': zone, 'type': type, 'dateKey': dateKey};
+  factory StructuralEvent.fromMap(Map<String, dynamic> map) => StructuralEvent(zone: map['zone'], type: map['type'], dateKey: map['dateKey']);
 }
 
 class Profile {
   final String id;
   String name;
   String dob;
-  List<String> conditions;
+  List<String> conditions; // Active Diagnoses
   List<Medication> medications;
-  List<String> activeSymptoms;
+  Map<String, String> activeSymptoms; 
   List<String> inactiveVault;
   Set<String> pacingDays; 
   List<StructuralEvent> structuralEvents; 
@@ -84,9 +85,25 @@ class Profile {
     required this.medications, required this.activeSymptoms, required this.inactiveVault,
     Set<String>? pacing, List<StructuralEvent>? structural,
   }) : pacingDays = pacing ?? {}, structuralEvents = structural ?? [];
+
+  Map<String, dynamic> toMap() => {
+    'id': id, 'name': name, 'dob': dob, 'conditions': conditions,
+    'activeSymptoms': activeSymptoms, 'inactiveVault': inactiveVault, 'pacingDays': pacingDays.toList(),
+    'medications': medications.map((x) => x.toMap()).toList(),
+    'structuralEvents': structuralEvents.map((x) => x.toMap()).toList(),
+  };
+
+  factory Profile.fromMap(Map<String, dynamic> map) => Profile(
+    id: map['id'], name: map['name'], dob: map['dob'],
+    conditions: List<String>.from(map['conditions'] ?? []),
+    activeSymptoms: Map<String, String>.from(map['activeSymptoms'] ?? {}),
+    inactiveVault: List<String>.from(map['inactiveVault'] ?? []),
+    pacing: Set<String>.from(map['pacingDays'] ?? []),
+    medications: List<Medication>.from((map['medications'] ?? []).map((x) => Medication.fromMap(x))),
+    structural: List<StructuralEvent>.from((map['structuralEvents'] ?? []).map((x) => StructuralEvent.fromMap(x))),
+  );
 }
 
-// NEW: Dynamic Data Models for JSON Integration
 class WisdomQuote {
   final String text;
   final String category;
@@ -104,15 +121,7 @@ class ClinicalArticle {
 // MAIN APPLICATION STATE
 // ---------------------------------------------------------
 class MainAppScreen extends StatefulWidget {
-  final bool isDarkMode;
-  final VoidCallback onToggleTheme;
-  final double fontScale;
-  final ValueChanged<double> onScaleFont;
-
-  const MainAppScreen({
-    super.key, required this.isDarkMode, required this.onToggleTheme,
-    required this.fontScale, required this.onScaleFont,
-  });
+  const MainAppScreen({super.key});
 
   @override
   State<MainAppScreen> createState() => _MainAppScreenState();
@@ -122,18 +131,17 @@ class _MainAppScreenState extends State<MainAppScreen> {
   late List<Profile> _profiles;
   late Profile _activeProfile;
   
-  // Dynamic Databases (Simulating JSON loading)
   late List<WisdomQuote> _wisdomDatabase;
   late WisdomQuote _dailyWisdom;
   late List<ClinicalArticle> _clinicalLibraryDatabase;
 
   int _currentNavIndex = 0; 
-  bool _showReport = false;
   bool _isEditingMode = false;
   DateTime _selectedDate = DateTime.now();
+  String _selectedReportSpecialty = "General"; 
 
   final _profileNameController = TextEditingController();
-  final _profileDobController = TextEditingController();
+  final _newDiagnosisController = TextEditingController();
   final _newSymptomController = TextEditingController();
   final _newMedNameController = TextEditingController();
   final _newMedDoseController = TextEditingController();
@@ -143,92 +151,104 @@ class _MainAppScreenState extends State<MainAppScreen> {
   @override
   void initState() {
     super.initState();
-    
-    // Simulating loaded data from 'zebra_wisdom.json'
+    _loadSimulatedLibraries();
+    _loadUserProfiles();
+  }
+
+  void _saveData() {
+    var box = Hive.box('zebraBox');
+    String encodedData = json.encode(_profiles.map((p) => p.toMap()).toList());
+    box.put('profiles', encodedData);
+  }
+
+  void _loadSimulatedLibraries() {
     _wisdomDatabase = [
       WisdomQuote(text: "Descansar no es rendirse; es una intervención médica necesaria para tu sistema nervioso.", category: "Pacing"),
       WisdomQuote(text: "Tus síntomas son reales, incluso cuando los exámenes de rutina no los muestran.", category: "Validación"),
-      WisdomQuote(text: "La fatiga multisistémica requiere paciencia radical contigo misma hoy.", category: "Fatiga"),
+      WisdomQuote(text: "El mundo es tu papa. Hoy toca reparar.", category: "Potato Day"),
     ];
     _dailyWisdom = _wisdomDatabase[Random().nextInt(_wisdomDatabase.length)];
 
-    // Simulating loaded data from 'clinical_library.json'
     _clinicalLibraryDatabase = [
-      ClinicalArticle(category: "Tejido Conectivo (SED/TEH)", title: "Criterios Beighton y Riesgos", content: "Evaluación basada en 9 puntos de hipermovilidad articular. Los pacientes presentan fragilidad tisular que afecta la cicatrización y respuesta a anestesia."),
-      ClinicalArticle(category: "Disautonomía (POTS)", title: "Intolerancia Ortostática", content: "La taquicardia al ponerse de pie suele ir acompañada de niebla mental y fatiga extrema debido al estancamiento de sangre (blood pooling)."),
-      ClinicalArticle(category: "Gastrointestinal y Nutrición", title: "Bloqueos de Absorción", content: "Inflamación crónica, dismotilidad y fármacos protectores gástricos pueden bloquear la correcta absorción de micronutrientes vitales como el hierro y B12."),
+      ClinicalArticle(category: "Tejido Conectivo", title: "Criterios Beighton", content: "Evaluación basada en 9 puntos de hipermovilidad articular. Implica fragilidad de tejidos blandos."),
+      ClinicalArticle(category: "Disautonomía", title: "POTS e Intolerancia Ortostática", content: "Taquicardia severa al ponerse de pie acompañada de niebla mental debido al estancamiento del flujo sanguíneo.")
     ];
+  }
 
-    _profiles = [
-      Profile(
-        id: '1', name: 'Paulina (Me)', dob: '1991-09-04',
-        conditions: ['clEDS (TNXB)', 'Adenomiosis', 'POTS', 'Anemia'],
-        medications: [
-          Medication(name: 'Hierro', doseDetails: '14mg'),
-          Medication(name: 'Vitamina C', doseDetails: '1000mg'),
-          Medication(name: 'Duloxetina', doseDetails: '60mg'),
-          Medication(name: 'Ibuprofeno', doseDetails: '400mg (SOS)'),
-        ],
-        activeSymptoms: ['Fatiga', 'Moratones', 'Niebla mental'],
-        inactiveVault: ['Diarrea', 'Mareos', 'Urticaria', 'Nauseas'],
-      ),
-      Profile(
-        id: '2', name: 'Carla (Sobrina)', dob: '2018-05-12',
-        conditions: ['Control Pediátrico'],
-        medications: [
-          Medication(name: 'Vitamina D', doseDetails: '1 Gota (400 IU)'),
-        ],
-        activeSymptoms: ['Tos'],
-        inactiveVault: ['Fiebre', 'Fatiga'],
-      ),
-    ];
+  void _loadUserProfiles() {
+    var box = Hive.box('zebraBox');
+    String? storedData = box.get('profiles');
+
+    if (storedData != null) {
+      List<dynamic> decoded = json.decode(storedData);
+      _profiles = decoded.map((x) => Profile.fromMap(x)).toList();
+    } else {
+      _profiles = [
+        Profile(
+          id: '1', name: 'Paulina (Me)', dob: '1991-09-04',
+          conditions: ['clEDS', 'Adenomiosis', 'POTS', 'Anemia'], // Curated diagnoses
+          medications: [
+            Medication(name: 'Hierro', doseDetails: '14mg'),
+            Medication(name: 'Vitamina C', doseDetails: '1000mg'),
+            Medication(name: 'Duloxetina', doseDetails: '60mg'),
+            Medication(name: 'Ibuprofeno', doseDetails: '400mg (SOS)'),
+          ],
+          activeSymptoms: {'Fatiga crónica': 'Moderado', 'Niebla mental': 'Severo'},
+          inactiveVault: ['Taquicardia ortostática', 'Mareos al pararse', 'Reflujo gástrico', 'Náuseas', 'Moratones'],
+        ),
+      ];
+      _saveData();
+    }
     _activeProfile = _profiles[0];
     _updateControllers();
   }
 
   void _updateControllers() {
     _profileNameController.text = _activeProfile.name;
-    _profileDobController.text = _activeProfile.dob;
   }
 
   List<Map<String, dynamic>> _generateClinicalFlags() {
     List<Map<String, dynamic>> flags = [];
     final meds = _activeProfile.medications.map((m) => m.name.toLowerCase()).toList();
+    final diagnoses = _activeProfile.conditions.map((c) => c.toLowerCase()).toList();
 
     if (meds.any((m) => m.contains('hierro')) && meds.any((m) => m.contains('vitamina c'))) {
       flags.add({"type": "positive", "message": "💡 SINERGIA ÓPTIMA: La Vitamina C potencia la absorción del hierro."});
     }
+    
     if (meds.any((m) => m.contains('duloxetina')) && meds.any((m) => m.contains('ibuprofeno'))) {
-      flags.add({"type": "severe", "message": "🚨 ALERTA HEMORRÁGICA: Duloxetina + AINEs potencian el riesgo de diátesis hemorrágica."});
+      if (diagnoses.contains('cleds') || diagnoses.contains('adenomiosis')) {
+        flags.add({
+          "type": "severe", 
+          "message": "🚨 ALERTA HEMORRÁGICA: Duloxetina + AINEs elevan el riesgo de sangrado debido a tus diagnósticos activos (clEDS/Adenomiosis)."
+        });
+      }
     }
     return flags;
   }
 
   @override
   Widget build(BuildContext context) {
-    Color contrastColor = widget.isDarkMode ? Colors.white : Colors.black;
-    Color inverseContrastColor = widget.isDarkMode ? Colors.black : Colors.white;
+    String appBarTitle = _currentNavIndex == 0 ? _activeProfile.name.toUpperCase() 
+                       : _currentNavIndex == 1 ? "PANEL DE INFORMES" 
+                       : "BIBLIOTECA CLÍNICA";
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: widget.isDarkMode ? Colors.black : Colors.white,
+        backgroundColor: Colors.black,
         elevation: 0,
-        bottom: PreferredSize(preferredSize: const Size.fromHeight(1.0), child: Container(color: contrastColor, height: 1.0)),
-        title: _currentNavIndex == 1 
-            ? Text("BIBLIOTECA CLÍNICA", style: Theme.of(context).textTheme.titleLarge?.copyWith(letterSpacing: 1))
+        bottom: PreferredSize(preferredSize: const Size.fromHeight(1.0), child: Container(color: Colors.white, height: 1.0)),
+        title: _currentNavIndex != 0 
+            ? Text(appBarTitle, style: const TextStyle(letterSpacing: 1, fontWeight: FontWeight.bold))
             : DropdownButton<Profile>(
                 value: _activeProfile,
-                dropdownColor: inverseContrastColor,
-                icon: Icon(Icons.arrow_drop_down, color: contrastColor),
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(letterSpacing: 1),
+                dropdownColor: Colors.black,
+                icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
+                style: const TextStyle(fontSize: 22, color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1),
                 underline: Container(),
                 onChanged: (Profile? newProfile) {
                   if (newProfile != null) {
-                    setState(() {
-                      _activeProfile = newProfile;
-                      _showReport = false;
-                      _updateControllers();
-                    });
+                    setState(() { _activeProfile = newProfile; _updateControllers(); });
                   }
                 },
                 items: _profiles.map<DropdownMenuItem<Profile>>((Profile profile) {
@@ -238,36 +258,34 @@ class _MainAppScreenState extends State<MainAppScreen> {
         actions: [
           if (_currentNavIndex == 0)
             IconButton(
-              icon: Icon(_isEditingMode ? Icons.playlist_add_check_rounded : Icons.settings_outlined, color: contrastColor, size: 28),
-              onPressed: () => setState(() { _isEditingMode = !_isEditingMode; _showReport = false; }),
+              icon: Icon(_isEditingMode ? Icons.playlist_add_check_rounded : Icons.settings_outlined, color: Colors.white, size: 28),
+              onPressed: () => setState(() => _isEditingMode = !_isEditingMode),
             ),
-          IconButton(icon: Icon(Icons.text_fields, color: contrastColor), onPressed: () => widget.onScaleFont(widget.fontScale >= 1.4 ? 1.0 : widget.fontScale + 0.2)),
-          IconButton(icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode, color: contrastColor), onPressed: widget.onToggleTheme),
         ],
       ),
       body: _currentNavIndex == 0 
-          ? (_showReport ? _buildReportView(contrastColor) : (_isEditingMode ? _buildConfigurationView(contrastColor, inverseContrastColor) : _buildMainTrackingView(contrastColor, inverseContrastColor)))
-          : _buildCompendiumLibraryView(contrastColor),
+          ? (_isEditingMode ? _buildConfigurationView() : _buildMainTrackingView())
+          : (_currentNavIndex == 1 ? _buildReportView() : _buildCompendiumLibraryView()),
       
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: widget.isDarkMode ? Colors.black : Colors.white,
-        selectedItemColor: contrastColor,
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.white,
         unselectedItemColor: Colors.grey,
         currentIndex: _currentNavIndex,
-        onTap: (index) => setState(() { _currentNavIndex = index; _showReport = false; _isEditingMode = false; }),
+        onTap: (index) => setState(() { _currentNavIndex = index; _isEditingMode = false; }),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.check_circle_outline), label: 'Rastreador'),
+          BottomNavigationBarItem(icon: Icon(Icons.assignment_ind_outlined), label: 'Resumen'),
           BottomNavigationBarItem(icon: Icon(Icons.menu_book_rounded), label: 'Biblioteca'),
         ],
       ),
     );
   }
 
-  // --- CALENDAR STRIP ---
-  Widget _buildCalendarStrip(Color contrastColor, Color inverseContrastColor) {
+  Widget _buildCalendarStrip() {
     return Container(
       height: 80,
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: contrastColor, width: 1))),
+      decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white, width: 1))),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 14,
@@ -284,18 +302,18 @@ class _MainAppScreenState extends State<MainAppScreen> {
               width: 65,
               margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
               decoration: BoxDecoration(
-                color: isSelected ? contrastColor : Colors.transparent,
-                border: Border.all(color: contrastColor, width: isPacing ? 2 : 1),
+                color: isSelected ? Colors.white : Colors.transparent,
+                border: Border.all(color: Colors.white, width: isPacing ? 2 : 1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(DateFormat('MMM').format(date).toUpperCase(), style: TextStyle(fontSize: 10 * widget.fontScale, color: isSelected ? inverseContrastColor : contrastColor, fontWeight: FontWeight.bold)),
+                  Text(DateFormat('MMM').format(date).toUpperCase(), style: TextStyle(fontSize: 10, color: isSelected ? Colors.black : Colors.white, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 2),
                   isPacing 
-                      ? Icon(Icons.shield_outlined, color: isSelected ? inverseContrastColor : contrastColor, size: 20 * widget.fontScale)
-                      : Text(DateFormat('d').format(date), style: TextStyle(fontSize: 16 * widget.fontScale, color: isSelected ? inverseContrastColor : contrastColor, fontWeight: FontWeight.bold)),
+                      ? Icon(Icons.shield_outlined, color: isSelected ? Colors.black : Colors.white, size: 20)
+                      : Text(DateFormat('d').format(date), style: TextStyle(fontSize: 16, color: isSelected ? Colors.black : Colors.white, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -305,12 +323,47 @@ class _MainAppScreenState extends State<MainAppScreen> {
     );
   }
 
-  // --- STRUCTURAL BODY MAP MENU ---
-  void _openStructuralMenu(String zone, Color contrastColor, Color inverseContrastColor) {
+  void _openSeverityMenu(String symptom) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: inverseContrastColor,
-      shape: RoundedRectangleBorder(side: BorderSide(color: contrastColor, width: 2)),
+      backgroundColor: Colors.black,
+      shape: const RoundedRectangleBorder(side: BorderSide(color: Colors.white, width: 2)),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("GRAVEDAD DE: ${symptom.toUpperCase()}", style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.circle, color: Colors.green),
+                title: const Text("Leve", style: TextStyle(color: Colors.white)),
+                onTap: () { setState(() { _activeProfile.activeSymptoms[symptom] = "Leve"; _saveData(); }); Navigator.pop(context); },
+              ),
+              ListTile(
+                leading: const Icon(Icons.circle, color: Colors.orange),
+                title: const Text("Moderado", style: TextStyle(color: Colors.white)),
+                onTap: () { setState(() { _activeProfile.activeSymptoms[symptom] = "Moderado"; _saveData(); }); Navigator.pop(context); },
+              ),
+              ListTile(
+                leading: const Icon(Icons.circle, color: Colors.red),
+                title: const Text("Severo", style: TextStyle(color: Colors.white)),
+                onTap: () { setState(() { _activeProfile.activeSymptoms[symptom] = "Severo"; _saveData(); }); Navigator.pop(context); },
+              ),
+            ],
+          ),
+        );
+      }
+    );
+  }
+
+  void _openStructuralMenu(String zone) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.black,
+      shape: const RoundedRectangleBorder(side: BorderSide(color: Colors.white, width: 2)),
       builder: (context) {
         return Container(
           padding: const EdgeInsets.all(20),
@@ -319,15 +372,21 @@ class _MainAppScreenState extends State<MainAppScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("ZONA: ${zone.toUpperCase()}", style: TextStyle(color: contrastColor, fontSize: 16 * widget.fontScale, fontWeight: FontWeight.bold)),
+                Text("REGISTRAR EN: ${zone.toUpperCase()}", style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 16),
-                _buildStructuralOption("Subluxación (Inestabilidad Parcial)", zone, contrastColor),
-                _buildStructuralOption("Dislocación (Salida Completa)", zone, contrastColor),
-                _buildStructuralOption("Inestabilidad Articular (Laxitud)", zone, contrastColor),
-                _buildStructuralOption("Dolor Articular (Ache/Inflamación)", zone, contrastColor),
-                _buildStructuralOption("Dolor Miofascial (Fascia/Músculo)", zone, contrastColor),
-                _buildStructuralOption("Dolor Neuropático (Nervio)", zone, contrastColor),
-                _buildStructuralOption("Otro evento...", zone, contrastColor),
+                ...["Subluxación", "Dislocación", "Inestabilidad Articular", "Dolor Articular", "Dolor Miofascial", "Dolor Neuropático"]
+                  .map((type) => ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.warning_amber_rounded, color: Colors.white),
+                    title: Text(type, style: const TextStyle(color: Colors.white)),
+                    onTap: () {
+                      setState(() {
+                        _activeProfile.structuralEvents.add(StructuralEvent(zone: zone, type: type, dateKey: _getDateKey(_selectedDate)));
+                        _saveData();
+                      });
+                      Navigator.pop(context);
+                    },
+                  )),
               ],
             ),
           ),
@@ -336,22 +395,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
     );
   }
 
-  Widget _buildStructuralOption(String type, String zone, Color contrastColor) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: Icon(Icons.warning_amber_rounded, color: contrastColor),
-      title: Text(type, style: TextStyle(color: contrastColor, fontSize: 14 * widget.fontScale)),
-      onTap: () {
-        setState(() {
-          _activeProfile.structuralEvents.add(StructuralEvent(zone: zone, type: type, dateKey: _getDateKey(_selectedDate)));
-        });
-        Navigator.pop(context);
-      },
-    );
-  }
-
-  // --- MAIN TRACKING VIEW ---
-  Widget _buildMainTrackingView(Color contrastColor, Color inverseContrastColor) {
+  Widget _buildMainTrackingView() {
     String currentDateKey = _getDateKey(_selectedDate);
     bool isCurrentlyPacing = _activeProfile.pacingDays.contains(currentDateKey);
     List<StructuralEvent> todaysEvents = _activeProfile.structuralEvents.where((e) => e.dateKey == currentDateKey).toList();
@@ -359,55 +403,36 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
     return Column(
       children: [
-        _buildCalendarStrip(contrastColor, inverseContrastColor),
+        _buildCalendarStrip(),
         Expanded(
           child: ListView(
             padding: const EdgeInsets.all(16.0),
             children: [
-              // 0. NEW: ZEBRA WISDOM CARD
               Container(
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 24),
-                decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1, style: BorderStyle.solid)),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.wb_incandescent_outlined, color: contrastColor, size: 18),
-                        const SizedBox(width: 8),
-                        Text("SABIDURÍA ZEBRA", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text('"${_dailyWisdom.text}"', style: TextStyle(fontSize: 15 * widget.fontScale, fontStyle: FontStyle.italic, color: contrastColor, height: 1.4)),
-                  ],
-                ),
+                decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 1)),
+                child: Text('"${_dailyWisdom.text}"', style: const TextStyle(fontSize: 15, fontStyle: FontStyle.italic, height: 1.4)),
               ),
 
-              // 1. PACING TOGGLE
               InkWell(
                 onTap: () => setState(() {
                   isCurrentlyPacing ? _activeProfile.pacingDays.remove(currentDateKey) : _activeProfile.pacingDays.add(currentDateKey);
+                  _saveData();
                 }),
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isCurrentlyPacing ? contrastColor : Colors.transparent,
-                    border: Border.all(color: contrastColor, width: 2),
+                    color: isCurrentlyPacing ? Colors.white : Colors.transparent,
+                    border: Border.all(color: Colors.white, width: 2),
                   ),
                   child: Row(
                     children: [
-                      Icon(isCurrentlyPacing ? Icons.shield : Icons.shield_outlined, color: isCurrentlyPacing ? inverseContrastColor : contrastColor, size: 28),
+                      Icon(isCurrentlyPacing ? Icons.shield : Icons.shield_outlined, color: isCurrentlyPacing ? Colors.black : Colors.white, size: 28),
                       const SizedBox(width: 12),
+                      // FIX: Removed the hallucinated 'James: true'
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("DÍA DE PACING (RECUPERACIÓN)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale, color: isCurrentlyPacing ? inverseContrastColor : contrastColor)),
-                            Text("Validar el descanso como intervención.", style: TextStyle(fontSize: 12 * widget.fontScale, color: isCurrentlyPacing ? inverseContrastColor : contrastColor)),
-                          ],
-                        ),
+                        child: Text("POTATO DAY (RECUPERACIÓN)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: isCurrentlyPacing ? Colors.black : Colors.white)),
                       )
                     ],
                   ),
@@ -415,32 +440,16 @@ class _MainAppScreenState extends State<MainAppScreen> {
               ),
               const SizedBox(height: 24),
 
-              // 2. COMPACT STRUCTURAL BODY MAP
-              Text("MAPA ESTRUCTURAL (ZONAS)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
+              const Text("MAPA DE ZONAS ESTRUCTURALES", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
               const SizedBox(height: 12),
-              Text("TREN SUPERIOR", style: TextStyle(fontSize: 12 * widget.fontScale, color: Colors.grey, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
               Wrap(
                 spacing: 8, runSpacing: 8,
-                children: ["Cervicales", "Hombros", "Codos", "Muñecas", "Manos/Dedos", "Espalda Alta"]
+                children: ["Cervicales", "Hombros", "Muñecas", "Manos", "Lumbar/Pelvis", "Caderas", "Rodillas", "Tobillos"]
                   .map((zone) => ActionChip(
                     backgroundColor: Colors.transparent,
-                    side: BorderSide(color: contrastColor, width: 1),
-                    label: Text(zone, style: TextStyle(color: contrastColor, fontSize: 12 * widget.fontScale)),
-                    onPressed: () => _openStructuralMenu(zone, contrastColor, inverseContrastColor),
-                  )).toList(),
-              ),
-              const SizedBox(height: 16),
-              Text("TREN INFERIOR", style: TextStyle(fontSize: 12 * widget.fontScale, color: Colors.grey, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8, runSpacing: 8,
-                children: ["Lumbar/Pelvis", "Caderas", "Rodillas", "Tobillos", "Pies"]
-                  .map((zone) => ActionChip(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: contrastColor, width: 1),
-                    label: Text(zone, style: TextStyle(color: contrastColor, fontSize: 12 * widget.fontScale)),
-                    onPressed: () => _openStructuralMenu(zone, contrastColor, inverseContrastColor),
+                    side: const BorderSide(color: Colors.white),
+                    label: Text(zone, style: const TextStyle(color: Colors.white, fontSize: 12)),
+                    onPressed: () => _openStructuralMenu(zone),
                   )).toList(),
               ),
               
@@ -448,115 +457,82 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(border: Border.all(color: contrastColor, style: BorderStyle.solid)),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.white)),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: todaysEvents.map((event) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Icon(Icons.adjust, color: contrastColor, size: 16),
-                          const SizedBox(width: 8),
-                          Expanded(child: Text("${event.zone}: ${event.type}", style: TextStyle(fontSize: 14 * widget.fontScale))),
-                          IconButton(
-                            padding: EdgeInsets.zero, constraints: const BoxConstraints(),
-                            icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                            onPressed: () => setState(() => _activeProfile.structuralEvents.remove(event)),
-                          )
-                        ],
-                      ),
+                    children: todaysEvents.map((event) => Row(
+                      children: [
+                        const Icon(Icons.adjust, color: Colors.white, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text("${event.zone}: ${event.type}")),
+                        IconButton(icon: const Icon(Icons.close, color: Colors.red, size: 18), onPressed: () => setState(() { _activeProfile.structuralEvents.remove(event); _saveData(); }))
+                      ],
                     )).toList(),
                   ),
                 )
               ],
               const SizedBox(height: 24),
 
-              // 3. CLINICAL FLAGS
               if (activeFlags.isNotEmpty) ...[
-                Text("ANÁLISIS DE INTERACCIONES", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
+                const Text("ANÁLISIS CLÍNICO AUTOMÁTICO", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
                 const SizedBox(height: 8),
                 ...activeFlags.map((flag) => Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: flag["type"] == "severe" ? Colors.redAccent : contrastColor, width: 2),
-                        color: flag["type"] == "positive" ? Colors.green.withOpacity(0.1) : Colors.transparent,
-                      ),
-                      child: Text(flag["message"], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
+                      decoration: BoxDecoration(border: Border.all(color: flag["type"] == "severe" ? Colors.redAccent : Colors.white, width: 2)),
+                      child: Text(flag["message"], style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                     )),
-                const Divider(thickness: 2, color: Colors.grey),
-                const SizedBox(height: 12),
+                const Divider(thickness: 1, color: Colors.grey),
               ],
 
-              // 4. ACTIVE SYMPTOMS
-              Text("SÍNTOMAS ACTIVOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
+              const Text("SÍNTOMAS ACTIVOS", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
               const SizedBox(height: 8),
-              _activeProfile.activeSymptoms.isEmpty
-                  ? Text("No hay síntomas activos seleccionados.", style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14 * widget.fontScale))
-                  : Wrap(
-                      spacing: 8, runSpacing: 8,
-                      children: _activeProfile.activeSymptoms.map((symptom) => InputChip(
-                        backgroundColor: widget.isDarkMode ? Colors.grey[900] : Colors.grey[200],
-                        label: Text(symptom, style: TextStyle(fontSize: 14 * widget.fontScale)),
-                        deleteIconColor: contrastColor,
-                        onDeleted: () => setState(() { _activeProfile.activeSymptoms.remove(symptom); _activeProfile.inactiveVault.add(symptom); }),
-                      )).toList(),
-                    ),
+              Wrap(
+                spacing: 8, runSpacing: 8,
+                children: _activeProfile.activeSymptoms.entries.map((entry) {
+                  Color chipColor = entry.value == "Leve" ? Colors.green[900]! : entry.value == "Moderado" ? Colors.orange[900]! : Colors.red[900]!;
+                  return InputChip(
+                    backgroundColor: chipColor,
+                    side: const BorderSide(color: Colors.white),
+                    label: Text("${entry.key} (${entry.value})"),
+                    onPressed: () => _openSeverityMenu(entry.key),
+                    onDeleted: () => setState(() { _activeProfile.activeSymptoms.remove(entry.key); _activeProfile.inactiveVault.insert(0, entry.key); _saveData(); }),
+                    deleteIconColor: Colors.white,
+                  );
+                }).toList(),
+              ),
               const SizedBox(height: 24),
               
-              // 5. INACTIVE VAULT
-              Text("BAÚL INACTIVO (+)", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
+              const Text("BAÚL INACTIVO (+)", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
               const SizedBox(height: 8),
-              _activeProfile.inactiveVault.isEmpty
-                  ? Text("El baúl está vacío.", style: TextStyle(fontStyle: FontStyle.italic, fontSize: 14 * widget.fontScale))
-                  : Wrap(
-                      spacing: 8, runSpacing: 8,
-                      children: _activeProfile.inactiveVault.map((symptom) => ActionChip(
-                        backgroundColor: widget.isDarkMode ? Colors.black : Colors.white,
-                        side: BorderSide(color: contrastColor, width: 1),
-                        label: Text(symptom, style: TextStyle(fontSize: 14 * widget.fontScale)),
-                        onPressed: () => setState(() { _activeProfile.inactiveVault.remove(symptom); _activeProfile.activeSymptoms.add(symptom); }),
-                      )).toList(),
-                    ),
+              Wrap(
+                spacing: 8, runSpacing: 8,
+                children: _activeProfile.inactiveVault.map((symptom) => ActionChip(
+                  backgroundColor: Colors.black,
+                  side: const BorderSide(color: Colors.white),
+                  label: Text(symptom, style: const TextStyle(color: Colors.white)),
+                  onPressed: () => setState(() { _activeProfile.inactiveVault.remove(symptom); _activeProfile.activeSymptoms[symptom] = "Moderado"; _saveData(); }),
+                )).toList(),
+              ),
               const SizedBox(height: 24),
 
-              // 6. DOSAGE TRACKING
-              Text("SEGUIMIENTO DE DOSIS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
+              const Text("SEGUIMIENTO DE SUPLEMENTOS / REMEDIOS", style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1)),
               const SizedBox(height: 8),
               ..._activeProfile.medications.map((med) => Container(
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                decoration: BoxDecoration(border: Border.all(color: contrastColor)),
+                decoration: BoxDecoration(border: Border.all(color: Colors.white)),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(med.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15 * widget.fontScale)),
-                          Text(med.doseDetails, style: TextStyle(fontSize: 12 * widget.fontScale, color: Colors.grey)),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        IconButton(icon: Icon(Icons.remove_circle_outline, color: contrastColor), onPressed: () => setState(() => med.updateDose(_selectedDate, -1))),
-                        Text("${med.getDoseForDate(_selectedDate)}", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18 * widget.fontScale)), 
-                        IconButton(icon: Icon(Icons.add_circle_outline, color: contrastColor), onPressed: () => setState(() => med.updateDose(_selectedDate, 1))),
-                      ],
-                    )
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(med.name, style: const TextStyle(fontWeight: FontWeight.bold)), Text(med.doseDetails, style: const TextStyle(fontSize: 12, color: Colors.grey))])),
+                    Row(children: [
+                      IconButton(icon: const Icon(Icons.remove_circle_outline), onPressed: () => setState(() { med.updateDose(_selectedDate, -1); _saveData(); })),
+                      Text("${med.getDoseForDate(_selectedDate)}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)), 
+                      IconButton(icon: const Icon(Icons.add_circle_outline), onPressed: () => setState(() { med.updateDose(_selectedDate, 1); _saveData(); })),
+                    ])
                   ],
                 ),
               )),
-              
-              const SizedBox(height: 24),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(side: BorderSide(color: contrastColor, width: 2), padding: const EdgeInsets.symmetric(vertical: 16)),
-                onPressed: () => setState(() => _showReport = true),
-                child: Text("GENERAR INFORME CLÍNICO", style: TextStyle(fontWeight: FontWeight.bold, color: contrastColor, fontSize: 16 * widget.fontScale)),
-              ),
             ],
           ),
         ),
@@ -564,96 +540,48 @@ class _MainAppScreenState extends State<MainAppScreen> {
     );
   }
 
-  // --- CONFIGURATION MENU ---
-  Widget _buildConfigurationView(Color contrastColor, Color inverseContrastColor) {
+  Widget _buildConfigurationView() {
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
-        Text("CONFIGURACIÓN Y EDICIÓN", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18 * widget.fontScale, color: contrastColor, letterSpacing: 1)),
+        const Text("CONFIGURACIÓN DE PERFIL CLÍNICO", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1)),
         const SizedBox(height: 16),
 
         Container(
           padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1)),
+          decoration: BoxDecoration(border: Border.all(color: Colors.white)),
+          child: TextField(
+            controller: _profileNameController,
+            decoration: const InputDecoration(labelText: "Nombre del Paciente", labelStyle: TextStyle(color: Colors.white)),
+            onChanged: (val) => setState(() { _activeProfile.name = val; _saveData(); }),
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(border: Border.all(color: Colors.white)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("EDITAR PERFIL", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
+              const Text("GESTIONAR DIAGNÓSTICOS / COMORBILIDADES", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               const SizedBox(height: 12),
-              TextField(
-                controller: _profileNameController,
-                decoration: InputDecoration(labelText: "Nombre", labelStyle: TextStyle(color: contrastColor), enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: contrastColor))),
-                onChanged: (val) => setState(() => _activeProfile.name = val),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("AÑADIR SÍNTOMA AL BAÚL", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              const SizedBox(height: 8),
               Row(
                 children: [
                   Expanded(
                     child: TextField(
-                      controller: _newSymptomController,
-                      decoration: InputDecoration(hintText: "Ej. Taquicardia al pararse", hintStyle: const TextStyle(color: Colors.grey), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: contrastColor))),
+                      controller: _newDiagnosisController,
+                      decoration: const InputDecoration(hintText: "Añadir diagnóstico (Ej. MCAS, CCI)", hintStyle: TextStyle(color: Colors.grey)),
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.add_box_rounded, color: contrastColor, size: 32),
+                    icon: const Icon(Icons.add_box_rounded, size: 32, color: Colors.white),
                     onPressed: () {
-                      if (_newSymptomController.text.trim().isNotEmpty) {
+                      if (_newDiagnosisController.text.trim().isNotEmpty) {
                         setState(() {
-                          _activeProfile.inactiveVault.add(_newSymptomController.text.trim());
-                          _newSymptomController.clear();
-                        });
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text("GESTIONAR MEDICAMENTOS", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: _newMedNameController,
-                decoration: InputDecoration(hintText: "Nombre (Ej. Sal/Sodio)", hintStyle: const TextStyle(color: Colors.grey), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: contrastColor))),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _newMedDoseController,
-                      decoration: InputDecoration(hintText: "Dosis (Ej. 1 gramo)", hintStyle: const TextStyle(color: Colors.grey), enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: contrastColor))),
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.add_box_rounded, color: contrastColor, size: 32),
-                    onPressed: () {
-                      if (_newMedNameController.text.trim().isNotEmpty) {
-                        setState(() {
-                          _activeProfile.medications.add(
-                            Medication(name: _newMedNameController.text.trim(), doseDetails: _newMedDoseController.text.trim())
-                          );
-                          _newMedNameController.clear();
-                          _newMedDoseController.clear();
+                          _activeProfile.conditions.add(_newDiagnosisController.text.trim());
+                          _newDiagnosisController.clear();
+                          _saveData();
                         });
                       }
                     },
@@ -661,87 +589,123 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 ],
               ),
               const SizedBox(height: 12),
-              ..._activeProfile.medications.map((med) => ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(med.name, style: TextStyle(fontSize: 14 * widget.fontScale, fontWeight: FontWeight.bold)),
-                    subtitle: Text(med.doseDetails, style: TextStyle(fontSize: 12 * widget.fontScale, color: Colors.grey)),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                      onPressed: () => setState(() => _activeProfile.medications.remove(med)),
+              _activeProfile.conditions.isEmpty 
+                  ? const Text("Sin diagnósticos registrados.", style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey))
+                  : Wrap(
+                      spacing: 8, runSpacing: 4,
+                      children: _activeProfile.conditions.map((condition) => InputChip(
+                        label: Text(condition),
+                        backgroundColor: Colors.grey[900],
+                        onDeleted: () => setState(() { _activeProfile.conditions.remove(condition); _saveData(); }),
+                        deleteIconColor: Colors.white,
+                      )).toList(),
                     ),
-                  )),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(border: Border.all(color: Colors.white)),
+          child: Row(
+            children: [
+              Expanded(child: TextField(controller: _newSymptomController, decoration: const InputDecoration(hintText: "Añadir síntoma personalizado al baúl", hintStyle: TextStyle(color: Colors.grey)))),
+              IconButton(icon: const Icon(Icons.add_box_rounded, size: 32), onPressed: () {
+                if (_newSymptomController.text.trim().isNotEmpty) {
+                  setState(() { _activeProfile.inactiveVault.insert(0, _newSymptomController.text.trim()); _newSymptomController.clear(); _saveData(); });
+                }
+              }),
+            ],
+          ),
+        ),
+        const SizedBox(height: 20),
+
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(border: Border.all(color: Colors.white)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text("AÑADIR NUEVO MEDICAMENTO / SUPLEMENTO", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+              TextField(controller: _newMedNameController, decoration: const InputDecoration(hintText: "Nombre (Ej. Visanne)")),
+              Row(
+                children: [
+                  Expanded(child: TextField(controller: _newMedDoseController, decoration: const InputDecoration(hintText: "Dosis (Ej. 2mg a las 22:30)"))),
+                  IconButton(icon: const Icon(Icons.add_box_rounded, size: 32), onPressed: () {
+                    if (_newMedNameController.text.trim().isNotEmpty) {
+                      setState(() {
+                        _activeProfile.medications.add(Medication(name: _newMedNameController.text.trim(), doseDetails: _newMedDoseController.text.trim()));
+                        _newMedNameController.clear(); _newMedDoseController.clear(); _saveData();
+                      });
+                    }
+                  }),
+                ],
+              ),
             ],
           ),
         ),
         const SizedBox(height: 24),
 
-        OutlinedButton.icon(
-          style: OutlinedButton.styleFrom(
-            side: BorderSide(color: contrastColor, width: 2),
-            padding: const EdgeInsets.symmetric(vertical: 12),
-          ),
-          icon: Icon(Icons.person_add_alt_1_rounded, color: contrastColor),
-          label: Text("CREAR NUEVO PERFIL (EJ. MAMÁ)", style: TextStyle(color: contrastColor, fontWeight: FontWeight.bold)),
-          onPressed: () {
-            setState(() {
-              final newId = (_profiles.length + 1).toString();
-              final newProfile = Profile(
-                id: newId, name: "NUEVO PERFIL $newId", dob: "1960-01-01",
-                conditions: [], medications: [], activeSymptoms: [], inactiveVault: [],
-              );
-              _profiles.add(newProfile);
-              _activeProfile = newProfile;
-              _updateControllers();
-            });
-          },
-        ),
-        const SizedBox(height: 24),
-        
         ElevatedButton(
-          style: ElevatedButton.styleFrom(backgroundColor: contrastColor, foregroundColor: inverseContrastColor, padding: const EdgeInsets.symmetric(vertical: 16)),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black, padding: const EdgeInsets.symmetric(vertical: 16)),
           onPressed: () => setState(() => _isEditingMode = false),
-          child: const Text("GUARDAR CAMBIOS", style: TextStyle(fontWeight: FontWeight.bold)),
+          child: const Text("GUARDAR PERFIL", style: TextStyle(fontWeight: FontWeight.bold)),
         )
       ],
     );
   }
 
-  // --- REPORT VIEW ---
-  Widget _buildReportView(Color contrastColor) {
+  Widget _buildReportView() {
+    Map<String, String> filteredSymptoms = _activeProfile.activeSymptoms;
+    List<Medication> filteredMeds = _activeProfile.medications;
+
+    if (_selectedReportSpecialty == "Ortopedia/Fisio") {
+      filteredMeds = _activeProfile.medications.where((m) => m.name.contains("Ibuprofeno") || m.name.contains("Duloxetina")).toList();
+      filteredSymptoms = Map.fromEntries(_activeProfile.activeSymptoms.entries.where((e) => e.key.contains("Tensión") || e.key.contains("Dolor") || e.key.contains("Fatiga")));
+    } else if (_selectedReportSpecialty == "Hematología") {
+      filteredMeds = _activeProfile.medications.where((m) => m.name.contains("Hierro") || m.name.contains("Vitamina C")).toList();
+      filteredSymptoms = Map.fromEntries(_activeProfile.activeSymptoms.entries.where((e) => e.key.contains("Moratones") || e.key.contains("Sangrado") || e.key.contains("Fatiga")));
+    }
+
     return ListView(
       padding: const EdgeInsets.all(16.0),
       children: [
-        Row(
-          children: [
-            IconButton(icon: Icon(Icons.arrow_back, color: contrastColor), onPressed: () => setState(() => _showReport = false)),
-            Text("VISTA PREVIA DEL INFORME", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18 * widget.fontScale)),
-          ],
+        const Text("FILTRAR VISTA PARA CONSULTA MÉDICA", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8, runSpacing: 8,
+          children: ["General", "Ortopedia/Fisio", "Hematología"].map((spec) => ChoiceChip(
+            backgroundColor: _selectedReportSpecialty == spec ? Colors.white : Colors.transparent,
+            labelStyle: TextStyle(color: _selectedReportSpecialty == spec ? Colors.black : Colors.white),
+            side: const BorderSide(color: Colors.white),
+            label: Text(spec),
+            selected: _selectedReportSpecialty == spec,
+            onSelected: (bool selected) => setState(() => _selectedReportSpecialty = spec),
+          )).toList(),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 24),
+
         Container(
           padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1)),
+          decoration: BoxDecoration(border: Border.all(color: Colors.white)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("=========================================", style: TextStyle(fontFamily: 'Courier', fontSize: 12 * widget.fontScale)),
-              Text("        CLINICAL ABSTRACT REPORT        ", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              Text("=========================================", style: TextStyle(fontFamily: 'Courier', fontSize: 12 * widget.fontScale)),
+              Text("PACIENTE: ${_activeProfile.name}", style: const TextStyle(fontFamily: 'Courier', fontSize: 14)),
+              Text("FECHA EVALUADA: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}", style: const TextStyle(fontFamily: 'Courier')),
+              const Divider(color: Colors.white),
+              
+              const Text("DIAGNÓSTICOS CLÍNICOS ACTIVOS:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold)),
+              ..._activeProfile.conditions.map((c) => Text(" • $c", style: const TextStyle(fontFamily: 'Courier'))),
               const SizedBox(height: 12),
-              Text("PACIENTE: ${_activeProfile.name}", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale)),
-              Text("DIAGNÓSTICOS:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              ..._activeProfile.conditions.map((c) => Text(" • $c", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))),
+              
+              const Text("SUPLEMENTACIÓN Y TRATAMIENTO:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold)),
+              ...filteredMeds.map((m) => Text(" • ${m.name} - Tomado Hoy: ${m.getDoseForDate(_selectedDate)}", style: const TextStyle(fontFamily: 'Courier'))),
               const SizedBox(height: 12),
-              Text("TRATAMIENTOS:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              ..._activeProfile.medications.map((m) => Text(" • ${m.name} [${m.doseDetails}] - Dosis Hoy: ${m.getDoseForDate(_selectedDate)}", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))),
-              const SizedBox(height: 12),
-              Text("SÍNTOMAS ACTIVOS:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              ..._activeProfile.activeSymptoms.map((s) => Text(" • $s", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))),
-              const SizedBox(height: 12),
-              Text("EVENTOS ESTRUCTURALES HOY:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold, fontSize: 14 * widget.fontScale)),
-              ..._activeProfile.structuralEvents.where((e) => e.dateKey == _getDateKey(_selectedDate)).map((e) => Text(" • ${e.zone}: ${e.type}", style: TextStyle(fontFamily: 'Courier', fontSize: 14 * widget.fontScale))),
-              const SizedBox(height: 12),
-              Text("=========================================", style: TextStyle(fontFamily: 'Courier', fontSize: 12 * widget.fontScale)),
+              
+              const Text("SÍNTOMAS REPORTADOS:", style: TextStyle(fontFamily: 'Courier', fontWeight: FontWeight.bold)),
+              ...filteredSymptoms.entries.map((s) => Text(" • ${s.key} [${s.value.toUpperCase()}]", style: const TextStyle(fontFamily: 'Courier'))),
             ],
           ),
         ),
@@ -749,44 +713,19 @@ class _MainAppScreenState extends State<MainAppScreen> {
     );
   }
 
-  // --- NEW DYNAMIC COMPENDIUM LIBRARY ---
-  Widget _buildCompendiumLibraryView(Color contrastColor) {
-    // Group articles by their dynamic categories
-    Map<String, List<ClinicalArticle>> groupedLibrary = {};
-    for (var article in _clinicalLibraryDatabase) {
-      if (!groupedLibrary.containsKey(article.category)) {
-        groupedLibrary[article.category] = [];
-      }
-      groupedLibrary[article.category]!.add(article);
-    }
-
+  Widget _buildCompendiumLibraryView() {
     return ListView(
       padding: const EdgeInsets.all(16.0),
-      children: [
-        Text("BIBLIOTECA CLÍNICA", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22 * widget.fontScale, color: contrastColor)),
-        Text("Repositorio Dinámico de Condiciones Complejas", style: TextStyle(fontSize: 14 * widget.fontScale, color: Colors.grey)),
-        const SizedBox(height: 24),
-        
-        ...groupedLibrary.entries.map((categoryEntry) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(categoryEntry.key.toUpperCase(), style: TextStyle(fontSize: 12 * widget.fontScale, fontWeight: FontWeight.bold, letterSpacing: 1, color: contrastColor)),
-              const SizedBox(height: 8),
-              ...categoryEntry.value.map((article) => Container(
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(border: Border.all(color: contrastColor, width: 1)),
-                child: ExpansionTile(
-                  iconColor: contrastColor, collapsedIconColor: contrastColor,
-                  title: Text(article.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16 * widget.fontScale, color: contrastColor)),
-                  children: [Padding(padding: const EdgeInsets.all(16.0), child: Text(article.content, style: TextStyle(fontSize: 14 * widget.fontScale, color: contrastColor, height: 1.5)))],
-                ),
-              )),
-              const SizedBox(height: 8),
-            ],
-          );
-        }),
-      ],
+      // FIX: Removed the hallucinated 'James: true'
+      children: _clinicalLibraryDatabase.map((article) => Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(border: Border.all(color: Colors.white, width: 1)),
+        child: ExpansionTile(
+          iconColor: Colors.white, collapsedIconColor: Colors.white,
+          title: Text(article.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          children: [Padding(padding: const EdgeInsets.all(16.0), child: Text(article.content, style: const TextStyle(height: 1.5)))],
+        ),
+      )).toList(),
     );
   }
 }
