@@ -1,0 +1,19 @@
+{
+  "facts": [
+    {
+      "condition": "EDS",
+      "fact": "Did you know? Strengthening your core (like the Hybrid Calisthenics bridges) helps your nerves improve proprioception!",
+      "tone": "Optimistic"
+    },
+    {
+      "condition": "General",
+      "fact": "Rest is productive. Your body builds muscle and repairs tissue specifically during the 'Potato Days' (Rest Days).",
+      "tone": "Supportive"
+    },
+    {
+      "condition": "Doctor Visit",
+      "fact": "When asking about bleeding, mention the TNXB gene. It helps doctors understand the structural nature of your bruising.",
+      "tone": "Neutral"
+    }
+  ]
+}
