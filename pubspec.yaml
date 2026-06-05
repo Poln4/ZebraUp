@@ -30,7 +30,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+ 
+  # NEW: required for PubMed integration
+  http: ^1.2.0           # API calls to NCBI E-utilities
+  xml: ^6.5.0            # parsing PubMed XML responses (efetch abstracts)
+  url_launcher: ^6.2.5   # opening pubmed.ncbi.nlm.nih.gov links externally
+ 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -62,6 +67,7 @@ flutter:
 
   assets:
     - assets/interactions.json
+    - assets/zebra_wisdom.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -1,0 +1,463 @@
+{
+  "facts": [
+    {
+      "condition": "Medical Procedures & Anesthesia",
+      "fact_en": "A 2026 clinical trial confirmed that patients with Ehlers-Danlos syndrome experience a significantly shorter duration of the effect of lidocaine.",
+      "fact_es": "Un ensayo clínico de 2026 confirmó que los pacientes con síndrome de Ehlers-Danlos experimentan una duración significativamente menor del efecto de la lidocaína.",
+      "fact_zh": "2026年的一項臨床試驗證實，Ehlers-Danlos症候群（EDS）患者體內利多卡因（Lidocaine）麻醉效果的持續時間顯著較短。",
+      "fact_ko": "2026년 임상 시험에 따르면 에를러스-단로스 증후군(EDS) 환자는 리도카인의 마취 효과 지속 시간이 현저히 짧은 것으로 확인되었습니다.",
+      "tone": "Validating",
+      "source": "Bourne et al., Regional Anesthesia & Pain Medicine, 2026"
+    },
+    {
+      "condition": "Medical Procedures & Anesthesia",
+      "fact_en": "If numbing shots at the dentist wear off quickly, it's not in your head; clinical data shows lidocaine effectiveness drops drastically at 15 and 30 minutes for EDS patients.",
+      "fact_es": "Si la anestesia en el dentista desaparece rápido, no es tu imaginación; los datos clínicos muestran que la eficacia de la lidocaína cae drásticamente a los 15 y 30 minutos en pacientes con SED.",
+      "fact_zh": "如果看牙醫時的麻醉針退得很快，這絕不是你的錯覺；臨床數據顯示，EDS患者在注射利多卡因後15和30分鐘時，其麻醉效果會急劇下降。",
+      "fact_ko": "치과 마취 주사가 빨리 풀리는 것은 기분 탓이 아닙니다. 임상 데이터에 따르면 EDS 환자의 경우 리도카인 투여 후 15분 및 30분 시점에 효과가 급격히 감소하는 것으로 나타났습니다.",
+      "tone": "Empowering",
+      "source": "Bourne et al., Regional Anesthesia & Pain Medicine, 2026"
+    },
+    {
+      "condition": "Medical Procedures & Anesthesia",
+      "fact_en": "Prior to procedures, it is important to discuss local anesthetic resistance with your surgeon, as EDS patients require tailored anesthesia plans to prevent pain.",
+      "fact_es": "Antes de cualquier procedimiento, es importante discutir la resistencia a la anestesia local con tu cirujano, ya que los pacientes con SED requieren planes de anestesia personalizados para prevenir el dolor.",
+      "fact_zh": "在進行任何手術或處置之前，與外科醫生討論局部麻醉劑耐藥性至關重要，因為EDS患者需要量身定制的麻醉方案以預防疼痛。",
+      "fact_ko": "시술이나 수술 전에 외과의사와 국소 마취제 저항성에 대해 논의하는 것이 중요합니다. EDS 환자는 통증을 예방하기 위해 맞춤형 마취 계획이 필요합니다.",
+      "tone": "Educational",
+      "source": "Bourne et al., Regional Anesthesia & Pain Medicine, 2026"
+    },
+    {
+      "condition": "Medical Procedures & Anesthesia",
+      "fact_en": "Local anesthetic resistance in EDS is often misunderstood, but objective data now validates that reduced lidocaine efficacy is a real, measurable phenomenon.",
+      "fact_es": "La resistencia a los anestésicos locales en el SED a menudo se malinterpreta, pero los datos objetivos ahora validan que la eficacia reducida de la lidocaína es un fenómeno real y medible.",
+      "fact_zh": "EDS患者對局部麻醉劑的耐藥性常常被誤解，但客觀數據現在證實，利多卡因療效降低是一個真實且可測量的現象。",
+      "fact_ko": "EDS 환자의 국소 마취제 저항성은 종종 오해를 받지만, 객관적인 데이터는 리도카인 효능 감소가 실제적이고 측정 가능한 현상임을 입증합니다.",
+      "tone": "Supportive",
+      "source": "Bourne et al., Regional Anesthesia & Pain Medicine, 2026"
+    },
+    {
+      "condition": "Medical Procedures & Anesthesia",
+      "fact_en": "While some rare cases of anesthetic resistance are tied to SCN5A gene mutations, reduced duration of lidocaine is broadly observed across hypermobile EDS patients.",
+      "fact_es": "Aunque algunos casos raros de resistencia anestésica están ligados a mutaciones en el gen SCN5A, la menor duración de la lidocaína se observa de manera amplia en pacientes con SED hiperlaxo.",
+      "fact_zh": "雖然少數罕見的麻醉耐藥性案例與SCN5A基因突變有關，但在過度活動型EDS（hEDS）患者中，普遍觀察到利多卡因持續時間縮短的現象。",
+      "fact_ko": "마취 저항성의 일부 드문 사례는 SCN5A 유전자 변이와 관련이 있지만, 리도카인의 지속 시간 단축은 과운동성 EDS 환자 전반에서 광범위하게 관찰됩니다.",
+      "tone": "Informative",
+      "source": "Detroit Anesthesia Services, Local Anesthetic Resistance"
+    },
+    {
+      "condition": "vEDS Emergency Preparedness",
+      "fact_en": "In an emergency, patients with Vascular EDS (vEDS) should carry a wallet card alerting responders to avoid chest compressions if possible, due to arterial and organ fragility.",
+      "fact_es": "En una emergencia, los pacientes con SED vascular (SEDv) deben llevar una tarjeta alertando a los paramédicos para evitar compresiones torácicas si es posible, debido a la fragilidad arterial y de los órganos.",
+      "fact_zh": "在緊急情況下，血管型EDS（vEDS）患者應隨身攜帶警示卡，提醒急救人員由於其動脈和器官極度脆弱，應盡可能避免進行胸外按壓。",
+      "fact_ko": "응급 상황에 대비하여 혈관성 EDS(vEDS) 환자는 동맥 및 장기 취약성으로 인해 가능한 경우 가슴 압박을 피하도록 구급대원에게 알리는 지갑용 카드를 휴대해야 합니다.",
+      "tone": "Empowering",
+      "source": "American Medical ID, Ehlers-Danlos Syndrome"
+    },
+    {
+      "condition": "Emergency Transport",
+      "fact_en": "During emergency transport, EMTs must be extremely careful to avoid joint subluxations or dislocations when moving a patient with hypermobility or EDS.",
+      "fact_es": "Durante el transporte de emergencia, los paramédicos deben ser extremadamente cuidadosos para evitar subluxaciones o luxaciones articulares al mover a un paciente con hiperlaxitud o SED.",
+      "fact_zh": "在緊急運送過程中，急救醫療技術人員（EMT）在移動具有關節過度活動或EDS的患者時，必須極其小心以防止關節半脫位或脫位。",
+      "fact_ko": "응급 이송 중 구급대원은 과운동성 또는 EDS 환자를 이동할 때 관절 아탈구 및 탈구를 방지하기 위해 각별히 주의해야 합니다.",
+      "tone": "Informative",
+      "source": "American Medical ID, Ehlers-Danlos Syndrome"
+    },
+    {
+      "condition": "vEDS Emergency Preparedness",
+      "fact_en": "If a vEDS patient experiences sudden, severe abdominal or chest pain, MRA or CT scans are crucial to rapidly identify potential arterial or bowel ruptures.",
+      "fact_es": "Si un paciente con SEDv experimenta dolor abdominal o torácico repentino y severo, las resonancias magnéticas (MRA) o tomografías (CT) son cruciales para identificar rápidamente posibles rupturas arteriales o intestinales.",
+      "fact_zh": "如果vEDS患者突發嚴重的腹痛或胸痛，進行磁振血管攝影（MRA）或電腦斷層掃描（CT）對於快速識別潛在的動脈或腸道破裂至關重要。",
+      "fact_ko": "vEDS 환자가 갑작스럽고 심한 복통이나 흉통을 겪는 경우, 잠재적인 동맥 또는 장 파열을 신속하게 식별하기 위해 MRA 또는 CT 스캔이 필수적입니다.",
+      "tone": "Educational",
+      "source": "The VEDS Movement, Emergency Preparedness"
+    },
+    {
+      "condition": "Emergency Preparedness",
+      "fact_en": "Having a medical ID bracelet engraved with your EDS diagnosis can literally be a lifesaver when you are unable to communicate your tissue fragility to first responders.",
+      "fact_es": "Tener una pulsera de identificación médica grabada con tu diagnóstico de SED puede literalmente salvarte la vida cuando no puedes comunicar tu fragilidad tisular a los socorristas.",
+      "fact_zh": "當你無法向第一線急救人員說明你的組織脆弱性時，佩戴一隻刻有你EDS診斷結果的醫療識別手鍊，字面意義上可以拯救你的生命。",
+      "fact_ko": "최초 대응자에게 자신의 조직 취약성을 의사소통할 수 없는 상태일 때, EDS 진단명이 새겨진 의료용 ID 팔찌를 착용하는 것은 말 그대로 생명을 구할 수 있습니다.",
+      "tone": "Supportive",
+      "source": "American Medical ID, Ehlers-Danlos Syndrome"
+    },
+    {
+      "condition": "Surgical Preparedness",
+      "fact_en": "Surgical procedures for vEDS have higher success rates when surgeons use gentle retraction, padded clamps, and pledgeted repairs to account for tissue fragility.",
+      "fact_es": "Los procedimientos quirúrgicos para el SEDv tienen mayores tasas de éxito cuando los cirujanos utilizan retracción suave, pinzas acolchadas y reparaciones reforzadas para compensar la fragilidad del tejido.",
+      "fact_zh": "當外科醫生使用溫和的牽引、帶墊的血管鉗和加固補片修補來應對組織脆弱性時，vEDS的外術手術成功率會更高。",
+      "fact_ko": "vEDS 환자의 수술은 외과의가 조직 취약성을 고려하여 부드러운 견인, 패드가 달린 클램프, 패치 보강(pledgeted) 수術을 사용할 때 성공률이 더 높습니다.",
+      "tone": "Optimistic",
+      "source": "The VEDS Movement, Emergency Preparedness Kit"
+    },
+    {
+      "condition": "POTS & Sodium Intake",
+      "fact_en": "For patients with POTS, a high-sodium diet actively increases blood plasma volume and lowers standing heart rates, combating the hypovolemia that drives symptoms.",
+      "fact_es": "Para los pacientes con POTS, una dieta alta en sodio aumenta activamente el volumen del plasma sanguíneo y reduce la frecuencia cardíaca al estar de pie, combatiendo la hipovolemia que causa los síntomas.",
+      "fact_zh": "對於POTS（姿勢性心搏過速症候群）患者，高鈉飲食能主動增加血漿容量並降低站立時的心率，從而對抗引發症狀的低血容量。",
+      "fact_ko": "POTS 환자의 경우, 고나트륨 식단은 혈장량을 적극적으로 늘리고 기립성 심박수를 낮추어 증상을 유발하는 저혈량증에 대처합니다.",
+      "tone": "Empowering",
+      "source": "Garland et al., 2021"
+    },
+    {
+      "condition": "Dysautonomia & Hydration",
+      "fact_en": "Dysautonomia in EDS can cause blood pooling in your legs; increasing fluid intake to 2-3 liters daily helps counter this and improves orthostatic tolerance.",
+      "fact_es": "La disautonomía en el SED puede hacer que la sangre se acumule en las piernas; aumentar la ingesta de líquidos a 2-3 litros diarios ayuda a contrarrestar esto y mejora la tolerancia ortostática.",
+      "fact_zh": "EDS中的自律神經失調會導致血液淤積在下肢；將每日液體攝入量增加至2至3公升有助於對抗這種現象並改善直立耐受性。",
+      "fact_ko": "EDS로 인한 자율신경실조증은 다리에 혈액이 고이는 현상을 유발할 수 있습니다. 하루 수분 섭취량을 2~3리터로 늘리면 이를 방지하고 기립 내성을 향상시키는 데 도움이 됩니다.",
+      "tone": "Educational",
+      "source": "USC Journal, POTS Associated Conditions"
+    },
+    {
+      "condition": "POTS & Quality of Life",
+      "fact_en": "POTS and hEDS share a high symptom burden, often resulting in similar impacts on quality of life, primarily driven by cardiovascular autonomic dysfunction.",
+      "fact_es": "El POTS y el SEDh comparten una alta carga de síntomas, lo que a menudo resulta en impactos similares en la calidad de vida, impulsados principalmente por la disfunción autonómica cardiovascular.",
+      "fact_zh": "POTS和hEDS（過度活動型EDS）共同具有很高的症狀負擔，通常對生活質量產生類似的影響，這主要是由心血管自律神經功能障礙所驅動的。",
+      "fact_ko": "POTS와 hEDS는 높은 증상 부담을 공유하며, 주로 심혈관 자율신경 장애로 인해 삶의 질에 유사한 영향을 미치는 경우가 많습니다.",
+      "tone": "Validating",
+      "source": "Cardiovascular Autonomic Dysfunction in hEDS Research"
+    },
+    {
+      "condition": "POTS & Exercise",
+      "fact_en": "Standard exercise can be difficult with POTS, so starting with recumbent (seated or lying down) exercises like rowing or swimming can safely build orthostatic tolerance.",
+      "fact_es": "El ejercicio estándar puede ser difícil con POTS, por lo que comenzar con ejercicios reclinados (sentado o acostado) como el remo o la natación puede desarrollar la tolerancia ortostática de manera segura.",
+      "fact_zh": "患有POTS時進行常規運動可能會很困難，因此從划船或游泳等斜躺式（坐姿或躺姿）運動開始，可以安全地建立直立耐受性。",
+      "fact_ko": "POTS 환자는 일반적인 운동이 어려울 수 있으므로, 로잉이나 수영과 같은 리컴번트(앉거나 누워서 하는) 운동으로 시작하면 기립 내성을 안전하게 기를 수 있습니다.",
+      "tone": "Optimistic",
+      "source": "USC Journal, POTS Associated Conditions"
+    },
+    {
+      "condition": "Dysautonomia Manifestations",
+      "fact_en": "Cardiovascular dysautonomia in hEDS isn't just a fast heart rate; it can also severely affect gut motility, bladder function, and temperature regulation.",
+      "fact_es": "La disautonomía cardiovascular en el SEDh no es solo un ritmo cardíaco rápido; también puede afectar gravemente la motilidad intestinal, la función de la vejiga y la regulación de la temperatura.",
+      "fact_zh": "hEDS中的心血管自律神經失調不僅僅表現為心跳加快；它還會嚴重影響腸胃蠕動、膀胱功能和體溫調節。",
+      "fact_ko": "hEDS의 심혈관 자율신경실조증은 단순히 빠른 심박수만을 의미하지 않습니다. 이는 장 운동성, 방광 기능, 체온 조절에도 심각한 영향을 미칠 수 있습니다.",
+      "tone": "Informative",
+      "source": "Cardiovascular Autonomic Dysfunction in hEDS Research"
+    },
+    {
+      "condition": "EDS & Exercise Recovery (DOMS)",
+      "fact_en": "Research proves that hypermobile individuals experience significantly greater Delayed-Onset Muscle Soreness (DOMS) than non-hypermobile people after resistance training.",
+      "fact_es": "La investigación demuestra que las personas con hiperlaxitud experimentan un dolor muscular de aparición tardía (DOMS) significativamente mayor que las personas no hiperlaxas después del entrenamiento de resistencia.",
+      "fact_zh": "研究證實，具有關節過度活動的人在進行阻力訓練後，所體驗到的延遲性肌肉痠痛（DOMS）顯著高於非關節過度活動的人。",
+      "fact_ko": "연구에 따르면 과운동성 체질을 가진 개인은 저항 운동 후 과운동성이 없는 사람에 비해 지연성 근육통(DOMS)을 한층 더 심하게 경험합니다.",
+      "tone": "Validating",
+      "source": "Ostuni et al., Effect of Joint Hypermobility Syndrome on DOMS"
+    },
+    {
+      "condition": "EDS & Eccentric Exercise",
+      "fact_en": "When doing eccentric exercises—like slowly lowering a weight—hypermobile muscles endure more microtears, meaning it's biologically normal to need extra recovery days.",
+      "fact_es": "Al hacer ejercicios excéntricos —como bajar un peso lentamente— los músculos hiperlaxos sufren más microdesgarros, lo que significa que es biológicamente normal necesitar días de recuperación adicionales.",
+      "fact_zh": "在進行離心運動（例如緩慢放下重物）時，過度活動的肌肉會承受更多的微小撕裂，這意味著需要額外的恢復天數在生物學上是完全正常的。",
+      "fact_ko": "원심성 운동(무게를 천천히 내리는 운동 등)을 할 때 과운동성 근육은 더 많은 미세 파열을 겪으므로, 추가적인 회복 일이 필요한 것은 생물학적으로 당연한 현상입니다.",
+      "tone": "Supportive",
+      "source": "Intrinsic PT, Understanding DOMS in Hypermobility"
+    },
+    {
+      "condition": "Exercise Adaptation",
+      "fact_en": "If your muscles ache intensely 24 to 72 hours after trying a new workout, be kind to yourself; your hypermobile body naturally needs more time to adapt.",
+      "fact_es": "Si tus músculos duelen intensamente de 24 a 72 horas después de probar un nuevo entrenamiento, sé amable contigo mismo; tu cuerpo hiperlaxo naturalmente necesita más tiempo para adaptarse.",
+      "fact_zh": "如果在嘗試新的訓練後24到72小時內肌肉強烈痠痛，請對自己溫柔一點；你的過度活動身體自然需要更多時間來適應。",
+      "fact_ko": "새로운 운동을 시도한 후 24~72시간 동안 근육통이 심하다면 자신을 다독여주세요. 과운동성 신체는 자연스럽게 적응하는 데 더 많은 시간이 필요합니다.",
+      "tone": "Empowering",
+      "source": "Fascia Institute, DOMS in Hypermobile Patients"
+    },
+    {
+      "condition": "Physical Therapy Modifications",
+      "fact_en": "Physical therapists must scale exercise parameters for hypermobile patients, as pushing through intense DOMS can lead to increased pain and treatment dropout.",
+      "fact_es": "Los fisioterapeutas deben ajustar los parámetros de ejercicio para pacientes hiperlaxos, ya que forzar a través de un DOMS intenso puede provocar mayor dolor y abandono del tratamiento.",
+      "fact_zh": "物理治療師必須為關節過度活動的患者調整運動參數，因為強行忍痛進行劇烈的DOMS訓練可能會導致疼痛加劇和患者中斷治療。",
+      "fact_ko": "물리치료사는 과운동성 환자의 운동 강도를 조절해야 합니다. 심한 지연성 근육통(DOMS)을 무릅쓰고 운동을 강행하면 통증이 악화되고 치료를 포기하게 될 수 있습니다.",
+      "tone": "Educational",
+      "source": "Ostuni et al., Effect of Joint Hypermobility Syndrome on DOMS"
+    },
+    {
+      "condition": "Gradual Loading",
+      "fact_en": "Starting a new exercise routine? Gradual loading is crucial for EDS patients to prevent overwhelming muscle soreness and safely build joint-stabilizing strength.",
+      "fact_es": "¿Empiezas una nueva rutina de ejercicios? La carga gradual es crucial para los pacientes con SED para prevenir un dolor muscular abrumador y desarrollar fuerza estabilizadora de manera segura.",
+      "fact_zh": "正在開始新的運動計畫嗎？漸進式負重對EDS患者至關重要，這樣可以防止無法承受的肌肉痠痛，並安全地建立穩定關節的力量。",
+      "fact_ko": "새로운 운동 루틴을 시작하시나요? EDS 환자에게는 압도적인 근육통을 예방하고 관절을 안정시키는 근력을 안전하게 키우기 위해 점진적인 부하 증량이 필수적입니다.",
+      "tone": "Optimistic",
+      "source": "Intrinsic PT, Understanding DOMS in Hypermobility"
+    },
+    {
+      "condition": "Fascia Densification",
+      "fact_en": "If you feel extremely stiff despite being hypermobile, you aren't imagining it. Your fascia thickens to compensate for loose ligaments, causing chronic stiffness.",
+      "fact_es": "Si te sientes extremadamente rígido a pesar de ser hiperlaxo, no te lo estás imaginando. Tu fascia se engrosa para compensar los ligamentos laxos, causando rigidez crónica.",
+      "fact_zh": "如果你雖然關節過度活動卻感到極度僵硬，這不是你的錯覺。你的筋膜會變厚以補償鬆弛的韌帶，從而導致慢性僵硬。",
+      "fact_ko": "몸이 유연함에도 불구하고 극심한 뻣뻣함을 느낀다면 그것은 착각이 아닙니다. 느슨한 인대를 보완하기 위해 근막이 두꺼워져 만성적인 뻣뻣함을 유발하는 것입니다.",
+      "tone": "Validating",
+      "source": "Steven Murdoch, Why Am I Stiff If I'm Hypermobile?"
+    },
+    {
+      "condition": "Fascial Gliding",
+      "fact_en": "In hypermobile EDS, overactive myofibroblasts lay down excess tissue, disrupting fascial lubrication and reducing the smooth gliding of your muscles.",
+      "fact_es": "En el SED hiperlaxo, los miofibroblastos hiperactivos depositan tejido en exceso, interrumpiendo la lubricación fascial y reduciendo el deslizamiento suave de tus músculos.",
+      "fact_zh": "在過度活動型EDS中，過度活躍的肌纖維母細胞會沉積過多的組織，破壞筋膜的潤滑，進而減少肌肉間的平滑滑動。",
+      "fact_ko": "과운동성 EDS에서는 과활성화된 근섬유아세포가 과도한 조직을 축적하여 근막 윤활을 방해하고 근육의 부드러운 미끄러짐(gliding)을 감소시킵니다.",
+      "tone": "Informative",
+      "source": "Wang et al., Fascia and Hypermobility Disorders (2025/2026)"
+    },
+    {
+      "condition": "Fascial Therapies",
+      "fact_en": "Fascial densification in EDS creates a self-reinforcing cycle of stiffness and pain, but targeted fascial therapies can help restore proper tissue gliding.",
+      "fact_es": "La densificación fascial en el SED crea un ciclo de rigidez y dolor que se refuerza a sí mismo, pero las terapias fasciales dirigidas pueden ayudar a restaurar el deslizamiento adecuado del tejido.",
+      "fact_zh": "EDS中的筋膜緻密化會造成僵硬與疼痛的惡性循環，但針對性的筋膜治療可以幫助恢復良好的組織滑動性。",
+      "fact_ko": "EDS의 근막 경직(densification)은 뻣뻣함과 통증의 악순환을 형성하지만, 표적 근막 치료는 적절한 조직 미끄러짐을 회복하는のに 도움이 될 수 있습니다.",
+      "tone": "Optimistic",
+      "source": "Steven Murdoch, Why Am I Stiff If I'm Hypermobile?"
+    },
+    {
+      "condition": "Fascia & Adipose Disorders",
+      "fact_en": "Clinical ultrasound imaging shows distinct patterns of fascial remodeling in hEDS patients, especially those with co-occurring adipose disorders like lipedema.",
+      "fact_es": "Las imágenes clínicas de ultrasonido muestran patrones distintos de remodelación fascial en pacientes con SEDh, especialmente en aquellos con trastornos adiposos concurrentes como el lipedema.",
+      "fact_zh": "臨床超音波影像顯示，hEDS患者具有獨特的筋膜重塑模式，特別是那些合併患有脂肪水腫（Lipedema）等脂肪組織障礙的患者。",
+      "fact_ko": "임상 초음파 영상은 hEDS 환자, 특히 하지 부종(lipedema)과 같은 지방 장애가 동반된 환자에게서 뚜렷한 근막 리모델링 패턴을 보여줍니다.",
+      "tone": "Educational",
+      "source": "Wang et al., Journal of Rare Diseases (2025)"
+    },
+    {
+      "condition": "Root Cause Management",
+      "fact_en": "Understanding how your fascia tries to stabilize your joints changes everything: treating the root cause of tissue stiffness is much safer than simply over-stretching.",
+      "fact_es": "Entender cómo tu fascia intenta estabilizar tus articulaciones lo cambia todo: tratar la causa raíz de la rigidez tisular es mucho más seguro que simplemente estirar en exceso.",
+      "fact_zh": "理解你的筋膜如何試圖穩定你的關節能改變一切：治療組織僵硬的根本原因，比單純地進行過度拉伸要安全得多。",
+      "fact_ko": "근막이 관절을 안정시키기 위해 어떻게 작동하는지 이해하면 모든 것이 달라집니다. 조직 뻣뻣함의 근본 원인을 치료하는 것이 단순히 과도하게 스트레칭을 하는 것보다 훨씬 안전합니다.",
+      "tone": "Empowering",
+      "source": "Wang, Fascia and Hypermobility Disorders"
+    },
+    {
+      "condition": "Foot Orthotics & Fatigue",
+      "fact_en": "Foot pain in EDS is a major contributor to systemic fatigue. Using custom-made foot orthotics has been proven to significantly reduce daily exhaustion.",
+      "fact_es": "El dolor de pies en el SED es un factor principal que contribuye a la fatiga sistémica. Se ha demostrado que el uso de plantillas ortopédicas a medida reduce significativamente el agotamiento diario.",
+      "fact_zh": "EDS中的足部疼痛是全身性疲勞的主要原因。經證實，使用訂製的足部矯正鞋墊能顯著減輕每日的精疲力竭感。",
+      "fact_ko": "EDS 환자의 발 통증은 전신 피로의 주요 원인입니다. 맞춤형 발 교정용 깔창(orthotics)을 사용하면 일상적인 피로를 크게 줄일 수 있음이 입증되었습니다.",
+      "tone": "Supportive",
+      "source": "Reina-Bueno et al., Int J Environ Res Public Health (2020)"
+    },
+    {
+      "condition": "Mental Health & Foot Pain",
+      "fact_en": "Custom foot orthoses not only support your arches but can significantly improve mental health-related quality of life by reducing the daily burden of foot pain.",
+      "fact_es": "Las plantillas ortopédicas personalizadas no solo soportan los arcos, sino que pueden mejorar significativamente la calidad de vida relacionada con la salud mental al reducir la carga diaria del dolor de pies.",
+      "fact_zh": "訂製的足部矯正器不僅能支撐你的足弓，還能透過減輕每日的足部疼痛負擔，顯著改善與心理健康相關的生活品質。",
+      "fact_ko": "맞춤형 발 교정기는 아치를 지지할 뿐만 아니라 발 통증의 일상적 부담을 줄여 정신 건강 관련 삶의 질을 크게 향상시킬 수 있습니다.",
+      "tone": "Optimistic",
+      "source": "Reina-Bueno et al., Int J Environ Res Public Health (2020)"
+    },
+    {
+      "condition": "Biomechanics",
+      "fact_en": "Because EDS affects connective tissues globally, stabilizing your foundation with custom insoles can decrease the compensatory work your upper body muscles have to do.",
+      "fact_es": "Dado que el SED afecta los tejidos conectivos a nivel global, estabilizar tu base con plantillas a medida puede disminuir el trabajo compensatorio que deben realizar los músculos de la parte superior del cuerpo.",
+      "fact_zh": "由於EDS全面性地影響結締組織，使用訂製鞋墊來穩定你的基底可以減少上半身肌肉必須進行的代償性工作。",
+      "fact_ko": "EDS는 전신 결締조직에 영향을 미치므로, 맞춤형 인솔로 기초를 안정시키면 상체 근육이 해야 하는 보상적 작용(과로)을 줄일 수 있습니다.",
+      "tone": "Educational",
+      "source": "Reina-Bueno et al., Orthopedic Management of EDS"
+    },
+    {
+      "condition": "Foot Functionality",
+      "fact_en": "In an observational study, wearing custom-made orthotics for three months yielded measurable, significant improvements in foot functionality for patients with EDS.",
+      "fact_es": "En un estudio observacional, el uso de plantillas a medida durante tres meses produjo mejoras medibles y significativas en la funcionalidad del pie para pacientes con SED.",
+      "fact_zh": "在一項觀察性研究中，連續三個月佩戴訂製矯正鞋墊使EDS患者的足部功能得到了可觀且顯著的改善。",
+      "fact_ko": "한 관찰 연구에서 맞춤형 교정기를 3개월 동안 착용한 결과 EDS 환자의 발 기능이 정량적이고 유의미하게 향상되었습니다.",
+      "tone": "Informative",
+      "source": "Reina-Bueno et al., Int J Environ Res Public Health (2020)"
+    },
+    {
+      "condition": "Multidisciplinary Care",
+      "fact_en": "Orthotics are a crucial, non-invasive tool in the multidisciplinary management of EDS, helping to preserve joint health and mobility from the ground up.",
+      "fact_es": "Las plantillas son una herramienta crucial y no invasiva en el manejo multidisciplinario del SED, ayudando a preservar la salud y movilidad articular desde la base.",
+      "fact_zh": "足部矯正器是EDS多學科管理中一項至關重要的非侵入性工具，有助於從根本上維護關節健康和行動能力。",
+      "fact_ko": "교정기는 EDS의 다학제적 관리에서 중요한 비침습적 도구이며, 기초부터 관절 건강과 이동성을 보존하는 데 도움이 됩니다.",
+      "tone": "Empowering",
+      "source": "Reina-Bueno et al., Int J Environ Res Public Health (2020)"
+    },
+    {
+      "condition": "Physical Therapy Standards",
+      "fact_en": "Standard physical therapy can sometimes cause harm to hEDS patients. Treatment requires a holistic approach focused on low-load stability, not just generic stretching.",
+      "fact_es": "La fisioterapia estándar a veces puede causar daño a los pacientes con SEDh. El tratamiento requiere un enfoque holístico centrado en la estabilidad de baja carga, no solo estiramientos genéricos.",
+      "fact_zh": "傳統的物理治療有時會對hEDS患者造成傷害。治療需要一種專注於低負荷穩定性的整體方案，而非僅僅是常規的拉伸。",
+      "fact_ko": "일반적인 물리치료는 때로 hEDS 환자에게 해를 끼칠 수 있습니다. 치료는 단순한 스트레칭이 아니라 저부하 안정성에 초점을 맞춘 총체적인 접근 방식이 필요합니다.",
+      "tone": "Validating",
+      "source": "Russek et al., Phys Ther (2019)"
+    },
+    {
+      "condition": "Proprioception",
+      "fact_en": "Because hEDS is a multisystem condition, effective physical therapy must address proprioceptive deficits (body awareness) alongside muscle strengthening.",
+      "fact_es": "Debido a que el SEDh es una condición multisistémica, la fisioterapia efectiva debe abordar los déficits propioceptivos (conciencia corporal) junto con el fortalecimiento muscular.",
+      "fact_zh": "由於hEDS是一種多系統疾病，有效的物理治療必須在增強肌肉力量的同時，解決本體感覺障礙（身體空間感知能力）。",
+      "ko_fact": "hEDS는 다계통 질환이기 때문에 효과적인 물리치료는 근력 강화와 함께 고유수용성 감각 결핍(신체 인지)을 반드시 다루어야 합니다.",
+      "tone": "Educational",
+      "source": "Russek et al., Phys Ther (2019)"
+    },
+    {
+      "condition": "Therapist Selection",
+      "fact_en": "A physical therapist specialized in hypermobility will understand that your pain is real and will focus on functional movement rather than pushing past safe ranges of motion.",
+      "fact_es": "Un fisioterapeuta especializado en hiperlaxitud entenderá que tu dolor es real y se centrará en el movimiento funcional en lugar de forzar más allá de los rangos de movimiento seguros.",
+      "fact_zh": "專長於關節過度活動的物理治療師會理解你的疼痛是真實存在的，並且會專注於功能性動作，而不是強迫你超越安全的關節活動範圍。",
+      "fact_ko": "과운동성 전문 물리치료사는 당신의 통증이 실재함을 이해하며, 안전한 가동 범위를 넘어서도록 강요하기보다 기능적 움직임에 초점을 맞출 것입니다.",
+      "tone": "Supportive",
+      "source": "Mayo Clinic Connect, PT and EDS"
+    },
+    {
+      "condition": "Shoulder Instability",
+      "fact_en": "For shoulder instability in hEDS, emerging evidence supports low-load stability exercises to safely train the muscles to hold the joint in place without overstretching.",
+      "fact_es": "Para la inestabilidad del hombro en el SEDh, la evidencia emergente respalda los ejercicios de estabilidad de baja carga para entrenar de forma segura a los músculos para mantener la articulación en su lugar sin estirarla en exceso.",
+      "fact_zh": "針對hEDS患者的肩關節不穩定，新出現的證據支持進行低負荷穩定性訓練，以安全地鍛煉肌肉將關節固定在正確位置，同時避免過度拉伸。",
+      "fact_ko": "hEDS 환자의 어깨 불안정성에대해 최신 연구들은 근육이 과도하게 늘어나지 않으면서 관절을 제자리에 유지하도록 안전하게 훈련하는 저부하 안정성 운동을 지지합니다.",
+      "tone": "Optimistic",
+      "source": "Engelbert et al., Am J Med Genet C (2017)"
+    },
+    {
+      "condition": "Iatrogenic Injuries",
+      "fact_en": "Iatrogenic (treatment-caused) injuries are common when hypermobile patients are given inappropriate PT exercises; always advocate for hypermobility-aware care.",
+      "fact_es": "Las lesiones iatrogénicas (causadas por el tratamiento) son comunes cuando a los pacientes hiperlaxos se les dan ejercicios de fisioterapia inapropiados; aboga siempre por una atención consciente de la hiperlaxitud.",
+      "fact_zh": "當過度活動型患者接受不恰當的物理治療運動時，醫源性（治療引起的）損傷非常常見；請務必爭取了解過度活動症的專業護理。",
+      "fact_ko": "과운동성 환자에게 부적절한 PT 운동이 주어질 때 의원성(치료로 인한) 부상이 흔히 발생합니다. 항상 과운동성을 잘 아는 치료사의 케어를 요구하세요.",
+      "tone": "Empowering",
+      "source": "Russek et al., Phys Ther (2019)"
+    },
+    {
+      "condition": "Bleeding Diathesis",
+      "fact_en": "If you bruise easily but standard coagulation labs are normal, you aren't alone. EDS bleeding is often caused by cellular platelet defects, not standard clotting factors.",
+      "fact_es": "Si te salen moretones con facilidad pero los laboratorios de coagulación estándar son normales, no estás solo. El sangrado en el SED a menudo es causado por defectos celulares de las plaquetas, no por los factores de coagulación estándar.",
+      "fact_zh": "如果你很容易出現瘀青但常規凝血功能檢查完全正常，你並不孤單。EDS引發的出血通常是由於細胞層面的血小板缺陷所致，而非普遍的凝血因子問題。",
+      "fact_ko": "멍이 잘 들지만 표준 응혈 검사가 정상으로 나온다면 당신만 그런 것이 아닙니다. EDS 출혈은 일반적인 응고 인자가 아니라 세포 수준의 혈소판 결함으로 인해 발생하는 경우가 많습니다.",
+      "tone": "Validating",
+      "source": "Kumskova et al., Blood (2023)"
+    },
+    {
+      "condition": "Platelet Defects",
+      "fact_en": "Recent research reveals that platelets in EDS patients exhibit reduced GPVI receptor levels, which impairs their ability to signal and clot properly during injuries.",
+      "fact_es": "Investigaciones recientes revelan que las plaquetas en pacientes con SED presentan niveles reducidos del receptor GPVI, lo que perjudica su capacidad para enviar señales y coagular adecuadamente durante las lesiones.",
+      "fact_zh": "近期研究揭示，EDS患者的血小板表現出GPVI受體水平降低，這會損害其在受傷期間正確發出信號和凝血的能力。",
+      "fact_ko": "최근 연구에 따르면 EDS 환자의 혈소판은 GPVI 수용체 수치가 감소하여 부상 시 적절하게 신호를 전달하고 혈栓을 형성하는 능력이 저하되는 것으로 나타났습니다.",
+      "tone": "Educational",
+      "source": "Kumskova et al., Blood (2023)"
+    },
+    {
+      "condition": "Hematology Advocacy",
+      "fact_en": "Easy bruising in EDS is a structural and platelet-driven issue. Understanding this can help your hematologist avoid unnecessary and repetitive standard coagulation testing.",
+      "fact_es": "La aparición fácil de moretones en el SED es un problema estructural y provocado por las plaquetas. Comprender esto puede ayudar a tu hematólogo a evitar pruebas de coagulación estándar innecesarias y repetitivas.",
+      "fact_zh": "EDS中容易瘀青是一個結構性且由血小板驱动的問題。了解這一點可以幫助你的血液科醫生避免進行不必要且重複的常規凝血測試。",
+      "fact_ko": "EDS의 쉽게 멍이 드는 현상은 구조적 및 혈소판에 기인한 문제입니다. 이를 이해하면 혈액내과 의사가 불필요하고 반복적인 표준 응고 검사를 피하는 데 도움이 될 수 있습니다.",
+      "tone": "Empowering",
+      "source": "Kumskova et al., Blood (2023)"
+    },
+    {
+      "condition": "Integrin Signaling",
+      "fact_en": "Impaired integrin signaling in EDS platelets provides a direct biological explanation for the unexplained bleeding tendencies many hypermobile patients experience.",
+      "fact_es": "La señalización defectuosa de integrinas en las plaquetas del SED proporciona una explicación biológica directa a las tendencias de sangrado inexplicables que experimentan muchos pacientes hiperlaxos.",
+      "fact_zh": "EDS血小板中整合素（Integrin）信號傳導受損，為許多過度活動型患者所經歷的無法解釋的出血傾向提供了直接的生物學解釋。",
+      "fact_ko": "EDS 혈소판의 인테그린 신호 전달 장애는 많은 과운동성 환자들이 겪는 원인 불명의 출혈 경향에 대해 직접적인 생물학적 설명을 제공합니다.",
+      "tone": "Informative",
+      "source": "Kumskova et al., Blood (2023)"
+    },
+    {
+      "condition": "Thrombocytopathy",
+      "fact_en": "Patients with suspected thrombocytopathy (platelet dysfunction) may actually have underlying Ehlers-Danlos syndrome causing their specific bleeding profile.",
+      "fact_es": "Los pacientes con sospecha de trombocitopatía (disfunción plaquetaria) pueden tener en realidad un síndrome de Ehlers-Danlos subyacente que causa su perfil de sangrado específico.",
+      "fact_zh": "被懷疑患有血小板無力症或血小板功能障礙（Thrombocytopathy）的患者，實際上可能潛藏有Ehlers-Danlos症候群，這才是導致其特殊出血表現的原因。",
+      "fact_ko": "혈소판 기능 장애(thrombocytopathy)가 의심되는 환자는 실제로는 특정 출혈 프로파일을 유발하는 에를러스-단로스 증후군을 기저질환으로 가지고 있을 수 있습니다.",
+      "tone": "Educational",
+      "source": "Pujol-Moix, Blood (2023)"
+    },
+    {
+      "condition": "Adenomyosis & Iron",
+      "fact_en": "Heavy periods from conditions like adenomyosis can cause hidden iron deficiency. Testing Transferrin Saturation (TSAT) is often a more sensitive indicator than ferritin alone.",
+      "fact_es": "Los periodos abundantes por condiciones como la adenomiosis pueden causar una deficiencia de hierro oculta. Evaluar la Saturación de Transferrina (TSAT) suele ser un indicador más sensible que solo la ferritina.",
+      "fact_zh": "子宮腺肌症等疾病導致的經血過多可能會引起隱蔽的缺鐵症。檢測轉鐵蛋白飽和度（TSAT）通常比單獨檢測鐵蛋白是一個更敏感的指標。",
+      "fact_ko": "자궁선근증과 같은 질환으로 인한 과다월경은 잠재적 철분 결핍을 유발할 수 있습니다. 트랜스페린 포화도(TSAT) 검사는 종종 페리틴 단독 검사보다 더 민감한 지표가 됩니다.",
+      "tone": "Informative",
+      "source": "Kawamata et al., PLoS One (2026)"
+    },
+    {
+      "condition": "Functional Iron Deficiency",
+      "fact_en": "Inflammation can make your ferritin levels look falsely normal. If your TSAT is below 20%, your body may still be functionally starved of iron.",
+      "fact_es": "La inflamación puede hacer que tus niveles de ferritina parezcan falsamente normales. Si tu TSAT está por debajo del 20%, tu cuerpo aún puede estar funcionalmente hambriento de hierro.",
+      "fact_zh": "發炎反應可能會使你的鐵蛋白水平看起來呈現假性正常。如果你的TSAT低於20%，你的身體在功能上可能仍然極度缺鐵。",
+      "fact_ko": "염증은 페리틴 수치를 거짓 정상으로 보이게 만들 수 있습니다. TSAT 수치가 20% 미만이면 신체는 여전히 기능적으로 철분이 결핍된 상태일 수 있습니다.",
+      "tone": "Validating",
+      "source": "Kawamata et al., PLoS One (2026)"
+    },
+    {
+      "condition": "Inflammation & Fatigue",
+      "fact_en": "Because adenomyosis creates a chronic inflammatory state, it restricts iron availability, driving profound fatigue even when standard blood tests seem 'fine'.",
+      "fact_es": "Debido a que la adenomiosis crea un estado inflamatorio crónico, restringe la disponibilidad de hierro, provocando una fatiga profunda incluso cuando los análisis de sangre estándar parecen 'bien'.",
+      "fact_zh": "由於子宮腺肌症會產生慢性發炎狀態，它會限制鐵元素的可用性，進而導致深度的疲勞，即使常規血液檢查結果看起來「正常」。",
+      "fact_ko": "자궁선근증은 만성 염증 상태를 유발하기 때문에 철분 이용을 제한하여 표준 혈액 검사가 '정상'으로 보여도 극심한 피로를 유발합니다.",
+      "tone": "Supportive",
+      "source": "Kawamata et al., PLoS One (2026)"
+    },
+    {
+      "condition": "Blood Panel Advocacy",
+      "fact_en": "Advocating for a full iron panel, including TSAT, is essential for patients with heavy menstrual bleeding to accurately diagnose functional iron deficiency.",
+      "fact_es": "Abogar por un panel de hierro completo, que incluya el TSAT, es esencial para que las pacientes con sangrado menstrual abundante diagnostiquen con precisión la deficiencia funcional de hierro.",
+      "fact_zh": "爭取進行全面的鐵代謝指標檢查（包括TSAT）對於經血過多的患者精確診斷功能性缺鐵症至關重要。",
+      "fact_ko": "월경 과다 환자가 기능적 철분 결핍을 정확하게 진단받기 위해서는 TSAT를 포함한 전체 철분 패널 검사를 요구하는 것이 필수적입니다.",
+      "tone": "Empowering",
+      "source": "Kawamata et al., PLoS One (2026)"
+    },
+    {
+      "condition": "Treating Iron Deficiency",
+      "fact_en": "Detecting and treating functional iron deficiency can dramatically improve your energy levels, reducing the overlapping fatigue caused by chronic pain conditions.",
+      "fact_es": "Detectar y tratar la deficiencia funcional de hierro puede mejorar drásticamente tus niveles de energía, reduciendo la fatiga superpuesta causada por condiciones de dolor crónico.",
+      "fact_zh": "發現並治療功能性缺鐵症可以顯著提升你的能量水平，進而減輕因慢性疼痛疾病所帶來的疊加性疲勞。",
+      "fact_ko": "기능적 철분 결핍을 발견하고 치료하면 에너지 수치를 극적으로 향상시켜 만성 통증 질환으로 인한 복합적인 피로를 줄일 수 있습니다.",
+      "tone": "Optimistic",
+      "source": "Kawamata et al., PLoS One (2026)"
+    },
+    {
+      "condition": "Tendon Elongation & Strength Training",
+      "fact_en": "Tendons in hypermobile EDS can stretch 10% to 21.8% more than normal under load! This means your muscles have to work much harder to transmit force. Slow, controlled resistance training helps safely build strength without overstretching these fragile tissues.",
+      "fact_es": "¡Los tendones en el SED hiperlaxo pueden estirarse entre un 10% y un 21.8% más de lo normal bajo carga! Esto significa que tus músculos tienen que trabajar mucho más para transmitir la fuerza. El entrenamiento de resistencia lento y controlado ayuda a desarrollar la fuerza de manera segura sin estirar en exceso estos tejidos frágiles.",
+      "fact_zh": "過度活動型EDS患者的肌腱在負重時可能比常人多拉伸10%至21.8%！這意味著肌肉必須更費力地傳遞力量。緩慢、受控的阻力訓練有助於安全地增強力量，而不會過度拉伸這些脆弱的組織。",
+      "fact_ko": "과운동성 EDS 환자의 힘줄은 부하가 걸렸을 때 일반인보다 10%에서 21.8%까지 더 늘어날 수 있습니다! 이는 근육이 힘을 전달하기 위해 훨씬 더 열심히 일해야 함을 의미합니다. 느리고 조절된 저抗 운동은 이 취약한 조직을 과도하게 늘리지 않고 안전하게 근력을 키우는 데 도움이 됩니다.",
+      "tone": "Empowering",
+      "source": "Wang et al., 2025"
+    },
+    {
+      "condition": "Chronic Fatigue & Inflammation (TGF-β1)",
+      "fact_en": "Chronic fatigue in EDS has a biological footprint. Researchers have found that chronic emotional and mechanical stress triggers the release of TGF-β1, a cytokine that drives systemic inflammation, tissue stiffening, and profound exhaustion.",
+      "fact_es": "La fatiga crónica en el SED tiene una huella biológica. Los investigadores han descubierto que el estrés emocional y mecánico crónico desencadena la liberación de TGF-β1, una citocina que causa inflamación sistémica, rigidez del tejido y un agotamiento profundo.",
+      "fact_zh": "EDS的慢性疲勞具有生物學印記。研究人員發現，慢性的情緒與機械性壓力會觸發TGF-β1（一種細胞激素）的釋放，從而導致全身性發炎、組織變硬以及深度的疲憊感。",
+      "fact_ko": "EDS의 만성 피로는 생물학적 메커니즘을 가지고 있습니다. 연구에 따르면 만성적인 감정적 및 기계적 스트레스가 전신 염증, 조직 경직 및 극심한 피로를 유발하는 사이토카인인 TGF-β1의 방출을 촉발하는 것으로 나타났습니다.",
+      "tone": "Validating",
+      "source": "Wang et al., 2025"
+    },
+    {
+      "condition": "Gastrointestinal Issues & The Nervous System",
+      "fact_en": "Your gut issues are deeply connected to your nervous system. Studies link EDS chronic pain to sympathetic nervous system overactivation (fight-or-flight), which drastically reduces vagal nerve activity, severely impairing gastrointestinal motility and worsening IBS and GERD.",
+      "fact_es": "Tus problemas intestinales están profundamente conectados con tu sistema nervioso. Los estudios vinculan el dolor crónico del SED con la sobreactivación del sistema nervioso simpático (lucha o huida), lo que reduce drásticamente la actividad del nervio vago, afectando gravemente la motilidad gastrointestinal y empeorando el SII y el ERGE.",
+      "fact_zh": "您的腸胃問題與神經系統密切相關。研究將EDS慢性疼痛與交感神經系統的過度活化（戰或逃反應）聯繫起來，這會急劇降低迷走神經活性，嚴重損害胃腸動力並加重腸躁症（IBS）和胃食道逆流（GERD）。",
+      "fact_ko": "당신의 장 문제는 신경계와 깊이 연결되어 있습니다. 연구에 따르면 EDS 만성 통증은 교감신경계의 과활성화(투쟁-도피 반응)와 관련이 있으며, 이는 미조신경 활성을 급격히 감소시켜 위장관 운동성을 심각하게 손상시키고 과민성 대장 증후군(IBS) 및 위식도 역류 질환(GERD)을 악화시킵니다.",
+      "tone": "Supportive",
+      "source": "Fikree et al., 2017; Wang et al., 2025"
+    },
+    {
+      "condition": "EDS & Exercise (Calisthenics Tempo)",
+      "fact_en": "Using a slow 2-1-2-1 tempo during calisthenics (2 seconds down, 1-second pause, 2 seconds up, 1-second pause) eliminates momentum and forces your muscles to do the active work of safely stabilizing the joint.",
+      "fact_es": "Usar un tempo lento de 2-1-2-1 durante la calistenia (2 segundos para bajar, 1 segundo de pausa, 2 segundos para subir, 1 segundo de pausa) elimina el impulso y obliga a tus músculos a hacer el trabajo activo de estabilizar la articulación de manera segura.",
+      "fact_zh": "在進行自重健身（呼體健身）時使用緩慢的 2-1-2-1 節奏（下落2秒，停頓1秒，起身2秒，停頓1秒）可以消除慣性，迫使肌肉進行主動收縮，從而安全地穩定關節。",
+      "fact_ko": "맨몸 운동 중 느린 2-1-2-1 템포(2초 동안 내려가고, 1초 정지, 2초 동안 올라가고, 1초 정지)를 사용하면 관성이 제거되고 근육이 관절을 안전하게 안정시키는 능동적인 작업을 수행하도록 강제합니다.",
+      "tone": "Optimistic",
+      "source": "Clinical Practice / Calisthenics Stability Guides"
+    },
+    {
+      "condition": "Iron Reference Ranges",
+      "fact_en": "Many labs still use outdated reference ranges for iron. For highly metabolic tissues managing conditions like POTS and MPS, modern clinical standards suggest ferritin should ideally be above 30 to 50 ng/mL.",
+      "fact_es": "Muchos laboratorios todavía utilizan rangos de referencia desactualizados para el hierro. Para tejidos altamente metabólicos que manejan condiciones como POTS y SFM, los estándares clínicos modernos sugieren que la ferritina idealmente debería estar por encima de 30 a 50 ng/mL.",
+      "fact_zh": "許多實驗室仍在使用過時的鐵蛋白參考範圍。對於管理POTS和MPS（肌膜疼痛症候群）等高度代謝活躍的組織，現代臨床標準建議鐵蛋白水平理想上應保持在 30 至 50 ng/mL 以上。",
+      "fact_ko": "많은 검사기관에서 여전히 오래된 철분 참고 범위를 사용하고 있습니다. POTS 및 MPS와 같은 질환을 관리하는 고대사 조직의 경우, 현대 임상 기준은 페리틴 수치가 이상적으로 30에서 50 ng/mL 이상이어야 함을 시사합니다.",
+      "tone": "Neutral",
+      "source": "Modern Hematology Standards"
+    },
+    {
+      "condition": "Myofascial Pain Syndrome & Iron Deficiency",
+      "fact_en": "There is a direct biological link between low iron and chronic muscle knots. Research indicates that iron deficiency reduces muscle oxygenation and increases muscle fatigue, which acts as a systemic perpetuating factor for the formation of hyperirritable myofascial trigger points.",
+      "fact_es": "Existe un vínculo biológico directo entre el bajo nivel de hierro y los nudos musculares crónicos. La investigación indica que la deficiencia de hierro reduce la oxigenación muscular y aumenta la fatiga muscular, lo que actúa como un factor perpetuador sistémico para la formación de puntos gatillo miofasciales hiperirritables.",
+      "fact_zh": "低鐵與慢性肌肉緊結（氣結）之間存在直接的生物學聯繫。研究表明，缺鐵會降低肌肉氧合作用並增加肌肉疲勞，這成為形成高度敏感的肌筋膜激痛點的全身性持續因素。",
+      "fact_ko": "낮은 철분 수치와 만성 근육 뭉침(근육 매듭) 사이에는 직접적인 생물학적 연관성이 있습니다. 연구에 따르면 철분 결핍은 근육 산소 공급을 감소시키고 근육 피로를 증가시켜, 과민감한 근막 유발점 형성의 전신적인 지속 요인으로 작용합니다.",
+      "tone": "Educational",
+      "source": "Steen et al., 2025"
+    }
+  ]
+}
