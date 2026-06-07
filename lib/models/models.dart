@@ -1,61 +1,102 @@
+// =============================================================================
+// ZebraUpp domain model — Phase 1 foundation.
+//
+// Changes vs. the previous schema (clean wipe, no migration code):
+//   • SymptomSeverity is now a 5-level scale (0–4) matching Wave's dot UI.
+//   • MentalEvent severity stays 1–5 for now (separate concern; revisit later).
+//   • MedicationDef separates `strength` + `unit` from `defaultQuantity` + `form`
+//     so a Bearable-style "1 pill × 500mg" UI is possible.
+//   • DoseEvent gains `quantity`, `groupId`, plus a snapshot of strength/unit/form,
+//     and a `severityBefore` map keyed by symptomId for outcome baselining.
+//   • MedicationOutcome now captures severityBefore + severityAfter (0–4) and an
+//     optional OutcomeReason. Status (better/same/worse) is computed from the
+//     delta, not stored.
+//   • New: MedicationGroup + MedicationGroupEntry — Bearable-style batch logging
+//     ("Meds de la noche" @ 22:00 → 1 tap logs 6 doses).
+//   • New: SymptomEvent.photoPath for the "añadir foto" Wave feature.
+//   • MedicationDef gains a stable `id` so groups can reference it across renames.
+//
+// Interaction rules moved out to lib/services/interaction_engine.dart
+// (single source of truth — the old duplicate here is gone).
+// =============================================================================
+
 import 'dart:math';
 
-// ============================================================================
-// ID GENERATION
-// ============================================================================
+// -----------------------------------------------------------------------------
+// ID generation
+// -----------------------------------------------------------------------------
 String _newId() {
   final rand = Random.secure();
   final hex = List.generate(6, (_) => rand.nextInt(16).toRadixString(16)).join();
   return '${DateTime.now().microsecondsSinceEpoch}-$hex';
 }
 
-// ============================================================================
-// ENUMS
-// ============================================================================
+// =============================================================================
+// SEVERITY (0–4 scale)
+// =============================================================================
 
+/// Five-level symptom severity scale.
+///
+/// Stored as an int (`value`) so analytics can do arithmetic — delta, mean,
+/// trend — without round-tripping through an enum. UI surfaces should render
+/// the dot at index `value` colored per `colorHex`.
 enum SymptomSeverity {
-  mild('Leve'),
-  moderate('Moderado'),
-  severe('Severo');
+  none(0, 'Ninguna'),
+  mild(1, 'Leve'),
+  moderate(2, 'Moderada'),
+  intense(3, 'Intensa'),
+  unbearable(4, 'Insoportable');
+
+  final int value;
+  final String label;
+  const SymptomSeverity(this.value, this.label);
+
+  static SymptomSeverity fromValue(int v) {
+    if (v < 0) return none;
+    if (v > 4) return unbearable;
+    return values.firstWhere((s) => s.value == v);
+  }
+
+  /// Hex color string for the severity dot — keeps the model UI-framework-free.
+  /// Flutter callers parse with `Color(int.parse(hex.substring(1), radix: 16) | 0xFF000000)`.
+  String get colorHex => switch (this) {
+        SymptomSeverity.none => '#9E9E9E',
+        SymptomSeverity.mild => '#FFD54F',
+        SymptomSeverity.moderate => '#FF9800',
+        SymptomSeverity.intense => '#F44336',
+        SymptomSeverity.unbearable => '#7B1FA2',
+      };
+}
+
+// =============================================================================
+// MEDICATION OUTCOME — context for "why the severity changed"
+// =============================================================================
+
+/// Optional reason a user attributes the outcome to, captured on check-in.
+/// Lets us flag outcomes where the med likely didn't drive the change.
+enum OutcomeReason {
+  natural('Cambio natural del síntoma'),
+  medicationHelped('Creo que ayudó este medicamento'),
+  otherTrigger('Otro gatillo (comida, estrés, clima…)'),
+  additionalMed('Tomé otro medicamento también'),
+  unsure('No estoy seguro/a');
 
   final String label;
-  const SymptomSeverity(this.label);
+  const OutcomeReason(this.label);
 
-  static SymptomSeverity parse(dynamic raw) {
-    if (raw is String) {
-      for (final s in SymptomSeverity.values) {
-        if (s.name == raw) return s;
-      }
-      for (final s in SymptomSeverity.values) {
-        if (s.label.toLowerCase() == raw.toLowerCase()) return s;
-      }
+  static OutcomeReason? parse(String? raw) {
+    if (raw == null) return null;
+    for (final r in values) {
+      if (r.name == raw) return r;
     }
-    return SymptomSeverity.moderate;
+    return null;
   }
 }
 
-/// Outcome of a medication-symptom check-in.
-enum MedicationOutcomeStatus {
-  pending('Pendiente'),
-  better('Mejor'),
-  same('Igual'),
-  worse('Peor'),
-  unknown('No recuerdo');
+// =============================================================================
+// MENTAL STATE catalog (unchanged shape; severity still 1–5)
+// =============================================================================
 
-  final String label;
-  const MedicationOutcomeStatus(this.label);
-
-  static MedicationOutcomeStatus parse(dynamic raw) {
-    if (raw is String) {
-      for (final s in MedicationOutcomeStatus.values) {
-        if (s.name == raw) return s;
-      }
-    }
-    return MedicationOutcomeStatus.pending;
-  }
-}
-
-/// Fixed catalog of mental states tracked. Kept deliberately shallow.
 enum MentalState {
   mood('Ánimo', '🙂'),
   anxiety('Ansiedad', '😰'),
@@ -70,7 +111,7 @@ enum MentalState {
 
   static MentalState? parse(dynamic raw) {
     if (raw is String) {
-      for (final s in MentalState.values) {
+      for (final s in values) {
         if (s.name == raw) return s;
       }
     }
@@ -78,9 +119,9 @@ enum MentalState {
   }
 }
 
-// ============================================================================
-// EVENT LOGS (TIMESERIES DATA)
-// ============================================================================
+// =============================================================================
+// EVENT LOGS
+// =============================================================================
 
 class SymptomEvent {
   final String id;
@@ -88,6 +129,9 @@ class SymptomEvent {
   final String name;
   final SymptomSeverity severity;
   final String? note;
+  /// Optional local file path to a photo (rashes, swelling, subluxations).
+  /// Phase-1 stores the path only; the actual file lives on the device fs.
+  final String? photoPath;
 
   SymptomEvent({
     String? id,
@@ -95,15 +139,22 @@ class SymptomEvent {
     required this.name,
     required this.severity,
     this.note,
+    this.photoPath,
   }) : id = id ?? _newId();
 
-  SymptomEvent copyWith({DateTime? timestamp, SymptomSeverity? severity, String? note}) {
+  SymptomEvent copyWith({
+    DateTime? timestamp,
+    SymptomSeverity? severity,
+    String? note,
+    String? photoPath,
+  }) {
     return SymptomEvent(
       id: id,
       timestamp: timestamp ?? this.timestamp,
       name: name,
       severity: severity ?? this.severity,
       note: note ?? this.note,
+      photoPath: photoPath ?? this.photoPath,
     );
   }
 
@@ -111,16 +162,18 @@ class SymptomEvent {
         'id': id,
         'timestamp': timestamp.toIso8601String(),
         'name': name,
-        'severity': severity.name,
+        'severity': severity.value,
         'note': note,
+        'photoPath': photoPath,
       };
 
   factory SymptomEvent.fromMap(Map<String, dynamic> map) => SymptomEvent(
         id: map['id'],
         timestamp: DateTime.parse(map['timestamp']),
         name: map['name'],
-        severity: SymptomSeverity.parse(map['severity']),
+        severity: SymptomSeverity.fromValue((map['severity'] as num).toInt()),
         note: map['note'] as String?,
+        photoPath: map['photoPath'] as String?,
       );
 }
 
@@ -128,22 +181,61 @@ class DoseEvent {
   final String id;
   final DateTime timestamp;
   final String medicationName;
-  /// IDs of symptoms this dose was taken in response to (for outcome tracking).
+  /// Stable ref to MedicationDef.id. Falls back to name match if null
+  /// (legacy entries or imports without the FK).
+  final String? medicationId;
+  /// How many of the form unit were taken — 1, 0.5, 2, etc.
+  final double quantity;
+  /// Snapshot of strength at the moment of the dose (mg, mcg, IU…). Snapshotted
+  /// because the user may later edit the MedicationDef strength; we don't want
+  /// historical dose totals to silently shift under us.
+  final double strengthAtDose;
+  final String unitAtDose; // 'mg', 'mcg', 'IU', 'g', 'ml', ''
+  final String formAtDose; // 'pill', 'capsule', 'drop', 'tablet', 'patch', 'spray', 'ml'
+  /// IDs of symptoms this dose was logged in response to.
   final List<String> linkedSymptomIds;
+  /// Severity (0–4) of each linked symptom AT DOSE TIME. Used as the baseline
+  /// for outcome deltas — answering "did it help?" requires knowing the before.
+  final Map<String, int> severityBefore;
+  /// If this dose was logged as part of a MedicationGroup batch, the group's id.
+  final String? groupId;
 
   DoseEvent({
     String? id,
     required this.timestamp,
     required this.medicationName,
+    this.medicationId,
+    this.quantity = 1.0,
+    this.strengthAtDose = 0.0,
+    this.unitAtDose = '',
+    this.formAtDose = 'pill',
     this.linkedSymptomIds = const [],
+    this.severityBefore = const {},
+    this.groupId,
   }) : id = id ?? _newId();
 
-  DoseEvent copyWith({DateTime? timestamp, List<String>? linkedSymptomIds}) {
+  /// Total active dose ("how much active ingredient I took") — quantity × strength.
+  /// Useful for reports: "Duloxetina hoy: 90mg total".
+  double get totalStrength => quantity * strengthAtDose;
+
+  DoseEvent copyWith({
+    DateTime? timestamp,
+    double? quantity,
+    List<String>? linkedSymptomIds,
+    Map<String, int>? severityBefore,
+  }) {
     return DoseEvent(
       id: id,
       timestamp: timestamp ?? this.timestamp,
       medicationName: medicationName,
+      medicationId: medicationId,
+      quantity: quantity ?? this.quantity,
+      strengthAtDose: strengthAtDose,
+      unitAtDose: unitAtDose,
+      formAtDose: formAtDose,
       linkedSymptomIds: linkedSymptomIds ?? this.linkedSymptomIds,
+      severityBefore: severityBefore ?? this.severityBefore,
+      groupId: groupId,
     );
   }
 
@@ -151,14 +243,29 @@ class DoseEvent {
         'id': id,
         'timestamp': timestamp.toIso8601String(),
         'medicationName': medicationName,
+        'medicationId': medicationId,
+        'quantity': quantity,
+        'strengthAtDose': strengthAtDose,
+        'unitAtDose': unitAtDose,
+        'formAtDose': formAtDose,
         'linkedSymptomIds': linkedSymptomIds,
+        'severityBefore': severityBefore,
+        'groupId': groupId,
       };
 
   factory DoseEvent.fromMap(Map<String, dynamic> map) => DoseEvent(
         id: map['id'],
         timestamp: DateTime.parse(map['timestamp']),
         medicationName: map['medicationName'],
-        linkedSymptomIds: List<String>.from(map['linkedSymptomIds'] ?? []),
+        medicationId: map['medicationId'] as String?,
+        quantity: (map['quantity'] as num?)?.toDouble() ?? 1.0,
+        strengthAtDose: (map['strengthAtDose'] as num?)?.toDouble() ?? 0.0,
+        unitAtDose: map['unitAtDose'] as String? ?? '',
+        formAtDose: map['formAtDose'] as String? ?? 'pill',
+        linkedSymptomIds: List<String>.from(map['linkedSymptomIds'] ?? const []),
+        severityBefore: Map<String, int>.from(
+            (map['severityBefore'] as Map?)?.map((k, v) => MapEntry(k as String, (v as num).toInt())) ?? const {}),
+        groupId: map['groupId'] as String?,
       );
 }
 
@@ -204,12 +311,14 @@ class StructuralEvent {
       );
 }
 
-/// Mental state event — same shape as symptom but bounded to the MentalState enum.
 class MentalEvent {
   final String id;
   final DateTime timestamp;
   final MentalState state;
-  /// 1–5 scale (1 = none/very low, 5 = severe/very high)
+  /// 1–5 scale (1 = very low/none, 5 = severe/overwhelming).
+  /// Kept on its own scale on purpose — mental states and physical symptoms
+  /// have different shapes; unifying with SymptomSeverity is a separate
+  /// product decision, not a foundation change.
   final int severity;
   final String? note;
 
@@ -248,20 +357,15 @@ class MentalEvent {
       );
 }
 
-/// Activity event — for tracking exercise/movement (Hampton-style routine).
 class ActivityEvent {
   final String id;
   final DateTime timestamp;
   final String name;
-  /// Either reps×sets OR duration — keep both optional.
   final int? sets;
   final int? reps;
   final int? durationMinutes;
-  /// Rate of Perceived Exertion, 0–10.
-  final int effort;
-  /// 1–5 feeling scale (1 = pain/injured, 5 = strong/confident).
-  final int feeling;
-  /// Heart rate response, free text for now ("80 → 110", "n/a", etc).
+  final int effort;   // 0–10 RPE
+  final int feeling;  // 1–5 subjective
   final String? hhr;
   final String? note;
 
@@ -329,8 +433,16 @@ class ActivityEvent {
       );
 }
 
-/// Tracks whether a dose helped with a specific symptom.
-/// Created when user logs a dose AND opts in to tracking effectiveness.
+// =============================================================================
+// MEDICATION OUTCOME — before/after capture
+// =============================================================================
+
+/// A pending or answered "did the med help?" check-in for a specific
+/// dose↔symptom pair.
+///
+/// Phase 1 design: capture severity BEFORE (at dose time) and AFTER (at
+/// check-in). Don't collapse to better/same/worse — keep the raw numbers and
+/// let downstream code compute deltas, distributions, and effect-size stats.
 class MedicationOutcome {
   final String id;
   final String doseId;
@@ -339,9 +451,21 @@ class MedicationOutcome {
   final String symptomName;
   final DateTime doseTimestamp;
   final DateTime checkAt;
-  final MedicationOutcomeStatus status;
+
+  /// 0–4 severity captured AT DOSE TIME (snapshot copied from DoseEvent.severityBefore).
+  final int severityBefore;
+
+  /// 0–4 severity reported at check-in. Null while pending.
+  final int? severityAfter;
+
+  /// Optional context the user adds when answering.
+  final OutcomeReason? reason;
+
   /// When the user actually answered (null if still pending).
   final DateTime? respondedAt;
+
+  /// Free-text note from the check-in moment (rare, but useful).
+  final String? note;
 
   MedicationOutcome({
     String? id,
@@ -351,13 +475,37 @@ class MedicationOutcome {
     required this.symptomName,
     required this.doseTimestamp,
     required this.checkAt,
-    this.status = MedicationOutcomeStatus.pending,
+    required this.severityBefore,
+    this.severityAfter,
+    this.reason,
     this.respondedAt,
+    this.note,
   }) : id = id ?? _newId();
 
+  bool get isPending => severityAfter == null;
+  bool get isDue => isPending && DateTime.now().isAfter(checkAt);
+
+  /// Negative = improved, 0 = unchanged, positive = worsened.
+  /// Null while pending.
+  int? get delta =>
+      severityAfter == null ? null : severityAfter! - severityBefore;
+
+  /// Coarse label for legacy UI surfaces. Prefer `delta` for analytics.
+  String get coarseLabel {
+    final d = delta;
+    if (d == null) return 'Pendiente';
+    if (d <= -2) return 'Mucho mejor';
+    if (d == -1) return 'Mejor';
+    if (d == 0) return 'Igual';
+    if (d == 1) return 'Peor';
+    return 'Mucho peor';
+  }
+
   MedicationOutcome copyWith({
-    MedicationOutcomeStatus? status,
+    int? severityAfter,
+    OutcomeReason? reason,
     DateTime? respondedAt,
+    String? note,
   }) {
     return MedicationOutcome(
       id: id,
@@ -367,13 +515,13 @@ class MedicationOutcome {
       symptomName: symptomName,
       doseTimestamp: doseTimestamp,
       checkAt: checkAt,
-      status: status ?? this.status,
+      severityBefore: severityBefore,
+      severityAfter: severityAfter ?? this.severityAfter,
+      reason: reason ?? this.reason,
       respondedAt: respondedAt ?? this.respondedAt,
+      note: note ?? this.note,
     );
   }
-
-  bool get isPending => status == MedicationOutcomeStatus.pending;
-  bool get isDue => isPending && DateTime.now().isAfter(checkAt);
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -383,8 +531,11 @@ class MedicationOutcome {
         'symptomName': symptomName,
         'doseTimestamp': doseTimestamp.toIso8601String(),
         'checkAt': checkAt.toIso8601String(),
-        'status': status.name,
+        'severityBefore': severityBefore,
+        'severityAfter': severityAfter,
+        'reason': reason?.name,
         'respondedAt': respondedAt?.toIso8601String(),
+        'note': note,
       };
 
   factory MedicationOutcome.fromMap(Map<String, dynamic> map) => MedicationOutcome(
@@ -395,40 +546,196 @@ class MedicationOutcome {
         symptomName: map['symptomName'],
         doseTimestamp: DateTime.parse(map['doseTimestamp']),
         checkAt: DateTime.parse(map['checkAt']),
-        status: MedicationOutcomeStatus.parse(map['status']),
+        severityBefore: (map['severityBefore'] as num).toInt(),
+        severityAfter: (map['severityAfter'] as num?)?.toInt(),
+        reason: OutcomeReason.parse(map['reason'] as String?),
         respondedAt: map['respondedAt'] != null ? DateTime.parse(map['respondedAt']) : null,
+        note: map['note'] as String?,
       );
 }
 
-// ============================================================================
-// CATALOGS (DICTIONARY)
-// ============================================================================
+// =============================================================================
+// MEDICATION CATALOG (definitions + groups)
+// =============================================================================
 
 class MedicationDef {
+  /// Stable id so MedicationGroup entries survive name edits.
+  final String id;
+
   String name;
-  String defaultDose;
-  /// Hours after which the app should ask if the med helped.
-  /// Null means don't track outcomes for this med (e.g., daily vitamins).
+  double strength;          // numeric strength, e.g. 500
+  String unit;              // 'mg', 'mcg', 'IU', 'g', 'ml', '' for unspecified
+  String form;              // 'pill', 'capsule', 'drop', 'tablet', 'patch', 'spray', 'ml'
+  double defaultQuantity;   // 1.0, 0.5, 2.0…
+
+  /// Hours after a dose at which to ask "¿mejor / igual / peor?".
+  /// Null = don't track outcomes (daily vitamins etc.).
   int? outcomeCheckHours;
 
+  /// Free-form notes from the patient (e.g. "tomar con comida").
+  String? notes;
+
+  /// Active ingredient (INN). Populated later by CIMA lookup.
+  String? activeIngredient;
+
+  /// CIMA registration code (Spain) once matched.
+  String? cimaCode;
+
   MedicationDef({
+    String? id,
     required this.name,
-    required this.defaultDose,
+    this.strength = 0,
+    this.unit = '',
+    this.form = 'pill',
+    this.defaultQuantity = 1.0,
     this.outcomeCheckHours = 3,
-  });
+    this.notes,
+    this.activeIngredient,
+    this.cimaCode,
+  }) : id = id ?? _newId();
+
+  /// Human-readable dose summary for UI rows: "1 pill × 500mg".
+  String get displayDose {
+    final qty = _formatQuantity(defaultQuantity);
+    final formLabel = _pluralizeForm(form, defaultQuantity);
+    if (strength > 0 && unit.isNotEmpty) {
+      final str = _formatQuantity(strength);
+      return '$qty $formLabel × $str$unit';
+    }
+    return '$qty $formLabel';
+  }
 
   Map<String, dynamic> toMap() => {
+        'id': id,
         'name': name,
-        'defaultDose': defaultDose,
+        'strength': strength,
+        'unit': unit,
+        'form': form,
+        'defaultQuantity': defaultQuantity,
         'outcomeCheckHours': outcomeCheckHours,
+        'notes': notes,
+        'activeIngredient': activeIngredient,
+        'cimaCode': cimaCode,
       };
 
   factory MedicationDef.fromMap(Map<String, dynamic> map) => MedicationDef(
+        id: map['id'] as String?,
         name: map['name'],
-        defaultDose: map['defaultDose'],
+        strength: (map['strength'] as num?)?.toDouble() ?? 0,
+        unit: map['unit'] as String? ?? '',
+        form: map['form'] as String? ?? 'pill',
+        defaultQuantity: (map['defaultQuantity'] as num?)?.toDouble() ?? 1.0,
         outcomeCheckHours: map['outcomeCheckHours'] as int? ?? 3,
+        notes: map['notes'] as String?,
+        activeIngredient: map['activeIngredient'] as String?,
+        cimaCode: map['cimaCode'] as String?,
       );
 }
+
+String _formatQuantity(double q) {
+  if (q == q.roundToDouble()) return q.toInt().toString();
+  return q.toString();
+}
+
+String _pluralizeForm(String form, double qty) {
+  // Don't try to be clever in Spanish — just hand back the form. The UI
+  // can localize if it wants. "1 pill" reads fine for English; for Spanish
+  // we use 'pastilla', 'cápsula', 'gota', 'parche' as the form value at
+  // creation time and accept that "1 gotas" is mildly weird and ignorable.
+  return form;
+}
+
+class MedicationGroupEntry {
+  /// Foreign key to MedicationDef.id.
+  final String medicationId;
+  /// How many of the form unit when this group is logged.
+  /// Overrides MedicationDef.defaultQuantity for batch logging.
+  double quantity;
+
+  MedicationGroupEntry({required this.medicationId, this.quantity = 1.0});
+
+  Map<String, dynamic> toMap() => {
+        'medicationId': medicationId,
+        'quantity': quantity,
+      };
+
+  factory MedicationGroupEntry.fromMap(Map<String, dynamic> map) =>
+      MedicationGroupEntry(
+        medicationId: map['medicationId'] as String,
+        quantity: (map['quantity'] as num?)?.toDouble() ?? 1.0,
+      );
+}
+
+/// A reusable batch of meds — e.g. "Meds de la noche @ 22:00".
+/// Tapping the group on the Botiquín tab logs every entry in one shot.
+class MedicationGroup {
+  final String id;
+  String name;
+  /// Default time-of-day in minutes since midnight, or null if no default.
+  /// Stored as int (not TimeOfDay) so the model has no Flutter dependency.
+  int? defaultTimeMinutes;
+  List<MedicationGroupEntry> entries;
+
+  MedicationGroup({
+    String? id,
+    required this.name,
+    this.defaultTimeMinutes,
+    List<MedicationGroupEntry>? entries,
+  })  : id = id ?? _newId(),
+        entries = entries ?? <MedicationGroupEntry>[];
+
+  /// Apply defaultTimeMinutes to a date — convenience for the "log this group
+  /// for today at its default time" gesture.
+  DateTime? defaultTimeOn(DateTime date) {
+    final m = defaultTimeMinutes;
+    if (m == null) return null;
+    return DateTime(date.year, date.month, date.day, m ~/ 60, m % 60);
+  }
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'name': name,
+        'defaultTimeMinutes': defaultTimeMinutes,
+        'entries': entries.map((e) => e.toMap()).toList(),
+      };
+
+  factory MedicationGroup.fromMap(Map<String, dynamic> map) => MedicationGroup(
+        id: map['id'] as String?,
+        name: map['name'] as String,
+        defaultTimeMinutes: map['defaultTimeMinutes'] as int?,
+        entries: List<MedicationGroupEntry>.from(
+          (map['entries'] as List? ?? const []).map((e) =>
+              MedicationGroupEntry.fromMap(Map<String, dynamic>.from(e as Map))),
+        ),
+      );
+}
+
+// =============================================================================
+// EXERCISE CATALOG (unchanged)
+// =============================================================================
+
+class ExerciseDef {
+  final String name;
+  final String category;
+  final bool durationBased;
+  const ExerciseDef(this.name, this.category, {this.durationBased = false});
+}
+
+const List<ExerciseDef> kExerciseCatalog = [
+  ExerciseDef('Push-ups', 'Push'),
+  ExerciseDef('Pull-ups', 'Pull'),
+  ExerciseDef('Squats', 'Legs'),
+  ExerciseDef('Bridges', 'Posterior'),
+  ExerciseDef('Leg raises', 'Core'),
+  ExerciseDef('Twists', 'Core'),
+  ExerciseDef('Estiramiento', 'Stretch', durationBased: true),
+  ExerciseDef('Caminata', 'Cardio', durationBased: true),
+  ExerciseDef('Yoga gentil', 'Stretch', durationBased: true),
+];
+
+// =============================================================================
+// WISDOM + CLINICAL ARTICLES (small DTOs, unchanged)
+// =============================================================================
 
 class WisdomQuote {
   final String text;
@@ -447,11 +754,10 @@ class ClinicalArticle {
   });
 }
 
-// ============================================================================
-// PUBMED CACHE
-// ============================================================================
+// =============================================================================
+// PUBMED CACHE (unchanged)
+// =============================================================================
 
-/// A cached PubMed article. Stored once per PMID across all profiles.
 class PubMedArticle {
   final String pmid;
   final String title;
@@ -460,7 +766,6 @@ class PubMedArticle {
   final List<String> authors;
   final DateTime publicationDate;
   final DateTime cachedAt;
-  /// Conditions this article was fetched for (for cache invalidation).
   final List<String> fetchedForConditions;
 
   PubMedArticle({
@@ -499,111 +804,47 @@ class PubMedArticle {
         title: map['title'],
         abstractText: map['abstractText'] as String?,
         journal: map['journal'] ?? '',
-        authors: List<String>.from(map['authors'] ?? []),
+        authors: List<String>.from(map['authors'] ?? const []),
         publicationDate: DateTime.parse(map['publicationDate']),
         cachedAt: DateTime.parse(map['cachedAt']),
-        fetchedForConditions: List<String>.from(map['fetchedForConditions'] ?? []),
+        fetchedForConditions:
+            List<String>.from(map['fetchedForConditions'] ?? const []),
       );
 }
 
-// ============================================================================
-// INTERACTION ENGINE
-// ============================================================================
+/// Pre-bundled aggregate of cached search results for a condition.
+class PubMedSearchResult {
+  final String condition;
+  final List<PubMedArticle> articles;
+  final DateTime fetchedAt;
 
-enum InteractionLevel { info, warning, severe }
-
-class InteractionRule {
-  final List<String> medicationKeys;
-  final List<String>? requiredConditions;
-  final InteractionLevel level;
-  final String message;
-  final String? reference;
-
-  const InteractionRule({
-    required this.medicationKeys,
-    this.requiredConditions,
-    required this.level,
-    required this.message,
-    this.reference,
-  });
-
-  bool matches({
-    required List<String> medsLower,
-    required List<String> conditionsLower,
-  }) {
-    final medsOk = medicationKeys.every(
-      (key) => medsLower.any((m) => m.contains(key)),
-    );
-    if (!medsOk) return false;
-    if (requiredConditions == null || requiredConditions!.isEmpty) return true;
-    return requiredConditions!.any((c) => conditionsLower.any((dx) => dx.contains(c)));
-  }
+  PubMedSearchResult({
+    required this.condition,
+    required this.articles,
+    DateTime? fetchedAt,
+  }) : fetchedAt = fetchedAt ?? DateTime.now();
 }
 
-const List<InteractionRule> kInteractionRules = [
-  InteractionRule(
-    medicationKeys: ['hierro', 'vitamina c'],
-    level: InteractionLevel.info,
-    message: '💡 SINERGIA: La Vitamina C potencia la absorción del hierro.',
-  ),
-  InteractionRule(
-    medicationKeys: ['duloxetina', 'ibuprofeno'],
-    requiredConditions: ['eds', 'adenomiosis', 'sangrado', 'menorragia'],
-    level: InteractionLevel.severe,
-    message: '🚨 ALERTA HEMORRÁGICA: Duloxetina + AINE elevan el riesgo de sangrado.',
-    reference: 'SNRI + NSAID class warning; relevante en EDS y adenomiosis.',
-  ),
-];
-
-class InteractionEngine {
-  static List<InteractionRule> evaluate({
-    required List<String> medicationsToday,
-    required List<String> conditions,
-  }) {
-    final meds = medicationsToday.map((m) => m.toLowerCase()).toList();
-    final conds = conditions.map((c) => c.toLowerCase()).toList();
-    return kInteractionRules
-        .where((r) => r.matches(medsLower: meds, conditionsLower: conds))
-        .toList();
-  }
-}
-
-// ============================================================================
-// EXERCISE CATALOG (Hampton-modified)
-// ============================================================================
-
-class ExerciseDef {
-  final String name;
-  final String category;
-  final bool durationBased;
-  const ExerciseDef(this.name, this.category, {this.durationBased = false});
-}
-
-const List<ExerciseDef> kExerciseCatalog = [
-  ExerciseDef('Push-ups', 'Push'),
-  ExerciseDef('Pull-ups', 'Pull'),
-  ExerciseDef('Squats', 'Legs'),
-  ExerciseDef('Bridges', 'Posterior'),
-  ExerciseDef('Leg raises', 'Core'),
-  ExerciseDef('Twists', 'Core'),
-  ExerciseDef('Estiramiento', 'Stretch', durationBased: true),
-  ExerciseDef('Caminata', 'Cardio', durationBased: true),
-  ExerciseDef('Yoga gentil', 'Stretch', durationBased: true),
-];
-
-// ============================================================================
-// PROFILE (ANALYTICS ENGINE)
-// ============================================================================
+// =============================================================================
+// PROFILE — patient (or caregiver) analytics engine
+// =============================================================================
 
 class Profile {
   final String id;
   String name;
   List<String> conditions;
-  String? country; // For clinical-trial filtering later
+  String? country;
 
+  /// Catalog of symptoms this profile chooses to track (filters the picker).
   List<String> symptomVault;
+
+  /// Med catalog for this profile (the "botiquín").
   List<MedicationDef> botiquin;
 
+  /// Reusable batch logs (Bearable-style "morning meds", "night meds").
+  List<MedicationGroup> medicationGroups;
+
+  // Time-series history
   List<SymptomEvent> symptomHistory;
   List<DoseEvent> doseHistory;
   List<StructuralEvent> structuralHistory;
@@ -611,8 +852,10 @@ class Profile {
   List<ActivityEvent> activityHistory;
   List<MedicationOutcome> medicationOutcomes;
 
+  /// ISO date strings (YYYY-MM-DD) the patient marked as a recovery day.
   Set<String> pacingDays;
-  /// PMIDs the user saved to their library.
+
+  /// PMIDs the user starred from PubMed search.
   Set<String> savedArticlePmids;
 
   Profile({
@@ -622,6 +865,7 @@ class Profile {
     required this.symptomVault,
     required this.botiquin,
     this.country,
+    List<MedicationGroup>? medicationGroups,
     List<SymptomEvent>? symptoms,
     List<DoseEvent>? doses,
     List<StructuralEvent>? structural,
@@ -630,16 +874,91 @@ class Profile {
     List<MedicationOutcome>? outcomes,
     Set<String>? pacing,
     Set<String>? saved,
-  })  : symptomHistory = symptoms ?? [],
-        doseHistory = doses ?? [],
-        structuralHistory = structural ?? [],
-        mentalHistory = mental ?? [],
-        activityHistory = activity ?? [],
-        medicationOutcomes = outcomes ?? [],
-        pacingDays = pacing ?? {},
-        savedArticlePmids = saved ?? {};
+  })  : medicationGroups = medicationGroups ?? <MedicationGroup>[],
+        symptomHistory = symptoms ?? <SymptomEvent>[],
+        doseHistory = doses ?? <DoseEvent>[],
+        structuralHistory = structural ?? <StructuralEvent>[],
+        mentalHistory = mental ?? <MentalEvent>[],
+        activityHistory = activity ?? <ActivityEvent>[],
+        medicationOutcomes = outcomes ?? <MedicationOutcome>[],
+        pacingDays = pacing ?? <String>{},
+        savedArticlePmids = saved ?? <String>{};
 
-  // --- ANALYTICS ---
+  // ---------------------------------------------------------------------------
+  // Catalog helpers
+  // ---------------------------------------------------------------------------
+
+  MedicationDef? findMedById(String medId) {
+    for (final m in botiquin) {
+      if (m.id == medId) return m;
+    }
+    return null;
+  }
+
+  MedicationDef? findMedByName(String name) {
+    final lower = name.toLowerCase();
+    for (final m in botiquin) {
+      if (m.name.toLowerCase() == lower) return m;
+    }
+    return null;
+  }
+
+  /// Delete a med from the botiquín. By default, dose history is preserved
+  /// (so reports retain the data) and group entries referencing the med are
+  /// stripped. Pass `purgeHistory: true` to also delete past doses.
+  ///
+  /// Returns the number of group entries removed.
+  int deleteMedication(String medId, {bool purgeHistory = false}) {
+    botiquin.removeWhere((m) => m.id == medId);
+    int groupEntriesRemoved = 0;
+    for (final g in medicationGroups) {
+      final before = g.entries.length;
+      g.entries.removeWhere((e) => e.medicationId == medId);
+      groupEntriesRemoved += before - g.entries.length;
+    }
+    if (purgeHistory) {
+      doseHistory.removeWhere((d) => d.medicationId == medId);
+    }
+    return groupEntriesRemoved;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Day queries
+  // ---------------------------------------------------------------------------
+
+  bool _sameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+
+  List<DoseEvent> getDosesForDay(DateTime date) =>
+      doseHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  int getDoseCountForDayAndMed(DateTime date, String medName) =>
+      getDosesForDay(date).where((e) => e.medicationName == medName).length;
+
+  /// Total quantity of a med taken today (handles the 2-pills-at-once case).
+  double getDoseQuantityForDayAndMed(DateTime date, String medName) {
+    var sum = 0.0;
+    for (final d in getDosesForDay(date)) {
+      if (d.medicationName == medName) sum += d.quantity;
+    }
+    return sum;
+  }
+
+  List<SymptomEvent> getSymptomsForDay(DateTime date) =>
+      symptomHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  List<StructuralEvent> getStructuralForDay(DateTime date) =>
+      structuralHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  List<MentalEvent> getMentalForDay(DateTime date) =>
+      mentalHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  List<ActivityEvent> getActivityForDay(DateTime date) =>
+      activityHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  // ---------------------------------------------------------------------------
+  // Analytics
+  // ---------------------------------------------------------------------------
 
   List<String> getTrendingSymptoms() {
     final oneWeekAgo = DateTime.now().subtract(const Duration(days: 7));
@@ -654,45 +973,6 @@ class Profile {
         .toList();
   }
 
-  List<DoseEvent> getDosesForDay(DateTime date) => doseHistory
-      .where((e) =>
-          e.timestamp.year == date.year &&
-          e.timestamp.month == date.month &&
-          e.timestamp.day == date.day)
-      .toList();
-
-  int getDoseCountForDayAndMed(DateTime date, String medName) =>
-      getDosesForDay(date).where((e) => e.medicationName == medName).length;
-
-  List<SymptomEvent> getSymptomsForDay(DateTime date) => symptomHistory
-      .where((e) =>
-          e.timestamp.year == date.year &&
-          e.timestamp.month == date.month &&
-          e.timestamp.day == date.day)
-      .toList();
-
-  List<StructuralEvent> getStructuralForDay(DateTime date) => structuralHistory
-      .where((e) =>
-          e.timestamp.year == date.year &&
-          e.timestamp.month == date.month &&
-          e.timestamp.day == date.day)
-      .toList();
-
-  List<MentalEvent> getMentalForDay(DateTime date) => mentalHistory
-      .where((e) =>
-          e.timestamp.year == date.year &&
-          e.timestamp.month == date.month &&
-          e.timestamp.day == date.day)
-      .toList();
-
-  List<ActivityEvent> getActivityForDay(DateTime date) => activityHistory
-      .where((e) =>
-          e.timestamp.year == date.year &&
-          e.timestamp.month == date.month &&
-          e.timestamp.day == date.day)
-      .toList();
-
-  /// Latest mental severity for a given state today, or null if not logged.
   int? latestMentalSeverity(MentalState state, DateTime date) {
     final today = getMentalForDay(date).where((e) => e.state == state).toList();
     if (today.isEmpty) return null;
@@ -700,41 +980,104 @@ class Profile {
     return today.first.severity;
   }
 
-  /// Returns symptoms logged in the last [hours] hours with moderate+ severity.
-  /// Used to suggest linking a dose to a recent symptom.
+  /// Symptoms logged in the last [hours] hours at severity >= moderate (2).
+  /// Used when logging a dose to suggest a recent symptom to link.
   List<SymptomEvent> recentSignificantSymptoms({int hours = 2}) {
     final cutoff = DateTime.now().subtract(Duration(hours: hours));
     return symptomHistory
         .where((s) =>
-            s.timestamp.isAfter(cutoff) &&
-            (s.severity == SymptomSeverity.moderate ||
-                s.severity == SymptomSeverity.severe))
+            s.timestamp.isAfter(cutoff) && s.severity.value >= SymptomSeverity.moderate.value)
         .toList()
       ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
   }
 
-  /// Pending medication outcomes that are due for check-in.
+  /// Pending outcomes that have crossed their checkAt.
   List<MedicationOutcome> getDueOutcomes() =>
       medicationOutcomes.where((o) => o.isDue).toList()
         ..sort((a, b) => a.checkAt.compareTo(b.checkAt));
 
-  /// Effectiveness summary for a med→symptom pairing.
-  /// Returns "X of Y" (better count over answered count), or null if no data.
-  ({int better, int total})? effectivenessFor(String medName, String symptomName) {
-    final answered = medicationOutcomes
-        .where((o) =>
-            o.medicationName.toLowerCase() == medName.toLowerCase() &&
-            o.symptomName.toLowerCase() == symptomName.toLowerCase() &&
-            !o.isPending &&
-            o.status != MedicationOutcomeStatus.unknown)
-        .toList();
+  /// Effect-size summary for a (medication, symptom) pair.
+  ///
+  /// Returns the mean delta across answered outcomes (e.g. -1.8 means
+  /// the med drops severity by ~1.8 points on the 0–4 scale), the count
+  /// of answered outcomes, and the count of times the user reported
+  /// improvement (delta < 0). Returns null if there are no answered
+  /// outcomes yet.
+  ///
+  /// Outcomes with reason == `otherTrigger` or `additionalMed` are
+  /// excluded — those tell us the change probably wasn't this med.
+  ({double meanDelta, int total, int improved})? effectivenessFor(
+    String medName,
+    String symptomName,
+  ) {
+    final medLower = medName.toLowerCase();
+    final sxLower = symptomName.toLowerCase();
+    final answered = medicationOutcomes.where((o) {
+      if (o.medicationName.toLowerCase() != medLower) return false;
+      if (o.symptomName.toLowerCase() != sxLower) return false;
+      if (o.isPending) return false;
+      if (o.reason == OutcomeReason.otherTrigger ||
+          o.reason == OutcomeReason.additionalMed) return false;
+      return true;
+    }).toList();
     if (answered.isEmpty) return null;
-    final better =
-        answered.where((o) => o.status == MedicationOutcomeStatus.better).length;
-    return (better: better, total: answered.length);
+    var sum = 0.0;
+    var improved = 0;
+    for (final o in answered) {
+      final d = o.delta!;
+      sum += d;
+      if (d < 0) improved++;
+    }
+    return (
+      meanDelta: sum / answered.length,
+      total: answered.length,
+      improved: improved,
+    );
   }
 
-  // --- SERIALIZATION ---
+  // ---------------------------------------------------------------------------
+  // Mutators — batch group logging
+  // ---------------------------------------------------------------------------
+
+  /// Log every entry in a medication group as a single batch at [timestamp].
+  /// Returns the created DoseEvents. Does NOT call save — caller is
+  /// responsible for persistence so this stays UI-framework-free.
+  ///
+  /// [linkedSymptomIds] and [severityBefore] are applied to every dose in
+  /// the batch; for a single-symptom acute use case (rare for night meds,
+  /// common for an as-needed group), the UI can pre-collect a severity and
+  /// pass it through.
+  List<DoseEvent> logGroup(
+    MedicationGroup group, {
+    required DateTime timestamp,
+    List<String> linkedSymptomIds = const [],
+    Map<String, int> severityBefore = const {},
+  }) {
+    final created = <DoseEvent>[];
+    for (final entry in group.entries) {
+      final med = findMedById(entry.medicationId);
+      if (med == null) continue; // referenced med was deleted; skip silently
+      final dose = DoseEvent(
+        timestamp: timestamp,
+        medicationName: med.name,
+        medicationId: med.id,
+        quantity: entry.quantity,
+        strengthAtDose: med.strength,
+        unitAtDose: med.unit,
+        formAtDose: med.form,
+        linkedSymptomIds: linkedSymptomIds,
+        severityBefore: severityBefore,
+        groupId: group.id,
+      );
+      doseHistory.add(dose);
+      created.add(dose);
+    }
+    return created;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Serialization
+  // ---------------------------------------------------------------------------
 
   Map<String, dynamic> toMap() => {
         'id': id,
@@ -745,6 +1088,7 @@ class Profile {
         'pacingDays': pacingDays.toList(),
         'savedArticlePmids': savedArticlePmids.toList(),
         'botiquin': botiquin.map((x) => x.toMap()).toList(),
+        'medicationGroups': medicationGroups.map((x) => x.toMap()).toList(),
         'symptomHistory': symptomHistory.map((x) => x.toMap()).toList(),
         'doseHistory': doseHistory.map((x) => x.toMap()).toList(),
         'structuralHistory': structuralHistory.map((x) => x.toMap()).toList(),
@@ -756,24 +1100,42 @@ class Profile {
   factory Profile.fromMap(Map<String, dynamic> map) => Profile(
         id: map['id'],
         name: map['name'],
-        conditions: List<String>.from(map['conditions'] ?? []),
+        conditions: List<String>.from(map['conditions'] ?? const []),
         country: map['country'] as String?,
-        symptomVault: List<String>.from(map['symptomVault'] ?? []),
-        pacing: Set<String>.from(map['pacingDays'] ?? []),
-        saved: Set<String>.from(map['savedArticlePmids'] ?? []),
+        symptomVault: List<String>.from(map['symptomVault'] ?? const []),
+        pacing: Set<String>.from(map['pacingDays'] ?? const []),
+        saved: Set<String>.from(map['savedArticlePmids'] ?? const []),
         botiquin: List<MedicationDef>.from(
-            (map['botiquin'] ?? []).map((x) => MedicationDef.fromMap(x))),
+          (map['botiquin'] ?? const []).map(
+              (x) => MedicationDef.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
+        medicationGroups: List<MedicationGroup>.from(
+          (map['medicationGroups'] ?? const []).map((x) =>
+              MedicationGroup.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
         symptoms: List<SymptomEvent>.from(
-            (map['symptomHistory'] ?? []).map((x) => SymptomEvent.fromMap(x))),
+          (map['symptomHistory'] ?? const []).map(
+              (x) => SymptomEvent.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
         doses: List<DoseEvent>.from(
-            (map['doseHistory'] ?? []).map((x) => DoseEvent.fromMap(x))),
+          (map['doseHistory'] ?? const []).map(
+              (x) => DoseEvent.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
         structural: List<StructuralEvent>.from(
-            (map['structuralHistory'] ?? []).map((x) => StructuralEvent.fromMap(x))),
+          (map['structuralHistory'] ?? const []).map((x) =>
+              StructuralEvent.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
         mental: List<MentalEvent>.from(
-            (map['mentalHistory'] ?? []).map((x) => MentalEvent.fromMap(x))),
+          (map['mentalHistory'] ?? const []).map(
+              (x) => MentalEvent.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
         activity: List<ActivityEvent>.from(
-            (map['activityHistory'] ?? []).map((x) => ActivityEvent.fromMap(x))),
-        outcomes: List<MedicationOutcome>.from((map['medicationOutcomes'] ?? [])
-            .map((x) => MedicationOutcome.fromMap(x))),
+          (map['activityHistory'] ?? const []).map((x) =>
+              ActivityEvent.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
+        outcomes: List<MedicationOutcome>.from(
+          (map['medicationOutcomes'] ?? const []).map((x) =>
+              MedicationOutcome.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
       );
 }
