@@ -20,7 +20,7 @@ class HoyTab extends StatelessWidget {
   final Color inverseContrastColor;
   final VoidCallback onTogglePacing;
   final void Function(MentalState state, int severity, {DateTime? timestamp}) onLogMental;
-  final void Function(MedicationOutcome outcome, MedicationOutcomeStatus status) onAnswerOutcome;
+  final void Function(MedicationOutcome outcome, {required int severityAfter, OutcomeReason? reason}) onAnswerOutcome;
   final VoidCallback onChangeWisdom; // <-- NUEVO: Función para cambiar la frase
 
   const HoyTab({
