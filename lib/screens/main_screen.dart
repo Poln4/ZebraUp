@@ -6,6 +6,8 @@ import 'dart:math'; // <-- Agregado para los números aleatorios
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/models.dart';
+import '../services/interaction_engine.dart';
+import '../widgets/severity_picker.dart';
 import '../services/pubmed_service.dart';
 import 'hoy_tab.dart';
 import 'investigacion_tab.dart';
@@ -786,7 +788,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                         setState(() {
                           _activeProfile!.botiquin.add(MedicationDef(
                             name: _newMedNameController.text.trim(),
-                            defaultDose: _newMedDoseController.text.trim(),
+                            notes: _newMedDoseController.text.trim().isEmpty
+                                ? null
+                                : _newMedDoseController.text.trim(),
                             outcomeCheckHours: 3,
                           ));
                           _newMedNameController.clear();
@@ -819,7 +823,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(med.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cc)),
-                Text(med.defaultDose, style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                Text(
+                  med.notes?.isNotEmpty == true ? med.notes! : med.displayDose,
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
               ],
             ),
           ),
@@ -981,10 +988,11 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       buf.writeln("EFECTIVIDAD (histórico):");
       for (final pair in effPairs) {
         final parts = pair.split('→');
-        final eff = _activeProfile!.effectivenessFor(parts[0], parts[1]);
-        if (eff != null) {
-          final pct = (eff.better / eff.total * 100).toStringAsFixed(0);
-          buf.writeln(" • ${parts[0]} → ${parts[1]}: $pct% mejora (${eff.better}/${eff.total})");
+        final eff = _activeProfile!.effectivenessFor(medName, sxName);
+        if (eff != null) Text(
+          "Baja tu ${sxName.toLowerCase()} en promedio "
+          "${(-eff.meanDelta).toStringAsFixed(1)} puntos (${eff.improved}/${eff.total} mejor)",
+          );
         }
       }
     }
@@ -1231,12 +1239,19 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     });
   }
 
-  void _answerOutcome(MedicationOutcome o, MedicationOutcomeStatus status) {
+  void _answerOutcome(
+    MedicationOutcome o, {
+    required int severityAfter,
+    OutcomeReason? reason,
+  }) {
     setState(() {
       final idx = _activeProfile!.medicationOutcomes.indexOf(o);
       if (idx >= 0) {
-        _activeProfile!.medicationOutcomes[idx] =
-            o.copyWith(status: status, respondedAt: DateTime.now());
+        _activeProfile!.medicationOutcomes[idx] = o.copyWith(
+          severityAfter: severityAfter,
+          reason: reason,
+          respondedAt: DateTime.now(),
+        );
         _saveData();
       }
     });
@@ -1301,23 +1316,25 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    ...SymptomSeverity.values.map((sev) => ListTile(
-                          leading: Icon(Icons.circle, color: _severityColor(sev)),
-                          title: Text(sev.label, style: TextStyle(color: cc, fontSize: 14)),
-                          onTap: () {
-                            final note = noteCtrl.text.trim();
-                            setState(() {
-                              _activeProfile!.symptomHistory.add(SymptomEvent(
-                                timestamp: ts,
-                                name: symptom,
-                                severity: sev,
-                                note: note.isEmpty ? null : note,
-                              ));
-                              _saveData();
-                            });
-                            Navigator.pop(ctx);
-                          },
-                        )),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: SeverityDotPicker(
+                        showLabels: true,
+                        onSelect: (sev) {
+                          final note = noteCtrl.text.trim();
+                          setState(() {
+                            _activeProfile!.symptomHistory.add(SymptomEvent(
+                              timestamp: ts,
+                              name: symptom,
+                              severity: sev,
+                              note: note.isEmpty ? null : note,
+                            ));
+                            _saveData();
+                          });
+                          Navigator.pop(ctx);
+                        },
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -1413,11 +1430,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     );
   }
 
-  Color _severityColor(SymptomSeverity sev) => switch (sev) {
-        SymptomSeverity.mild => Colors.green,
-        SymptomSeverity.moderate => Colors.orange,
-        SymptomSeverity.severe => Colors.red,
-      };
+  Color _severityColor(SymptomSeverity sev) {
+  final hex = sev.colorHex.substring(1); // strip '#'
+  return Color(int.parse(hex, radix: 16) | 0xFF000000);
+  };
 
   void _openStructuralMenu(String zone, Color cc, Color ic) {
     DateTime ts = _timestampForLog();
@@ -1691,10 +1707,23 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                       backgroundColor: cc, minimumSize: const Size.fromHeight(48),
                     ),
                     onPressed: () {
+                      // Snapshot the symptom's current severity so the 3-hour check-in can
+                      // compute a real delta instead of asking "better/same/worse".
+                      final severityBefore = <String, int>{};
+                      if (selectedSymptom != null) {
+                        severityBefore[selectedSymptom!.id] = selectedSymptom!.severity.value;
+                      }
+                      
                       final dose = DoseEvent(
                         timestamp: ts,
                         medicationName: med.name,
+                        medicationId: med.id,
+                        quantity: med.defaultQuantity,
+                        strengthAtDose: med.strength,
+                        unitAtDose: med.unit,
+                        formAtDose: med.form,
                         linkedSymptomIds: selectedSymptom != null ? [selectedSymptom!.id] : const [],
+                        severityBefore: severityBefore,
                       );
                       setState(() {
                         _activeProfile!.doseHistory.add(dose);
@@ -1708,9 +1737,11 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                             symptomName: selectedSymptom!.name,
                             doseTimestamp: ts,
                             checkAt: ts.add(Duration(hours: med.outcomeCheckHours!)),
+                            severityBefore: selectedSymptom!.severity.value,
                           ));
                         }
                         _saveData();
+                      
                       });
                       Navigator.pop(ctx);
                     },
