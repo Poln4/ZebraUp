@@ -10,6 +10,7 @@ import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
 import 'hoy_tab.dart';
 import 'botiquin_tab.dart';
+import 'sintomas_tab.dart';
 import 'investigacion_tab.dart';
 import 'timestamp_picker.dart';
 
@@ -65,7 +66,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
    }
 
   Future<void> _bootstrap() async {
-     await Hive.box('zebraBox').clear();  // remove this line after first run
+     //await Hive.box('zebraBox').clear();  // remove this line after first run
      _loadUserProfiles();
      setState(() {});
    }
@@ -452,231 +453,15 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   // -------------------------------------------------------------------------
 
   Widget _buildSintomasTab(Color cc, Color ic) {
-    final todaysStructs = _activeProfile!.getStructuralForDay(_selectedDate);
-    final todaysSymptoms = _activeProfile!.getSymptomsForDay(_selectedDate);
-    final todaysActivity = _activeProfile!.getActivityForDay(_selectedDate);
-    final trendingSymptoms = _activeProfile!.getTrendingSymptoms();
-
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Text("ZONAS ESTRUCTURALES",
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: cc)),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: ["Cervicales", "Hombros", "Muñecas", "Manos", "Lumbar/Pelvis", "Caderas", "Rodillas", "Tobillos"]
-              .map((zone) => ActionChip(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: cc),
-                    label: Text(zone, style: TextStyle(color: cc, fontSize: 12)),
-                    onPressed: () => _openStructuralMenu(zone, cc, ic),
-                  ))
-              .toList(),
-        ),
-        if (todaysStructs.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(border: Border.all(color: cc)),
-            child: Column(
-              children: todaysStructs
-                  .map((e) => InkWell(
-                        onLongPress: () => _editStructuralEvent(e, cc, ic),
-                        child: Row(
-                          children: [
-                            Icon(Icons.adjust, color: cc, size: 16),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text("[${DateFormat('HH:mm').format(e.timestamp)}] ${e.zone}: ${e.type}",
-                                  style: TextStyle(color: cc, fontSize: 14)),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              onPressed: () => setState(() {
-                                _activeProfile!.structuralHistory.remove(e);
-                                _saveData();
-                              }),
-                            ),
-                          ],
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-        ],
-        const SizedBox(height: 32),
-
-        if (todaysSymptoms.isNotEmpty) ...[
-          Text("REGISTROS DE HOY",
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: cc)),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(border: Border.all(color: cc)),
-            child: Column(
-              children: todaysSymptoms
-                  .map((event) => InkWell(
-                        onLongPress: () => _editSymptomEvent(event, cc, ic),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
-                            children: [
-                              Icon(Icons.access_time, color: Colors.grey, size: 16),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} (${event.severity.label})",
-                                        style: TextStyle(color: cc, fontSize: 14)),
-                                    if (event.note != null && event.note!.trim().isNotEmpty)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 2.0),
-                                        child: Text(event.note!,
-                                            style: const TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic)),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                onPressed: () => setState(() {
-                                  _activeProfile!.symptomHistory.remove(event);
-                                  _saveData();
-                                }),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text("Mantén pulsado un registro para editar fecha/gravedad/nota.",
-              style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic)),
-          const SizedBox(height: 32),
-        ],
-
-        Text("EN TENDENCIA (ÚLTIMOS 7 DÍAS)",
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: cc)),
-        const SizedBox(height: 8),
-        trendingSymptoms.isEmpty
-            ? Text("No hay síntomas consistentes esta semana.",
-                style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey, fontSize: 14))
-            : Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: trendingSymptoms
-                    .map((s) => ActionChip(
-                          backgroundColor: ic,
-                          side: BorderSide(color: cc, width: 2),
-                          label: Text(s, style: TextStyle(color: cc, fontSize: 14, fontWeight: FontWeight.bold)),
-                          onPressed: () => _openSeverityMenu(s, cc, ic),
-                        ))
-                    .toList(),
-              ),
-        const SizedBox(height: 32),
-
-        Text("BAÚL DE SÍNTOMAS",
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: cc)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _activeProfile!.symptomVault
-              .map((s) => ActionChip(
-                    backgroundColor: ic,
-                    side: const BorderSide(color: Colors.grey),
-                    label: Text(s, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-                    onPressed: () => _openSeverityMenu(s, cc, ic),
-                  ))
-              .toList(),
-        ),
-        const SizedBox(height: 24),
-        TextField(
-          controller: _newSymptomController,
-          style: TextStyle(color: cc),
-          decoration: InputDecoration(
-            hintText: "+ Añadir síntoma al baúl...",
-            hintStyle: const TextStyle(color: Colors.grey),
-            suffixIcon: IconButton(
-              icon: Icon(Icons.add, color: cc),
-              onPressed: () {
-                if (_newSymptomController.text.trim().isNotEmpty) {
-                  setState(() {
-                    _activeProfile!.symptomVault.insert(0, _newSymptomController.text.trim());
-                    _newSymptomController.clear();
-                    _saveData();
-                  });
-                }
-              },
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 40),
-
-        // Activity section (the calisthenics layer, kept minimal)
-        Text("ACTIVIDAD",
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: cc)),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: kExerciseCatalog
-              .map((ex) => ActionChip(
-                    backgroundColor: Colors.transparent,
-                    side: BorderSide(color: cc),
-                    label: Text(ex.name, style: TextStyle(color: cc, fontSize: 12)),
-                    onPressed: () => _openActivityMenu(ex, cc, ic),
-                  ))
-              .toList(),
-        ),
-        if (todaysActivity.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(border: Border.all(color: cc)),
-            child: Column(
-              children: todaysActivity.map((a) {
-                final detail = a.durationMinutes != null
-                    ? '${a.durationMinutes}min'
-                    : '${a.sets ?? "?"}×${a.reps ?? "?"}';
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      Icon(Icons.fitness_center, color: cc, size: 16),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          "[${DateFormat('HH:mm').format(a.timestamp)}] ${a.name}: $detail · esfuerzo ${a.effort}/10 · sentir ${a.feeling}/5",
-                          style: TextStyle(color: cc, fontSize: 13),
-                        ),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: () => setState(() {
-                          _activeProfile!.activityHistory.remove(a);
-                          _saveData();
-                        }),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
-            ),
-          ),
-        ],
-        const SizedBox(height: 24),
-      ],
+    return SintomasTab(
+      profile: _activeProfile!,
+      selectedDate: _selectedDate,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+      onProfileChanged: () {
+        setState(() {});
+        _saveData();
+      },
     );
   }
 

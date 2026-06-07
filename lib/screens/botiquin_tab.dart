@@ -27,6 +27,7 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../services/interaction_engine.dart';
 import '../widgets/dose_stepper.dart';
+import '../widgets/group_form.dart';
 import '../widgets/med_form.dart';
 import '../widgets/severity_picker.dart';
 import 'timestamp_picker.dart';
@@ -75,8 +76,10 @@ class BotiquinTab extends StatelessWidget {
         // 2. Groups skeleton
         _GroupsSection(
           profile: profile,
+          selectedDate: selectedDate,
           contrastColor: contrastColor,
           inverseContrastColor: inverseContrastColor,
+          onProfileChanged: onProfileChanged,
         ),
         const SizedBox(height: 24),
 
@@ -254,18 +257,22 @@ class _InteractionList extends StatelessWidget {
 }
 
 // =============================================================================
-// Groups section — skeleton for this phase
+// Groups section — full CRUD wired to GroupFormSheet, batch logging on tap
 // =============================================================================
 
 class _GroupsSection extends StatelessWidget {
   final Profile profile;
+  final DateTime selectedDate;
   final Color contrastColor;
   final Color inverseContrastColor;
+  final VoidCallback onProfileChanged;
 
   const _GroupsSection({
     required this.profile,
+    required this.selectedDate,
     required this.contrastColor,
     required this.inverseContrastColor,
+    required this.onProfileChanged,
   });
 
   @override
@@ -302,7 +309,7 @@ class _GroupsSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Agrupa los medicamentos que tomas juntos para registrarlos en un solo toque.',
+                  'Agrupa los medicamentos que tomas juntos. Un toque registra todas las dosis a la vez.',
                   style: TextStyle(
                     color: cc.withValues(alpha: 0.6),
                     fontSize: 12,
@@ -317,13 +324,16 @@ class _GroupsSection extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 6),
                 child: _GroupRow(
                   group: g,
+                  profile: profile,
+                  selectedDate: selectedDate,
                   contrastColor: cc,
-                  onTap: () => _openPlaceholder(context),
+                  inverseContrastColor: inverseContrastColor,
+                  onProfileChanged: onProfileChanged,
                 ),
               )),
         const SizedBox(height: 8),
         OutlinedButton.icon(
-          onPressed: () => _openPlaceholder(context),
+          onPressed: () => _openCreateGroup(context),
           icon: Icon(Icons.add, size: 16, color: cc.withValues(alpha: 0.7)),
           label: Text(
             'Crear grupo',
@@ -344,43 +354,64 @@ class _GroupsSection extends StatelessWidget {
     );
   }
 
-  void _openPlaceholder(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: inverseContrastColor,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
-        title: Text('Próximamente',
-            style: TextStyle(color: contrastColor)),
-        content: Text(
-          'La creación y edición de grupos llegará en la próxima fase. '
-          'El modelo de datos ya está listo — solo falta la interfaz.',
-          style: TextStyle(
-              color: contrastColor.withValues(alpha: 0.8), height: 1.45),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text('OK',
-                style: TextStyle(
-                    color: contrastColor, fontWeight: FontWeight.bold)),
+  Future<void> _openCreateGroup(BuildContext context) async {
+    if (profile.botiquin.isEmpty) {
+      // Friendly nudge instead of an empty group form.
+      showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: inverseContrastColor,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16)),
+          title: Text('Sin medicamentos',
+              style: TextStyle(color: contrastColor)),
+          content: Text(
+            'Crea al menos un medicamento en tu botiquín antes de formar un grupo.',
+            style: TextStyle(
+                color: contrastColor.withValues(alpha: 0.8),
+                height: 1.45),
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text('OK',
+                  style: TextStyle(
+                      color: contrastColor,
+                      fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+    final result = await showGroupFormSheet(
+      context,
+      profile: profile,
+      contrastColor: contrastColor,
+      inverseContrastColor: inverseContrastColor,
     );
+    if (result != null && !identical(result, kGroupDeleted)) {
+      profile.medicationGroups.add(result);
+      onProfileChanged();
+    }
   }
 }
 
 class _GroupRow extends StatelessWidget {
   final MedicationGroup group;
+  final Profile profile;
+  final DateTime selectedDate;
   final Color contrastColor;
-  final VoidCallback onTap;
+  final Color inverseContrastColor;
+  final VoidCallback onProfileChanged;
 
   const _GroupRow({
     required this.group,
+    required this.profile,
+    required this.selectedDate,
     required this.contrastColor,
-    required this.onTap,
+    required this.inverseContrastColor,
+    required this.onProfileChanged,
   });
 
   @override
@@ -390,44 +421,352 @@ class _GroupRow extends StatelessWidget {
     final timeStr = m == null
         ? null
         : '${(m ~/ 60).toString().padLeft(2, '0')}:${(m % 60).toString().padLeft(2, '0')}';
+    final entryCount = group.entries.length;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: cc.withValues(alpha: 0.04),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: cc.withValues(alpha: 0.12)),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(group.name,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => _openLogBatch(context),
+        onLongPress: () => _openEditGroup(context),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: cc.withValues(alpha: 0.04),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: cc.withValues(alpha: 0.12)),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(group.name,
+                        style: TextStyle(
+                          color: cc,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        )),
+                    const SizedBox(height: 2),
+                    Text(
+                      '$entryCount ${entryCount == 1 ? 'medicamento' : 'medicamentos'}${timeStr != null ? ' · $timeStr' : ''}',
                       style: TextStyle(
-                        color: cc,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      )),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${group.entries.length} medicamentos${timeStr != null ? ' · $timeStr' : ''}',
-                    style: TextStyle(
-                      color: cc.withValues(alpha: 0.6),
-                      fontSize: 12,
+                        color: cc.withValues(alpha: 0.6),
+                        fontSize: 12,
+                      ),
                     ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.edit_outlined,
+                    size: 18, color: cc.withValues(alpha: 0.6)),
+                onPressed: () => _openEditGroup(context),
+                tooltip: 'Editar',
+                visualDensity: VisualDensity.compact,
+              ),
+              Icon(Icons.play_arrow_rounded,
+                  color: cc.withValues(alpha: 0.7), size: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openEditGroup(BuildContext context) async {
+    final result = await showGroupFormSheet(
+      context,
+      profile: profile,
+      existing: group,
+      contrastColor: contrastColor,
+      inverseContrastColor: inverseContrastColor,
+    );
+    if (result == null) return;
+    if (identical(result, kGroupDeleted)) {
+      profile.medicationGroups.removeWhere((g) => g.id == group.id);
+      onProfileChanged();
+      return;
+    }
+    final idx = profile.medicationGroups.indexWhere((g) => g.id == group.id);
+    if (idx >= 0) {
+      profile.medicationGroups[idx] = result;
+      onProfileChanged();
+    }
+  }
+
+  Future<void> _openLogBatch(BuildContext context) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: inverseContrastColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) => _GroupBatchLogSheet(
+        group: group,
+        profile: profile,
+        selectedDate: selectedDate,
+        contrastColor: contrastColor,
+        inverseContrastColor: inverseContrastColor,
+      ),
+    );
+    onProfileChanged();
+  }
+}
+
+// =============================================================================
+// _GroupBatchLogSheet — confirm timestamp and one-tap-log the whole group.
+// =============================================================================
+
+class _GroupBatchLogSheet extends StatefulWidget {
+  final MedicationGroup group;
+  final Profile profile;
+  final DateTime selectedDate;
+  final Color contrastColor;
+  final Color inverseContrastColor;
+
+  const _GroupBatchLogSheet({
+    required this.group,
+    required this.profile,
+    required this.selectedDate,
+    required this.contrastColor,
+    required this.inverseContrastColor,
+  });
+
+  @override
+  State<_GroupBatchLogSheet> createState() => _GroupBatchLogSheetState();
+}
+
+class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
+  late DateTime _timestamp;
+  bool _saved = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _timestamp = _initialTimestamp();
+  }
+
+  DateTime _initialTimestamp() {
+    final now = DateTime.now();
+    final d = widget.selectedDate;
+    final isToday =
+        d.year == now.year && d.month == now.month && d.day == now.day;
+    final base = isToday
+        ? now
+        : DateTime(d.year, d.month, d.day, now.hour, now.minute);
+    // If the group has a default time set, prefer that for "today" logging.
+    final defaultTs = widget.group.defaultTimeOn(d);
+    if (defaultTs != null && isToday) {
+      // Only use default time if it's in the past today; future-time
+      // defaults would feel weird as a "log now" timestamp.
+      if (defaultTs.isBefore(now)) return defaultTs;
+    } else if (defaultTs != null) {
+      return defaultTs;
+    }
+    return base;
+  }
+
+  void _save() {
+    if (_saved) return;
+    _saved = true;
+    widget.profile.logGroup(
+      widget.group,
+      timestamp: _timestamp,
+    );
+    Navigator.of(context).pop();
+  }
+
+  String _formatTimestamp(DateTime t) {
+    final now = DateTime.now();
+    final today =
+        t.year == now.year && t.month == now.month && t.day == now.day;
+    final time =
+        '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+    if (today) return 'Hoy a las $time';
+    return '${t.day}/${t.month} a las $time';
+  }
+
+  String _formatQty(double q) =>
+      q == q.roundToDouble() ? q.toInt().toString() : q.toString();
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = widget.contrastColor;
+    final viewInsets = MediaQuery.of(context).viewInsets;
+    final entries = widget.group.entries;
+    final orphanCount = entries.where((e) =>
+        widget.profile.findMedById(e.medicationId) == null).length;
+    final validEntries = entries
+        .where((e) =>
+            widget.profile.findMedById(e.medicationId) != null)
+        .toList();
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: viewInsets.bottom),
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Registrar grupo',
+                          style: TextStyle(
+                            color: cc.withValues(alpha: 0.6),
+                            fontSize: 12,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.group.name,
+                          style: TextStyle(
+                            color: cc,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.close, color: cc),
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
               ),
-            ),
-            Icon(Icons.chevron_right,
-                color: cc.withValues(alpha: 0.4), size: 20),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                'Se registrarán estas dosis:',
+                style: TextStyle(
+                  color: cc.withValues(alpha: 0.7),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.3,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: cc.withValues(alpha: 0.04),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: cc.withValues(alpha: 0.12)),
+                ),
+                child: Column(
+                  children: validEntries.map((e) {
+                    final med = widget.profile.findMedById(e.medicationId)!;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(Icons.medication_outlined,
+                              size: 14,
+                              color: cc.withValues(alpha: 0.6)),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              med.name,
+                              style: TextStyle(
+                                color: cc,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '${_formatQty(e.quantity)} ${med.form}${e.quantity == 1 ? '' : 's'}',
+                            style: TextStyle(
+                              color: cc.withValues(alpha: 0.65),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+              if (orphanCount > 0) ...[
+                const SizedBox(height: 8),
+                Text(
+                  '⚠️ $orphanCount medicamento${orphanCount == 1 ? '' : 's'} eliminado${orphanCount == 1 ? '' : 's'} del botiquín — se omitirá${orphanCount == 1 ? '' : 'n'}.',
+                  style: TextStyle(
+                    color: const Color(0xFFFFB74D),
+                    fontSize: 11,
+                    height: 1.4,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 20),
+
+              // Timestamp
+              OutlinedButton.icon(
+                onPressed: () async {
+                  final picked = await pickTimestamp(
+                    context: context,
+                    initial: _timestamp,
+                    contrastColor: cc,
+                    inverseContrastColor: widget.inverseContrastColor,
+                  );
+                  if (picked != null) {
+                    setState(() => _timestamp = picked);
+                  }
+                },
+                icon: Icon(Icons.access_time,
+                    size: 16, color: cc.withValues(alpha: 0.7)),
+                label: Text(
+                  _formatTimestamp(_timestamp),
+                  style: TextStyle(
+                      color: cc.withValues(alpha: 0.8), fontSize: 13),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: cc.withValues(alpha: 0.3)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: validEntries.isEmpty ? null : _save,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: cc,
+                    foregroundColor: widget.inverseContrastColor,
+                    disabledBackgroundColor: cc.withValues(alpha: 0.2),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(
+                    'Registrar ${validEntries.length} ${validEntries.length == 1 ? 'dosis' : 'dosis'}',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
         ),
       ),
     );
