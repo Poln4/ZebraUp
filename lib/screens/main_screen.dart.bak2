@@ -9,7 +9,6 @@ import '../models/models.dart';
 import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
 import 'hoy_tab.dart';
-import 'botiquin_tab.dart';
 import 'investigacion_tab.dart';
 import 'timestamp_picker.dart';
 
@@ -685,15 +684,152 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   // -------------------------------------------------------------------------
 
   Widget _buildBotiquinTab(Color cc, Color ic) {
-    return BotiquinTab(
-      profile: _activeProfile!,
-      selectedDate: _selectedDate,
-      contrastColor: cc,
-      inverseContrastColor: ic,
-      onProfileChanged: () {
-        setState(() {});
-        _saveData();
-      },
+    final flags = InteractionEngine.evaluate(
+      medicationsToday: _activeProfile!.getDosesForDay(_selectedDate).map((e) => e.medicationName).toList(),
+      conditions: _activeProfile!.conditions,
+    );
+    final todaysDoses = _activeProfile!.getDosesForDay(_selectedDate);
+    final dueOutcomes = _activeProfile!.getDueOutcomes();
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        if (dueOutcomes.isNotEmpty) ...[
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(border: Border.all(color: cc, width: 2)),
+            child: Row(
+              children: [
+                Icon(Icons.notifications_active_outlined, color: cc),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "${dueOutcomes.length} seguimiento(s) pendiente(s). Ve a la pestaña Hoy para responder.",
+                    style: TextStyle(color: cc, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (flags.isNotEmpty) ...[
+          Text("ALERTAS DE INTERACCIÓN",
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: cc)),
+          const SizedBox(height: 8),
+          ...flags.map((rule) => Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: rule.level == InteractionLevel.severe ? Colors.redAccent : cc,
+                    width: 2,
+                  ), 
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(rule.message,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: cc)),
+                    if (rule.reference != null) ...[
+                      const SizedBox(height: 4),
+                      Text(rule.reference!,
+                          style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic)),
+                    ],
+                  ],
+                ),
+              )),
+          const SizedBox(height: 24),
+        ],
+        Text("REGISTRAR DOSIS",
+            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: cc)),
+        const SizedBox(height: 8),
+        ..._activeProfile!.botiquin.map((med) => _buildMedRow(med, todaysDoses, cc, ic)),
+        if (todaysDoses.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Text("HISTORIAL DE TOMAS (HOY)",
+              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: cc)),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(border: Border.all(color: cc)),
+            child: Column(
+              children: todaysDoses
+                  .map((e) => InkWell(
+                        onLongPress: () => _editDoseEvent(e, cc, ic),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              Icon(Icons.access_time, color: Colors.grey, size: 16),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  "[${DateFormat('HH:mm').format(e.timestamp)}] ${e.medicationName}",
+                                  style: TextStyle(color: cc, fontSize: 14),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ))
+                  .toList(),
+            ),
+          ),
+        ],
+        const SizedBox(height: 32),
+        Text("ADMINISTRAR BOTIQUÍN",
+            style: const TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, color: Colors.grey, fontSize: 14)),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
+          child: Column(
+            children: [
+              TextField(
+                controller: _newMedNameController,
+                style: TextStyle(color: cc),
+                decoration: const InputDecoration(
+                  hintText: "Nombre Medicamento",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _newMedDoseController,
+                      style: TextStyle(color: cc),
+                      decoration: const InputDecoration(
+                        hintText: "Dosis (Ej. 14mg)",
+                        hintStyle: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_box_rounded, size: 32, color: cc),
+                    onPressed: () {
+                      if (_newMedNameController.text.trim().isNotEmpty) {
+                        setState(() {
+                          final doseText = _newMedDoseController.text.trim();
+                          _activeProfile!.botiquin.add(MedicationDef(
+                            name: _newMedNameController.text.trim(),
+                            notes: doseText.isEmpty ? null : doseText,
+                            outcomeCheckHours: 3,
+                          ));
+                          _newMedNameController.clear();
+                          _newMedDoseController.clear();
+                          _saveData();
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
