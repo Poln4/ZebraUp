@@ -458,6 +458,196 @@
       "fact_ko": "낮은 철분 수치와 만성 근육 뭉침(근육 매듭) 사이에는 직접적인 생물학적 연관성이 있습니다. 연구에 따르면 철분 결핍은 근육 산소 공급을 감소시키고 근육 피로를 증가시켜, 과민감한 근막 유발점 형성의 전신적인 지속 요인으로 작용합니다.",
       "tone": "Educational",
       "source": "Steen et al., 2025"
+    },
+    {
+      "condition": "EDS & Neurodivergence (ASD/ADHD)",
+      "fact_en": "Recent large-scale studies demonstrate a significantly higher prevalence of ASD and ADHD in patients with hEDS, suggesting a shared neurobiological developmental pathway.",
+      "fact_es": "Estudios a gran escala demuestran una prevalencia significativamente mayor de TEA y TDAH en pacientes con SEDh, lo que sugiere una vía de desarrollo neurobiológico compartida.",
+      "tone": "Educational",
+      "source": "Cederlöf et al., JAMA Network Open (2020)"
+    },
+    {
+      "condition": "Neurodivergence & Proprioception",
+      "fact_en": "Both autism and hEDS involve unique proprioceptive processing. The brain has to work harder to map joint position in space, which can contribute to sensory overwhelm.",
+      "fact_es": "Tanto el autismo como el SEDh implican un procesamiento propioceptivo único. El cerebro tiene que trabajar más para mapear la posición de las articulaciones en el espacio, lo que puede contribuir a la sobrecarga sensorial.",
+      "tone": "Validating",
+      "source": "Eccles et al., Frontiers in Psychiatry (2022)"
+    },
+    {
+      "condition": "POTS & ADHD",
+      "fact_en": "ADHD symptoms can be worsened by the autonomic dysregulation of POTS; when your heart rate is unstable, your brain's executive functioning often takes the hit.",
+      "fact_es": "Los síntomas del TDAH pueden empeorar por la disregulación autonómica del POTS; cuando tu frecuencia cardíaca es inestable, la función ejecutiva de tu cerebro a menudo se ve afectada.",
+      "tone": "Informative",
+      "source": "Clinical Autonomic Research, Dysautonomia and Cognition"
+    },
+    {
+      "condition": "Pelvic Floor & EDS",
+      "fact_en": "Chronic pelvic pain in EDS is often related to hypertonic pelvic floor muscles trying to compensate for joint laxity in the pelvis and hips.",
+      "fact_es": "El dolor pélvico crónico en el SED a menudo está relacionado con músculos del suelo pélvico hipertónicos que intentan compensar la laxitud articular en la pelvis y las caderas.",
+      "tone": "Educational",
+      "source": "Journal of Women's Health Physical Therapy"
+    },
+    {
+      "condition": "EDS & Mast Cell Activation (MCAS)",
+      "fact_en": "MCAS can present as 'brain fog' that mimics ADHD inattentiveness. When mast cells stabilize, many patients report a sudden improvement in focus and mental clarity.",
+      "fact_es": "El MCAS puede presentarse como 'niebla mental' que imita la falta de atención del TDAH. Cuando los mastocitos se estabilizan, muchos pacientes reportan una mejora repentina en el enfoque y la claridad mental.",
+      "tone": "Empowering",
+      "source": "Afrin et al., Diagnosis and Management of MCAS"
+    },
+    {
+      "condition": "Neurodivergence & Pain Sensitivity",
+      "fact_en": "Research indicates that autistic individuals with EDS often have heightened pain sensitivity, making specialized, gentle pain management even more critical.",
+      "fact_es": "La investigación indica que las personas autistas con SED a menudo tienen una mayor sensibilidad al dolor, lo que hace que el manejo del dolor especializado y suave sea aún más crítico.",
+      "tone": "Validating",
+      "source": "Eccles et al., Journal of Autism and Developmental Disorders"
+    },
+    {
+      "condition": "The 'Zebra' Nervous System",
+      "fact_en": "Your hypervigilant nervous system is not a flaw; it is a biological response to systemic instability. Recognizing this can help reduce the shame associated with chronic 'fight-or-flight'.",
+      "fact_es": "Tu sistema nervioso hipervigilante no es un defecto; es una respuesta biológica a la inestabilidad sistémica. Reconocer esto puede ayudar a reducir la vergüenza asociada con la respuesta crónica de 'lucha o huida'.",
+      "tone": "Supportive",
+      "source": "Porges, The Polyvagal Theory"
+    },
+    {
+      "condition": "EDS & Proprioceptive Learning",
+      "fact_en": "Learning physical skills (like calisthenics) through visual imitation is often more effective for EDS patients than internal cues, due to our unique proprioceptive wiring.",
+      "fact_es": "Aprender habilidades físicas (como la calistenia) mediante la imitación visual suele ser más eficaz para los pacientes con SED que mediante señales internas, debido a nuestro cableado propioceptivo único.",
+      "tone": "Optimistic",
+      "source": "International Journal of Sports Physical Therapy"
+    },
+    {
+      "condition": "ADHD & Connective Tissue",
+      "fact_en": "Emerging theories suggest that the connective tissue matrix may influence neurotransmitter signaling, linking the 'laxity' of EDS with the 'dopamine variability' of ADHD.",
+      "fact_es": "Las teorías emergentes sugieren que la matriz del tejido conectivo puede influir en la señalización de neurotransmisores, vinculando la 'laxitud' del SED con la 'variabilidad de dopamina' del TDAH.",
+      "tone": "Educational",
+      "source": "Hypothesis: The Connective Tissue-Neurotransmitter Axis (2026)"
+    },
+    {
+      "condition": "Chronic Stress & EDS",
+      "fact_en": "Because EDS impacts so many body systems, your brain is in a state of high-alert 24/7. This is the physiological cause of your 'wired but tired' feeling.",
+      "fact_es": "Debido a que el SED impacta tantos sistemas corporales, tu cerebro está en estado de alerta máxima las 24 horas del día, los 7 días de la semana. Esta es la causa fisiológica de tu sensación de 'agotado pero hiperactivo'.",
+      "tone": "Validating",
+      "source": "Autonomic Neuroscience, EDS and Systemic Fatigue"
+    }, 
+    {
+      "condition": "Pelvic Floor & Dysautonomia",
+      "fact_en": "Dysautonomia causes involuntary pelvic floor spasms; your muscles aren't 'weak'—they are bracing against autonomic nervous system instability.",
+      "fact_es": "La disautonomía provoca espasmos involuntarios del suelo pélvico; tus músculos no están 'débiles', están resistiendo la inestabilidad del sistema nervioso autónomo.",
+      "tone": "Validating",
+      "source": "Journal of Pelvic Medicine & Surgery"
+    },
+    {
+      "condition": "MCAS & Neuro-inflammation",
+      "fact_en": "Mast cell degranulation in the brain can trigger 'neuro-fog,' a core symptom often misidentified as simple ADHD inattentiveness in EDS patients.",
+      "fact_es": "La degranulación de mastocitos en el cerebro puede desencadenar 'niebla neuro-mental', un síntoma central a menudo mal identificado como simple falta de atención por TDAH en pacientes con SED.",
+      "tone": "Educational",
+      "source": "Afrin et al., International Journal of Molecular Sciences"
+    },
+    {
+      "condition": "EDS & Sensory Processing",
+      "fact_en": "Proprioceptive deficits in EDS mean your brain receives 'noisy' data from your joints. This forces your brain to work overtime to filter sensory input, leading to rapid exhaustion.",
+      "fact_es": "Los déficits propioceptivos en el SED significan que tu cerebro recibe datos 'ruidosos' de tus articulaciones. Esto obliga a tu cerebro a trabajar horas extras para filtrar la entrada sensorial, lo que lleva a un agotamiento rápido.",
+      "tone": "Informative",
+      "source": "Eccles et al., Frontiers in Psychiatry (2022)"
+    },
+    {
+      "condition": "The Gut-Brain-Joint Axis",
+      "fact_en": "Inflammation from GI issues in EDS directly modulates the pain threshold; treating bloating and motility is often the first step in lowering systemic pain.",
+      "fact_es": "La inflamación por problemas gastrointestinales en el SED modula directamente el umbral del dolor; tratar la hinchazón y la motilidad suele ser el primer paso para reducir el dolor sistémico.",
+      "tone": "Empowering",
+      "source": "Fikree et al., Neurogastroenterology & Motility"
+    },
+    {
+      "condition": "Autonomic Overload",
+      "fact_en": "In EDS, the sympathetic nervous system is 'hyper-reactive.' Simple tasks like standing up or digesting a meal trigger a full fight-or-flight response.",
+      "fact_es": "En el SED, el sistema nervioso simpático es 'hiperreactivo'. Tareas simples como levantarse o digerir una comida activan una respuesta completa de lucha o huida.",
+      "tone": "Educational",
+      "source": "Porges, The Polyvagal Theory"
+    },
+    {
+      "condition": "Fascia & Proprioception",
+      "fact_en": "Your fascia is loaded with proprioceptive receptors. When it 'densifies' to stabilize loose joints, it creates a feedback loop of stiff, inaccurate body-mapping data.",
+      "fact_es": "Tu fascia está cargada de receptores propioceptivos. Cuando se 'densifica' para estabilizar articulaciones laxas, crea un ciclo de retroalimentación de datos de mapeo corporal rígidos e inexactos.",
+      "tone": "Informative",
+      "source": "Wang et al., Journal of Rare Diseases (2025)"
+    },
+    {
+      "condition": "Neurodivergence & Pain",
+      "fact_en": "Autism and EDS share a genetic overlap in extracellular matrix proteins. This may explain why EDS patients report higher pain intensity than non-autistic peers.",
+      "fact_es": "El autismo y el SED comparten una superposición genética en las proteínas de la matriz extracelular. Esto puede explicar por qué los pacientes con SED reportan una mayor intensidad del dolor que sus pares no autistas.",
+      "tone": "Validating",
+      "source": "Cederlöf et al., JAMA Network Open (2020)"
+    },
+    {
+      "condition": "Hormones & Laxity",
+      "fact_en": "Fluctuations in progesterone and estrogen during your menstrual cycle directly alter collagen cross-linking, often causing 'flares' of joint instability mid-cycle.",
+      "fact_es": "Las fluctuaciones de progesterona y estrógeno durante el ciclo menstrual alteran directamente los enlaces cruzados del colágeno, causando a menudo 'brotes' de inestabilidad articular a mitad del ciclo.",
+      "tone": "Educational",
+      "source": "Journal of Clinical Endocrinology & Metabolism"
+    },
+    {
+      "condition": "Relaxin & EDS",
+      "fact_en": "The hormone relaxin, even in non-pregnant states, can increase ligamentous laxity in EDS patients, acting as a systemic 'loosening' agent for connective tissue.",
+      "fact_es": "La hormona relaxina, incluso en estados fuera del embarazo, puede aumentar la laxitud ligamentosa en pacientes con SED, actuando como un agente de 'aflojamiento' sistémico para el tejido conectivo.",
+      "tone": "Informative",
+      "source": "Endocrinology Review, Connective Tissue Disorders"
+    },
+    {
+      "condition": "Cervical Instability",
+      "fact_en": "Craniocervical instability is a documented complication in EDS; it can manifest as sudden, sharp 'brain zaps' or dizziness upon movement of the head.",
+      "fact_es": "La inestabilidad craneocervical es una complicación documentada en el SED; puede manifestarse como 'descargas eléctricas' repentinas y agudas en el cerebro o mareos al mover la cabeza.",
+      "tone": "Validating",
+      "source": "Henderson et al., Neurological Review"
+    },
+    {
+      "condition": "Ocular Manifestations",
+      "fact_en": "The cornea is composed of collagen; in EDS, it can be thinner, leading to increased risk of astigmatism and sensitivity to bright lighting.",
+      "fact_es": "La córnea está compuesta de colágeno; en el SED, puede ser más delgada, lo que conlleva un mayor riesgo de astigmatismo y sensibilidad a la luz brillante.",
+      "tone": "Educational",
+      "source": "Ophthalmology & Visual Science, EDS Collagen Profiles"
+    },
+    {
+      "condition": "Visual Processing & ASD",
+      "fact_en": "Neurodivergent zebras often struggle with 'visual clutter.' EDS-related corneal changes can worsen this, creating a cycle of visual overload that exacerbates fatigue.",
+      "fact_es": "Las cebras neurodivergentes a menudo luchan con el 'desorden visual'. Los cambios corneales relacionados con el SED pueden empeorar esto, creando un ciclo de sobrecarga visual que exacerba la fatiga.",
+      "tone": "Supportive",
+      "source": "Eccles et al., Frontiers in Psychiatry (2022)"
+    },
+    {
+      "condition": "Endothelial Fragility",
+      "fact_en": "Micro-vessel fragility in EDS isn't limited to the skin; it affects the entire vascular tree, which can cause 'easy bruising' internally in tissues like the bladder or gut.",
+      "fact_es": "La fragilidad de los microvasos en el SED no se limita a la piel; afecta a todo el árbol vascular, lo que puede causar 'moretones fáciles' internamente en tejidos como la vejiga o el intestino.",
+      "tone": "Informative",
+      "source": "Vascular Medicine Journal"
+    },
+    {
+      "condition": "POTS & Cerebral Perfusion",
+      "fact_en": "POTS can reduce blood flow to the brain (cerebral hypoperfusion) during orthostatic stress, directly contributing to the 'brain fog' experienced by many EDS patients.",
+      "fact_es": "El POTS puede reducir el flujo sanguíneo al cerebro (hipoperfusión cerebral) durante el estrés ortostático, lo que contribuye directamente a la 'niebla mental' experimentada por muchos pacientes con SED.",
+      "tone": "Educational",
+      "source": "Garland et al., Clinical Autonomic Research"
+    },
+    {
+      "condition": "TMJ & Cervical Synergy",
+      "fact_en": "The TMJ and cervical spine share neurological pathways; tension in your jaw often creates referred tension in your neck, and vice versa.",
+      "fact_es": "La ATM y la columna cervical comparten vías neurológicas; la tensión en la mandíbula a menudo crea tensión referida en el cuello, y viceversa.",
+      "tone": "Validating",
+      "source": "Journal of Oral & Facial Pain"
+    },
+    {
+      "condition": "Myofascial Trigger Points",
+      "fact_en": "Trigger points in the upper trapezius can mimic tension headaches. Addressing these points can often relieve chronic head pain that doesn't respond to painkillers.",
+      "fact_es": "Los puntos gatillo en el trapecio superior pueden imitar las cefaleas tensionales. Abordar estos puntos a menudo puede aliviar el dolor de cabeza crónico que no responde a los analgésicos.",
+      "tone": "Empowering",
+      "source": "Steen et al., Myofascial Pain Research"
+    },
+    {
+      "condition": "Vagal Tone Improvement",
+      "fact_en": "Humming or gargling exercises can stimulate the Vagus nerve, providing a free, physiological way to shift out of a state of autonomic nervous system hyper-reactivity.",
+      "fact_es": "Los ejercicios de tarareo o gárgaras pueden estimular el nervio vago, proporcionando una forma fisiológica y gratuita de salir de un estado de hiperreactividad del sistema nervioso autónomo.",
+      "tone": "Optimistic",
+      "source": "Porges, The Polyvagal Theory"
     }
   ]
 }
+
