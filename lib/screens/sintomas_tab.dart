@@ -49,7 +49,7 @@ class _SintomasTabState extends State<SintomasTab> {
     _newSymptomCtrl.dispose();
     super.dispose();
   }
-
+}
   // ---------------------------------------------------------------------------
   // HELPERS
   // ---------------------------------------------------------------------------
