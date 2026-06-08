@@ -825,6 +825,9 @@ class Profile {
   List<String> conditions;
   String? country;
 
+  /// custom exercises
+  List<String> customExercises;
+
   /// Catalog of symptoms this profile chooses to track (filters the picker).
   List<String> symptomVault;
 
@@ -837,10 +840,15 @@ class Profile {
   // Time-series history
   List<SymptomEvent> symptomHistory;
   List<DoseEvent> doseHistory;
+  List<MoodEntry> moodHistory;
   List<StructuralEvent> structuralHistory;
   List<MentalEvent> mentalHistory;
   List<ActivityEvent> activityHistory;
   List<MedicationOutcome> medicationOutcomes;
+
+  // Weather
+  double? homeLatitude;
+  double? homeLongitude;
 
   /// ISO date strings (YYYY-MM-DD) the patient marked as a recovery day.
   Set<String> pacingDays;
@@ -854,7 +862,11 @@ class Profile {
     required this.conditions,
     required this.symptomVault,
     required this.botiquin,
+    this.customExercises = const [],
+    this.moodHistory = const [],
     this.country,
+    this.homeLatitude,
+    this.homeLongitude,
     List<MedicationGroup>? medicationGroups,
     List<SymptomEvent>? symptoms,
     List<DoseEvent>? doses,
@@ -921,6 +933,15 @@ class Profile {
 
   List<DoseEvent> getDosesForDay(DateTime date) =>
       doseHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  List<MoodEntry> getMoodForDay(DateTime day) {
+  return moodHistory
+      .where((m) =>
+          m.timestamp.year == day.year &&
+          m.timestamp.month == day.month &&
+          m.timestamp.day == day.day)
+      .toList();
+  }
 
   int getDoseCountForDayAndMed(DateTime date, String medName) =>
       getDosesForDay(date).where((e) => e.medicationName == medName).length;
@@ -1075,16 +1096,20 @@ class Profile {
         'conditions': conditions,
         'country': country,
         'symptomVault': symptomVault,
+        'customExercises': customExercises,
         'pacingDays': pacingDays.toList(),
         'savedArticlePmids': savedArticlePmids.toList(),
         'botiquin': botiquin.map((x) => x.toMap()).toList(),
         'medicationGroups': medicationGroups.map((x) => x.toMap()).toList(),
         'symptomHistory': symptomHistory.map((x) => x.toMap()).toList(),
         'doseHistory': doseHistory.map((x) => x.toMap()).toList(),
+        'moodHistory': moodHistory.map((m) => m.toMap()).toList(),
         'structuralHistory': structuralHistory.map((x) => x.toMap()).toList(),
         'mentalHistory': mentalHistory.map((x) => x.toMap()).toList(),
         'activityHistory': activityHistory.map((x) => x.toMap()).toList(),
         'medicationOutcomes': medicationOutcomes.map((x) => x.toMap()).toList(),
+        'homeLatitude': homeLatitude,
+        'homeLongitude': homeLongitude,
       };
 
   factory Profile.fromMap(Map<String, dynamic> map) => Profile(
@@ -1092,6 +1117,7 @@ class Profile {
         name: map['name'],
         conditions: List<String>.from(map['conditions'] ?? const []),
         country: map['country'] as String?,
+        customExercises: List<String>.from(map['customExercises'] ?? []),
         symptomVault: List<String>.from(map['symptomVault'] ?? const []),
         pacing: Set<String>.from(map['pacingDays'] ?? const []),
         saved: Set<String>.from(map['savedArticlePmids'] ?? const []),
@@ -1111,6 +1137,10 @@ class Profile {
           (map['doseHistory'] ?? const []).map(
               (x) => DoseEvent.fromMap(Map<String, dynamic>.from(x as Map))),
         ),
+        moodHistory: List<MoodEntry>.from(
+          (map['moodHistory'] ?? const []).map(
+            (x) => MoodEntry.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
         structural: List<StructuralEvent>.from(
           (map['structuralHistory'] ?? const []).map((x) =>
               StructuralEvent.fromMap(Map<String, dynamic>.from(x as Map))),
@@ -1127,5 +1157,163 @@ class Profile {
           (map['medicationOutcomes'] ?? const []).map((x) =>
               MedicationOutcome.fromMap(Map<String, dynamic>.from(x as Map))),
         ),
+        homeLatitude: (map['homeLatitude'] as num?)?.toDouble(),
+        homeLongitude: (map['homeLongitude'] as num?)?.toDouble(),
       );
+}
+
+// =============================================================================
+// MOOD TRACKING (Foxtale-style B+C: quadrant → palette → multi-select)
+// =============================================================================
+
+enum MoodQuadrant {
+  activatedUnpleasant,
+  activatedPleasant,
+  calmUnpleasant,
+  calmPleasant,
+}
+
+extension MoodQuadrantLabels on MoodQuadrant {
+  String get label => switch (this) {
+        MoodQuadrant.activatedUnpleasant => 'activada · desagradable',
+        MoodQuadrant.activatedPleasant => 'activada · agradable',
+        MoodQuadrant.calmUnpleasant => 'calmada · desagradable',
+        MoodQuadrant.calmPleasant => 'calmada · agradable',
+      };
+
+  /// Short teaser shown on the quadrant card in step 1.
+  String get teaserStates => switch (this) {
+        MoodQuadrant.activatedUnpleasant => 'tensa, ansiosa',
+        MoodQuadrant.activatedPleasant => 'enérgica, alegre',
+        MoodQuadrant.calmUnpleasant => 'drenada, triste',
+        MoodQuadrant.calmPleasant => 'tranquila, en paz',
+      };
+}
+
+/// Spanish mood vocabulary, curated per quadrant.
+/// "abrumada" intentionally appears in two quadrants — it's a state that
+/// reads as either high- or low-arousal depending on the day. The duplicate
+/// is a feature.
+const kMoodVocabulary = <MoodQuadrant, List<String>>{
+  MoodQuadrant.activatedUnpleasant: [
+    'ansiosa', 'tensa', 'irritada', 'frustrada', 'abrumada', 'asustada',
+  ],
+  MoodQuadrant.activatedPleasant: [
+    'enérgica', 'emocionada', 'motivada', 'alegre', 'entusiasta', 'optimista',
+  ],
+  MoodQuadrant.calmUnpleasant: [
+    'drenada', 'triste', 'vacía', 'agotada', 'indiferente', 'abrumada',
+  ],
+  MoodQuadrant.calmPleasant: [
+    'tranquila', 'en paz', 'satisfecha', 'esperanzada', 'agradecida', 'segura',
+  ],
+};
+
+class MoodEntry {
+  final String id;
+  final DateTime timestamp;
+  final MoodQuadrant primaryQuadrant;
+  final List<String> states;
+  final int? intensity; // 1–5, optional, session-level
+
+  MoodEntry({
+    String? id,
+    required this.timestamp,
+    required this.primaryQuadrant,
+    required this.states,
+    this.intensity,
+  }) : id = id ?? '${timestamp.millisecondsSinceEpoch}-${states.join('|').hashCode}';
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'timestamp': timestamp.toIso8601String(),
+        'primaryQuadrant': primaryQuadrant.name,
+        'states': states,
+        'intensity': intensity,
+      };
+
+  factory MoodEntry.fromMap(Map<String, dynamic> map) => MoodEntry(
+        id: map['id'] as String?,
+        timestamp: DateTime.parse(map['timestamp'] as String),
+        primaryQuadrant: MoodQuadrant.values.firstWhere(
+          (q) => q.name == map['primaryQuadrant'],
+          orElse: () => MoodQuadrant.calmPleasant,
+        ),
+        states: List<String>.from((map['states'] as List?) ?? const []),
+        intensity: map['intensity'] as int?,
+      );
+
+  MoodEntry copyWith({
+    DateTime? timestamp,
+    MoodQuadrant? primaryQuadrant,
+    List<String>? states,
+    int? intensity,
+  }) =>
+      MoodEntry(
+        id: id,
+        timestamp: timestamp ?? this.timestamp,
+        primaryQuadrant: primaryQuadrant ?? this.primaryQuadrant,
+        states: states ?? this.states,
+        intensity: intensity ?? this.intensity,
+      );
+}
+
+// =============================================================================
+// WEATHER (Open-Meteo daily snapshot, cached locally)
+// =============================================================================
+
+class WeatherDay {
+  /// Date key in YYYY-MM-DD format.
+  final String dateKey;
+  final double? pressureHpa;
+  final double? temperatureC;
+  final double? humidityPct;
+  final double? pressureDeltaHpa; // vs. previous day, can be negative
+  final DateTime fetchedAt;
+
+  WeatherDay({
+    required this.dateKey,
+    this.pressureHpa,
+    this.temperatureC,
+    this.humidityPct,
+    this.pressureDeltaHpa,
+    required this.fetchedAt,
+  });
+
+  Map<String, dynamic> toMap() => {
+        'dateKey': dateKey,
+        'pressureHpa': pressureHpa,
+        'temperatureC': temperatureC,
+        'humidityPct': humidityPct,
+        'pressureDeltaHpa': pressureDeltaHpa,
+        'fetchedAt': fetchedAt.toIso8601String(),
+      };
+
+  factory WeatherDay.fromMap(Map<String, dynamic> map) => WeatherDay(
+        dateKey: map['dateKey'] as String,
+        pressureHpa: (map['pressureHpa'] as num?)?.toDouble(),
+        temperatureC: (map['temperatureC'] as num?)?.toDouble(),
+        humidityPct: (map['humidityPct'] as num?)?.toDouble(),
+        pressureDeltaHpa: (map['pressureDeltaHpa'] as num?)?.toDouble(),
+        fetchedAt: DateTime.parse(map['fetchedAt'] as String),
+      );
+
+  /// Sentence-form summary for the Hoy chip.
+  String shortSummary() {
+    final parts = <String>[];
+    if (pressureHpa != null) {
+      final p = pressureHpa!.round();
+      final arrow = pressureDeltaHpa == null
+          ? ''
+          : pressureDeltaHpa! <= -3
+              ? ' ↓${pressureDeltaHpa!.abs().round()}'
+              : pressureDeltaHpa! >= 3
+                  ? ' ↑${pressureDeltaHpa!.round()}'
+                  : '';
+      parts.add('$p hPa$arrow');
+    }
+    if (temperatureC != null) parts.add('${temperatureC!.round()}°C');
+    if (humidityPct != null) parts.add('${humidityPct!.round()}% hum.');
+    return parts.join(' · ');
+  }
 }

@@ -83,6 +83,7 @@ class BotiquinTab extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
+
         // 3. Med list
         _SectionHeader(
           title: 'Tu botiquín',
@@ -144,6 +145,8 @@ class BotiquinTab extends StatelessWidget {
     }
   }
 }
+
+
 
 // =============================================================================
 // Section header — matches Hoy tab's visual language

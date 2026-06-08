@@ -8,6 +8,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../models/models.dart';
 import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
+import '../services/weather_service.dart';
 import 'hoy_tab.dart';
 import 'botiquin_tab.dart';
 import 'sintomas_tab.dart';
@@ -44,6 +45,19 @@ class _MainAppScreenState extends State<MainAppScreen> {
   final Random _random = Random(); // Generador de aleatoriedad
 
   final PubMedService _pubmed = PubMedService();
+  final WeatherService _weather = WeatherService();
+  WeatherDay? _todayWeather;
+
+  Future<void> _fetchTodayWeather() async {
+    final lat = _activeProfile?.homeLatitude;
+    final lng = _activeProfile?.homeLongitude;
+    if (lat == null || lng == null) {
+      setState(() => _todayWeather = null);
+      return;
+    }
+    final w = await _weather.getToday(lat: lat, lng: lng);
+    if (mounted) setState(() => _todayWeather = w);
+  }
 
   int _currentNavIndex = 0;
   DateTime _selectedDate = DateTime.now();
@@ -68,6 +82,8 @@ class _MainAppScreenState extends State<MainAppScreen> {
   Future<void> _bootstrap() async {
      //await Hive.box('zebraBox').clear();  // remove this line after first run
      _loadUserProfiles();
+     await _loadLibraries();
+     await _fetchTodayWeather();
      setState(() {});
    }
   @override
@@ -104,10 +120,34 @@ class _MainAppScreenState extends State<MainAppScreen> {
       setState(() {
         // 2. Alimentar la Biblioteca Clínica
         _clinicalLibraryDatabase = jsonFacts.map((item) {
+          final fact = (item['fact_es'] ?? '').toString().trim();
+
+          // Citation can live under different keys in the JSON — try the common ones.
+          // If yours is named differently, add it to this list:
+          final source = (item['citation'] ??
+                          item['source'] ??
+                          item['reference'] ??
+                          item['url'] ??
+                          '')
+                      .toString()
+                      .trim();
+
+          // Use the first sentence of the fact as the card title (much more meaningful
+          // than the tone). Tone stays untouched in the JSON for future use.
+          final firstSentence = fact.split(RegExp(r'[.!?]')).first.trim();
+          final title = firstSentence.isEmpty
+              ? 'Dato clínico'
+              : (firstSentence.length > 80
+                  ? '${firstSentence.substring(0, 77)}…'
+                  : firstSentence);
+
+          // Embed the citation at the bottom of the expanded content.
+          final content = source.isEmpty ? fact : '$fact\n\nFuente: $source';
+
           return ClinicalArticle(
             category: item['condition'] ?? 'General',
-            title: item['tone'] ?? 'Información', 
-            content: item['fact_es'] ?? '', 
+            title: title,
+            content: content,
           );
         }).toList();
 
@@ -121,28 +161,50 @@ class _MainAppScreenState extends State<MainAppScreen> {
         }).toList();
       });
     } catch (e) {
-      debugPrint("Error cargando el JSON: $e");
-      // ESTO MOSTRARÁ EL ERROR DIRECTAMENTE EN LA TARJETA
-      setState(() {
-        _wisdomDatabase = [
-          WisdomQuote(text: "ERROR: $e", category: "Debugging")
-        ];
-        _currentWisdom = _wisdomDatabase.first;
-      });
+      debugPrint("Error cargando zebra_wisdom.json: $e");
+      _wisdomDatabase = baseQuotes; // graceful fallback
     }
 
-    // 4. Elegir una frase inicial al terminar de cargar todo
-    _changeWisdomQuote(); 
+      _restoreOrPickDailyWisdom();
   }
 
-  // Método para cambiar la frase aleatoriamente
-  void _changeWisdomQuote() {
+  /// One quote per day, persisted. Tapping the card overrides for that day.
+  void _restoreOrPickDailyWisdom() {
     if (_wisdomDatabase.isEmpty) return;
-    
-    setState(() {
-      int randomIndex = _random.nextInt(_wisdomDatabase.length);
-      _currentWisdom = _wisdomDatabase[randomIndex];
-    });
+    final box = Hive.box('zebraBox');
+    final todayKey = _getDateKey(DateTime.now());
+    final storedDate = box.get('wisdomDateKey') as String?;
+    final storedIdx = box.get('wisdomIndex') as int?;
+
+    int idx;
+    if (storedDate == todayKey &&
+        storedIdx != null &&
+        storedIdx >= 0 &&
+        storedIdx < _wisdomDatabase.length) {
+      idx = storedIdx;
+    } else {
+      idx = _random.nextInt(_wisdomDatabase.length);
+      box.put('wisdomDateKey', todayKey);
+      box.put('wisdomIndex', idx);
+    }
+    setState(() => _currentWisdom = _wisdomDatabase[idx]);
+  }
+
+  /// Manually rotate to a different quote (user tap).
+  void _changeWisdomQuote() {
+    if (_wisdomDatabase.length < 2) return;
+    final box = Hive.box('zebraBox');
+    int newIdx;
+    int safety = 0;
+    do {
+      newIdx = _random.nextInt(_wisdomDatabase.length);
+      safety++;
+    } while (_currentWisdom != null &&
+        _wisdomDatabase[newIdx].text == _currentWisdom!.text &&
+        safety < 10);
+    box.put('wisdomDateKey', _getDateKey(DateTime.now()));
+    box.put('wisdomIndex', newIdx);
+    setState(() => _currentWisdom = _wisdomDatabase[newIdx]);
   }
 
   // -------------------------------------------------------------------------
@@ -180,29 +242,13 @@ class _MainAppScreenState extends State<MainAppScreen> {
       _profiles = [
         Profile(
           id: '1',
-          name: 'Paulina (Me)',
-          conditions: ['clEDS', 'Adenomiosis', 'POTS', 'Anemia'],
+          name: 'Mi perfil',
+          conditions: [],
           botiquin: [
-            MedicationDef(
-              name: 'Hierro',
-              strength: 14, unit: 'mg', form: 'pastilla',
-              outcomeCheckHours: null,
-            ),
             MedicationDef(
               name: 'Vitamina C',
               strength: 1000, unit: 'mg', form: 'pastilla',
               outcomeCheckHours: null,
-            ),
-            MedicationDef(
-              name: 'Duloxetina',
-              strength: 60, unit: 'mg', form: 'cápsula',
-              outcomeCheckHours: null,
-            ),
-            MedicationDef(
-              name: 'Ibuprofeno',
-              strength: 400, unit: 'mg', form: 'pastilla',
-              notes: 'SOS',
-              outcomeCheckHours: 3,
             ),
             MedicationDef(
               name: 'Paracetamol',
@@ -265,6 +311,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
             if (newProfile != null) {
               setState(() {
                 _activeProfile = newProfile;
+                _fetchTodayWeather();
                 _updateControllers();
               });
             }
@@ -331,8 +378,11 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           inverseContrastColor: ic,
           onTogglePacing: _togglePacing,
           onLogMental: _logMental,
+          onLogMood: _logMood,
+          onDeleteMood: _deleteMoodEntry,
           onAnswerOutcome: _answerOutcome,
-          onChangeWisdom: _changeWisdomQuote, // <-- THIS FIXES THE ERROR
+          onChangeWisdom: _changeWisdomQuote, 
+          todayWeather: _todayWeather,
         );
       case 1:
         return _buildSintomasTab(cc, ic);
@@ -811,6 +861,27 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                     ))
                 .toList(),
           ),
+          const SizedBox(height: 24),
+          const Text("MI UBICACIÓN (PARA EL CLIMA)",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 4),
+          Text(
+            _activeProfile!.homeLatitude == null
+                ? "Sin ubicación. Toca para añadir."
+                : "lat ${_activeProfile!.homeLatitude!.toStringAsFixed(2)}, "
+                    "lng ${_activeProfile!.homeLongitude!.toStringAsFixed(2)}",
+            style: TextStyle(color: cc, fontSize: 13),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(side: BorderSide(color: cc)),
+            icon: Icon(Icons.place_outlined, color: cc),
+            label: Text(
+              _activeProfile!.homeLatitude == null ? "AÑADIR COORDENADAS" : "EDITAR COORDENADAS",
+              style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12),
+            ),
+            onPressed: () => _editLocation(),
+          ),
           const SizedBox(height: 40),
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(
@@ -842,6 +913,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       ),
     );
   }
+
+  
 
   void _createNewProfile() {
     setState(() {
@@ -885,6 +958,62 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     if (mounted) Navigator.pop(context);
   }
 
+    Future<void> _editLocation() async {
+    final latCtrl = TextEditingController(
+        text: _activeProfile!.homeLatitude?.toString() ?? '');
+    final lngCtrl = TextEditingController(
+        text: _activeProfile!.homeLongitude?.toString() ?? '');
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Tu ubicación"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Necesito latitud y longitud para traer el clima. "
+              "Buscá tu ciudad en Google Maps, click derecho → copiar coordenadas.",
+              style: TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: latCtrl,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              decoration: const InputDecoration(hintText: "Latitud (ej. -34.61)"),
+            ),
+            TextField(
+              controller: lngCtrl,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              decoration: const InputDecoration(hintText: "Longitud (ej. -58.38)"),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Cancelar")),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Guardar")),
+        ],
+      ),
+    );
+    if (saved != true) return;
+
+    final lat = double.tryParse(latCtrl.text.trim());
+    final lng = double.tryParse(lngCtrl.text.trim());
+    if (lat == null || lng == null || lat.abs() > 90 || lng.abs() > 180) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Coordenadas inválidas.")),
+        );
+      }
+      return;
+    }
+    setState(() {
+      _activeProfile!.homeLatitude = lat;
+      _activeProfile!.homeLongitude = lng;
+      _saveData();
+    });
+    await _fetchTodayWeather();
+  }
   // -------------------------------------------------------------------------
   // ACTIONS: logging, editing, outcome answering
   // -------------------------------------------------------------------------
@@ -911,6 +1040,30 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       _saveData();
     });
   }
+
+  void _logMood({
+    required MoodQuadrant primaryQuadrant,
+    required List<String> states,
+    int? intensity,
+  }) {
+    setState(() {
+      _activeProfile!.moodHistory.add(MoodEntry(
+        timestamp: _timestampForLog(),
+        primaryQuadrant: primaryQuadrant,
+        states: states,
+        intensity: intensity,
+      ));
+      _saveData();
+    });
+  }
+
+  void _deleteMoodEntry(MoodEntry entry) {
+    setState(() {
+      _activeProfile!.moodHistory.remove(entry);
+      _saveData();
+    });
+  }
+
 
   void _answerOutcome(
     MedicationOutcome o, {

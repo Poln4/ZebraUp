@@ -22,6 +22,7 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../widgets/severity_picker.dart';
+import '../widgets/mood_picker_sheet.dart';
 
 // Hardcoded Spanish to avoid requiring initializeDateFormatting('es') in main().
 const _diasSemana = [
@@ -42,11 +43,18 @@ class HoyTab extends StatelessWidget {
   final Profile profile;
   final DateTime selectedDate;
   final WisdomQuote wisdom;
+  final WeatherDay? todayWeather;
   final Color contrastColor;
   final Color inverseContrastColor;
   final VoidCallback onTogglePacing;
   final void Function(MentalState state, int severity, {DateTime? timestamp})
       onLogMental;
+  final void Function({
+    required MoodQuadrant primaryQuadrant,
+    required List<String> states,
+    int? intensity,
+  }) onLogMood;
+  final void Function(MoodEntry) onDeleteMood;
   final void Function(MedicationOutcome outcome,
       {required int severityAfter, OutcomeReason? reason}) onAnswerOutcome;
   final VoidCallback onChangeWisdom;
@@ -60,8 +68,11 @@ class HoyTab extends StatelessWidget {
     required this.inverseContrastColor,
     required this.onTogglePacing,
     required this.onLogMental,
+    required this.onLogMood,
+    required this.onDeleteMood,
     required this.onAnswerOutcome,
     required this.onChangeWisdom,
+    this.todayWeather,
   });
 
   String _dateKey(DateTime d) =>
@@ -118,31 +129,52 @@ class HoyTab extends StatelessWidget {
           const SizedBox(height: 24),
         ],
 
-        // 3. PRIMARY — single "how do you feel" decision.
-        _SectionHeader(
-          title: '¿Cómo te sientes ahora?',
-          contrastColor: contrastColor,
-        ),
-        const SizedBox(height: 12),
-        _FeelingSelector(
-          current: currentMood,
-          contrastColor: contrastColor,
-          inverseContrastColor: inverseContrastColor,
-          onSelect: (v) => onLogMental(MentalState.mood, v),
-        ),
-        if (currentMood != null) ...[
-          const SizedBox(height: 6),
+        if (todayWeather != null) ...[
+          const SizedBox(height: 12),
+          // 1. Título del clima (con el mismo estilo de tus otras secciones)
           Text(
-            _moodTrailer(currentMood),
+            'EL CLIMA HOY',
             style: TextStyle(
-              fontSize: 12,
-              color: contrastColor.withValues(alpha: 0.55),
-              fontStyle: FontStyle.italic,
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: contrastColor,
+              letterSpacing: 0.3,
             ),
           ),
+          const SizedBox(height: 8), // Espacio entre el título y la burbuja
+
+          // 2. Tu caja de clima original
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              border: Border.all(color: contrastColor.withValues(alpha: 0.4)),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.cloud_outlined, color: contrastColor.withValues(alpha: 0.7), size: 14),
+                const SizedBox(width: 6),
+                Text(
+                  todayWeather!.shortSummary(),
+                  style: TextStyle(color: contrastColor.withValues(alpha: 0.7), fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          // 3. Este es el margen inferior que despegará la sección de "CÓMO ESTOY"
+          const SizedBox(height: 24),
         ],
 
-        const SizedBox(height: 24),
+        // 3. New Mood section. 
+        MoodSection(
+          profile: profile,
+          selectedDate: selectedDate,
+          contrastColor: contrastColor,
+          inverseContrastColor: inverseContrastColor,
+          onLogMood: onLogMood,
+          onDeleteMood: onDeleteMood,
+        ),
 
         // 4. PROGRESSIVE — mental details collapsed by default.
         _MentalDetailsSection(
@@ -1145,7 +1177,7 @@ class _WisdomBlock extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  '✨ Sabiduría zebra',
+                  '✨ Sabiduría cebra 🦓',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
