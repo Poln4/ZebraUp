@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/models.dart';
 import 'timestamp_picker.dart';
-import '../widgets/therapy_logger_sheet.dart';
 
 /// Síntomas tab.
 ///
@@ -34,8 +33,6 @@ class SintomasTab extends StatefulWidget {
 
 class _SintomasTabState extends State<SintomasTab> {
   final _newSymptomCtrl = TextEditingController();
-  final _newExerciseCtrl = TextEditingController();
-  final _newTherapyModalityCtrl = TextEditingController();
 
   static const _zones = [
     "Cervicales", "Hombros", "Muñecas", "Manos",
@@ -492,60 +489,6 @@ class _SintomasTabState extends State<SintomasTab> {
       ],
     );
   }
-
-  void _addCustomExercise() {
-    final txt = _newExerciseCtrl.text.trim();
-    if (txt.isEmpty || _p.customExercises.contains(txt)) {
-      _newExerciseCtrl.clear();
-      return;
-    }
-    setState(() => _p.customExercises = [..._p.customExercises, txt]);
-    _newExerciseCtrl.clear();
-    widget.onProfileChanged();
-  }
-  void _addCustomTherapyModality() {
-    final txt = _newTherapyModalityCtrl.text.trim();
-    if (txt.isEmpty || _p.customTherapyModalities.contains(txt)
-        || kTherapyCatalog.contains(txt)) {
-      _newTherapyModalityCtrl.clear();
-      return;
-    }
-    setState(() => _p.customTherapyModalities = [..._p.customTherapyModalities, txt]);
-    _newTherapyModalityCtrl.clear();
-    widget.onProfileChanged();
-  }
-
-  Future<void> _logTherapy(String modality) async {
-    final result = await showTherapyLoggerSheet(
-      context: context,
-      contrastColor: _cc,
-      inverseContrastColor: _ic,
-      modality: modality,
-      defaultTimestamp: _timestampForLog(),
-    );
-    if (result == null) return;
-    setState(() => _p.therapyHistory.add(result));
-    widget.onProfileChanged();
-  }
-
-  Future<void> _editTherapy(TherapyEvent existing) async {
-    final result = await showTherapyLoggerSheet(
-      context: context,
-      contrastColor: _cc,
-      inverseContrastColor: _ic,
-      modality: existing.modality,
-      defaultTimestamp: existing.timestamp,
-      existing: existing,
-    );
-    if (result == null) return;
-    final idx = _p.therapyHistory.indexOf(existing);
-    if (idx >= 0) {
-      setState(() => _p.therapyHistory[idx] = result);
-      widget.onProfileChanged();
-    }
-  }
-
-
 
   void _addSymptomToVault() {
     final txt = _newSymptomCtrl.text.trim();
