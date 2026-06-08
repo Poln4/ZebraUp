@@ -9,6 +9,9 @@ import '../models/models.dart';
 import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
 import '../services/weather_service.dart';
+import '../services/medline_plus_service.dart';
+import '../widgets/condition_info_sheet.dart';
+import 'onboarding_screen.dart';
 import 'hoy_tab.dart';
 import 'botiquin_tab.dart';
 import 'sintomas_tab.dart';
@@ -45,6 +48,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
   final Random _random = Random(); // Generador de aleatoriedad
 
   final PubMedService _pubmed = PubMedService();
+  final MedlinePlusService _medlinePlus = MedlinePlusService();
   final WeatherService _weather = WeatherService();
   WeatherDay? _todayWeather;
 
@@ -239,31 +243,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
       final decoded = json.decode(storedData) as List<dynamic>;
       _profiles = decoded.map((x) => Profile.fromMap(x)).toList();
     } else {
-      _profiles = [
-        Profile(
-          id: '1',
-          name: 'Mi perfil',
-          conditions: [],
-          botiquin: [
-            MedicationDef(
-              name: 'Vitamina C',
-              strength: 1000, unit: 'mg', form: 'pastilla',
-              outcomeCheckHours: null,
-            ),
-            MedicationDef(
-              name: 'Paracetamol',
-              strength: 500, unit: 'mg', form: 'pastilla',
-              notes: 'SOS',
-              outcomeCheckHours: 3,
-            ),
-          ],
-          symptomVault: [
-            'Fatiga crónica', 'Niebla mental', 'Taquicardia ortostática',
-            'Mareos al pararse', 'Reflujo gástrico', 'Náuseas',
-            'Moratones', 'Dolor de cabeza',
-          ],
-        ),
-      ];
+      _profiles = [];
       _saveData();
     }
     if (_profiles.isNotEmpty) {
@@ -383,6 +363,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           onAnswerOutcome: _answerOutcome,
           onChangeWisdom: _changeWisdomQuote, 
           todayWeather: _todayWeather,
+          showHint: _shouldShowHoyHint,
+          onDismissHint: _dismissHoyHint,
         );
       case 1:
         return _buildSintomasTab(cc, ic);
@@ -423,32 +405,18 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Widget _buildEmptyProfileScaffold(Color cc, Color ic) {
-    return Scaffold(
-      backgroundColor: ic,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.person_add_alt_1_rounded, color: cc, size: 64),
-              const SizedBox(height: 16),
-              Text("Crea tu primer perfil",
-                  style: TextStyle(color: cc, fontSize: 20, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 24),
-              OutlinedButton(
-                style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: cc, width: 2),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                ),
-                onPressed: _createNewProfile,
-                child: Text("CREAR PERFIL",
-                    style: TextStyle(color: cc, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return OnboardingScreen(
+      contrastColor: cc,
+      inverseContrastColor: ic,
+      onComplete: (newProfile) async {
+        setState(() {
+          _profiles.add(newProfile);
+          _activeProfile = newProfile;
+          _updateControllers();
+          _saveData();
+        });
+        await _fetchTodayWeather();
+      },
     );
   }
 
@@ -845,6 +813,11 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               ),
             ],
           ),
+          const SizedBox(height: 4),
+          const Text(
+            "Toca una condición para leer información en español (MedlinePlus). El × la elimina.",
+            style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+          ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
@@ -853,6 +826,13 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 .map((condition) => InputChip(
                       label: Text(condition, style: TextStyle(color: ic, fontSize: 14)),
                       backgroundColor: cc,
+                      onPressed: () => showConditionInfoSheet(
+                        context: context,
+                        userCondition: condition,
+                        contrastColor: cc,
+                        inverseContrastColor: ic,
+                        service: _medlinePlus,
+                      ),
                       onDeleted: () => setState(() {
                         _activeProfile!.conditions.remove(condition);
                         _saveData();
@@ -973,7 +953,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           children: [
             const Text(
               "Necesito latitud y longitud para traer el clima. "
-              "Buscá tu ciudad en Google Maps, click derecho → copiar coordenadas.",
+              "Busca tu ciudad en Google Maps, click derecho → copiar coordenadas.",
               style: TextStyle(fontSize: 12),
             ),
             const SizedBox(height: 12),
@@ -1055,6 +1035,31 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       ));
       _saveData();
     });
+  }
+
+  // =============================================================================
+  // First-session hint on Hoy. Two Hive keys:
+  //   hoyHintFirstSeen — ISO timestamp of when the hint first rendered
+  //   hoyHintAcked     — true once user taps × on the hint
+  // Hint auto-hides 48h after first seen, or immediately when acked.
+  // =============================================================================
+
+  bool get _shouldShowHoyHint {
+    final box = Hive.box('zebraBox');
+    if (box.get('hoyHintAcked') == true) return false;
+    final firstSeen = box.get('hoyHintFirstSeen') as String?;
+    if (firstSeen == null) {
+      box.put('hoyHintFirstSeen', DateTime.now().toIso8601String());
+      return true;
+    }
+    final ts = DateTime.tryParse(firstSeen);
+    if (ts == null) return false;
+    return DateTime.now().difference(ts).inHours <= 48;
+  }
+
+  void _dismissHoyHint() {
+    Hive.box('zebraBox').put('hoyHintAcked', true);
+    setState(() {}); // triggers HoyTab rebuild with showHint=false
   }
 
   void _deleteMoodEntry(MoodEntry entry) {

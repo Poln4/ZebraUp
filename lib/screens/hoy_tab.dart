@@ -59,6 +59,9 @@ class HoyTab extends StatelessWidget {
       {required int severityAfter, OutcomeReason? reason}) onAnswerOutcome;
   final VoidCallback onChangeWisdom;
 
+  final bool showHint;
+  final VoidCallback onDismissHint;
+
   const HoyTab({
     super.key,
     required this.profile,
@@ -72,6 +75,8 @@ class HoyTab extends StatelessWidget {
     required this.onDeleteMood,
     required this.onAnswerOutcome,
     required this.onChangeWisdom,
+    required this.showHint,        // NEW
+    required this.onDismissHint, 
     this.todayWeather,
   });
 
@@ -105,6 +110,49 @@ class HoyTab extends StatelessWidget {
         ),
 
         const SizedBox(height: 20),
+
+        // 1.5. FIRST-SESSION HINT — surfaces above everything else for new
+        //      users, dismissible via ×, auto-hides after 48h or once acked.
+        //      State is in _MainAppScreenState; this widget just renders + delegates.
+        if (showHint) ...[
+          Container(
+            margin: const EdgeInsets.only(bottom: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              border: Border.all(color: contrastColor.withValues(alpha: 0.5)),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.lightbulb_outline, color: contrastColor, size: 16),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "Tip: en Síntomas, toca un chip del baúl para registrar. Mantén pulsado un registro para editar.",
+                    style: TextStyle(
+                      color: contrastColor.withValues(alpha: 0.8),
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: onDismissHint,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(
+                      Icons.close,
+                      color: contrastColor.withValues(alpha: 0.6),
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+
 
         // 2. URGENT — pending outcome check-ins. Surfaces above everything
         //    because they're time-sensitive and the user likely opened the
