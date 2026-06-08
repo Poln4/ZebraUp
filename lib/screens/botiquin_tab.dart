@@ -64,6 +64,17 @@ class BotiquinTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
       children: [
+        // 0. Today's doses (delete-by-event surface for fixing logging mistakes)
+        if (dosesToday.isNotEmpty) ...[
+          _TodaysDoses(
+            doses: dosesToday,
+            profile: profile,
+            contrastColor: contrastColor,
+            onProfileChanged: onProfileChanged,
+          ),
+          const SizedBox(height: 20),
+        ],
+        
         // 1. Interactions
         if (interactions.isNotEmpty) ...[
           _InteractionList(
@@ -1349,5 +1360,149 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
         ),
       ),
     );
+  }
+}
+// =============================================================================
+// _TodaysDoses — chronological list of today's doses with per-event delete.
+// Solves the "I typed the med name wrong and need it out of my records" case.
+// =============================================================================
+
+class _TodaysDoses extends StatelessWidget {
+  final List<DoseEvent> doses;
+  final Profile profile;
+  final Color contrastColor;
+  final VoidCallback onProfileChanged;
+
+  const _TodaysDoses({
+    required this.doses,
+    required this.profile,
+    required this.contrastColor,
+    required this.onProfileChanged,
+  });
+
+  String _formatQty(double q) =>
+      q == q.roundToDouble() ? q.toInt().toString() : q.toStringAsFixed(1);
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = contrastColor;
+    final sorted = [...doses]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Dosis de hoy',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+                color: cc,
+                letterSpacing: 0.3,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: cc.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${sorted.length}',
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            color: cc.withValues(alpha: 0.04),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: cc.withValues(alpha: 0.12)),
+          ),
+          child: Column(
+            children: sorted.map((d) {
+              final timeStr =
+                  '${d.timestamp.hour.toString().padLeft(2, '0')}:${d.timestamp.minute.toString().padLeft(2, '0')}';
+              final qtyLabel = '${_formatQty(d.quantity)} ${d.formAtDose}';
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  children: [
+                    Icon(Icons.medication_outlined,
+                        size: 14, color: cc.withValues(alpha: 0.6)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '[$timeStr] ${d.medicationName}',
+                            style: TextStyle(
+                                color: cc, fontSize: 13, fontWeight: FontWeight.w500),
+                          ),
+                          Text(
+                            qtyLabel,
+                            style: TextStyle(
+                                color: cc.withValues(alpha: 0.6), fontSize: 11),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                      tooltip: 'Eliminar esta dosis',
+                      onPressed: () => _confirmDelete(context, d),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Toca × para eliminar una dosis específica (útil si registraste mal el nombre).',
+          style: TextStyle(
+              color: cc.withValues(alpha: 0.5), fontSize: 11, fontStyle: FontStyle.italic),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context, DoseEvent d) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Eliminar esta dosis'),
+        content: Text(
+            '¿Eliminar la dosis de ${d.medicationName} registrada a las '
+            '${d.timestamp.hour.toString().padLeft(2, '0')}:${d.timestamp.minute.toString().padLeft(2, '0')}? '
+            'Esta acción no se puede deshacer.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Eliminar', style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    profile.doseHistory.removeWhere((x) => x.id == d.id);
+    // Also remove any pending outcome tied to this dose.
+    profile.medicationOutcomes.removeWhere((o) => o.doseId == d.id);
+    onProfileChanged();
   }
 }

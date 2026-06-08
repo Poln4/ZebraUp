@@ -368,6 +368,8 @@ class ActivityEvent {
   final int feeling;  // 1–5 subjective
   final String? hhr;
   final String? note;
+  final int? painBefore;
+  final int? painAfter;
 
   ActivityEvent({
     String? id,
@@ -380,7 +382,15 @@ class ActivityEvent {
     required this.feeling,
     this.hhr,
     this.note,
+    this.painBefore,
+    this.painAfter,
   }) : id = id ?? _newId();
+
+  /// Positive = improvement (less pain after). Null if either side missing.
+  int? get painDelta {
+    if (painBefore == null || painAfter == null) return null;
+    return painBefore! - painAfter!;
+  }
 
   ActivityEvent copyWith({
     DateTime? timestamp,
@@ -391,6 +401,8 @@ class ActivityEvent {
     int? feeling,
     String? hhr,
     String? note,
+    int? painBefore,
+    int? painAfter,
   }) {
     return ActivityEvent(
       id: id,
@@ -403,6 +415,8 @@ class ActivityEvent {
       feeling: feeling ?? this.feeling,
       hhr: hhr ?? this.hhr,
       note: note ?? this.note,
+      painBefore: painBefore ?? this.painBefore,
+      painAfter: painAfter ?? this.painAfter,
     );
   }
 
@@ -417,6 +431,8 @@ class ActivityEvent {
         'feeling': feeling,
         'hhr': hhr,
         'note': note,
+        'painBefore': painBefore,
+        'painAfter': painAfter,
       };
 
   factory ActivityEvent.fromMap(Map<String, dynamic> map) => ActivityEvent(
@@ -430,6 +446,8 @@ class ActivityEvent {
         feeling: (map['feeling'] as num).toInt(),
         hhr: map['hhr'] as String?,
         note: map['note'] as String?,
+        painBefore: (map['painBefore'] as num?)?.toInt(),
+        painAfter: (map['painAfter'] as num?)?.toInt(),
       );
 }
 
@@ -822,8 +840,10 @@ class PubMedArticle {
 class Profile {
   final String id;
   String name;
+  String? relationship;
   List<String> conditions;
   String? country;
+  List<LifeEvent> lifeEvents;
 
   /// custom exercises
   List<String> customExercises;
@@ -871,6 +891,8 @@ class Profile {
     this.homeLongitude,
     this.therapyHistory = const [],
     this.customTherapyModalities = const [],
+    this.relationship,
+    List<LifeEvent>? lifeEvents,
     List<MedicationGroup>? medicationGroups,
     List<SymptomEvent>? symptoms,
     List<DoseEvent>? doses,
@@ -886,6 +908,7 @@ class Profile {
         structuralHistory = structural ?? <StructuralEvent>[],
         mentalHistory = mental ?? <MentalEvent>[],
         activityHistory = activity ?? <ActivityEvent>[],
+        lifeEvents = lifeEvents ?? <LifeEvent>[],
         medicationOutcomes = outcomes ?? <MedicationOutcome>[],
         pacingDays = pacing ?? <String>{},
         savedArticlePmids = saved ?? <String>{};
@@ -966,6 +989,9 @@ class Profile {
     }
     return sum;
   }
+
+  List<LifeEvent> getLifeEventsForDay(DateTime date) =>
+    lifeEvents.where((e) => e.covers(date)).toList();
 
   List<SymptomEvent> getSymptomsForDay(DateTime date) =>
       symptomHistory.where((e) => _sameDay(e.timestamp, date)).toList();
@@ -1121,6 +1147,8 @@ class Profile {
         'activityHistory': activityHistory.map((x) => x.toMap()).toList(),
         'medicationOutcomes': medicationOutcomes.map((x) => x.toMap()).toList(),
         'therapyHistory': therapyHistory.map((t) => t.toMap()).toList(),
+        'relationship': relationship,
+        'lifeEvents': lifeEvents.map((e) => e.toMap()).toList(),
         'customTherapyModalities': customTherapyModalities,
         'homeLatitude': homeLatitude,
         'homeLongitude': homeLongitude,
@@ -1173,6 +1201,10 @@ class Profile {
         ),
         therapyHistory: ((map['therapyHistory'] as List?) ?? const [])
             .map((x) => TherapyEvent.fromMap(x as Map<String, dynamic>))
+            .toList(),
+        relationship: map['relationship'] as String?,
+        lifeEvents: ((map['lifeEvents'] as List?) ?? const [])
+            .map((x) => LifeEvent.fromMap(Map<String, dynamic>.from(x as Map)))
             .toList(),
         customTherapyModalities: List<String>.from(map['customTherapyModalities'] ?? []),
         homeLatitude: (map['homeLatitude'] as num?)?.toDouble(),
@@ -1437,4 +1469,91 @@ const kTherapyCatalog = <String>[
   'Osteopatía',
   'Fisioterapia',
   'Quiropraxia',
+];
+
+// =============================================================================
+// LIFE EVENTS (context layer over symptom/dose/mood data)
+// =============================================================================
+// Discrete real-world events (travel, accident, move, grief, work change…)
+// that contextualize the period of data they overlap. Not a daily log.
+// Shown as dots on the calendar strip and as a context section in reports.
+
+class LifeEvent {
+  final String id;
+  String title;
+  DateTime startDate;
+  /// Null means single-day event.
+  DateTime? endDate;
+  /// Free-form category. Suggested values live in kLifeEventCategorySuggestions.
+  String? category;
+  String? note;
+
+  LifeEvent({
+    String? id,
+    required this.title,
+    required this.startDate,
+    this.endDate,
+    this.category,
+    this.note,
+  }) : id = id ?? '${startDate.millisecondsSinceEpoch}-${title.hashCode}';
+
+  /// Returns true if this event covers the given date (inclusive on both ends).
+  bool covers(DateTime date) {
+    final start = DateTime(startDate.year, startDate.month, startDate.day);
+    final end = endDate == null
+        ? start
+        : DateTime(endDate!.year, endDate!.month, endDate!.day);
+    final d = DateTime(date.year, date.month, date.day);
+    return !d.isBefore(start) && !d.isAfter(end);
+  }
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'title': title,
+        'startDate': startDate.toIso8601String(),
+        'endDate': endDate?.toIso8601String(),
+        'category': category,
+        'note': note,
+      };
+
+  factory LifeEvent.fromMap(Map<String, dynamic> map) => LifeEvent(
+        id: map['id'] as String?,
+        title: map['title'] as String,
+        startDate: DateTime.parse(map['startDate'] as String),
+        endDate:
+            map['endDate'] != null ? DateTime.parse(map['endDate'] as String) : null,
+        category: map['category'] as String?,
+        note: map['note'] as String?,
+      );
+
+  LifeEvent copyWith({
+    String? title,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? category,
+    String? note,
+    bool clearEndDate = false,
+  }) =>
+      LifeEvent(
+        id: id,
+        title: title ?? this.title,
+        startDate: startDate ?? this.startDate,
+        endDate: clearEndDate ? null : (endDate ?? this.endDate),
+        category: category ?? this.category,
+        note: note ?? this.note,
+      );
+}
+
+/// Suggested categories shown as autocomplete chips. Free-form input is allowed.
+const kLifeEventCategorySuggestions = <String>[
+  'viaje',
+  'accidente',
+  'mudanza',
+  'duelo',
+  'cambio laboral',
+  'evento estresante',
+  'evento positivo',
+  'intervención médica',
+  'enfermedad',
+  'otro',
 ];

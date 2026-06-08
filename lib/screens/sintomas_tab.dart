@@ -10,7 +10,8 @@ import 'timestamp_picker.dart';
 /// 2. Registros de hoy (combined: symptoms + structurals, long-press to edit)
 /// 3. En tendencia (últimos 7 días)
 /// 4. Baúl de síntomas + inline add
-/// 5. Actividad del día (catálogo + registros)
+///
+/// Activity and therapy moved to MovimientoTab.
 class SintomasTab extends StatefulWidget {
   final Profile profile;
   final DateTime selectedDate;
@@ -49,7 +50,7 @@ class _SintomasTabState extends State<SintomasTab> {
     _newSymptomCtrl.dispose();
     super.dispose();
   }
-}
+
   // ---------------------------------------------------------------------------
   // HELPERS
   // ---------------------------------------------------------------------------
@@ -79,8 +80,7 @@ class _SintomasTabState extends State<SintomasTab> {
       SymptomSeverity.values.where((s) => !_isUnrated(s)).toList();
 
   /// Row of colored severity dots. Single-source dot picker for both
-  /// log + edit flows. If `onTap` is provided, it fires immediately on tap;
-  /// `selected` shows a ring around the chosen dot.
+  /// log + edit flows.
   Widget _buildDotPicker({
     SymptomSeverity? selected,
     required ValueChanged<SymptomSeverity> onTap,
@@ -135,7 +135,6 @@ class _SintomasTabState extends State<SintomasTab> {
   Widget build(BuildContext context) {
     final todaysStructs = _p.getStructuralForDay(widget.selectedDate);
     final todaysSymptoms = _p.getSymptomsForDay(widget.selectedDate);
-    final todaysActivity = _p.getActivityForDay(widget.selectedDate);
     final trending = _p.getTrendingSymptoms();
 
     return ListView(
@@ -254,7 +253,7 @@ class _SintomasTabState extends State<SintomasTab> {
             ),
           ),
           const SizedBox(height: 6),
-          const Text("Mantén pulsado un registro para editar fecha/gravedad/nota.",
+          const Text("Mantén presionado un registro para editar fecha/gravedad/nota.",
               style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic)),
         ],
 
@@ -333,7 +332,7 @@ class _SintomasTabState extends State<SintomasTab> {
   }
 
   // ---------------------------------------------------------------------------
-  // STRUCTURAL MODALS (unchanged)
+  // STRUCTURAL MODALS
   // ---------------------------------------------------------------------------
 
   void _openStructuralMenu(String zone) {
@@ -443,7 +442,7 @@ class _SintomasTabState extends State<SintomasTab> {
   }
 
   // ---------------------------------------------------------------------------
-  // SYMPTOM MODALS — now with dot picker + skip-rating link
+  // SYMPTOM MODALS
   // ---------------------------------------------------------------------------
 
   void _openSeverityMenu(String symptom) {
@@ -517,7 +516,7 @@ class _SintomasTabState extends State<SintomasTab> {
                     child: TextButton(
                       onPressed: () => saveWith(unratedSentinel, ctx),
                       child: Text(
-                        "Logear sin rating",
+                        "Registrar sin rating",
                         style: TextStyle(
                           color: _cc.withValues(alpha: 0.7),
                           decoration: TextDecoration.underline,
@@ -592,7 +591,7 @@ class _SintomasTabState extends State<SintomasTab> {
                     Padding(
                       padding: const EdgeInsets.only(top: 6.0),
                       child: Text(
-                        "Este registro no tiene rating. Tocá un punto para asignar uno.",
+                        "Este registro no tiene rating. Toca un punto para asignar uno.",
                         style: TextStyle(
                           color: _cc.withValues(alpha: 0.6),
                           fontSize: 11,
@@ -629,5 +628,4 @@ class _SintomasTabState extends State<SintomasTab> {
       ),
     );
   }
-
-  
+}

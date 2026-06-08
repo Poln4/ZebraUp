@@ -6,17 +6,18 @@ import 'dart:math'; // <-- Agregado para los números aleatorios
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/models.dart';
-import 'dart:convert';
 import '../services/profile_io_service.dart';
 import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
 import '../services/weather_service.dart';
 import '../services/medline_plus_service.dart';
 import '../widgets/condition_info_sheet.dart';
+import '../widgets/life_event_form_sheet.dart';
 import 'onboarding_screen.dart';
 import 'hoy_tab.dart';
 import 'botiquin_tab.dart';
 import 'sintomas_tab.dart';
+import 'movimiento_tab.dart';
 import 'investigacion_tab.dart';
 import 'timestamp_picker.dart';
 
@@ -333,7 +334,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
         content: const Text(
           'Esta acción borra TODOS los perfiles, registros, configuraciones y caché. '
           'No se puede deshacer.\n\n'
-          '¿Querés exportar primero?',
+          '¿Quieres exportar primero?',
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
@@ -359,7 +360,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Para confirmar, escribí ELIMINAR abajo.'),
+              const Text('Para confirmar, escribe ELIMINAR abajo.'),
               const SizedBox(height: 12),
               TextField(
                 controller: typedCtrl,
@@ -522,6 +523,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
         items: [
           const BottomNavigationBarItem(icon: Icon(Icons.wb_sunny_outlined), label: 'Hoy'),
           const BottomNavigationBarItem(icon: Icon(Icons.accessibility_new_rounded), label: 'Síntomas'),
+          const BottomNavigationBarItem(icon: Icon(Icons.self_improvement_outlined), label: 'Movimiento'),
           BottomNavigationBarItem(
             icon: _buildBotiquinIcon(dueOutcomesCount, contrastColor),
             label: 'Botiquín',
@@ -554,8 +556,18 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       case 1:
         return _buildSintomasTab(cc, ic);
       case 2:
-        return _buildBotiquinTab(cc, ic);
-      case 3:
+        return MovimientoTab(
+          profile: _activeProfile!,
+          selectedDate: _selectedDate,
+          contrastColor: cc,
+          inverseContrastColor: ic,
+          onProfileChanged: () {
+            setState(() {});
+            _saveData();
+          },
+        );
+      case 3: return _buildBotiquinTab(cc, ic);
+      case 4:
       default:
         return _buildClinicaTab(cc, ic);
     }
@@ -632,16 +644,34 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 border: Border.all(color: cc, width: isPacing ? 2 : 1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  Text(DateFormat('MMM').format(date).toUpperCase(),
-                      style: TextStyle(fontSize: 10, color: isSelected ? ic : cc, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 2),
-                  isPacing
-                      ? Icon(Icons.shield_outlined, color: isSelected ? ic : cc, size: 18)
-                      : Text(DateFormat('d').format(date),
-                          style: TextStyle(fontSize: 14, color: isSelected ? ic : cc, fontWeight: FontWeight.bold)),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(DateFormat('MMM').format(date).toUpperCase(),
+                          style: TextStyle(fontSize: 10, color: isSelected ? ic : cc, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 2),
+                      isPacing
+                          ? Icon(Icons.shield_outlined, color: isSelected ? ic : cc, size: 18)
+                          : Text(DateFormat('d').format(date),
+                              style: TextStyle(fontSize: 14, color: isSelected ? ic : cc, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  // Life event dot — small marker at the bottom if any life event covers this date.
+                  if (_activeProfile!.getLifeEventsForDay(date).isNotEmpty)
+                    Positioned(
+                      bottom: 4,
+                      child: Container(
+                        width: 5,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: isSelected ? ic : const Color(0xFF9C27B0), // purple — distinct from pacing/severity
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -910,9 +940,59 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
   Widget _buildCompendiumLibraryContent(Color cc, Color ic) {
     final savedCount = _activeProfile!.savedArticlePmids.length;
+    final conditions = _activeProfile!.conditions;
+
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
+        // 1. MIS CONDICIONES — tap a chip to read MedlinePlus content in Spanish.
+        if (conditions.isNotEmpty) ...[
+          Container(
+            padding: const EdgeInsets.all(12),
+            margin: const EdgeInsets.only(top: 12, bottom: 16),
+            decoration: BoxDecoration(border: Border.all(color: cc)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("MIS CONDICIONES",
+                    style: TextStyle(
+                        color: cc,
+                        fontSize: 12,
+                        letterSpacing: 1,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text(
+                  "Toca una para leer información en español (fuente: MedlinePlus).",
+                  style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 6,
+                  children: conditions
+                      .map((condition) => ActionChip(
+                            backgroundColor: Colors.transparent,
+                            side: BorderSide(color: cc),
+                            avatar: Icon(Icons.health_and_safety_outlined,
+                                color: cc, size: 14),
+                            label: Text(condition,
+                                style: TextStyle(color: cc, fontSize: 13)),
+                            onPressed: () => showConditionInfoSheet(
+                              context: context,
+                              userCondition: condition,
+                              contrastColor: cc,
+                              inverseContrastColor: ic,
+                              service: _medlinePlus,
+                            ),
+                          ))
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        // 2. Saved articles indicator
         if (savedCount > 0)
           Container(
             margin: const EdgeInsets.only(bottom: 16),
@@ -922,11 +1002,15 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               children: [
                 Icon(Icons.bookmark, color: cc, size: 18),
                 const SizedBox(width: 8),
-                Text("$savedCount artículo(s) guardado(s) — ve a Investigación.",
-                    style: TextStyle(color: cc, fontSize: 12)),
+                Expanded(
+                  child: Text("$savedCount artículo(s) guardado(s) — ve a Investigación.",
+                      style: TextStyle(color: cc, fontSize: 12)),
+                ),
               ],
             ),
           ),
+
+        // 3. Existing zebra wisdom / clinical articles
         ..._clinicalLibraryDatabase.map((article) => Container(
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(border: Border.all(color: cc)),
@@ -1000,7 +1084,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           ),
           const SizedBox(height: 4),
           const Text(
-            "Toca una condición para leer información en español (MedlinePlus). El × la elimina.",
+            "Toca la × para eliminar una condición. Para leer sobre ellas, ve a Clínica → Compendio.",
             style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 8),
@@ -1011,13 +1095,6 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 .map((condition) => InputChip(
                       label: Text(condition, style: TextStyle(color: ic, fontSize: 14)),
                       backgroundColor: cc,
-                      onPressed: () => showConditionInfoSheet(
-                        context: context,
-                        userCondition: condition,
-                        contrastColor: cc,
-                        inverseContrastColor: ic,
-                        service: _medlinePlus,
-                      ),
                       onDeleted: () => setState(() {
                         _activeProfile!.conditions.remove(condition);
                         _saveData();
@@ -1025,6 +1102,125 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                       deleteIconColor: ic,
                     ))
                 .toList(),
+          ),
+          const Text("RELACIÓN CON ESTE PERFIL",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 4),
+          const Text(
+            "¿Para quién es este perfil? Útil si registras a alguien que cuidas.",
+            style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: <String?>[null, 'Yo', 'Mi hijo/a', 'Mi pareja', 'Mi madre/padre', 'Otro']
+                .map((rel) {
+              final isSelected = _activeProfile!.relationship == rel ||
+                  (rel == null && _activeProfile!.relationship == null);
+              final label = rel ?? '— sin especificar —';
+              return InkWell(
+                onTap: () => setState(() {
+                  _activeProfile!.relationship = rel;
+                  _saveData();
+                }),
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: isSelected ? cc : Colors.transparent,
+                    border: Border.all(color: cc.withValues(alpha: 0.4)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(label,
+                      style: TextStyle(
+                        color: isSelected ? ic : cc.withValues(alpha: 0.8),
+                        fontSize: 12,
+                      )),
+                ),
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 24),
+          const Text("EVENTOS DE VIDA",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          const SizedBox(height: 4),
+          const Text(
+            "Cosas que pueden haber impactado tu cuerpo o ánimo: viajes, accidentes, mudanzas, eventos buenos o estresantes. Aparecen como puntos morados en el calendario.",
+            style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+          ),
+          const SizedBox(height: 8),
+          if (_activeProfile!.lifeEvents.isEmpty)
+            const Text("Aún no hay eventos registrados.",
+                style: TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic))
+          else
+            Column(
+              children: (_activeProfile!.lifeEvents.toList()
+                    ..sort((a, b) => b.startDate.compareTo(a.startDate)))
+                  .map((e) {
+                final dateLabel = e.endDate == null
+                    ? DateFormat('d MMM yyyy').format(e.startDate)
+                    : "${DateFormat('d MMM').format(e.startDate)} → ${DateFormat('d MMM yyyy').format(e.endDate!)}";
+                return InkWell(
+                  onTap: () => _editLifeEvent(e, cc, ic),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 6),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: cc.withValues(alpha: 0.3)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFF9C27B0),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(e.title,
+                                  style: TextStyle(
+                                      color: cc, fontSize: 13, fontWeight: FontWeight.w600)),
+                              Text(
+                                e.category != null ? "$dateLabel · ${e.category}" : dateLabel,
+                                style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
+                              ),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () => setState(() {
+                            _activeProfile!.lifeEvents.remove(e);
+                            _saveData();
+                          }),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: cc),
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
+            icon: Icon(Icons.add, color: cc),
+            label: Text("AÑADIR EVENTO",
+                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12)),
+            onPressed: () => _addLifeEvent(cc, ic),
           ),
           const SizedBox(height: 24),
           const Text("MI UBICACIÓN (PARA EL CLIMA)",
@@ -1054,7 +1250,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             icon: Icon(Icons.person_add_alt_1_rounded, color: cc),
-            label: Text("CREAR NUEVO PERFIL",
+            label: Text("AÑADIR NUEVO PERFIL",
                 style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 14)),
             onPressed: () {
               _createNewProfile();
@@ -1172,11 +1368,12 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     if (mounted) Navigator.pop(context);
   }
 
-    Future<void> _editLocation() async {
+  Future<void> _editLocation() async {
     final latCtrl = TextEditingController(
         text: _activeProfile!.homeLatitude?.toString() ?? '');
     final lngCtrl = TextEditingController(
         text: _activeProfile!.homeLongitude?.toString() ?? '');
+
 
     final saved = await showDialog<bool>(
       context: context,
@@ -1227,6 +1424,36 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       _saveData();
     });
     await _fetchTodayWeather();
+  }
+
+  Future<void> _addLifeEvent(Color cc, Color ic) async {
+    final result = await showLifeEventFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+    );
+    if (result == null) return;
+    setState(() {
+      _activeProfile!.lifeEvents.add(result);
+      _saveData();
+    });
+  }
+
+  Future<void> _editLifeEvent(LifeEvent existing, Color cc, Color ic) async {
+    final result = await showLifeEventFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+      existing: existing,
+    );
+    if (result == null) return;
+    final idx = _activeProfile!.lifeEvents.indexOf(existing);
+    if (idx >= 0) {
+      setState(() {
+        _activeProfile!.lifeEvents[idx] = result;
+        _saveData();
+      });
+    }
   }
   // -------------------------------------------------------------------------
   // ACTIONS: logging, editing, outcome answering
