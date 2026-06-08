@@ -6,6 +6,8 @@ import 'dart:math'; // <-- Agregado para los números aleatorios
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/models.dart';
+import 'dart:convert';
+import '../services/profile_io_service.dart';
 import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
 import '../services/weather_service.dart';
@@ -47,6 +49,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
   WisdomQuote? _currentWisdom; // Guarda la frase actual que se muestra
   final Random _random = Random(); // Generador de aleatoriedad
 
+  final ProfileIoService _profileIo = ProfileIoService();
   final PubMedService _pubmed = PubMedService();
   final MedlinePlusService _medlinePlus = MedlinePlusService();
   final WeatherService _weather = WeatherService();
@@ -209,6 +212,188 @@ class _MainAppScreenState extends State<MainAppScreen> {
     box.put('wisdomDateKey', _getDateKey(DateTime.now()));
     box.put('wisdomIndex', newIdx);
     setState(() => _currentWisdom = _wisdomDatabase[newIdx]);
+  }
+
+  // --------------
+  // =============================================================================
+  // ARCO rights: export, import, wipe.
+  // Ley 21.719 (Chile) and equivalent LatAm frameworks require these to be
+  // available to the user without friction. They live in the settings drawer.
+  // =============================================================================
+
+  Future<void> _exportActiveProfile() async {
+    if (_activeProfile == null) return;
+    try {
+      final filename = await _profileIo.exportProfile(_activeProfile!);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Datos exportados: $filename'),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al exportar: $e')),
+      );
+    }
+  }
+
+  Future<void> _importProfile() async {
+    // Step 1: pick + validate.
+    final ImportPreview? preview;
+    try {
+      preview = await _profileIo.pickAndValidateImport();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Importación cancelada: $e')),
+      );
+      return;
+    }
+    if (preview == null || !mounted) return;
+
+    // Step 2: show the user what's about to land + confirm.
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Importar este perfil'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Nombre: ${preview!.profile.name}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            if (preview.exportedAt != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                'Exportado: ${preview.exportedAt!.toLocal().toString().split('.').first}',
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Text('Contiene ${preview.totalEvents} registros:'),
+            const SizedBox(height: 4),
+            Text(
+              '• ${preview.symptomCount} síntomas\n'
+              '• ${preview.doseCount} dosis\n'
+              '• ${preview.structuralCount} estructurales\n'
+              '• ${preview.activityCount} actividades\n'
+              '• ${preview.therapyCount} terapias\n'
+              '• ${preview.moodCount} estados de ánimo\n'
+              '• ${preview.mentalCount} registros mentales',
+              style: const TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Esto se agregará como un perfil nuevo. Tu perfil actual no se borra.',
+              style: TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Importar')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    // Step 3: add as a NEW profile (don't replace active).
+    // Give it a fresh id so it never collides with an existing one.
+    final imported = preview.profile;
+    final newProfile = Profile.fromMap({
+      ...imported.toMap(),
+      'id': '${DateTime.now().millisecondsSinceEpoch}-imported',
+    });
+    setState(() {
+      _profiles.add(newProfile);
+      _activeProfile = newProfile;
+      _updateControllers();
+      _saveData();
+    });
+    await _fetchTodayWeather();
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Perfil importado correctamente.')),
+      );
+    }
+  }
+
+  Future<void> _wipeAllData() async {
+    // Two-step confirmation. First explains, second requires typing.
+    final firstOk = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Eliminar todos los datos'),
+        content: const Text(
+          'Esta acción borra TODOS los perfiles, registros, configuraciones y caché. '
+          'No se puede deshacer.\n\n'
+          '¿Querés exportar primero?',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Continuar',
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (firstOk != true || !mounted) return;
+
+    final typedCtrl = TextEditingController();
+    final secondOk = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDlg) => AlertDialog(
+          title: const Text('Última confirmación'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Para confirmar, escribí ELIMINAR abajo.'),
+              const SizedBox(height: 12),
+              TextField(
+                controller: typedCtrl,
+                autofocus: true,
+                decoration: const InputDecoration(hintText: 'ELIMINAR'),
+                onChanged: (_) => setDlg(() {}),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+            TextButton(
+              onPressed: typedCtrl.text.trim() == 'ELIMINAR'
+                  ? () => Navigator.pop(ctx, true)
+                  : null,
+              child: const Text(
+                'Borrar todo',
+                style: TextStyle(color: Colors.redAccent),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (secondOk != true || !mounted) return;
+
+    await _profileIo.wipeEverything();
+    setState(() {
+      _profiles = [];
+      _activeProfile = null;
+      _todayWeather = null;
+      _currentWisdom = null;
+    });
+    // Build will route to onboarding because _activeProfile is null.
   }
 
   // -------------------------------------------------------------------------
@@ -889,6 +1074,55 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               onPressed: () => _confirmDeleteProfile(),
             ),
           ],
+          const SizedBox(height: 32),
+          Text("MIS DATOS",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1, color: cc)),
+          Divider(color: cc),
+          const SizedBox(height: 8),
+          Text(
+            "Tienes derecho a acceder, exportar, importar o eliminar tus datos en cualquier momento.",
+            style: TextStyle(color: cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: cc, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            icon: Icon(Icons.download_outlined, color: cc),
+            label: Text("EXPORTAR MIS DATOS",
+                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13)),
+            onPressed: _exportActiveProfile,
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: cc, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            icon: Icon(Icons.upload_outlined, color: cc),
+            label: Text("IMPORTAR PERFIL",
+                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13)),
+            onPressed: _importProfile,
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(color: Colors.redAccent, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            icon: const Icon(Icons.delete_forever_outlined, color: Colors.redAccent),
+            label: const Text(
+              "BORRAR TODO",
+              style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 13),
+            ),
+            onPressed: _wipeAllData,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Esta acción borra todos los perfiles, registros y configuraciones. Irreversible.",
+            style: TextStyle(color: cc.withValues(alpha: 0.5), fontSize: 11, fontStyle: FontStyle.italic),
+          ),
         ],
       ),
     );

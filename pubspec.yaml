@@ -44,6 +44,9 @@ dependencies:
   hive_flutter: ^1.1.0
   image_picker: ^1.0.7
 
+  file_saver: ^0.2.13
+  file_picker: ^8.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

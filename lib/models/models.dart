@@ -1,5 +1,5 @@
 // =============================================================================
-// ZebraUpp domain model — Phase 1 foundation.
+// ZebraUp domain model — Phase 1 foundation.
 //
 // Changes vs. the previous schema (clean wipe, no migration code):
 //   • SymptomSeverity is now a 5-level scale (0–4) matching Wave's dot UI.
@@ -844,6 +844,8 @@ class Profile {
   List<StructuralEvent> structuralHistory;
   List<MentalEvent> mentalHistory;
   List<ActivityEvent> activityHistory;
+  List<TherapyEvent> therapyHistory;
+  List<String> customTherapyModalities;
   List<MedicationOutcome> medicationOutcomes;
 
   // Weather
@@ -867,6 +869,8 @@ class Profile {
     this.country,
     this.homeLatitude,
     this.homeLongitude,
+    this.therapyHistory = const [],
+    this.customTherapyModalities = const [],
     List<MedicationGroup>? medicationGroups,
     List<SymptomEvent>? symptoms,
     List<DoseEvent>? doses,
@@ -941,6 +945,14 @@ class Profile {
           m.timestamp.month == day.month &&
           m.timestamp.day == day.day)
       .toList();
+  }
+  List<TherapyEvent> getTherapyForDay(DateTime day) {
+    return therapyHistory
+        .where((t) =>
+            t.timestamp.year == day.year &&
+            t.timestamp.month == day.month &&
+            t.timestamp.day == day.day)
+        .toList();
   }
 
   int getDoseCountForDayAndMed(DateTime date, String medName) =>
@@ -1108,6 +1120,8 @@ class Profile {
         'mentalHistory': mentalHistory.map((x) => x.toMap()).toList(),
         'activityHistory': activityHistory.map((x) => x.toMap()).toList(),
         'medicationOutcomes': medicationOutcomes.map((x) => x.toMap()).toList(),
+        'therapyHistory': therapyHistory.map((t) => t.toMap()).toList(),
+        'customTherapyModalities': customTherapyModalities,
         'homeLatitude': homeLatitude,
         'homeLongitude': homeLongitude,
       };
@@ -1157,6 +1171,10 @@ class Profile {
           (map['medicationOutcomes'] ?? const []).map((x) =>
               MedicationOutcome.fromMap(Map<String, dynamic>.from(x as Map))),
         ),
+        therapyHistory: ((map['therapyHistory'] as List?) ?? const [])
+            .map((x) => TherapyEvent.fromMap(x as Map<String, dynamic>))
+            .toList(),
+        customTherapyModalities: List<String>.from(map['customTherapyModalities'] ?? []),
         homeLatitude: (map['homeLatitude'] as num?)?.toDouble(),
         homeLongitude: (map['homeLongitude'] as num?)?.toDouble(),
       );
@@ -1316,4 +1334,107 @@ class WeatherDay {
     if (humidityPct != null) parts.add('${humidityPct!.round()}% hum.');
     return parts.join(' · ');
   }
+} 
+
+// =============================================================================
+// THERAPY EVENTS (passive therapies: kinesio, acupuntura, masaje, etc.)
+// =============================================================================
+// Distinct from ActivityEvent because therapies are passive, clinical,
+// often paid, and tracked for outcome rather than effort.
+// Source: Steen, Jaiswal & Kumbhare (2025); Maarj et al. (2022).
+
+class TherapyEvent {
+  final String id;
+  final DateTime timestamp;
+  final String modality;          // e.g. "Kinesiología", "Acupuntura"
+  final String? bodyArea;         // e.g. "Cervicales", "Lumbar"
+  final int? durationMinutes;
+  final String? therapistOrPlace; // free text
+  final int? cost;                // CLP, optional
+  final int? severityBefore;      // 0-4, e-VAS pre-session
+  final int? severityAfter;       // 0-4, e-VAS post-session
+  final String? note;
+
+  TherapyEvent({
+    String? id,
+    required this.timestamp,
+    required this.modality,
+    this.bodyArea,
+    this.durationMinutes,
+    this.therapistOrPlace,
+    this.cost,
+    this.severityBefore,
+    this.severityAfter,
+    this.note,
+  }) : id = id ?? '${timestamp.millisecondsSinceEpoch}-${modality.hashCode}';
+
+  /// Computed: positive number = improvement (before was worse), 0 = no change,
+  /// negative = got worse. Null if either side is unrecorded.
+  int? get severityDelta {
+    if (severityBefore == null || severityAfter == null) return null;
+    return severityBefore! - severityAfter!;
+  }
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'timestamp': timestamp.toIso8601String(),
+        'modality': modality,
+        'bodyArea': bodyArea,
+        'durationMinutes': durationMinutes,
+        'therapistOrPlace': therapistOrPlace,
+        'cost': cost,
+        'severityBefore': severityBefore,
+        'severityAfter': severityAfter,
+        'note': note,
+      };
+
+  factory TherapyEvent.fromMap(Map<String, dynamic> map) => TherapyEvent(
+        id: map['id'] as String?,
+        timestamp: DateTime.parse(map['timestamp'] as String),
+        modality: map['modality'] as String,
+        bodyArea: map['bodyArea'] as String?,
+        durationMinutes: map['durationMinutes'] as int?,
+        therapistOrPlace: map['therapistOrPlace'] as String?,
+        cost: map['cost'] as int?,
+        severityBefore: map['severityBefore'] as int?,
+        severityAfter: map['severityAfter'] as int?,
+        note: map['note'] as String?,
+      );
+
+  TherapyEvent copyWith({
+    DateTime? timestamp,
+    String? modality,
+    String? bodyArea,
+    int? durationMinutes,
+    String? therapistOrPlace,
+    int? cost,
+    int? severityBefore,
+    int? severityAfter,
+    String? note,
+  }) =>
+      TherapyEvent(
+        id: id,
+        timestamp: timestamp ?? this.timestamp,
+        modality: modality ?? this.modality,
+        bodyArea: bodyArea ?? this.bodyArea,
+        durationMinutes: durationMinutes ?? this.durationMinutes,
+        therapistOrPlace: therapistOrPlace ?? this.therapistOrPlace,
+        cost: cost ?? this.cost,
+        severityBefore: severityBefore ?? this.severityBefore,
+        severityAfter: severityAfter ?? this.severityAfter,
+        note: note ?? this.note,
+      );
 }
+
+/// Standard therapy modalities for Chilean / LatAm users.
+/// Custom additions live on Profile.customTherapyModalities.
+const kTherapyCatalog = <String>[
+  'Kinesiología',
+  'Acupuntura',
+  'Masaje terapéutico',
+  'Punción seca',
+  'Terapia manual',
+  'Osteopatía',
+  'Fisioterapia',
+  'Quiropraxia',
+];

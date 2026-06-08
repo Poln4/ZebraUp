@@ -7,17 +7,17 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('zebraBox');
   await Hive.openBox('pubmed_cache');
-  runApp(const ZebraUppApp());
+  runApp(const ZebraUpApp());
 }
 
-class ZebraUppApp extends StatefulWidget {
-  const ZebraUppApp({super.key});
+class ZebraUpApp extends StatefulWidget {
+  const ZebraUpApp({super.key});
 
   @override
-  State<ZebraUppApp> createState() => _ZebraUppAppState();
+  State<ZebraUpApp> createState() => _ZebraUpAppState();
 }
 
-class _ZebraUppAppState extends State<ZebraUppApp> {
+class _ZebraUpAppState extends State<ZebraUpApp> {
   bool isDarkMode = true;
   double fontScale = 1.0;
 
@@ -41,7 +41,7 @@ class _ZebraUppAppState extends State<ZebraUppApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Zebra Upp',
+      title: 'Zebra Up',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(Brightness.light),
       darkTheme: _buildTheme(Brightness.dark),

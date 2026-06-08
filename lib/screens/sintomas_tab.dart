@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/models.dart';
 import 'timestamp_picker.dart';
+import '../widgets/therapy_logger_sheet.dart';
 
 /// Síntomas tab.
 ///
@@ -34,6 +35,7 @@ class SintomasTab extends StatefulWidget {
 class _SintomasTabState extends State<SintomasTab> {
   final _newSymptomCtrl = TextEditingController();
   final _newExerciseCtrl = TextEditingController();
+  final _newTherapyModalityCtrl = TextEditingController();
 
   static const _zones = [
     "Cervicales", "Hombros", "Muñecas", "Manos",
@@ -49,6 +51,7 @@ class _SintomasTabState extends State<SintomasTab> {
   void dispose() {
     _newSymptomCtrl.dispose();
     _newExerciseCtrl.dispose();
+    _newTherapyModalityCtrl.dispose();
     super.dispose();
   }
 
@@ -388,6 +391,103 @@ class _SintomasTabState extends State<SintomasTab> {
             ),
           ),
         ],
+                // 6. THERAPIES (kinesio, acupuntura, masaje, etc.)
+        const SizedBox(height: 28),
+        Text("TERAPIAS DEL DÍA",
+            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            ...kTherapyCatalog,
+            ..._p.customTherapyModalities,
+          ].map((m) => ActionChip(
+                backgroundColor: Colors.transparent,
+                side: BorderSide(color: _cc),
+                avatar: Icon(Icons.healing_outlined, color: _cc, size: 14),
+                label: Text(m, style: TextStyle(color: _cc, fontSize: 12)),
+                onPressed: () => _logTherapy(m),
+              )).toList(),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _newTherapyModalityCtrl,
+          style: TextStyle(color: _cc),
+          textInputAction: TextInputAction.done,
+          onSubmitted: (_) => _addCustomTherapyModality(),
+          decoration: InputDecoration(
+            hintText: "+ Añadir modalidad (ej. flotación, reiki…)",
+            hintStyle: const TextStyle(color: Colors.grey),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.add, color: _cc),
+              onPressed: _addCustomTherapyModality,
+            ),
+          ),
+        ),
+        if (_p.getTherapyForDay(widget.selectedDate).isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(border: Border.all(color: _cc)),
+            child: Column(
+              children: _p.getTherapyForDay(widget.selectedDate).map((t) {
+                final parts = <String>[];
+                if (t.bodyArea != null) parts.add(t.bodyArea!);
+                if (t.durationMinutes != null) parts.add('${t.durationMinutes}min');
+                if (t.severityDelta != null) {
+                  final d = t.severityDelta!;
+                  parts.add(d > 0
+                      ? '↓$d niv.'
+                      : d < 0
+                          ? '↑${-d} niv.'
+                          : '=');
+                }
+                if (t.therapistOrPlace != null) parts.add(t.therapistOrPlace!);
+                if (t.cost != null) parts.add('\$${t.cost} CLP');
+                final detail = parts.join(' · ');
+                return InkWell(
+                  onLongPress: () => _editTherapy(t),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(Icons.healing_outlined, color: _cc, size: 16),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "[${DateFormat('HH:mm').format(t.timestamp)}] ${t.modality}",
+                                style: TextStyle(color: _cc, fontSize: 13, fontWeight: FontWeight.w500),
+                              ),
+                              if (detail.isNotEmpty)
+                                Text(detail,
+                                    style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 11)),
+                            ],
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {
+                            setState(() => _p.therapyHistory.remove(t));
+                            widget.onProfileChanged();
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text("Mantén pulsado un registro para editar.",
+              style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic)),
+        ],
         const SizedBox(height: 32),
       ],
     );
@@ -403,6 +503,49 @@ class _SintomasTabState extends State<SintomasTab> {
     _newExerciseCtrl.clear();
     widget.onProfileChanged();
   }
+  void _addCustomTherapyModality() {
+    final txt = _newTherapyModalityCtrl.text.trim();
+    if (txt.isEmpty || _p.customTherapyModalities.contains(txt)
+        || kTherapyCatalog.contains(txt)) {
+      _newTherapyModalityCtrl.clear();
+      return;
+    }
+    setState(() => _p.customTherapyModalities = [..._p.customTherapyModalities, txt]);
+    _newTherapyModalityCtrl.clear();
+    widget.onProfileChanged();
+  }
+
+  Future<void> _logTherapy(String modality) async {
+    final result = await showTherapyLoggerSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      modality: modality,
+      defaultTimestamp: _timestampForLog(),
+    );
+    if (result == null) return;
+    setState(() => _p.therapyHistory.add(result));
+    widget.onProfileChanged();
+  }
+
+  Future<void> _editTherapy(TherapyEvent existing) async {
+    final result = await showTherapyLoggerSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      modality: existing.modality,
+      defaultTimestamp: existing.timestamp,
+      existing: existing,
+    );
+    if (result == null) return;
+    final idx = _p.therapyHistory.indexOf(existing);
+    if (idx >= 0) {
+      setState(() => _p.therapyHistory[idx] = result);
+      widget.onProfileChanged();
+    }
+  }
+
+
 
   void _addSymptomToVault() {
     final txt = _newSymptomCtrl.text.trim();

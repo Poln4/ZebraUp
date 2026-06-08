@@ -203,7 +203,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           Icon(Icons.medical_information_outlined, color: _cc, size: 48),
           const SizedBox(height: 24),
-          Text("ZebraUpp",
+          Text("ZebraUp",
               style: TextStyle(color: _cc, fontSize: 32, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           Text("Tu copiloto para las citas médicas.",
@@ -212,7 +212,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           const SizedBox(height: 24),
           Text(
             "Las consultas son cortas. Tu memoria, después de una semana difícil, también. "
-            "ZebraUpp registra tus síntomas, medicamentos y patrones para que llegues "
+            "ZebraUp registra tus síntomas, medicamentos y patrones para que llegues "
             "a cada cita con datos concretos — no con frases sueltas que se te olvidan "
             "apenas te sientas frente al médico. Y porque sabemos que cuidas de otros, "
             "puedes agregar a tus familiares y mascotas.",
@@ -232,6 +232,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 Expanded(
                   child: Text(
                     "Todos tus datos se guardan en este dispositivo. No subimos nada a internet.",
+                    style: TextStyle(
+                        color: _cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              border: Border.all(color: _cc.withValues(alpha: 0.4)),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.info_outline, size: 16, color: _cc.withValues(alpha: 0.7)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "Esta aplicación no es un dispositivo médico. No diagnostica, "
+                    "trata, cura ni previene ninguna condición médica.",
                     style: TextStyle(
                         color: _cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
                   ),
