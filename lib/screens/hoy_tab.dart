@@ -15,8 +15,7 @@
 //      not blocking the entry.
 //
 // Outcome check-ins use the new SeverityDotPicker with `anchor` showing the
-// severity at dose-time and `selected` capturing the after-state — closing the
-// loop on the "Mejor/Igual/Peor collapses information" problem.
+// severity at dose-time and `selected` capturing the after-state.
 // =============================================================================
 
 import 'package:flutter/material.dart';
@@ -46,14 +45,21 @@ class HoyTab extends StatelessWidget {
   final WeatherDay? todayWeather;
   final Color contrastColor;
   final Color inverseContrastColor;
+  
+  // NUEVO: Recibimos el diccionario EMA JSON desde MainAppScreen
+  final Map<MoodQuadrant, List<EmaMood>> moodDictionary;
+
   final VoidCallback onTogglePacing;
   final void Function(MentalState state, int severity, {DateTime? timestamp})
       onLogMental;
+      
+  // ACTUALIZADO: Cambiamos intensity por notes
   final void Function({
     required MoodQuadrant primaryQuadrant,
     required List<String> states,
-    int? intensity,
+    String? notes, 
   }) onLogMood;
+  
   final void Function(MoodEntry) onDeleteMood;
   final void Function(MedicationOutcome outcome,
       {required int severityAfter, OutcomeReason? reason}) onAnswerOutcome;
@@ -69,13 +75,14 @@ class HoyTab extends StatelessWidget {
     required this.wisdom,
     required this.contrastColor,
     required this.inverseContrastColor,
+    required this.moodDictionary, // Inyectado
     required this.onTogglePacing,
     required this.onLogMental,
     required this.onLogMood,
     required this.onDeleteMood,
     required this.onAnswerOutcome,
     required this.onChangeWisdom,
-    required this.showHint,        // NEW
+    required this.showHint,
     required this.onDismissHint, 
     this.todayWeather,
   });
@@ -94,8 +101,6 @@ class HoyTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPacing = profile.pacingDays.contains(_dateKey(selectedDate));
     final dueOutcomes = _isToday() ? profile.getDueOutcomes() : <MedicationOutcome>[];
-    final currentMood =
-        profile.latestMentalSeverity(MentalState.mood, selectedDate);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -111,9 +116,7 @@ class HoyTab extends StatelessWidget {
 
         const SizedBox(height: 20),
 
-        // 1.5. FIRST-SESSION HINT — surfaces above everything else for new
-        //      users, dismissible via ×, auto-hides after 48h or once acked.
-        //      State is in _MainAppScreenState; this widget just renders + delegates.
+        // 1.5. FIRST-SESSION HINT
         if (showHint) ...[
           Container(
             margin: const EdgeInsets.only(bottom: 16),
@@ -152,11 +155,7 @@ class HoyTab extends StatelessWidget {
           ),
         ],
 
-
-
-        // 2. URGENT — pending outcome check-ins. Surfaces above everything
-        //    because they're time-sensitive and the user likely opened the
-        //    app to address them. Hidden when viewing a non-today date.
+        // 2. URGENT — pending outcome check-ins.
         if (dueOutcomes.isNotEmpty) ...[
           _SectionHeader(
             title: 'Pendientes',
@@ -179,7 +178,6 @@ class HoyTab extends StatelessWidget {
 
         if (todayWeather != null) ...[
           const SizedBox(height: 12),
-          // 1. Título del clima (con el mismo estilo de tus otras secciones)
           Text(
             'EL CLIMA HOY',
             style: TextStyle(
@@ -189,9 +187,8 @@ class HoyTab extends StatelessWidget {
               letterSpacing: 0.3,
             ),
           ),
-          const SizedBox(height: 8), // Espacio entre el título y la burbuja
+          const SizedBox(height: 8),
 
-          // 2. Tu caja de clima original
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
@@ -210,7 +207,6 @@ class HoyTab extends StatelessWidget {
               ],
             ),
           ),
-          // 3. Este es el margen inferior que despegará la sección de "CÓMO ESTOY"
           const SizedBox(height: 24),
         ],
 
@@ -220,9 +216,12 @@ class HoyTab extends StatelessWidget {
           selectedDate: selectedDate,
           contrastColor: contrastColor,
           inverseContrastColor: inverseContrastColor,
+          moodDictionary: moodDictionary, // Pasamos el diccionario JSON
           onLogMood: onLogMood,
           onDeleteMood: onDeleteMood,
         ),
+
+        const SizedBox(height: 16),
 
         // 4. PROGRESSIVE — mental details collapsed by default.
         _MentalDetailsSection(
@@ -253,17 +252,6 @@ class HoyTab extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _moodTrailer(int v) {
-    return switch (v) {
-      1 => 'Día difícil. Validamos eso. 🫂',
-      2 => 'Bajón hoy. Está bien tomártelo con calma.',
-      3 => 'Tirando — un día regular.',
-      4 => 'Bien. Disfrútalo.',
-      5 => '✨ Brillando. Que dure.',
-      _ => '',
-    };
   }
 }
 
@@ -358,7 +346,7 @@ class _HoyHeader extends StatelessWidget {
 }
 
 // =============================================================================
-// Section header — used by every section for visual rhythm
+// Section header
 // =============================================================================
 
 class _SectionHeader extends StatelessWidget {
@@ -411,7 +399,7 @@ class _SectionHeader extends StatelessWidget {
 }
 
 // =============================================================================
-// Outcome answer card — wraps SeverityDotPicker with anchor + reason
+// Outcome answer card
 // =============================================================================
 
 class _OutcomeAnswerCard extends StatefulWidget {
@@ -458,7 +446,6 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Context line
           RichText(
             text: TextSpan(
               style: TextStyle(color: cc, fontSize: 13, height: 1.4),
@@ -484,8 +471,6 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
             ),
           ),
           const SizedBox(height: 12),
-
-          // Before-anchor: "estaba en"
           Row(
             children: [
               Text(
@@ -499,8 +484,6 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
             ],
           ),
           const SizedBox(height: 12),
-
-          // The question
           Text(
             '¿Cómo está ahora?',
             style: TextStyle(
@@ -510,8 +493,6 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
             ),
           ),
           const SizedBox(height: 8),
-
-          // Dot picker with anchor (so user sees where they were)
           SeverityDotPicker(
             anchor: before,
             selected: _selected,
@@ -519,8 +500,6 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
             onSelect: (sev) => setState(() => _selected = sev),
           ),
           const SizedBox(height: 12),
-
-          // Optional reason picker — collapsed by default
           if (_showReasonPicker) ...[
             Text(
               '¿A qué lo atribuyes?',
@@ -552,8 +531,6 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
             ),
             const SizedBox(height: 12),
           ],
-
-          // Footer: reason toggle + save
           Row(
             children: [
               TextButton.icon(
@@ -613,99 +590,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
 }
 
 // =============================================================================
-// FeelingSelector — primary "how do you feel" entry, faces + colors
-// =============================================================================
-
-class _FeelingSelector extends StatelessWidget {
-  final int? current;
-  final Color contrastColor;
-  final Color inverseContrastColor;
-  final ValueChanged<int> onSelect;
-
-  const _FeelingSelector({
-    required this.current,
-    required this.contrastColor,
-    required this.inverseContrastColor,
-    required this.onSelect,
-  });
-
-  static const _faces = ['😩', '😟', '😐', '🙂', '😄'];
-  static const _labels = ['Muy mal', 'Mal', 'Regular', 'Bien', 'Muy bien'];
-  static const _colors = [
-    Color(0xFFE57373), // 1 — red
-    Color(0xFFFFB74D), // 2 — orange
-    Color(0xFFFFD54F), // 3 — yellow
-    Color(0xFFAED581), // 4 — light green
-    Color(0xFF81C784), // 5 — green
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: List.generate(5, (i) {
-        final v = i + 1;
-        final selected = current == v;
-        final color = _colors[i];
-        return Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3),
-            child: InkWell(
-              onTap: () => onSelect(v),
-              borderRadius: BorderRadius.circular(12),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 180),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: selected
-                      ? color
-                      : color.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: selected
-                        ? color
-                        : color.withValues(alpha: 0.3),
-                    width: selected ? 0 : 1,
-                  ),
-                  boxShadow: selected
-                      ? [
-                          BoxShadow(
-                            color: color.withValues(alpha: 0.35),
-                            blurRadius: 10,
-                            offset: const Offset(0, 3),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Column(
-                  children: [
-                    Text(_faces[i], style: const TextStyle(fontSize: 28)),
-                    const SizedBox(height: 4),
-                    Text(
-                      _labels[i],
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight:
-                            selected ? FontWeight.bold : FontWeight.w500,
-                        color: selected
-                            ? (color.computeLuminance() > 0.5
-                                ? Colors.black87
-                                : Colors.white)
-                            : contrastColor.withValues(alpha: 0.7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      }),
-    );
-  }
-}
-
-// =============================================================================
-// MentalDetailsSection — collapsed by default
+// MentalDetailsSection
 // =============================================================================
 
 class _MentalDetailsSection extends StatefulWidget {
@@ -734,8 +619,6 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
   @override
   Widget build(BuildContext context) {
     final cc = widget.contrastColor;
-    // Count how many extra dimensions are already logged today — surface as
-    // a small badge so the user knows there's already data here.
     final loggedToday = <MentalState>{
       MentalState.anxiety,
       MentalState.emotionalEnergy,
@@ -814,7 +697,6 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                 children: [
                   const Divider(height: 1),
                   const SizedBox(height: 12),
-                  // Detailed sliders for the two secondary core dimensions.
                   _MentalSlider(
                     state: MentalState.anxiety,
                     current: widget.profile.latestMentalSeverity(
@@ -832,7 +714,6 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                         widget.onLogMental(MentalState.emotionalEnergy, v),
                   ),
                   const SizedBox(height: 16),
-                  // Less-common states as chips.
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
@@ -939,7 +820,6 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
   }
 }
 
-/// 5-segment slider for mental dimensions. Kept compact; this is detail UX.
 class _MentalSlider extends StatelessWidget {
   final MentalState state;
   final int? current;
@@ -1031,7 +911,7 @@ class _MentalSlider extends StatelessWidget {
 }
 
 // =============================================================================
-// NarrativeSummary — sentence-form recap, not counts
+// NarrativeSummary
 // =============================================================================
 
 class _NarrativeSummary extends StatelessWidget {
@@ -1053,12 +933,14 @@ class _NarrativeSummary extends StatelessWidget {
     final structs = profile.getStructuralForDay(selectedDate);
     final doses = profile.getDosesForDay(selectedDate);
     final mentals = profile.getMentalForDay(selectedDate);
+    final emaMoods = profile.getMoodForDay(selectedDate); // NUEVO
 
     final sentences = _buildSentences(
       syms: syms,
       structs: structs,
       doses: doses,
       mentals: mentals,
+      emaMoods: emaMoods,
       isPacing: isPacing,
     );
 
@@ -1109,36 +991,29 @@ class _NarrativeSummary extends StatelessWidget {
     required List<StructuralEvent> structs,
     required List<DoseEvent> doses,
     required List<MentalEvent> mentals,
+    required List<MoodEntry> emaMoods,
     required bool isPacing,
   }) {
     final out = <String>[];
 
-    // Empty-state — gentle, not chastising.
-    if (syms.isEmpty &&
-        structs.isEmpty &&
-        doses.isEmpty &&
-        mentals.isEmpty) {
+    if (syms.isEmpty && structs.isEmpty && doses.isEmpty && mentals.isEmpty && emaMoods.isEmpty) {
       out.add(isPacing
           ? '🛡️ Día de descanso. Aún no has registrado nada — está bien.'
           : 'Aún no has registrado nada hoy. ¿Cómo va todo?');
       return out;
     }
 
-    // Symptoms line — surface the strongest, not a count.
     if (syms.isNotEmpty) {
       final worst = syms.reduce((a, b) =>
           a.severity.value >= b.severity.value ? a : b);
       final n = syms.length;
       if (n == 1) {
-        out.add(
-            'Registraste 1 síntoma: ${worst.name.toLowerCase()} (${worst.severity.label.toLowerCase()}).');
+        out.add('Registraste 1 síntoma: ${worst.name.toLowerCase()} (${worst.severity.label.toLowerCase()}).');
       } else {
-        out.add(
-            'Registraste $n síntomas — el más fuerte fue ${worst.name.toLowerCase()} (${worst.severity.label.toLowerCase()}).');
+        out.add('Registraste $n síntomas — el más fuerte fue ${worst.name.toLowerCase()} (${worst.severity.label.toLowerCase()}).');
       }
     }
 
-    // Structural — zebra-specific, surface even one event.
     if (structs.isNotEmpty) {
       final n = structs.length;
       out.add(n == 1
@@ -1146,7 +1021,6 @@ class _NarrativeSummary extends StatelessWidget {
           : 'Tuviste $n eventos estructurales hoy.');
     }
 
-    // Doses — group by med, list top 3 by count.
     if (doses.isNotEmpty) {
       final byMed = <String, double>{};
       for (final d in doses) {
@@ -1161,30 +1035,19 @@ class _NarrativeSummary extends StatelessWidget {
       }).join(', ');
       final extra = sorted.length > 3 ? ' y ${sorted.length - 3} más' : '';
       final totalDoses = doses.length;
-      out.add(
-          'Tomaste $totalDoses ${totalDoses == 1 ? 'dosis' : 'dosis'}: $shown$extra.');
+      out.add('Tomaste $totalDoses ${totalDoses == 1 ? 'dosis' : 'dosis'}: $shown$extra.');
     }
 
-    // Mental average — surface mood specifically (the primary slider).
-    final moodEvents =
-        mentals.where((m) => m.state == MentalState.mood).toList();
-    if (moodEvents.isNotEmpty) {
-      final avg =
-          moodEvents.map((m) => m.severity).reduce((a, b) => a + b) /
-              moodEvents.length;
-      final emoji = avg < 2
-          ? '😩'
-          : avg < 3
-              ? '😟'
-              : avg < 4
-                  ? '😐'
-                  : avg < 4.5
-                      ? '🙂'
-                      : '😄';
-      out.add('Tu ánimo promedio: $emoji ${avg.toStringAsFixed(1)}/5.');
+    // NUEVO: Resumen narrativo con los sustantivos neutros del modelo EMA
+    if (emaMoods.isNotEmpty) {
+      final allStates = emaMoods.expand((e) => e.states).toSet().toList();
+      if (allStates.isNotEmpty) {
+        final statesStr = allStates.take(4).join(', ');
+        final extra = allStates.length > 4 ? '...' : '';
+        out.add('Tus estados y sensaciones registradas: $statesStr$extra.');
+      }
     }
 
-    // Pacing footer — reframes the day for what it was.
     if (isPacing) {
       out.add('🛡️ Te diste permiso para descansar. Eso cuenta.');
     }
@@ -1194,7 +1057,7 @@ class _NarrativeSummary extends StatelessWidget {
 }
 
 // =============================================================================
-// Wisdom block — bottom, ambient, tappable to rotate
+// Wisdom block
 // =============================================================================
 
 class _WisdomBlock extends StatelessWidget {

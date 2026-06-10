@@ -19,5 +19,47 @@
     "type": "positive",
     "severity": "Baja",
     "message": "💡 SINERGIA ÓPTIMA: La Vitamina C potencia la absorción del hierro al reducirlo a su forma ferrosa (Fe2+)."
+  },
+  {
+    "primary": "hierro",
+    "interacting_with": ["cúrcuma", "piperina", "té", "café", "polifenoles"],
+    "type": "warning",
+    "severity": "Alta",
+    "message": "⚠️ INHIBICIÓN DE ABSORCIÓN: La cúrcuma y los polifenoles se unen al hierro en el tracto gastrointestinal, bloqueando significativamente su absorción. Deben separarse por al menos 2 horas."
+  },
+  {
+    "primary": "aine",
+    "interacting_with": ["estómago vacío", "ayuno", "sam", "mcas"],
+    "type": "severe",
+    "severity": "Alta",
+    "message": "🚨 RIESGO GI Y MASTOCITARIO: En SED, la fragilidad del tejido conectivo aumenta el riesgo de sangrado GI con AINEs (siempre tomar con comida). Además, en pacientes con Síndrome de Activación Mastocitaria (SAM), pueden desencadenar desgranulación o anafilaxia."
+  },
+  {
+    "primary": "nac",
+    "interacting_with": ["uso diario", "dosis continua"],
+    "type": "warning",
+    "severity": "Media",
+    "message": "🔄 ROTACIÓN RECOMENDADA: El uso continuo de NAC (N-acetilcisteína) reduce su eficacia con el tiempo. La dosificación cíclica (ej. 3-4 días de descanso) previene el agotamiento de precursores y mantiene la eficiencia en la síntesis de glutatión."
+  },
+  {
+    "primary": "lidocaína",
+    "interacting_with": ["anestésicos locales", "procedimientos médicos", "odontología"],
+    "type": "warning",
+    "severity": "Alta",
+    "message": "⚡ RESISTENCIA ANESTÉSICA: Los pacientes con Síndrome de Ehlers-Danlos experimentan una duración y eficacia significativamente menor de la lidocaína (cae drásticamente a los 15-30 min). Se requieren alternativas o redosificación constante."
+  },
+  {
+    "primary": "vitamina d",
+    "interacting_with": ["magnesio", "bisglicinato de magnesio"],
+    "type": "positive",
+    "severity": "Baja",
+    "message": "💡 SINERGIA METABÓLICA: El magnesio es un cofactor esencial para la síntesis y activación de la Vitamina D en el cuerpo. Un nivel adecuado de magnesio mejora la respuesta a la suplementación con Vitamina D."
+  },
+  {
+    "primary": "opiáceos",
+    "interacting_with": ["tramadol", "fentanilo", "codeína"],
+    "type": "warning",
+    "severity": "Media",
+    "message": "⚠️ LENTITUD GASTROINTESTINAL: El uso de opiáceos para el manejo del dolor en SED empeora severamente la dismotilidad gastrointestinal, exacerbando el estreñimiento crónico o el Síndrome de Intestino Irritable (SII)."
   }
 ]

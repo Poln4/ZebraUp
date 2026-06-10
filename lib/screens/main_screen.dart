@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
-import 'dart:math'; // <-- Agregado para los números aleatorios
+import 'dart:math';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/models.dart';
@@ -43,12 +43,13 @@ class _MainAppScreenState extends State<MainAppScreen> {
   late List<Profile> _profiles;
   Profile? _activeProfile;
 
-  // Variables para la Base de Datos Clínica y de Sabiduría
+  // Variables para la Base de Datos Clínica, de Sabiduría y Emociones (EMA)
   List<WisdomQuote> _wisdomDatabase = [];
   List<ClinicalArticle> _clinicalLibraryDatabase = [];
+  Map<MoodQuadrant, List<EmaMood>> _moodDictionary = {}; // <--- NUEVO: Diccionario EMA
   
-  WisdomQuote? _currentWisdom; // Guarda la frase actual que se muestra
-  final Random _random = Random(); // Generador de aleatoriedad
+  WisdomQuote? _currentWisdom;
+  final Random _random = Random();
 
   final ProfileIoService _profileIo = ProfileIoService();
   final PubMedService _pubmed = PubMedService();
@@ -88,12 +89,12 @@ class _MainAppScreenState extends State<MainAppScreen> {
    }
 
   Future<void> _bootstrap() async {
-     //await Hive.box('zebraBox').clear();  // remove this line after first run
      _loadUserProfiles();
      await _loadLibraries();
      await _fetchTodayWeather();
      setState(() {});
    }
+
   @override
   void dispose() {
     _profileNameController.dispose();
@@ -105,51 +106,28 @@ class _MainAppScreenState extends State<MainAppScreen> {
   }
 
   // -------------------------------------------------------------------------
-  // DATOS Y JSON (La nueva integración)
+  // DATOS Y JSON (Integración EMA + Sabiduría)
   // -------------------------------------------------------------------------
 
   Future<void> _loadLibraries() async {
-    // 1. Tus frases originales (puedes dejarlas o borrarlas si solo quieres las del JSON)
     List<WisdomQuote> baseQuotes = [
       WisdomQuote(text: "Descansar no es rendirse; es una intervención médica necesaria para tu sistema nervioso.", category: "Pacing"),
       WisdomQuote(text: "Tus síntomas son reales, incluso cuando los exámenes de rutina no los muestran.", category: "Validación"),
       WisdomQuote(text: "El mundo es tu papa. Hoy toca reparar.", category: "Potato Day"),
     ];
 
+    // 1. Cargar Zebra Wisdom (Datos clínicos y validación)
     try {
-      // OJO: Asegúrate de usar el nombre exacto de tu archivo. 
-      // Si le pusiste zebra_wisdom.json, usa ese. Si guardaste el que generamos con Python, 
-      // probablemente se llame consolidated_eds_facts.json
-      final String jsonString = await rootBundle.loadString('assets/zebra_wisdom.json');
-      final Map<String, dynamic> jsonData = jsonDecode(jsonString);
-      
-      final List<dynamic> jsonFacts = jsonData['facts'] ?? [];
+      final String wisdomString = await rootBundle.loadString('assets/zebra_wisdom.json');
+      final Map<String, dynamic> wisdomData = jsonDecode(wisdomString);
+      final List<dynamic> jsonFacts = wisdomData['facts'] ?? [];
 
       setState(() {
-        // 2. Alimentar la Biblioteca Clínica
         _clinicalLibraryDatabase = jsonFacts.map((item) {
           final fact = (item['fact_es'] ?? '').toString().trim();
-
-          // Citation can live under different keys in the JSON — try the common ones.
-          // If yours is named differently, add it to this list:
-          final source = (item['citation'] ??
-                          item['source'] ??
-                          item['reference'] ??
-                          item['url'] ??
-                          '')
-                      .toString()
-                      .trim();
-
-          // Use the first sentence of the fact as the card title (much more meaningful
-          // than the tone). Tone stays untouched in the JSON for future use.
+          final source = (item['citation'] ?? item['source'] ?? item['reference'] ?? item['url'] ?? '').toString().trim();
           final firstSentence = fact.split(RegExp(r'[.!?]')).first.trim();
-          final title = firstSentence.isEmpty
-              ? 'Dato clínico'
-              : (firstSentence.length > 80
-                  ? '${firstSentence.substring(0, 77)}…'
-                  : firstSentence);
-
-          // Embed the citation at the bottom of the expanded content.
+          final title = firstSentence.isEmpty ? 'Dato clínico' : (firstSentence.length > 80 ? '${firstSentence.substring(0, 77)}…' : firstSentence);
           final content = source.isEmpty ? fact : '$fact\n\nFuente: $source';
 
           return ClinicalArticle(
@@ -159,8 +137,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
           );
         }).toList();
 
-        // 3. Alimentar las Frases de Sabiduría (WisdomDatabase)
-        // Juntamos las 3 bases + los 51 facts del JSON
         _wisdomDatabase = baseQuotes + jsonFacts.map((item) {
           return WisdomQuote(
             text: item['fact_es'] ?? '',
@@ -170,13 +146,37 @@ class _MainAppScreenState extends State<MainAppScreen> {
       });
     } catch (e) {
       debugPrint("Error cargando zebra_wisdom.json: $e");
-      _wisdomDatabase = baseQuotes; // graceful fallback
+      _wisdomDatabase = baseQuotes; 
     }
 
-      _restoreOrPickDailyWisdom();
+    // 2. Cargar EMA Moods (Diccionario de emociones para el Mood Tracker)
+    try {
+      final String moodString = await rootBundle.loadString('assets/ema_moods.json');
+      final Map<String, dynamic> moodData = jsonDecode(moodString);
+      
+      final Map<MoodQuadrant, List<EmaMood>> loadedMoods = {
+        MoodQuadrant.activatedUnpleasant: [],
+        MoodQuadrant.activatedPleasant: [],
+        MoodQuadrant.calmUnpleasant: [],
+        MoodQuadrant.calmPleasant: [],
+      };
+
+      for (final key in moodData.keys) {
+        final quad = MoodQuadrantLabels.fromJsonCategory(key);
+        final List<dynamic> list = moodData[key];
+        loadedMoods[quad]!.addAll(list.map((m) => EmaMood.fromMap(m as Map<String, dynamic>)));
+      }
+      
+      setState(() {
+        _moodDictionary = loadedMoods;
+      });
+    } catch (e) {
+      debugPrint("Error cargando ema_moods.json: $e");
+    }
+
+    _restoreOrPickDailyWisdom();
   }
 
-  /// One quote per day, persisted. Tapping the card overrides for that day.
   void _restoreOrPickDailyWisdom() {
     if (_wisdomDatabase.isEmpty) return;
     final box = Hive.box('zebraBox');
@@ -185,10 +185,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
     final storedIdx = box.get('wisdomIndex') as int?;
 
     int idx;
-    if (storedDate == todayKey &&
-        storedIdx != null &&
-        storedIdx >= 0 &&
-        storedIdx < _wisdomDatabase.length) {
+    if (storedDate == todayKey && storedIdx != null && storedIdx >= 0 && storedIdx < _wisdomDatabase.length) {
       idx = storedIdx;
     } else {
       idx = _random.nextInt(_wisdomDatabase.length);
@@ -198,7 +195,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
     setState(() => _currentWisdom = _wisdomDatabase[idx]);
   }
 
-  /// Manually rotate to a different quote (user tap).
   void _changeWisdomQuote() {
     if (_wisdomDatabase.length < 2) return;
     final box = Hive.box('zebraBox');
@@ -207,20 +203,18 @@ class _MainAppScreenState extends State<MainAppScreen> {
     do {
       newIdx = _random.nextInt(_wisdomDatabase.length);
       safety++;
-    } while (_currentWisdom != null &&
-        _wisdomDatabase[newIdx].text == _currentWisdom!.text &&
-        safety < 10);
+    } while (_currentWisdom != null && _wisdomDatabase[newIdx].text == _currentWisdom!.text && safety < 10);
     box.put('wisdomDateKey', _getDateKey(DateTime.now()));
     box.put('wisdomIndex', newIdx);
     setState(() => _currentWisdom = _wisdomDatabase[newIdx]);
   }
 
-  // --------------
-  // =============================================================================
-  // ARCO rights: export, import, wipe.
-  // Ley 21.719 (Chile) and equivalent LatAm frameworks require these to be
-  // available to the user without friction. They live in the settings drawer.
-  // =============================================================================
+  // -------------------------------------------------------------------------
+  // ARCO RIGHTS (Export / Import / Wipe)
+  // -------------------------------------------------------------------------
+  
+  // ( ... Todo el bloque de Exportar, Importar y Wipe permanece intacto ... )
+  // Reinsertando por completitud del archivo:
 
   Future<void> _exportActiveProfile() async {
     if (_activeProfile == null) return;
@@ -228,34 +222,25 @@ class _MainAppScreenState extends State<MainAppScreen> {
       final filename = await _profileIo.exportProfile(_activeProfile!);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Datos exportados: $filename'),
-          duration: const Duration(seconds: 4),
-        ),
+        SnackBar(content: Text('Datos exportados: $filename'), duration: const Duration(seconds: 4)),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al exportar: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al exportar: $e')));
     }
   }
 
   Future<void> _importProfile() async {
-    // Step 1: pick + validate.
     final ImportPreview? preview;
     try {
       preview = await _profileIo.pickAndValidateImport();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Importación cancelada: $e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Importación cancelada: $e')));
       return;
     }
     if (preview == null || !mounted) return;
 
-    // Step 2: show the user what's about to land + confirm.
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -264,35 +249,17 @@ class _MainAppScreenState extends State<MainAppScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Nombre: ${preview!.profile.name}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            Text('Nombre: ${preview!.profile.name}', style: const TextStyle(fontWeight: FontWeight.bold)),
             if (preview.exportedAt != null) ...[
               const SizedBox(height: 4),
-              Text(
-                'Exportado: ${preview.exportedAt!.toLocal().toString().split('.').first}',
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
+              Text('Exportado: ${preview.exportedAt!.toLocal().toString().split('.').first}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
             ],
             const SizedBox(height: 12),
             Text('Contiene ${preview.totalEvents} registros:'),
             const SizedBox(height: 4),
-            Text(
-              '• ${preview.symptomCount} síntomas\n'
-              '• ${preview.doseCount} dosis\n'
-              '• ${preview.structuralCount} estructurales\n'
-              '• ${preview.activityCount} actividades\n'
-              '• ${preview.therapyCount} terapias\n'
-              '• ${preview.moodCount} estados de ánimo\n'
-              '• ${preview.mentalCount} registros mentales',
-              style: const TextStyle(fontSize: 12),
-            ),
+            Text('• ${preview.symptomCount} síntomas\n• ${preview.doseCount} dosis\n• ${preview.structuralCount} estructurales\n• ${preview.activityCount} actividades\n• ${preview.therapyCount} terapias\n• ${preview.moodCount} estados de ánimo\n• ${preview.mentalCount} registros mentales', style: const TextStyle(fontSize: 12)),
             const SizedBox(height: 12),
-            const Text(
-              'Esto se agregará como un perfil nuevo. Tu perfil actual no se borra.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
+            const Text('Esto se agregará como un perfil nuevo. Tu perfil actual no se borra.', style: TextStyle(fontSize: 12, color: Colors.grey)),
           ],
         ),
         actions: [
@@ -303,8 +270,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
     );
     if (confirmed != true || !mounted) return;
 
-    // Step 3: add as a NEW profile (don't replace active).
-    // Give it a fresh id so it never collides with an existing one.
     final imported = preview.profile;
     final newProfile = Profile.fromMap({
       ...imported.toMap(),
@@ -317,34 +282,18 @@ class _MainAppScreenState extends State<MainAppScreen> {
       _saveData();
     });
     await _fetchTodayWeather();
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Perfil importado correctamente.')),
-      );
-    }
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Perfil importado correctamente.')));
   }
 
   Future<void> _wipeAllData() async {
-    // Two-step confirmation. First explains, second requires typing.
     final firstOk = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Eliminar todos los datos'),
-        content: const Text(
-          'Esta acción borra TODOS los perfiles, registros, configuraciones y caché. '
-          'No se puede deshacer.\n\n'
-          '¿Quieres exportar primero?',
-        ),
+        content: const Text('Esta acción borra TODOS los perfiles, registros, configuraciones y caché. No se puede deshacer.\n\n¿Quieres exportar primero?'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text(
-              'Continuar',
-              style: TextStyle(color: Colors.redAccent),
-            ),
-          ),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Continuar', style: TextStyle(color: Colors.redAccent))),
         ],
       ),
     );
@@ -373,13 +322,8 @@ class _MainAppScreenState extends State<MainAppScreen> {
           actions: [
             TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
             TextButton(
-              onPressed: typedCtrl.text.trim() == 'ELIMINAR'
-                  ? () => Navigator.pop(ctx, true)
-                  : null,
-              child: const Text(
-                'Borrar todo',
-                style: TextStyle(color: Colors.redAccent),
-              ),
+              onPressed: typedCtrl.text.trim() == 'ELIMINAR' ? () => Navigator.pop(ctx, true) : null,
+              child: const Text('Borrar todo', style: TextStyle(color: Colors.redAccent)),
             ),
           ],
         ),
@@ -394,7 +338,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
       _todayWeather = null;
       _currentWisdom = null;
     });
-    // Build will route to onboarding because _activeProfile is null.
   }
 
   // -------------------------------------------------------------------------
@@ -543,6 +486,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           wisdom: _currentWisdom ?? WisdomQuote(text: "Cargando sabiduría...", category: "Loading"),
           contrastColor: cc,
           inverseContrastColor: ic,
+          moodDictionary: _moodDictionary, // <--- NUEVO: Inyectamos el JSON dict aquí
           onTogglePacing: _togglePacing,
           onLogMental: _logMental,
           onLogMood: _logMood,
@@ -573,7 +517,6 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     }
   }
 
-  /// Botiquín icon with a small badge if there are pending outcomes.
   Widget _buildBotiquinIcon(int dueCount, Color cc) {
     if (dueCount == 0) return const Icon(Icons.medical_services_outlined);
     return Stack(
@@ -659,7 +602,6 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                               style: TextStyle(fontSize: 14, color: isSelected ? ic : cc, fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  // Life event dot — small marker at the bottom if any life event covers this date.
                   if (_activeProfile!.getLifeEventsForDay(date).isNotEmpty)
                     Positioned(
                       bottom: 4,
@@ -668,7 +610,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                         height: 5,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isSelected ? ic : const Color(0xFF9C27B0), // purple — distinct from pacing/severity
+                          color: isSelected ? ic : const Color(0xFF9C27B0),
                         ),
                       ),
                     ),
@@ -715,61 +657,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     );
   }
 
-  Widget _buildMedRow(MedicationDef med, List<DoseEvent> todaysDoses, Color cc, Color ic) {
-    final doseCount = _activeProfile!.getDoseCountForDayAndMed(_selectedDate, med.name);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(border: Border.all(color: Colors.grey)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(med.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: cc)),
-                Text(
-                  med.notes?.isNotEmpty == true ? med.notes! : med.displayDose,
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-              ],
-            ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.remove_circle_outline, color: cc),
-                onPressed: doseCount == 0
-                    ? null
-                    : () {
-                        DoseEvent? lastDose;
-                        for (final e in todaysDoses) {
-                          if (e.medicationName == med.name) lastDose = e;
-                        }
-                        if (lastDose != null) {
-                          setState(() {
-                            _activeProfile!.doseHistory.remove(lastDose);
-                            _saveData();
-                          });
-                        }
-                      },
-              ),
-              Text("$doseCount",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: cc)),
-              IconButton(
-                icon: Icon(Icons.add_circle_outline, color: cc),
-                onPressed: () => _logDose(med, cc, ic),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   // -------------------------------------------------------------------------
-  // CLÍNICA TAB
+  // CLÍNICA TAB (Y REPORTE)
   // -------------------------------------------------------------------------
 
   Widget _buildClinicaTab(Color cc, Color ic) {
@@ -823,6 +712,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final todaysDoses = _activeProfile!.getDosesForDay(_selectedDate);
     final todaysStructs = _activeProfile!.getStructuralForDay(_selectedDate);
     final todaysMental = _activeProfile!.getMentalForDay(_selectedDate);
+    final todaysMoods = _activeProfile!.getMoodForDay(_selectedDate); // <--- NUEVO
 
     final grouped = <String, SymptomSeverity>{};
     for (final s in todaysSymptoms) {
@@ -871,11 +761,23 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     }
     if (mentalSummary.isNotEmpty) {
       buf.writeln();
-      buf.writeln("SALUD MENTAL (máx. del día, 1–5):");
+      buf.writeln("NIEBLA / FATIGA (máx. del día, 1–5):");
       for (final m in mentalSummary.entries) {
         buf.writeln(" • ${m.key.label}: ${m.value}/5");
       }
     }
+    
+    // <--- NUEVO: Inclusión de los estados de ánimo EMA y notas en el reporte clínico
+    if (todaysMoods.isNotEmpty) {
+      buf.writeln();
+      buf.writeln("ESTADOS EMA & CONTEXTO:");
+      for (final entry in todaysMoods) {
+        final timeStr = DateFormat('HH:mm').format(entry.timestamp);
+        final notesStr = entry.notes != null && entry.notes!.isNotEmpty ? " | Nota: ${entry.notes}" : "";
+        buf.writeln(" • [$timeStr] ${entry.states.join(', ')}$notesStr");
+      }
+    }
+    
     if (todaysStructs.isNotEmpty) {
       buf.writeln();
       buf.writeln("EVENTOS ESTRUCTURALES:");
@@ -884,7 +786,6 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       }
     }
 
-    // Effectiveness summaries
     final effPairs = <String>{};
     for (final o in _activeProfile!.medicationOutcomes) {
       effPairs.add('${o.medicationName}→${o.symptomName}');
@@ -897,7 +798,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         final eff = _activeProfile!.effectivenessFor(parts[0], parts[1]);
         if (eff != null) {
           final pct = (eff.improved / eff.total * 100).toStringAsFixed(0);
-          final avg = (-eff.meanDelta).toStringAsFixed(1);  // negative delta = improvement, flip the sign for display
+          final avg = (-eff.meanDelta).toStringAsFixed(1); 
           buf.writeln(" • ${parts[0]} → ${parts[1]}: $pct% mejora (${eff.improved}/${eff.total}), promedio -$avg pts");
         }
       }
@@ -945,7 +846,6 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
-        // 1. MIS CONDICIONES — tap a chip to read MedlinePlus content in Spanish.
         if (conditions.isNotEmpty) ...[
           Container(
             padding: const EdgeInsets.all(12),
@@ -955,14 +855,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("MIS CONDICIONES",
-                    style: TextStyle(
-                        color: cc,
-                        fontSize: 12,
-                        letterSpacing: 1,
-                        fontWeight: FontWeight.bold)),
+                    style: TextStyle(color: cc, fontSize: 12, letterSpacing: 1, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text(
-                  "Toca una para leer información en español (fuente: MedlinePlus).",
+                  "Toca una para leer información en español (fuente: MedlinePlus/Wiki).",
                   style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
                 ),
                 const SizedBox(height: 10),
@@ -973,10 +869,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                       .map((condition) => ActionChip(
                             backgroundColor: Colors.transparent,
                             side: BorderSide(color: cc),
-                            avatar: Icon(Icons.health_and_safety_outlined,
-                                color: cc, size: 14),
-                            label: Text(condition,
-                                style: TextStyle(color: cc, fontSize: 13)),
+                            avatar: Icon(Icons.health_and_safety_outlined, color: cc, size: 14),
+                            label: Text(condition, style: TextStyle(color: cc, fontSize: 13)),
                             onPressed: () => showConditionInfoSheet(
                               context: context,
                               userCondition: condition,
@@ -992,7 +886,6 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           ),
         ],
 
-        // 2. Saved articles indicator
         if (savedCount > 0)
           Container(
             margin: const EdgeInsets.only(bottom: 16),
@@ -1010,7 +903,6 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             ),
           ),
 
-        // 3. Existing zebra wisdom / clinical articles
         ..._clinicalLibraryDatabase.map((article) => Container(
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(border: Border.all(color: cc)),
@@ -1022,7 +914,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text(article.content,
+                    child: SelectableText(article.content,
                         style: TextStyle(height: 1.5, color: cc, fontSize: 14)),
                   ),
                 ],
@@ -1103,6 +995,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                     ))
                 .toList(),
           ),
+          const SizedBox(height: 24),
           const Text("RELACIÓN CON ESTE PERFIL",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 4),
@@ -1324,8 +1217,6 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     );
   }
 
-  
-
   void _createNewProfile() {
     setState(() {
       final newId = "${DateTime.now().millisecondsSinceEpoch}-${_profiles.length + 1}";
@@ -1369,11 +1260,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Future<void> _editLocation() async {
-    final latCtrl = TextEditingController(
-        text: _activeProfile!.homeLatitude?.toString() ?? '');
-    final lngCtrl = TextEditingController(
-        text: _activeProfile!.homeLongitude?.toString() ?? '');
-
+    final latCtrl = TextEditingController(text: _activeProfile!.homeLatitude?.toString() ?? '');
+    final lngCtrl = TextEditingController(text: _activeProfile!.homeLongitude?.toString() ?? '');
 
     final saved = await showDialog<bool>(
       context: context,
@@ -1412,9 +1300,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final lng = double.tryParse(lngCtrl.text.trim());
     if (lat == null || lng == null || lat.abs() > 90 || lng.abs() > 180) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Coordenadas inválidas.")),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Coordenadas inválidas.")));
       }
       return;
     }
@@ -1427,11 +1313,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Future<void> _addLifeEvent(Color cc, Color ic) async {
-    final result = await showLifeEventFormSheet(
-      context: context,
-      contrastColor: cc,
-      inverseContrastColor: ic,
-    );
+    final result = await showLifeEventFormSheet(context: context, contrastColor: cc, inverseContrastColor: ic);
     if (result == null) return;
     setState(() {
       _activeProfile!.lifeEvents.add(result);
@@ -1440,12 +1322,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Future<void> _editLifeEvent(LifeEvent existing, Color cc, Color ic) async {
-    final result = await showLifeEventFormSheet(
-      context: context,
-      contrastColor: cc,
-      inverseContrastColor: ic,
-      existing: existing,
-    );
+    final result = await showLifeEventFormSheet(context: context, contrastColor: cc, inverseContrastColor: ic, existing: existing);
     if (result == null) return;
     final idx = _activeProfile!.lifeEvents.indexOf(existing);
     if (idx >= 0) {
@@ -1455,6 +1332,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       });
     }
   }
+
   // -------------------------------------------------------------------------
   // ACTIONS: logging, editing, outcome answering
   // -------------------------------------------------------------------------
@@ -1482,28 +1360,28 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     });
   }
 
+  // <--- NUEVO: Modificada la firma de guardado de _logMood para usar notas en vez de intensity.
   void _logMood({
     required MoodQuadrant primaryQuadrant,
     required List<String> states,
-    int? intensity,
+    String? notes, 
   }) {
-    setState(() {
-      _activeProfile!.moodHistory.add(MoodEntry(
-        timestamp: _timestampForLog(),
-        primaryQuadrant: primaryQuadrant,
-        states: states,
-        intensity: intensity,
-      ));
-      _saveData();
-    });
-  }
+  // Creamos la entrada
+    final newEntry = MoodEntry(
+      timestamp: _timestampForLog(),
+      primaryQuadrant: primaryQuadrant,
+      states: states,
+      notes: notes,
+    );
 
-  // =============================================================================
-  // First-session hint on Hoy. Two Hive keys:
-  //   hoyHintFirstSeen — ISO timestamp of when the hint first rendered
-  //   hoyHintAcked     — true once user taps × on the hint
-  // Hint auto-hides 48h after first seen, or immediately when acked.
-  // =============================================================================
+    setState(() {
+      // Reasignamos la lista para forzar a Flutter a detectar el cambio de estado
+      _activeProfile!.moodHistory = List.from(_activeProfile!.moodHistory)..add(newEntry);
+    });
+    
+    // Guardamos en Hive fuera del setState por rendimiento
+    _saveData();
+  }
 
   bool get _shouldShowHoyHint {
     final box = Hive.box('zebraBox');
@@ -1520,16 +1398,15 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
   void _dismissHoyHint() {
     Hive.box('zebraBox').put('hoyHintAcked', true);
-    setState(() {}); // triggers HoyTab rebuild with showHint=false
+    setState(() {});
   }
 
   void _deleteMoodEntry(MoodEntry entry) {
     setState(() {
-      _activeProfile!.moodHistory.remove(entry);
-      _saveData();
+      _activeProfile!.moodHistory = List.from(_activeProfile!.moodHistory)..remove(entry);
     });
+    _saveData();
   }
-
 
   void _answerOutcome(
     MedicationOutcome o, {
@@ -1559,631 +1436,4 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       _saveData();
     });
   }
-
-  // ---- LOGGING ----
-
-  void _openSeverityMenu(String symptom, Color cc, Color ic) {
-    final noteCtrl = TextEditingController();
-    DateTime ts = _timestampForLog();
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: ic,
-      shape: RoundedRectangleBorder(side: BorderSide(color: cc, width: 2)),
-      isScrollControlled: true,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setSheet) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("GRAVEDAD DE: ${symptom.toUpperCase()}",
-                        style: TextStyle(color: cc, fontSize: 16, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(side: BorderSide(color: cc.withValues(alpha: 0.5))),
-                      icon: Icon(Icons.access_time, color: cc, size: 16),
-                      label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                          style: TextStyle(color: cc, fontSize: 12)),
-                      onPressed: () async {
-                        final picked = await pickTimestamp(
-                          context: ctx, initial: ts,
-                          contrastColor: cc, inverseContrastColor: ic,
-                        );
-                        if (picked != null) setSheet(() => ts = picked);
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: noteCtrl,
-                      style: TextStyle(color: cc),
-                      decoration: const InputDecoration(
-                        hintText: "Nota opcional (contexto, gatillo, etc.)",
-                        hintStyle: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    ...SymptomSeverity.values.map((sev) => ListTile(
-                          leading: Icon(Icons.circle, color: _severityColor(sev)),
-                          title: Text(sev.label, style: TextStyle(color: cc, fontSize: 14)),
-                          onTap: () {
-                            final note = noteCtrl.text.trim();
-                            setState(() {
-                              _activeProfile!.symptomHistory.add(SymptomEvent(
-                                timestamp: ts,
-                                name: symptom,
-                                severity: sev,
-                                note: note.isEmpty ? null : note,
-                              ));
-                              _saveData();
-                            });
-                            Navigator.pop(ctx);
-                          },
-                        )),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  void _editSymptomEvent(SymptomEvent event, Color cc, Color ic) {
-    final noteCtrl = TextEditingController(text: event.note ?? '');
-    DateTime ts = event.timestamp;
-    SymptomSeverity sev = event.severity;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: ic,
-      shape: RoundedRectangleBorder(side: BorderSide(color: cc, width: 2)),
-      isScrollControlled: true,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setSheet) {
-            return Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("EDITAR: ${event.name.toUpperCase()}",
-                        style: TextStyle(color: cc, fontSize: 16, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(side: BorderSide(color: cc.withValues(alpha: 0.5))),
-                      icon: Icon(Icons.access_time, color: cc, size: 16),
-                      label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                          style: TextStyle(color: cc, fontSize: 12)),
-                      onPressed: () async {
-                        final picked = await pickTimestamp(
-                          context: ctx, initial: ts,
-                          contrastColor: cc, inverseContrastColor: ic,
-                        );
-                        if (picked != null) setSheet(() => ts = picked);
-                      },
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: noteCtrl,
-                      style: TextStyle(color: cc),
-                      decoration: const InputDecoration(hintText: "Nota opcional", hintStyle: TextStyle(color: Colors.grey)),
-                    ),
-                    const SizedBox(height: 8),
-                    ...SymptomSeverity.values.map((s) => ListTile(
-                          leading: Icon(Icons.circle, color: _severityColor(s)),
-                          title: Text(s.label, style: TextStyle(color: cc)),
-                          trailing: sev == s ? Icon(Icons.check, color: cc) : null,
-                          onTap: () => setSheet(() => sev = s),
-                        )),
-                    const SizedBox(height: 8),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: cc,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        minimumSize: const Size.fromHeight(48),
-                      ),
-                      onPressed: () {
-                        final note = noteCtrl.text.trim();
-                        setState(() {
-                          final idx = _activeProfile!.symptomHistory.indexOf(event);
-                          if (idx >= 0) {
-                            _activeProfile!.symptomHistory[idx] = event.copyWith(
-                              timestamp: ts,
-                              severity: sev,
-                              note: note.isEmpty ? null : note,
-                            );
-                            _saveData();
-                          }
-                        });
-                        Navigator.pop(ctx);
-                      },
-                      child: Text('GUARDAR CAMBIOS',
-                          style: TextStyle(color: ic, fontWeight: FontWeight.bold)),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Color _severityColor(SymptomSeverity sev) {
-    final hex = sev.colorHex.substring(1); // strip leading '#'
-    return Color(int.parse(hex, radix: 16) | 0xFF000000);
-  }
-
-  void _openStructuralMenu(String zone, Color cc, Color ic) {
-    DateTime ts = _timestampForLog();
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: ic,
-      shape: RoundedRectangleBorder(side: BorderSide(color: cc, width: 2)),
-      isScrollControlled: true,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setSheet) => Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("REGISTRAR EN: ${zone.toUpperCase()}",
-                        style: TextStyle(color: cc, fontSize: 16, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(side: BorderSide(color: cc.withValues(alpha: 0.5))),
-                      icon: Icon(Icons.access_time, color: cc, size: 16),
-                      label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                          style: TextStyle(color: cc, fontSize: 12)),
-                      onPressed: () async {
-                        final picked = await pickTimestamp(
-                            context: ctx,
-                            initial: ts,
-                            contrastColor: cc,
-                            inverseContrastColor: ic);
-                        if (picked != null) setSheet(() => ts = picked);
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    ...["Subluxación", "Dislocación", "Inestabilidad Articular", "Dolor Articular", "Dolor Miofascial", "Dolor Neuropático"]
-                        .map((type) => ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              leading: Icon(Icons.warning_amber_rounded, color: cc),
-                              title: Text(type, style: TextStyle(color: cc, fontSize: 14)),
-                              onTap: () {
-                                setState(() {
-                                  _activeProfile!.structuralHistory.add(StructuralEvent(
-                                    timestamp: ts, zone: zone, type: type,
-                                  ));
-                                  _saveData();
-                                });
-                                Navigator.pop(ctx);
-                              },
-                            )),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _editStructuralEvent(StructuralEvent event, Color cc, Color ic) {
-    DateTime ts = event.timestamp;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: ic,
-      shape: RoundedRectangleBorder(side: BorderSide(color: cc, width: 2)),
-      isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("EDITAR: ${event.zone.toUpperCase()} / ${event.type}",
-                    style: TextStyle(color: cc, fontSize: 14, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(side: BorderSide(color: cc.withValues(alpha: 0.5))),
-                  icon: Icon(Icons.access_time, color: cc, size: 16),
-                  label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                      style: TextStyle(color: cc, fontSize: 12)),
-                  onPressed: () async {
-                    final picked = await pickTimestamp(
-                        context: ctx, initial: ts, contrastColor: cc, inverseContrastColor: ic);
-                    if (picked != null) setSheet(() => ts = picked);
-                  },
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: cc, minimumSize: const Size.fromHeight(48),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      final idx = _activeProfile!.structuralHistory.indexOf(event);
-                      if (idx >= 0) {
-                        _activeProfile!.structuralHistory[idx] = event.copyWith(timestamp: ts);
-                        _saveData();
-                      }
-                    });
-                    Navigator.pop(ctx);
-                  },
-                  child: Text('GUARDAR', style: TextStyle(color: ic, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _editDoseEvent(DoseEvent event, Color cc, Color ic) {
-    DateTime ts = event.timestamp;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: ic,
-      shape: RoundedRectangleBorder(side: BorderSide(color: cc, width: 2)),
-      isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("EDITAR HORA: ${event.medicationName.toUpperCase()}",
-                    style: TextStyle(color: cc, fontSize: 14, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(side: BorderSide(color: cc.withValues(alpha: 0.5))),
-                  icon: Icon(Icons.access_time, color: cc, size: 16),
-                  label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                      style: TextStyle(color: cc, fontSize: 12)),
-                  onPressed: () async {
-                    final picked = await pickTimestamp(
-                        context: ctx, initial: ts, contrastColor: cc, inverseContrastColor: ic);
-                    if (picked != null) setSheet(() => ts = picked);
-                  },
-                ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: cc, minimumSize: const Size.fromHeight(48),
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      final idx = _activeProfile!.doseHistory.indexOf(event);
-                      if (idx >= 0) {
-                        _activeProfile!.doseHistory[idx] = event.copyWith(timestamp: ts);
-                        _saveData();
-                      }
-                    });
-                    Navigator.pop(ctx);
-                  },
-                  child: Text('GUARDAR', style: TextStyle(color: ic, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _logDose(MedicationDef med, Color cc, Color ic) {
-    DateTime ts = _timestampForLog();
-    final recentSymptoms = _activeProfile!.recentSignificantSymptoms(hours: 4);
-    SymptomEvent? selectedSymptom;
-    final trackOutcome = ValueNotifier<bool>(med.outcomeCheckHours != null && recentSymptoms.isNotEmpty);
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: ic,
-      shape: RoundedRectangleBorder(side: BorderSide(color: cc, width: 2)),
-      isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("REGISTRAR: ${med.name.toUpperCase()}",
-                      style: TextStyle(color: cc, fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Text(
-                    med.notes?.isNotEmpty == true ? med.notes! : med.displayDose,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: cc.withValues(alpha: 0.5))),
-                    icon: Icon(Icons.access_time, color: cc, size: 16),
-                    label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                        style: TextStyle(color: cc, fontSize: 12)),
-                    onPressed: () async {
-                      final picked = await pickTimestamp(
-                          context: ctx, initial: ts, contrastColor: cc, inverseContrastColor: ic);
-                      if (picked != null) setSheet(() => ts = picked);
-                    },
-                  ),
-                  if (med.outcomeCheckHours != null && recentSymptoms.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(border: Border.all(color: cc.withValues(alpha: 0.5))),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ValueListenableBuilder<bool>(
-                            valueListenable: trackOutcome,
-                            builder: (_, val, __) => Row(
-                              children: [
-                                Checkbox(
-                                  value: val,
-                                  activeColor: cc,
-                                  onChanged: (v) => trackOutcome.value = v ?? false,
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    "Hacer seguimiento ${med.outcomeCheckHours}h después",
-                                    style: TextStyle(color: cc, fontSize: 13),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ValueListenableBuilder<bool>(
-                            valueListenable: trackOutcome,
-                            builder: (_, val, __) {
-                              if (!val) return const SizedBox.shrink();
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const SizedBox(height: 8),
-                                  Text("¿Para qué síntoma?",
-                                      style: TextStyle(color: cc, fontSize: 12, fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 4),
-                                  ...recentSymptoms.take(5).map((s) => RadioListTile<SymptomEvent>(
-                                        value: s,
-                                        groupValue: selectedSymptom,
-                                        activeColor: cc,
-                                        dense: true,
-                                        contentPadding: EdgeInsets.zero,
-                                        title: Text(
-                                          "${s.name} (${s.severity.label}) — ${DateFormat('HH:mm').format(s.timestamp)}",
-                                          style: TextStyle(color: cc, fontSize: 12),
-                                        ),
-                                        onChanged: (v) => setSheet(() => selectedSymptom = v),
-                                      )),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: cc, minimumSize: const Size.fromHeight(48),
-                    ),
-                    onPressed: () {
-                      final dose = DoseEvent(
-                        timestamp: ts,
-                        medicationName: med.name,
-                        linkedSymptomIds: selectedSymptom != null ? [selectedSymptom!.id] : const [],
-                      );
-                      setState(() {
-                        _activeProfile!.doseHistory.add(dose);
-                        if (trackOutcome.value &&
-                            selectedSymptom != null &&
-                            med.outcomeCheckHours != null) {
-                          _activeProfile!.medicationOutcomes.add(MedicationOutcome(
-                            doseId: dose.id,
-                            symptomId: selectedSymptom!.id,
-                            medicationName: med.name,
-                            symptomName: selectedSymptom!.name,
-                            doseTimestamp: ts,
-                            checkAt: ts.add(Duration(hours: med.outcomeCheckHours!)),
-                            severityBefore: selectedSymptom!.severity.value,
-                          ));
-                        }
-                        _saveData();
-                      });
-                      Navigator.pop(ctx);
-                    },
-                    child: Text('REGISTRAR DOSIS',
-                        style: TextStyle(color: ic, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _openActivityMenu(ExerciseDef ex, Color cc, Color ic) {
-    DateTime ts = _timestampForLog();
-    final setsCtrl = TextEditingController();
-    final repsCtrl = TextEditingController();
-    final durationCtrl = TextEditingController();
-    final hhrCtrl = TextEditingController();
-    final noteCtrl = TextEditingController();
-    int effort = 5;
-    int feeling = 3;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: ic,
-      shape: RoundedRectangleBorder(side: BorderSide(color: cc, width: 2)),
-      isScrollControlled: true,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(ex.name.toUpperCase(),
-                      style: TextStyle(color: cc, fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: cc.withValues(alpha: 0.5))),
-                    icon: Icon(Icons.access_time, color: cc, size: 16),
-                    label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                        style: TextStyle(color: cc, fontSize: 12)),
-                    onPressed: () async {
-                      final picked = await pickTimestamp(
-                          context: ctx, initial: ts, contrastColor: cc, inverseContrastColor: ic);
-                      if (picked != null) setSheet(() => ts = picked);
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  if (ex.durationBased)
-                    TextField(
-                      controller: durationCtrl,
-                      style: TextStyle(color: cc),
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                          hintText: "Duración (min)", hintStyle: TextStyle(color: Colors.grey)),
-                    )
-                  else
-                    Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: setsCtrl,
-                            style: TextStyle(color: cc),
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(hintText: "Sets", hintStyle: TextStyle(color: Colors.grey)),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: TextField(
-                            controller: repsCtrl,
-                            style: TextStyle(color: cc),
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(hintText: "Reps", hintStyle: TextStyle(color: Colors.grey)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: hhrCtrl,
-                    style: TextStyle(color: cc),
-                    decoration: const InputDecoration(
-                        hintText: "HHR opcional (ej. 70→110)", hintStyle: TextStyle(color: Colors.grey)),
-                  ),
-                  const SizedBox(height: 16),
-                  Text("Esfuerzo: $effort/10",
-                      style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12)),
-                  Slider(
-                    value: effort.toDouble(),
-                    min: 0,
-                    max: 10,
-                    divisions: 10,
-                    activeColor: cc,
-                    label: '$effort',
-                    onChanged: (v) => setSheet(() => effort = v.toInt()),
-                  ),
-                  Text("Cómo me sentí: $feeling/5",
-                      style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12)),
-                  Text(_feelingLabel(feeling),
-                      style: const TextStyle(color: Colors.grey, fontSize: 11)),
-                  Slider(
-                    value: feeling.toDouble(),
-                    min: 1,
-                    max: 5,
-                    divisions: 4,
-                    activeColor: cc,
-                    label: '$feeling',
-                    onChanged: (v) => setSheet(() => feeling = v.toInt()),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: noteCtrl,
-                    style: TextStyle(color: cc),
-                    decoration: const InputDecoration(
-                        hintText: "Nota opcional", hintStyle: TextStyle(color: Colors.grey)),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: cc, minimumSize: const Size.fromHeight(48),
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _activeProfile!.activityHistory.add(ActivityEvent(
-                          timestamp: ts,
-                          name: ex.name,
-                          sets: int.tryParse(setsCtrl.text),
-                          reps: int.tryParse(repsCtrl.text),
-                          durationMinutes: int.tryParse(durationCtrl.text),
-                          effort: effort,
-                          feeling: feeling,
-                          hhr: hhrCtrl.text.trim().isEmpty ? null : hhrCtrl.text.trim(),
-                          note: noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim(),
-                        ));
-                        _saveData();
-                      });
-                      Navigator.pop(ctx);
-                    },
-                    child: Text('GUARDAR ACTIVIDAD',
-                        style: TextStyle(color: ic, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _feelingLabel(int v) => switch (v) {
-        1 => '🤕 En dolor / lesión',
-        2 => '😟 Incómodo / preocupado',
-        3 => '😐 Neutral',
-        4 => '😊 Relajado',
-        5 => '💪 Fuerte y seguro',
-        _ => '$v',
-      };
 }

@@ -22,6 +22,7 @@
 
 import 'dart:math';
 
+
 // -----------------------------------------------------------------------------
 // ID generation
 // -----------------------------------------------------------------------------
@@ -1216,6 +1217,11 @@ class Profile {
 // MOOD TRACKING (Foxtale-style B+C: quadrant → palette → multi-select)
 // =============================================================================
 
+// =============================================================================
+// MOOD TRACKING MODELS (EMA - Quadrant → Rich Palette via JSON)
+// Language: Gender-Neutral Nouns (Sustantivos Neutros)
+// =============================================================================
+
 enum MoodQuadrant {
   activatedUnpleasant,
   activatedPleasant,
@@ -1224,54 +1230,93 @@ enum MoodQuadrant {
 }
 
 extension MoodQuadrantLabels on MoodQuadrant {
+  /// Etiquetas de los cuadrantes utilizando sustantivos abstractos neutros
+  /// en lugar de adjetivos con género (ej. 'activada/calmada').
   String get label => switch (this) {
-        MoodQuadrant.activatedUnpleasant => 'activada · desagradable',
-        MoodQuadrant.activatedPleasant => 'activada · agradable',
-        MoodQuadrant.calmUnpleasant => 'calmada · desagradable',
-        MoodQuadrant.calmPleasant => 'calmada · agradable',
+        MoodQuadrant.activatedUnpleasant => 'activación · malestar',
+        MoodQuadrant.activatedPleasant => 'activación · bienestar',
+        MoodQuadrant.calmUnpleasant => 'calma · malestar',
+        MoodQuadrant.calmPleasant => 'calma · bienestar',
       };
 
-  /// Short teaser shown on the quadrant card in step 1.
+  /// Descriptores breves basados en estados sustantivos neutros para el paso 1.
   String get teaserStates => switch (this) {
-        MoodQuadrant.activatedUnpleasant => 'tensa, ansiosa',
-        MoodQuadrant.activatedPleasant => 'enérgica, alegre',
-        MoodQuadrant.calmUnpleasant => 'drenada, triste',
-        MoodQuadrant.calmPleasant => 'tranquila, en paz',
+        MoodQuadrant.activatedUnpleasant => 'tensión, ansiedad',
+        MoodQuadrant.activatedPleasant => 'energía, alegría',
+        MoodQuadrant.calmUnpleasant => 'agotamiento, tristeza',
+        MoodQuadrant.calmPleasant => 'tranquilidad, paz',
+      };
+
+  /// Mapea las claves de categorías del archivo JSON con los enums nativos de Dart
+  static MoodQuadrant fromJsonCategory(String category) {
+    return switch (category.toLowerCase()) {
+      'high-unpleasant' => MoodQuadrant.activatedUnpleasant,
+      'high-pleasant' => MoodQuadrant.activatedPleasant,
+      'low-unpleasant' => MoodQuadrant.calmUnpleasant,
+      'low-pleasant' => MoodQuadrant.calmPleasant,
+      _ => MoodQuadrant.calmPleasant,
+    };
+  }
+}
+
+/// Representa una emoción rica con sus definiciones clínicas e idiomas,
+/// cargada directamente desde el archivo `ema_moods.json` (versión neutra).
+class EmaMood {
+  final String english;
+  final String spanish; // Almacenará el sustantivo (ej. "Aislamiento", "Frustración")
+  final String definitionEn;
+  final String definitionEs;
+
+  EmaMood({
+    required this.english,
+    required this.spanish,
+    required this.definitionEn,
+    required this.definitionEs,
+  });
+
+  factory EmaMood.fromMap(Map<String, dynamic> map) {
+    // 🚨 EL FIX ESTÁ AQUÍ:
+    // Buscamos la palabra usando todas las claves posibles que podrías tener en el JSON.
+    // Si ninguna coincide, mostrará "Falta Key" en rojo en la app para que te des cuenta.
+    
+    final es = map['spanish_equivalent'] ?? map['estado_es'] ?? map['name_es'] ?? map['word_es'] ?? map['mood_es'] ?? 'Falta Key';
+    final en = map['english_term'] ?? map['estado_en'] ?? map['name_en'] ?? map['word_en'] ?? map['mood_en'] ?? 'Missing Key';
+    
+    final defEs = map['definition_es'] ?? map['definicion_es'] ?? map['desc_es'] ?? '';
+    final defEn = map['definition_en'] ?? map['definicion_en'] ?? map['desc_en'] ?? '';
+
+    return EmaMood(
+      english: en.toString(),
+      spanish: es.toString(),
+      definitionEn: defEn.toString(),
+      definitionEs: defEs.toString(),
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        'english': english,
+        'spanish': spanish,
+        'definition_en': definitionEn,
+        'definition_es': definitionEs,
       };
 }
 
-/// Spanish mood vocabulary, curated per quadrant.
-/// "abrumada" intentionally appears in two quadrants — it's a state that
-/// reads as either high- or low-arousal depending on the day. The duplicate
-/// is a feature.
-const kMoodVocabulary = <MoodQuadrant, List<String>>{
-  MoodQuadrant.activatedUnpleasant: [
-    'ansiosa', 'tensa', 'irritada', 'frustrada', 'abrumada', 'asustada',
-  ],
-  MoodQuadrant.activatedPleasant: [
-    'enérgica', 'emocionada', 'motivada', 'alegre', 'entusiasta', 'optimista',
-  ],
-  MoodQuadrant.calmUnpleasant: [
-    'drenada', 'triste', 'vacía', 'agotada', 'indiferente', 'abrumada',
-  ],
-  MoodQuadrant.calmPleasant: [
-    'tranquila', 'en paz', 'satisfecha', 'esperanzada', 'agradecida', 'segura',
-  ],
-};
-
+/// Representa un registro histórico guardado por el usuario.
+/// Mantiene los estados seleccionados como cadenas (sustantivos del JSON)
+/// y notas contextuales libres.
 class MoodEntry {
   final String id;
   final DateTime timestamp;
   final MoodQuadrant primaryQuadrant;
-  final List<String> states;
-  final int? intensity; // 1–5, optional, session-level
+  final List<String> states; // Almacena los sustantivos neutros seleccionados
+  final String? notes;       // Contexto personalizado opcional (Ej: "Mucha niebla mental")
 
   MoodEntry({
     String? id,
     required this.timestamp,
     required this.primaryQuadrant,
     required this.states,
-    this.intensity,
+    this.notes,
   }) : id = id ?? '${timestamp.millisecondsSinceEpoch}-${states.join('|').hashCode}';
 
   Map<String, dynamic> toMap() => {
@@ -1279,32 +1324,32 @@ class MoodEntry {
         'timestamp': timestamp.toIso8601String(),
         'primaryQuadrant': primaryQuadrant.name,
         'states': states,
-        'intensity': intensity,
+        'notes': notes,
       };
 
   factory MoodEntry.fromMap(Map<String, dynamic> map) => MoodEntry(
         id: map['id'] as String?,
         timestamp: DateTime.parse(map['timestamp'] as String),
         primaryQuadrant: MoodQuadrant.values.firstWhere(
-          (q) => q.name == map['primaryQuadrant'],
+          (q) => q.name == map['mapPrimaryQuadrant'] || q.name == map['primaryQuadrant'],
           orElse: () => MoodQuadrant.calmPleasant,
         ),
         states: List<String>.from((map['states'] as List?) ?? const []),
-        intensity: map['intensity'] as int?,
+        notes: map['notes'] as String?,
       );
 
   MoodEntry copyWith({
     DateTime? timestamp,
     MoodQuadrant? primaryQuadrant,
     List<String>? states,
-    int? intensity,
+    String? notes,
   }) =>
       MoodEntry(
         id: id,
         timestamp: timestamp ?? this.timestamp,
         primaryQuadrant: primaryQuadrant ?? this.primaryQuadrant,
         states: states ?? this.states,
-        intensity: intensity ?? this.intensity,
+        notes: notes ?? this.notes,
       );
 }
 
