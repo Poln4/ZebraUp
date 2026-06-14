@@ -1,0 +1,64 @@
+{
+  "@@locale": "es",
+
+  "navHoy": "Hoy",
+  "navSintomas": "Síntomas",
+  "navMovimiento": "Movimiento",
+  "navBotiquin": "Botiquín",
+  "navClinica": "Clínica",
+
+  "actionCancel": "Cancelar",
+  "actionSave": "Guardar",
+  "actionImport": "Importar",
+  "actionContinue": "Continuar",
+  "actionUnderstood": "Entendido",
+
+  "languageSectionTitle": "IDIOMA / LANGUAGE",
+  "languageFootnote": "El idioma se aplica a toda la aplicación. Tus datos no cambian.",
+
+  "myDataTitle": "MIS DATOS",
+  "arcoRightsBlurb": "Tienes derecho a acceder, exportar, importar o eliminar tus datos en cualquier momento.",
+  "exportDataButton": "EXPORTAR MIS DATOS",
+  "importFileButton": "IMPORTAR DESDE ARCHIVO",
+  "importPasteButton": "IMPORTAR PEGANDO TEXTO",
+  "wipeAllButton": "BORRAR TODO",
+  "wipeWarningFootnote": "Esta acción borra todos los perfiles, registros y configuraciones. Irreversible.",
+
+  "exportSuccess": "Datos exportados: {filename}",
+  "@exportSuccess": { "placeholders": { "filename": { "type": "String" } } },
+  "exportError": "Error al exportar: {reason}",
+  "@exportError": { "placeholders": { "reason": { "type": "String" } } },
+
+  "importCancelled": "Importación cancelada: {reason}",
+  "@importCancelled": { "placeholders": { "reason": { "type": "String" } } },
+  "importSuccess": "Perfil importado correctamente.",
+  "importDialogTitle": "Importar este perfil",
+  "importDialogName": "Nombre: {name}",
+  "@importDialogName": { "placeholders": { "name": { "type": "String" } } },
+  "importDialogExportedAt": "Exportado: {date}",
+  "@importDialogExportedAt": { "placeholders": { "date": { "type": "String" } } },
+  "importDialogContains": "Contiene {count} registros:",
+  "@importDialogContains": { "placeholders": { "count": { "type": "int" } } },
+  "importDialogFootnote": "Esto se agregará como un perfil nuevo. Tu perfil actual no se borra.",
+
+  "nounSymptoms": "síntomas",
+  "nounDoses": "dosis",
+  "nounStructural": "eventos estructurales",
+  "nounActivities": "actividades",
+  "nounTherapies": "terapias",
+  "nounMoods": "estados de ánimo",
+  "nounMental": "registros mentales",
+
+  "pasteImportTitle": "Importar pegando texto",
+  "pasteImportInstructions": "Abre tu archivo .json exportado (por ejemplo, desde la app Archivos), selecciona todo el texto, cópialo y pégalo aquí.",
+  "pasteImportHint": "Pega aquí el contenido del archivo…",
+
+  "errImportUnreadable": "No se pudo leer el archivo.",
+  "errImportInvalidJson": "El texto no es JSON válido.",
+  "errImportNotZebra": "Este archivo no parece ser de ZebraUpp.",
+  "errImportUnknownSchema": "Versión de esquema desconocida.",
+  "errImportSchemaMismatch": "Este archivo es de una versión diferente (v{found}). Versión esperada: v{expected}.",
+  "@errImportSchemaMismatch": { "placeholders": { "found": { "type": "String" }, "expected": { "type": "String" } } },
+  "errImportMissingProfile": "No se encontró perfil en el archivo.",
+  "errImportCorruptProfile": "El perfil está dañado o tiene un formato inesperado."
+}

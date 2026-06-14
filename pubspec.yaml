@@ -35,7 +35,7 @@ dependencies:
   http: ^1.2.0           # API calls to NCBI E-utilities
   xml: ^7.0.1            # parsing PubMed XML responses (efetch abstracts)
   url_launcher: ^6.2.5   # opening pubmed.ncbi.nlm.nih.gov links externally
- 
+  
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
@@ -44,8 +44,11 @@ dependencies:
   hive_flutter: ^1.1.0
   image_picker: ^1.0.7
 
-  file_saver: ^0.2.13
-  file_picker: ^8.0.0
+  file_saver: ^0.2.14
+  file_picker: ^8.1.2
+  flutter_localizations:        
+    sdk: flutter
+  
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +66,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

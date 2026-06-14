@@ -13,6 +13,7 @@ import '../services/weather_service.dart';
 import '../services/medline_plus_service.dart';
 import '../widgets/condition_info_sheet.dart';
 import '../widgets/life_event_form_sheet.dart';
+import '../l10n/app_localizations.dart';
 import 'onboarding_screen.dart';
 import 'hoy_tab.dart';
 import 'botiquin_tab.dart';
@@ -26,6 +27,8 @@ class MainAppScreen extends StatefulWidget {
   final VoidCallback onToggleTheme;
   final double fontScale;
   final ValueChanged<double> onScaleFont;
+  final Locale locale;
+  final ValueChanged<Locale> onChangeLocale;
 
   const MainAppScreen({
     super.key,
@@ -33,6 +36,8 @@ class MainAppScreen extends StatefulWidget {
     required this.onToggleTheme,
     required this.fontScale,
     required this.onScaleFont,
+    required this.locale,
+    required this.onChangeLocale,
   });
 
   @override
@@ -40,7 +45,7 @@ class MainAppScreen extends StatefulWidget {
 }
 
 class _MainAppScreenState extends State<MainAppScreen> {
-  late List<Profile> _profiles;
+  List<Profile> _profiles = [];
   Profile? _activeProfile;
 
   // Variables para la Base de Datos Clínica, de Sabiduría y Emociones (EMA)
@@ -218,63 +223,162 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   Future<void> _exportActiveProfile() async {
     if (_activeProfile == null) return;
+    final t = AppLocalizations.of(context)!;
     try {
       final filename = await _profileIo.exportProfile(_activeProfile!);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Datos exportados: $filename'), duration: const Duration(seconds: 4)),
+        SnackBar(content: Text(t.exportSuccess(filename)), duration: const Duration(seconds: 4)),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al exportar: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(t.exportError(e.toString()))));
     }
   }
 
-  Future<void> _importProfile() async {
+  /// Traduce un error tipado del servicio a texto localizado para el usuario.
+  String _importErrorMessage(Object e, AppLocalizations t) {
+    if (e is ImportException) {
+      return switch (e.code) {
+        ImportErrorCode.unreadableFile => t.errImportUnreadable,
+        ImportErrorCode.invalidJson => t.errImportInvalidJson,
+        ImportErrorCode.notZebraUpp => t.errImportNotZebra,
+        ImportErrorCode.unknownSchema => t.errImportUnknownSchema,
+        ImportErrorCode.schemaMismatch => t.errImportSchemaMismatch(
+            e.detail ?? '?', ProfileIoService.schemaVersion.toString()),
+        ImportErrorCode.missingProfile => t.errImportMissingProfile,
+        ImportErrorCode.corruptProfile => t.errImportCorruptProfile,
+      };
+    }
+    return e.toString();
+  }
+
+  /// Vía A: importar desde archivo (file_picker).
+  Future<void> _importProfileFromFile() async {
+    final t = AppLocalizations.of(context)!;
     final ImportPreview? preview;
     try {
       preview = await _profileIo.pickAndValidateImport();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Importación cancelada: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(t.importCancelled(_importErrorMessage(e, t)))));
       return;
     }
     if (preview == null || !mounted) return;
+    await _confirmAndApplyImport(preview);
+  }
 
-    final confirmed = await showDialog<bool>(
+  /// Vía B: importar pegando el JSON como texto. Sin plugins — funciona
+  /// siempre, incluso en PWA de iOS o si file_picker falla.
+  Future<void> _importProfileFromPaste() async {
+    final t = AppLocalizations.of(context)!;
+    final ctrl = TextEditingController();
+    final raw = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Importar este perfil'),
+        title: Text(t.pasteImportTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Nombre: ${preview!.profile.name}', style: const TextStyle(fontWeight: FontWeight.bold)),
-            if (preview.exportedAt != null) ...[
-              const SizedBox(height: 4),
-              Text('Exportado: ${preview.exportedAt!.toLocal().toString().split('.').first}', style: const TextStyle(color: Colors.grey, fontSize: 12)),
-            ],
+            Text(t.pasteImportInstructions, style: const TextStyle(fontSize: 12)),
             const SizedBox(height: 12),
-            Text('Contiene ${preview.totalEvents} registros:'),
-            const SizedBox(height: 4),
-            Text('• ${preview.symptomCount} síntomas\n• ${preview.doseCount} dosis\n• ${preview.structuralCount} estructurales\n• ${preview.activityCount} actividades\n• ${preview.therapyCount} terapias\n• ${preview.moodCount} estados de ánimo\n• ${preview.mentalCount} registros mentales', style: const TextStyle(fontSize: 12)),
-            const SizedBox(height: 12),
-            const Text('Esto se agregará como un perfil nuevo. Tu perfil actual no se borra.', style: TextStyle(fontSize: 12, color: Colors.grey)),
+            TextField(
+              controller: ctrl,
+              maxLines: 6,
+              autofocus: true,
+              style: const TextStyle(fontSize: 11, fontFamily: 'Courier'),
+              decoration: InputDecoration(
+                hintText: t.pasteImportHint,
+                border: const OutlineInputBorder(),
+              ),
+            ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Importar')),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(t.actionCancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, ctrl.text),
+              child: Text(t.actionImport)),
+        ],
+      ),
+    );
+    if (raw == null || raw.trim().isEmpty || !mounted) return;
+
+    final ImportPreview preview;
+    try {
+      preview = _profileIo.validateJsonString(raw.trim());
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(t.importCancelled(_importErrorMessage(e, t)))));
+      return;
+    }
+    await _confirmAndApplyImport(preview);
+  }
+
+  /// Núcleo compartido: diálogo de confirmación + aplicación del perfil.
+  /// Ambas vías de importación terminan aquí.
+  Future<void> _confirmAndApplyImport(ImportPreview preview) async {
+    final t = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.importDialogTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(t.importDialogName(preview.profile.name),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            if (preview.exportedAt != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                  t.importDialogExportedAt(preview.exportedAt!
+                      .toLocal()
+                      .toString()
+                      .split('.')
+                      .first),
+                  style: const TextStyle(color: Colors.grey, fontSize: 12)),
+            ],
+            const SizedBox(height: 12),
+            Text(t.importDialogContains(preview.totalEvents)),
+            const SizedBox(height: 4),
+            Text(
+                '• ${preview.symptomCount} ${t.nounSymptoms}\n'
+                '• ${preview.doseCount} ${t.nounDoses}\n'
+                '• ${preview.structuralCount} ${t.nounStructural}\n'
+                '• ${preview.activityCount} ${t.nounActivities}\n'
+                '• ${preview.therapyCount} ${t.nounTherapies}\n'
+                '• ${preview.moodCount} ${t.nounMoods}\n'
+                '• ${preview.mentalCount} ${t.nounMental}',
+                style: const TextStyle(fontSize: 12)),
+            const SizedBox(height: 12),
+            Text(t.importDialogFootnote,
+                style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(t.actionCancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(t.actionImport)),
         ],
       ),
     );
     if (confirmed != true || !mounted) return;
 
-    final imported = preview.profile;
     final newProfile = Profile.fromMap({
-      ...imported.toMap(),
+      ...preview.profile.toMap(),
       'id': '${DateTime.now().millisecondsSinceEpoch}-imported',
     });
+    _profileIo.finalizeImport(preview);
     setState(() {
       _profiles.add(newProfile);
       _activeProfile = newProfile;
@@ -282,7 +386,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
       _saveData();
     });
     await _fetchTodayWeather();
-    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Perfil importado correctamente.')));
+    if (mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(t.importSuccess)));
+    }
   }
 
   Future<void> _wipeAllData() async {
@@ -368,12 +475,32 @@ class _MainAppScreenState extends State<MainAppScreen> {
   void _loadUserProfiles() {
     final box = Hive.box('zebraBox');
     final storedData = box.get('profiles');
-    if (storedData != null) {
-      final decoded = json.decode(storedData) as List<dynamic>;
-      _profiles = decoded.map((x) => Profile.fromMap(x)).toList();
-    } else {
+    if (storedData == null) {
       _profiles = [];
-      _saveData();
+      return; // OJO: ya no llamamos _saveData() aquí — no hay nada que guardar
+    }
+    try {
+      final decoded = json.decode(storedData) as List<dynamic>;
+      final loaded = <Profile>[];
+      for (final x in decoded) {
+        try {
+          loaded.add(Profile.fromMap(Map<String, dynamic>.from(x as Map)));
+        } catch (e) {
+          // Un perfil corrupto no debe tumbar a los demás.
+          debugPrint('Perfil omitido por error de parseo: $e');
+        }
+      }
+      if (loaded.isEmpty && decoded.isNotEmpty) {
+        // Todo falló al parsear: respaldar el blob crudo ANTES de que
+        // cualquier _saveData() lo sobrescriba. Recuperable manualmente.
+        box.put('profiles_backup_${DateTime.now().millisecondsSinceEpoch}', storedData);
+      }
+      _profiles = loaded;
+    } catch (e) {
+      // JSON ilegible: respaldar y partir vacío SIN sobrescribir el original.
+      debugPrint('Error decodificando profiles: $e');
+      box.put('profiles_backup_${DateTime.now().millisecondsSinceEpoch}', storedData);
+      _profiles = [];
     }
     if (_profiles.isNotEmpty) {
       _activeProfile = _profiles.first;
@@ -464,14 +591,22 @@ class _MainAppScreenState extends State<MainAppScreen> {
         currentIndex: _currentNavIndex,
         onTap: (i) => setState(() => _currentNavIndex = i),
         items: [
-          const BottomNavigationBarItem(icon: Icon(Icons.wb_sunny_outlined), label: 'Hoy'),
-          const BottomNavigationBarItem(icon: Icon(Icons.accessibility_new_rounded), label: 'Síntomas'),
-          const BottomNavigationBarItem(icon: Icon(Icons.self_improvement_outlined), label: 'Movimiento'),
+          BottomNavigationBarItem(
+              icon: const Icon(Icons.wb_sunny_outlined),
+              label: AppLocalizations.of(context)!.navHoy),
+          BottomNavigationBarItem(
+              icon: const Icon(Icons.accessibility_new_rounded),
+              label: AppLocalizations.of(context)!.navSintomas),
+          BottomNavigationBarItem(
+              icon: const Icon(Icons.self_improvement_outlined),
+              label: AppLocalizations.of(context)!.navMovimiento),
           BottomNavigationBarItem(
             icon: _buildBotiquinIcon(dueOutcomesCount, contrastColor),
-            label: 'Botiquín',
+            label: AppLocalizations.of(context)!.navBotiquin,
           ),
-          const BottomNavigationBarItem(icon: Icon(Icons.analytics_outlined), label: 'Clínica'),
+          BottomNavigationBarItem(
+              icon: const Icon(Icons.analytics_outlined),
+              label: AppLocalizations.of(context)!.navClinica),
         ],
       ),
     );
@@ -1164,6 +1299,50 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             ),
           ],
           const SizedBox(height: 32),
+          Text(AppLocalizations.of(context)!.languageSectionTitle,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  letterSpacing: 1,
+                  color: cc)),
+          Divider(color: cc),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 6,
+            children: [
+              (const Locale('es'), 'Español'),
+              (const Locale('en'), 'English'),
+            ].map((opt) {
+              final isSelected = widget.locale.languageCode == opt.$1.languageCode;
+              return InkWell(
+                onTap: () => widget.onChangeLocale(opt.$1),
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected ? cc : Colors.transparent,
+                    border: Border.all(color: cc.withValues(alpha: 0.4)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Text(opt.$2,
+                      style: TextStyle(
+                        color: isSelected ? ic : cc.withValues(alpha: 0.8),
+                        fontSize: 13,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                      )),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 4),
+          Text(AppLocalizations.of(context)!.languageFootnote,
+              style: TextStyle(
+                  color: cc.withValues(alpha: 0.5),
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic)),
+          const SizedBox(height: 32),
           Text("MIS DATOS",
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1, color: cc)),
           Divider(color: cc),
@@ -1189,10 +1368,21 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               side: BorderSide(color: cc, width: 1.5),
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            icon: Icon(Icons.upload_outlined, color: cc),
-            label: Text("IMPORTAR PERFIL",
+            icon: Icon(Icons.upload_file_outlined, color: cc),
+            label: Text(AppLocalizations.of(context)!.importFileButton,
                 style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13)),
-            onPressed: _importProfile,
+            onPressed: _importProfileFromFile,
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: cc, width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+            ),
+            icon: Icon(Icons.content_paste_go_outlined, color: cc),
+            label: Text(AppLocalizations.of(context)!.importPasteButton,
+                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13)),
+            onPressed: _importProfileFromPaste,
           ),
           const SizedBox(height: 16),
           OutlinedButton.icon(

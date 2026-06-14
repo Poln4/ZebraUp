@@ -1,0 +1,57 @@
+{
+  "@@locale": "en",
+
+  "navHoy": "Today",
+  "navSintomas": "Symptoms",
+  "navMovimiento": "Movement",
+  "navBotiquin": "Med Kit",
+  "navClinica": "Clinical",
+
+  "actionCancel": "Cancel",
+  "actionSave": "Save",
+  "actionImport": "Import",
+  "actionContinue": "Continue",
+  "actionUnderstood": "Got it",
+
+  "languageSectionTitle": "IDIOMA / LANGUAGE",
+  "languageFootnote": "The language applies to the whole app. Your data does not change.",
+
+  "myDataTitle": "MY DATA",
+  "arcoRightsBlurb": "You have the right to access, export, import, or delete your data at any time.",
+  "exportDataButton": "EXPORT MY DATA",
+  "importFileButton": "IMPORT FROM FILE",
+  "importPasteButton": "IMPORT BY PASTING TEXT",
+  "wipeAllButton": "DELETE EVERYTHING",
+  "wipeWarningFootnote": "This deletes all profiles, records, and settings. Irreversible.",
+
+  "exportSuccess": "Data exported: {filename}",
+  "exportError": "Export error: {reason}",
+
+  "importCancelled": "Import cancelled: {reason}",
+  "importSuccess": "Profile imported successfully.",
+  "importDialogTitle": "Import this profile",
+  "importDialogName": "Name: {name}",
+  "importDialogExportedAt": "Exported: {date}",
+  "importDialogContains": "Contains {count} records:",
+  "importDialogFootnote": "This will be added as a new profile. Your current profile is not deleted.",
+
+  "nounSymptoms": "symptoms",
+  "nounDoses": "doses",
+  "nounStructural": "structural events",
+  "nounActivities": "activities",
+  "nounTherapies": "therapies",
+  "nounMoods": "mood entries",
+  "nounMental": "mental records",
+
+  "pasteImportTitle": "Import by pasting text",
+  "pasteImportInstructions": "Open your exported .json file (for example, from the Files app), select all the text, copy it, and paste it here.",
+  "pasteImportHint": "Paste the file contents here…",
+
+  "errImportUnreadable": "The file could not be read.",
+  "errImportInvalidJson": "The text is not valid JSON.",
+  "errImportNotZebra": "This file does not appear to be from ZebraUpp.",
+  "errImportUnknownSchema": "Unknown schema version.",
+  "errImportSchemaMismatch": "This file is from a different version (v{found}). Expected version: v{expected}.",
+  "errImportMissingProfile": "No profile found in the file.",
+  "errImportCorruptProfile": "The profile is damaged or has an unexpected format."
+}
