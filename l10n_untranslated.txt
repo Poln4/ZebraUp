@@ -1,1 +1,65 @@
-{}
+{
+  "en": [
+    "quadrantCalpleasant"
+  ],
+
+  "zh": [
+    "exportSuccess",
+    "exportError",
+    "importCancelled",
+    "importSuccess",
+    "importDialogTitle",
+    "importDialogName",
+    "importDialogExportedAt",
+    "importDialogContains",
+    "importDialogFootnote",
+    "nounSymptoms",
+    "nounDoses",
+    "nounStructural",
+    "nounActivities",
+    "nounTherapies",
+    "nounMoods",
+    "nounMental",
+    "pasteImportTitle",
+    "pasteImportInstructions",
+    "pasteImportHint",
+    "errImportUnreadable",
+    "errImportInvalidJson",
+    "errImportNotZebra",
+    "errImportUnknownSchema",
+    "errImportSchemaMismatch",
+    "errImportMissingProfile",
+    "errImportCorruptProfile",
+    "quadrantCalpleasant"
+  ],
+
+  "zh_TW": [
+    "exportSuccess",
+    "exportError",
+    "importCancelled",
+    "importSuccess",
+    "importDialogTitle",
+    "importDialogName",
+    "importDialogExportedAt",
+    "importDialogContains",
+    "importDialogFootnote",
+    "nounSymptoms",
+    "nounDoses",
+    "nounStructural",
+    "nounActivities",
+    "nounTherapies",
+    "nounMoods",
+    "nounMental",
+    "pasteImportTitle",
+    "pasteImportInstructions",
+    "pasteImportHint",
+    "errImportUnreadable",
+    "errImportInvalidJson",
+    "errImportNotZebra",
+    "errImportUnknownSchema",
+    "errImportSchemaMismatch",
+    "errImportMissingProfile",
+    "errImportCorruptProfile",
+    "quadrantCalpleasant"
+  ]
+}

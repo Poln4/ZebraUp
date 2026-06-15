@@ -876,6 +876,8 @@ class Profile {
   List<HydrationEntry> hydrationHistory;
   List<HrvReading> hrvHistory;
   List<MovementMetric> movementHistory;
+  // PHASE 5.2d — fever readings (schema v3, additive)
+  List<FeverReading> feverHistory;
 
   // Weather
   double? homeLatitude;
@@ -917,6 +919,7 @@ class Profile {
     List<HydrationEntry>? hydration,
     List<HrvReading>? hrv,
     List<MovementMetric>? movement,
+    List<FeverReading>? fever,
   })  : medicationGroups = medicationGroups ?? <MedicationGroup>[],
         symptomHistory = symptoms ?? <SymptomEvent>[],
         doseHistory = doses ?? <DoseEvent>[],
@@ -932,7 +935,8 @@ class Profile {
         sleepHistory = sleep ?? <SleepEntry>[],
         hydrationHistory = hydration ?? <HydrationEntry>[],
         hrvHistory = hrv ?? <HrvReading>[],
-        movementHistory = movement ?? <MovementMetric>[];
+        movementHistory = movement ?? <MovementMetric>[],
+        feverHistory = fever ?? <FeverReading>[];
 
   // ---------------------------------------------------------------------------
   // Catalog helpers
@@ -1019,6 +1023,37 @@ class Profile {
 
   List<StructuralEvent> getStructuralForDay(DateTime date) =>
       structuralHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  // PHASE 5.1 — bowel/hemorrhoidal day-query helpers
+  List<BowelEvent> getBowelForDay(DateTime date) =>
+      bowelHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  List<HemorrhoidalEvent> getHemorrhoidalForDay(DateTime date) =>
+      hemorrhoidalHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  // PHASE 5.2d — fever day-query helper
+  List<FeverReading> getFeverForDay(DateTime date) =>
+      feverHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  /// Days since the most recent bowel event, computed from `bowelHistory`.
+  ///
+  /// Returns `null` when there is no bowel history at all — the UI uses
+  /// null as the "no data yet" sentinel and hides the counter rather than
+  /// showing a misleading large number. Once any event has been logged,
+  /// the value is the integer day delta between today and the most recent
+  /// event's calendar date (so an event logged this morning returns 0).
+  int? get daysSinceLastBM {
+    if (bowelHistory.isEmpty) return null;
+    final mostRecent = bowelHistory
+        .map((e) => e.timestamp)
+        .reduce((a, b) => a.isAfter(b) ? a : b);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final lastDay =
+        DateTime(mostRecent.year, mostRecent.month, mostRecent.day);
+    final diff = today.difference(lastDay).inDays;
+    return diff < 0 ? 0 : diff;
+  }
 
   List<MentalEvent> getMentalForDay(DateTime date) =>
       mentalHistory.where((e) => _sameDay(e.timestamp, date)).toList();
@@ -1180,6 +1215,7 @@ class Profile {
         'hydrationHistory': hydrationHistory.map((x) => x.toMap()).toList(),
         'hrvHistory': hrvHistory.map((x) => x.toMap()).toList(),
         'movementHistory': movementHistory.map((x) => x.toMap()).toList(),
+        'feverHistory': feverHistory.map((x) => x.toMap()).toList(),
       };
 
   factory Profile.fromMap(Map<String, dynamic> map) => Profile(
@@ -1260,6 +1296,10 @@ class Profile {
         movement: List<MovementMetric>.from(
           (map['movementHistory'] ?? const []).map((x) =>
               MovementMetric.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
+        fever: List<FeverReading>.from(
+          (map['feverHistory'] ?? const []).map(
+              (x) => FeverReading.fromMap(Map<String, dynamic>.from(x as Map))),
         ),
       );
 }
@@ -2210,6 +2250,116 @@ class MovementMetric {
         exercisesCompleted: (map['exercisesCompleted'] as num?)?.toInt(),
         customValue: (map['customValue'] as num?)?.toDouble(),
         customUnit: map['customUnit'] as String?,
+        note: map['note'] as String?,
+      );
+}
+
+// =============================================================================
+// PHASE 5.2d — FEVER (schema v3)
+// =============================================================================
+// First-class temperature tracking. Distinct from SymptomEvent because
+// temperatures are quantitative and require dedicated display (peak,
+// trajectory, antipyretic timing). Captured in Celsius internally; UI
+// handles °C ↔ °F conversion at display time.
+//
+// Clinical motivation: patients with EDS frequently have autonomic
+// dysregulation, comorbid autoimmune conditions, or both. Fever as a
+// first-class signal lets clinicians distinguish infection from
+// dysautonomia symptoms — a temperature reading is unambiguous data,
+// where "fiebre" buried in a symptom note is not.
+
+enum FeverSite {
+  axillary('axilar'),
+  oral('oral'),
+  tympanic('timpánica'),
+  rectal('rectal'),
+  forehead('frente');
+
+  // Default fallback label (Spanish, LatAm neutral). For user-facing
+  // localized labels, use the FeverSiteLocalization.label(l10n)
+  // extension in lib/widgets/fever_form_sheet.dart.
+  final String defaultLabel;
+  const FeverSite(this.defaultLabel);
+
+  static FeverSite? parse(String? raw) {
+    if (raw == null) return null;
+    for (final s in values) {
+      if (s.name == raw) return s;
+    }
+    return null;
+  }
+}
+
+class FeverReading {
+  final String id;
+  final DateTime timestamp;
+
+  /// Temperature in Celsius. Single source of truth in the model — UI
+  /// converts to °F at display time, never the other direction.
+  final double temperatureC;
+
+  final FeverSite site;
+
+  /// Did the user take an antipyretic in roughly the 4h leading up to (or
+  /// concurrent with) this reading? Stored as a simple bool; the user
+  /// records the temperature they observe, and this flag contextualizes it
+  /// (a 38.2°C reading after paracetamol means something different than
+  /// 38.2°C with no medication on board).
+  final bool antipyreticTaken;
+
+  /// Optional free-text antipyretic name ("paracetamol", "ibuprofeno").
+  /// Not normalized to MedicationDef in 5.2d.1 — that mapping is
+  /// correlation engine territory and can be inferred later by name match.
+  final String? antipyreticName;
+
+  final String? note;
+
+  FeverReading({
+    String? id,
+    required this.timestamp,
+    required this.temperatureC,
+    this.site = FeverSite.axillary,
+    this.antipyreticTaken = false,
+    this.antipyreticName,
+    this.note,
+  }) : id = id ?? _newId();
+
+  FeverReading copyWith({
+    DateTime? timestamp,
+    double? temperatureC,
+    FeverSite? site,
+    bool? antipyreticTaken,
+    String? antipyreticName,
+    String? note,
+  }) {
+    return FeverReading(
+      id: id,
+      timestamp: timestamp ?? this.timestamp,
+      temperatureC: temperatureC ?? this.temperatureC,
+      site: site ?? this.site,
+      antipyreticTaken: antipyreticTaken ?? this.antipyreticTaken,
+      antipyreticName: antipyreticName ?? this.antipyreticName,
+      note: note ?? this.note,
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        'id': id,
+        'timestamp': timestamp.toIso8601String(),
+        'temperatureC': temperatureC,
+        'site': site.name,
+        'antipyreticTaken': antipyreticTaken,
+        'antipyreticName': antipyreticName,
+        'note': note,
+      };
+
+  factory FeverReading.fromMap(Map<String, dynamic> map) => FeverReading(
+        id: map['id'] as String?,
+        timestamp: DateTime.parse(map['timestamp'] as String),
+        temperatureC: (map['temperatureC'] as num).toDouble(),
+        site: FeverSite.parse(map['site'] as String?) ?? FeverSite.axillary,
+        antipyreticTaken: map['antipyreticTaken'] as bool? ?? false,
+        antipyreticName: map['antipyreticName'] as String?,
         note: map['note'] as String?,
       );
 }

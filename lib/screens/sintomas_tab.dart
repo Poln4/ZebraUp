@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/models.dart';
 import 'timestamp_picker.dart';
+import '../widgets/bowel_form_sheet.dart';
+import '../widgets/hemorrhoidal_form_sheet.dart';
+import '../widgets/fever_form_sheet.dart';
+import '../extensions/context_ext.dart';
+import '../l10n/app_localizations.dart';
+
 
 /// Síntomas tab.
 ///
@@ -135,13 +141,17 @@ class _SintomasTabState extends State<SintomasTab> {
   Widget build(BuildContext context) {
     final todaysStructs = _p.getStructuralForDay(widget.selectedDate);
     final todaysSymptoms = _p.getSymptomsForDay(widget.selectedDate);
-    final trending = _p.getTrendingSymptoms();
+    final todaysBowel = _p.getBowelForDay(widget.selectedDate);
+    final todaysHemorrhoidal = _p.getHemorrhoidalForDay(widget.selectedDate);
+    final todaysFever = _p.getFeverForDay(widget.selectedDate);
+    final trending = _p.getTrendingSymptoms(); 
+    final l10n = context.l10n;
 
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         // 1. STRUCTURAL ZONES
-        Text("ZONAS ESTRUCTURALES",
+        Text(l10n.symptomsSectionStructuralZones,
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
         const SizedBox(height: 12),
         Wrap(
@@ -157,10 +167,53 @@ class _SintomasTabState extends State<SintomasTab> {
               .toList(),
         ),
 
+        // PHASE 5.1 — TRÁNSITO INTESTINAL
+        const SizedBox(height: 28),
+        Text(l10n.symptomsSectionBowelTransit,
+            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            _bucketCard(BowelBucket.constipation, Icons.remove_circle_outline, 'estreñimiento'),
+            _bucketCard(BowelBucket.normal, Icons.circle_outlined, 'normal'),
+            _bucketCard(BowelBucket.diarrhea, Icons.waves, 'diarrea'),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.4))),
+            icon: Icon(Icons.add, color: _cc, size: 16),
+            label: Text(l10n.symptomsActionAddHemorrhoid, style: TextStyle(color: _cc, fontSize: 12)),
+            onPressed: _openHemorrhoidalForm,
+          ),
+        ),
+
+        // PHASE 5.2d.2 — FIEBRE
+        const SizedBox(height: 28),
+        Text(l10n.feverSectionTitle,
+            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
+        const SizedBox(height: 12),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+            icon: Icon(Icons.thermostat, color: _cc, size: 18),
+            label: Text(l10n.feverActionAddReading,
+                style: TextStyle(color: _cc, fontSize: 12, fontWeight: FontWeight.bold)),
+            onPressed: _openFeverForm,
+          ),
+        ),
+
         // 2. TODAY'S COMBINED LOG
-        if (todaysStructs.isNotEmpty || todaysSymptoms.isNotEmpty) ...[
+        if (todaysStructs.isNotEmpty ||
+            todaysSymptoms.isNotEmpty ||
+            todaysBowel.isNotEmpty ||
+            todaysHemorrhoidal.isNotEmpty ||
+            todaysFever.isNotEmpty) ...[
           const SizedBox(height: 24),
-          Text("REGISTROS DE HOY",
+          Text(l10n.symptomsSectionTodaysLogs,
               style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
           const SizedBox(height: 8),
           Container(
@@ -188,6 +241,146 @@ class _SintomasTabState extends State<SintomasTab> {
                               constraints: const BoxConstraints(),
                               onPressed: () {
                                 setState(() => _p.structuralHistory.remove(e));
+                                widget.onProfileChanged();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+                ...todaysBowel.map((e) => InkWell(
+                      onLongPress: () => _editBowelEvent(e),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Icon(
+                              switch (e.bucket) {
+                                BowelBucket.constipation => Icons.remove_circle_outline,
+                                BowelBucket.normal => Icons.circle_outlined,
+                                BowelBucket.diarrhea => Icons.waves,
+                              },
+                              color: _cc,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "[${DateFormat('HH:mm').format(e.timestamp)}] ${e.bucket.label}"
+                                    "${e.bristolType != null ? ' · tipo ${e.bristolType}' : ''}"
+                                    "${e.urgency ? ' · urgencia' : ''}"
+                                    "${e.bloodPresent ? ' · sangrado' : ''}"
+                                    "${e.incompleteEvacuation ? ' · incompleta' : ''}",
+                                    style: TextStyle(color: _cc, fontSize: 13),
+                                  ),
+                                  if (e.note != null && e.note!.trim().isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2.0),
+                                      child: Text(e.note!,
+                                          style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 11,
+                                              fontStyle: FontStyle.italic)),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () {
+                                setState(() => _p.bowelHistory.remove(e));
+                                widget.onProfileChanged();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+                ...todaysHemorrhoidal.map((e) => InkWell(
+                      onLongPress: () => _editHemorrhoidalEvent(e),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Icon(Icons.healing, color: _cc, size: 14),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "[${DateFormat('HH:mm').format(e.timestamp)}] hemorroide"
+                                    "${e.bleeding ? ' · sangrado' : ''}"
+                                    "${e.severity != SymptomSeverity.none ? ' (${e.severity.label.toLowerCase()})' : ''}",
+                                    style: TextStyle(color: _cc, fontSize: 13),
+                                  ),
+                                  if (e.note != null && e.note!.trim().isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2.0),
+                                      child: Text(e.note!,
+                                          style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 11,
+                                              fontStyle: FontStyle.italic)),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () {
+                                setState(() => _p.hemorrhoidalHistory.remove(e));
+                                widget.onProfileChanged();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+                ...todaysFever.map((e) => InkWell(
+                      onLongPress: () => _editFeverEvent(e),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            Icon(Icons.thermostat, color: _cc, size: 14),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "[${DateFormat('HH:mm').format(e.timestamp)}] "
+                                    "${e.temperatureC.toStringAsFixed(1)}°C"
+                                    " · ${e.site.label(l10n)}"
+                                    "${e.antipyreticTaken ? ' · ${l10n.feverLogLabelWithAntipyretic}' : ''}",
+                                    style: TextStyle(color: _cc, fontSize: 13),
+                                  ),
+                                  if (e.note != null && e.note!.trim().isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2.0),
+                                      child: Text(e.note!,
+                                          style: const TextStyle(
+                                              color: Colors.grey,
+                                              fontSize: 11,
+                                              fontStyle: FontStyle.italic)),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () {
+                                setState(() => _p.feverHistory.remove(e));
                                 widget.onProfileChanged();
                               },
                             ),
@@ -253,17 +446,17 @@ class _SintomasTabState extends State<SintomasTab> {
             ),
           ),
           const SizedBox(height: 6),
-          const Text("Mantén presionado un registro para editar fecha/gravedad/nota.",
+          Text(l10n.symptomsFootnoteLongPressEdit,
               style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic)),
         ],
 
         // 3. TRENDING
         const SizedBox(height: 28),
-        Text("EN TENDENCIA (ÚLTIMOS 7 DÍAS)",
+        Text(l10n.symptomsSectionTrending,
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
         const SizedBox(height: 8),
         if (trending.isEmpty)
-          const Text("No hay síntomas consistentes esta semana.",
+          Text(l10n.symptomsTrendingEmpty,
               style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey, fontSize: 14))
         else
           Wrap(
@@ -282,7 +475,7 @@ class _SintomasTabState extends State<SintomasTab> {
 
         // 4. SYMPTOM VAULT + INLINE ADD
         const SizedBox(height: 28),
-        Text("BAÚL DE SÍNTOMAS",
+        Text(l10n.symptomsSectionVault,
             style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
         const SizedBox(height: 8),
         Wrap(
@@ -304,7 +497,7 @@ class _SintomasTabState extends State<SintomasTab> {
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => _addSymptomToVault(),
           decoration: InputDecoration(
-            hintText: "+ Añadir síntoma al baúl...",
+            hintText: l10n.symptomsVaultPlaceholder,
             hintStyle: const TextStyle(color: Colors.grey),
             suffixIcon: IconButton(
               icon: Icon(Icons.add, color: _cc),
@@ -352,7 +545,7 @@ class _SintomasTabState extends State<SintomasTab> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("REGISTRAR EN: ${zone.toUpperCase()}",
+                  Text(context.l10n.symptomsModalLogHeader(zone.toUpperCase()),
                       style: TextStyle(color: _cc, fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
@@ -403,7 +596,7 @@ class _SintomasTabState extends State<SintomasTab> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("EDITAR: ${event.zone.toUpperCase()} / ${event.type}",
+                Text(context.l10n.symptomsModalEditHeader(event.zone.toUpperCase(), event.type),
                     style: TextStyle(color: _cc, fontSize: 14, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
                 OutlinedButton.icon(
@@ -431,7 +624,7 @@ class _SintomasTabState extends State<SintomasTab> {
                     }
                     Navigator.pop(ctx);
                   },
-                  child: Text('GUARDAR', style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
+                  child: Text(context.l10n.symptomsActionSave, style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
                 ),
               ],
             ),
@@ -497,13 +690,13 @@ class _SintomasTabState extends State<SintomasTab> {
                   TextField(
                     controller: noteCtrl,
                     style: TextStyle(color: _cc),
-                    decoration: const InputDecoration(
-                      hintText: "Nota opcional (contexto, gatillo, etc.)",
+                    decoration: InputDecoration(
+                      hintText: context.l10n.symptomsLabelOptionalNote,
                       hintStyle: TextStyle(color: Colors.grey),
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text("GRAVEDAD",
+                  Text(context.l10n.symptomsLabelSeverityGrading,
                       style: TextStyle(
                           color: _cc.withValues(alpha: 0.7),
                           fontSize: 11,
@@ -516,7 +709,7 @@ class _SintomasTabState extends State<SintomasTab> {
                     child: TextButton(
                       onPressed: () => saveWith(unratedSentinel, ctx),
                       child: Text(
-                        "Registrar sin rating",
+                        context.l10n.symptomsActionLogUnrated,
                         style: TextStyle(
                           color: _cc.withValues(alpha: 0.7),
                           decoration: TextDecoration.underline,
@@ -554,7 +747,7 @@ class _SintomasTabState extends State<SintomasTab> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("EDITAR: ${event.name.toUpperCase()}",
+                  Text(context.l10n.symptomsModalEditSymptomHeader(event.name.toUpperCase()),
                       style: TextStyle(color: _cc, fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
@@ -572,11 +765,11 @@ class _SintomasTabState extends State<SintomasTab> {
                   TextField(
                     controller: noteCtrl,
                     style: TextStyle(color: _cc),
-                    decoration: const InputDecoration(
-                        hintText: "Nota opcional", hintStyle: TextStyle(color: Colors.grey)),
+                    decoration: InputDecoration(
+                        hintText: context.l10n.symptomsLabelOptionalNoteSimple, hintStyle: TextStyle(color: Colors.grey)),
                   ),
                   const SizedBox(height: 16),
-                  Text("GRAVEDAD",
+                  Text(context.l10n.symptomsLabelSeverityGrading,
                       style: TextStyle(
                           color: _cc.withValues(alpha: 0.7),
                           fontSize: 11,
@@ -591,7 +784,7 @@ class _SintomasTabState extends State<SintomasTab> {
                     Padding(
                       padding: const EdgeInsets.only(top: 6.0),
                       child: Text(
-                        "Este registro no tiene rating. Toca un punto para asignar uno.",
+                        context.l10n.symptomsUnratedInlineWarning,
                         style: TextStyle(
                           color: _cc.withValues(alpha: 0.6),
                           fontSize: 11,
@@ -618,7 +811,7 @@ class _SintomasTabState extends State<SintomasTab> {
                       }
                       Navigator.pop(ctx);
                     },
-                    child: Text('GUARDAR CAMBIOS', style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
+                    child: Text(context.l10n.symptomsActionSaveChanges, style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
@@ -627,5 +820,126 @@ class _SintomasTabState extends State<SintomasTab> {
         ),
       ),
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // PHASE 5.1 — Bowel & hemorrhoidal handlers
+  // ---------------------------------------------------------------------------
+
+  Widget _bucketCard(BowelBucket bucket, IconData icon, String label) {
+    return Expanded(
+      child: InkWell(
+        onTap: () => _openBowelForm(prefilledBucket: bucket),
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+          decoration: BoxDecoration(
+            border: Border.all(color: _cc.withValues(alpha: 0.4)),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: _cc, size: 32),
+              const SizedBox(height: 6),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: _cc, fontSize: 12),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openBowelForm({BowelBucket? prefilledBucket}) async {
+    final result = await showBowelFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      defaultTimestamp: _timestampForLog(),
+      prefilledBucket: prefilledBucket,
+    );
+    if (result == null) return;
+    setState(() => _p.bowelHistory.add(result));
+    widget.onProfileChanged();
+  }
+
+  Future<void> _editBowelEvent(BowelEvent event) async {
+    final result = await showBowelFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      defaultTimestamp: event.timestamp,
+      existing: event,
+    );
+    if (result == null) return;
+    final idx = _p.bowelHistory.indexOf(event);
+    if (idx >= 0) {
+      setState(() => _p.bowelHistory[idx] = result);
+      widget.onProfileChanged();
+    }
+  }
+
+  Future<void> _openHemorrhoidalForm() async {
+    final result = await showHemorrhoidalFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      defaultTimestamp: _timestampForLog(),
+    );
+    if (result == null) return;
+    setState(() => _p.hemorrhoidalHistory.add(result));
+    widget.onProfileChanged();
+  }
+
+  Future<void> _editHemorrhoidalEvent(HemorrhoidalEvent event) async {
+    final result = await showHemorrhoidalFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      defaultTimestamp: event.timestamp,
+      existing: event,
+    );
+    if (result == null) return;
+    final idx = _p.hemorrhoidalHistory.indexOf(event);
+    if (idx >= 0) {
+      setState(() => _p.hemorrhoidalHistory[idx] = result);
+      widget.onProfileChanged();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // PHASE 5.2d.2 — Fever handlers
+  // ---------------------------------------------------------------------------
+
+  Future<void> _openFeverForm() async {
+    final result = await showFeverFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      defaultTimestamp: _timestampForLog(),
+    );
+    if (result == null) return;
+    setState(() => _p.feverHistory.add(result));
+    widget.onProfileChanged();
+  }
+
+  Future<void> _editFeverEvent(FeverReading event) async {
+    final result = await showFeverFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      defaultTimestamp: event.timestamp,
+      existing: event,
+    );
+    if (result == null) return;
+    final idx = _p.feverHistory.indexOf(event);
+    if (idx >= 0) {
+      setState(() => _p.feverHistory[idx] = result);
+      widget.onProfileChanged();
+    }
   }
 }

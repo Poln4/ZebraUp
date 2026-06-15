@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
+import '../extensions/context_ext.dart';
+import '../l10n/app_localizations.dart';
 
 /// First-run onboarding. Four sequential steps with Skip available on
 /// all but step 2 (name). Returns the created Profile on completion,
@@ -8,12 +10,17 @@ class OnboardingScreen extends StatefulWidget {
   final Color contrastColor;
   final Color inverseContrastColor;
   final Future<void> Function(Profile profile) onComplete;
+  // PHASE 5.1d — optional import flow. When supplied, the welcome step
+  // shows a secondary CTA; the callback handles file/paste pick + validation
+  // and returns a Profile ready to be persisted via [onComplete].
+  final Future<Profile?> Function()? onImportFlow;
 
   const OnboardingScreen({
     super.key,
     required this.contrastColor,
     required this.inverseContrastColor,
     required this.onComplete,
+    this.onImportFlow,
   });
 
   @override
@@ -107,6 +114,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final canGoNext = _step != 1 || _nameCtrl.text.trim().isNotEmpty;
     final isLastStep = _step == 3;
     final canSkip = _step != 1; // skip blocked on the name step
+    final l10n = context.l10n;
 
     return Scaffold(
       backgroundColor: _ic,
@@ -160,14 +168,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   if (_step > 0)
                     TextButton(
                       onPressed: _back,
-                      child: Text("atrás",
+                      child: Text(l10n.onboardingActionBack,
                           style: TextStyle(color: _cc.withValues(alpha: 0.7))),
                     ),
                   const Spacer(),
                   if (canSkip && !isLastStep)
                     TextButton(
                       onPressed: _next,
-                      child: Text("saltar",
+                      child: Text(l10n.onboardingActionSkip,
                           style: TextStyle(color: _cc.withValues(alpha: 0.7))),
                     ),
                   const SizedBox(width: 8),
@@ -178,7 +186,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     onPressed: canGoNext ? _next : null,
                     child: Text(
-                      isLastStep ? "EMPEZAR" : "SIGUIENTE",
+                      isLastStep ? l10n.onboardingActionFinish : l10n.onboardingActionNext,
                       style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -203,19 +211,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         children: [
           Icon(Icons.medical_information_outlined, color: _cc, size: 48),
           const SizedBox(height: 24),
-          Text("ZebraUp",
+          Text(context.l10n.onboardingStepWelcomeTitle,
               style: TextStyle(color: _cc, fontSize: 32, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
-          Text("Tu copiloto para las citas médicas.",
+          Text(context.l10n.onboardingStepWelcomeSubtitle,
               style: TextStyle(
                   color: _cc.withValues(alpha: 0.8), fontSize: 18, fontWeight: FontWeight.w500)),
           const SizedBox(height: 24),
-          Text(
-            "Las consultas son cortas. Tu memoria, después de una semana difícil, también. "
-            "ZebraUp registra tus síntomas, medicamentos y patrones para que llegues "
-            "a cada cita con datos concretos — no con frases sueltas que se te olvidan "
-            "apenas te sientas frente al médico. Y porque sabemos que cuidas de otros, "
-            "puedes agregar a tus familiares y mascotas.",
+          Text(context.l10n.onboardingStepWelcomeBody,
             style: TextStyle(color: _cc, fontSize: 15, height: 1.5),
           ),
           const SizedBox(height: 20),
@@ -231,7 +234,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    "Todos tus datos se guardan en este dispositivo. No subimos nada a internet.",
+                    context.l10n.onboardingStepWelcomePrivacyNote,
                     style: TextStyle(
                         color: _cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
                   ),
@@ -252,8 +255,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    "Esta aplicación no es un dispositivo médico. No diagnostica, "
-                    "trata, cura ni previene ninguna condición médica.",
+                    context.l10n.onboardingStepWelcomeMedicalDisclaimer,
                     style: TextStyle(
                         color: _cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
                   ),
@@ -261,6 +263,51 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ],
             ),
           ),
+
+          // PHASE 5.1d — Import existing profile shortcut
+          if (widget.onImportFlow != null) ...[
+            const SizedBox(height: 24),
+            OutlinedButton(
+              onPressed: () async {
+                final imported = await widget.onImportFlow!();
+                if (imported != null && mounted) {
+                  await widget.onComplete(imported);
+                }
+              },
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: _cc, width: 1.5),
+                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.file_upload_outlined, color: _cc, size: 20),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          context.l10n.onboardingHaveProfileTitle,
+                          style: TextStyle(
+                              color: _cc,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          context.l10n.onboardingHaveProfileSubtitle,
+                          style: TextStyle(
+                              color: _cc.withValues(alpha: 0.7),
+                              fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(Icons.arrow_forward, color: _cc.withValues(alpha: 0.6), size: 16),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -276,13 +323,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Empecemos.",
+          Text(context.l10n.onboardingStepNameTitle,
               style: TextStyle(color: _cc, fontSize: 28, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
-          Text("¿Cómo te llamamos?",
+          Text(context.l10n.onboardingStepNameQuestion,
               style: TextStyle(color: _cc, fontSize: 16)),
           const SizedBox(height: 4),
-          Text("Solo se usa para personalizar la app. Puedes cambiarlo después.",
+          Text(context.l10n.onboardingStepNameFootnote,
               style: TextStyle(color: _cc.withValues(alpha: 0.6), fontSize: 12)),
           const SizedBox(height: 24),
           TextField(
@@ -290,7 +337,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             autofocus: true,
             style: TextStyle(color: _cc, fontSize: 22),
             decoration: InputDecoration(
-              hintText: "Tu nombre o apodo",
+              hintText: context.l10n.onboardingStepNameHint,
               hintStyle: TextStyle(color: _cc.withValues(alpha: 0.4), fontSize: 22),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: _cc.withValues(alpha: 0.4)),
@@ -318,12 +365,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Tus diagnósticos.",
+          Text(context.l10n.onboardingStepConditionsTitle,
               style: TextStyle(color: _cc, fontSize: 28, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           Text(
-            "¿Qué condiciones manejas? Las usamos para contextualizar interacciones "
-            "y reportes. Puedes agregar, editar o saltar este paso.",
+            context.l10n.onboardingStepConditionsBody,
             style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 14, height: 1.4),
           ),
           const SizedBox(height: 24),
@@ -335,8 +381,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   style: TextStyle(color: _cc),
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _addCondition(),
-                  decoration: const InputDecoration(
-                    hintText: "ej. hEDS, POTS, MCAS…",
+                  decoration: InputDecoration(
+                    hintText: context.l10n.onboardingStepConditionsHint,
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -346,7 +392,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 16),
           if (_conditions.isEmpty)
-            Text("Aún no agregaste ninguno. Puedes saltar este paso.",
+            Text(context.l10n.onboardingStepConditionsEmpty,
                 style: TextStyle(
                     color: _cc.withValues(alpha: 0.5),
                     fontSize: 12,
@@ -379,12 +425,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Tu botiquín.",
+          Text(context.l10n.onboardingStepMedsTitle,
               style: TextStyle(color: _cc, fontSize: 28, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           Text(
-            "Agrega los medicamentos que tomas habitualmente. "
-            "Vas a poder registrar cada dosis con un toque desde la pestaña Botiquín.",
+            context.l10n.onboardingStepMedsBody,
             style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 14, height: 1.4),
           ),
           const SizedBox(height: 24),
@@ -395,8 +440,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: TextField(
                   controller: _medNameCtrl,
                   style: TextStyle(color: _cc),
-                  decoration: const InputDecoration(
-                    hintText: "Nombre",
+                  decoration: InputDecoration(
+                    hintText: context.l10n.onboardingStepMedsNameHint,
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -409,8 +454,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   style: TextStyle(color: _cc),
                   textInputAction: TextInputAction.done,
                   onSubmitted: (_) => _addMed(),
-                  decoration: const InputDecoration(
-                    hintText: "Dosis (ej. 400mg)",
+                  decoration: InputDecoration(
+                    hintText: context.l10n.onboardingStepMedsDoseHint,
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -420,7 +465,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: 16),
           if (_meds.isEmpty)
-            Text("Sin medicamentos por ahora. Puedes saltar este paso.",
+            Text(context.l10n.onboardingStepMedsEmpty,
                 style: TextStyle(
                     color: _cc.withValues(alpha: 0.5),
                     fontSize: 12,

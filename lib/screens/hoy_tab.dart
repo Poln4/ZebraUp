@@ -19,9 +19,11 @@
 // =============================================================================
 
 import 'package:flutter/material.dart';
+import '../extensions/context_ext.dart';
 import '../models/models.dart';
 import '../widgets/severity_picker.dart';
 import '../widgets/mood_picker_sheet.dart';
+import '../l10n/app_localizations.dart';
 
 // Hardcoded Spanish to avoid requiring initializeDateFormatting('es') in main().
 const _diasSemana = [
@@ -67,6 +69,8 @@ class HoyTab extends StatelessWidget {
 
   final bool showHint;
   final VoidCallback onDismissHint;
+  // PHASE 5.2a — navigate to another tab (banner shortcut uses this).
+  final ValueChanged<int> onNavigate;
 
   const HoyTab({
     super.key,
@@ -83,7 +87,8 @@ class HoyTab extends StatelessWidget {
     required this.onAnswerOutcome,
     required this.onChangeWisdom,
     required this.showHint,
-    required this.onDismissHint, 
+    required this.onDismissHint,
+    required this.onNavigate, 
     this.todayWeather,
   });
 
@@ -101,6 +106,7 @@ class HoyTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPacing = profile.pacingDays.contains(_dateKey(selectedDate));
     final dueOutcomes = _isToday() ? profile.getDueOutcomes() : <MedicationOutcome>[];
+    final l10n = context.l10n;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -131,7 +137,7 @@ class HoyTab extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    "Tip: en Síntomas, toca un chip del baúl para registrar. Mantén pulsado un registro para editar.",
+                    l10n.hintTapTip,
                     style: TextStyle(
                       color: contrastColor.withValues(alpha: 0.8),
                       fontSize: 12,
@@ -179,7 +185,7 @@ class HoyTab extends StatelessWidget {
         if (todayWeather != null) ...[
           const SizedBox(height: 12),
           Text(
-            'EL CLIMA HOY',
+            l10n.sectionWeather,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -242,7 +248,19 @@ class HoyTab extends StatelessWidget {
           contrastColor: contrastColor,
         ),
 
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
+
+        // PHASE 5.1 — Bowel counter (null-safe; hidden when no bowel history).
+        _BowelCounter(profile: profile, contrastColor: contrastColor),
+
+        // PHASE 5.2a — Distention banner (visible only when daysSinceLastBM >= 3).
+        _DistentionBanner(
+          profile: profile,
+          contrastColor: contrastColor,
+          onTapRegister: () => onNavigate(1),
+        ),
+
+        const SizedBox(height: 16),
 
         // 6. WISDOM — demoted to bottom, smaller, ambient.
         _WisdomBlock(
@@ -277,6 +295,7 @@ class _HoyHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateLine = _fechaLarga(date);
+    final l10n = context.l10n;
     final capitalized =
         dateLine[0].toUpperCase() + dateLine.substring(1);
 
@@ -284,7 +303,7 @@ class _HoyHeader extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Hoy es',
+          l10n.headerTodayIs,
           style: TextStyle(
             fontSize: 12,
             color: contrastColor.withValues(alpha: 0.55),
@@ -328,8 +347,8 @@ class _HoyHeader extends StatelessWidget {
                 const SizedBox(width: 6),
                 Text(
                   isPacing
-                      ? 'Día de descanso — sin expectativas'
-                      : 'Marcar como día de descanso',
+                      ? l10n.pacingActiveState
+                      : l10n.pacingInactiveState,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -428,6 +447,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
   @override
   Widget build(BuildContext context) {
     final o = widget.outcome;
+    final l10n = context.l10n;
     final cc = widget.contrastColor;
     final before = SymptomSeverity.fromValue(o.severityBefore);
     final hoursAgo =
@@ -451,7 +471,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
               style: TextStyle(color: cc, fontSize: 13, height: 1.4),
               children: [
                 TextSpan(
-                  text: 'Hace ${hoursAgo.toStringAsFixed(1)}h tomaste ',
+                  text: l10n.outcomeCardTimePrefix(hoursAgo.toStringAsFixed(1)),
                   style: TextStyle(color: cc.withValues(alpha: 0.8)),
                 ),
                 TextSpan(
@@ -474,7 +494,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
           Row(
             children: [
               Text(
-                'Estaba en ',
+                l10n.outcomeCardInitialState,
                 style: TextStyle(
                   fontSize: 12,
                   color: cc.withValues(alpha: 0.65),
@@ -485,7 +505,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
           ),
           const SizedBox(height: 12),
           Text(
-            '¿Cómo está ahora?',
+            l10n.outcomeCardQuestionNow,
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -502,7 +522,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
           const SizedBox(height: 12),
           if (_showReasonPicker) ...[
             Text(
-              '¿A qué lo atribuyes?',
+              l10n.outcomeCardAttributionQuestion,
               style: TextStyle(
                 fontSize: 12,
                 color: cc.withValues(alpha: 0.7),
@@ -544,7 +564,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                   color: cc.withValues(alpha: 0.7),
                 ),
                 label: Text(
-                  _showReasonPicker ? 'Ocultar' : 'Otro factor',
+                  _showReasonPicker ? 'Ocultar' : l10n.outcomeActionAddFactor,
                   style: TextStyle(
                     fontSize: 12,
                     color: cc.withValues(alpha: 0.7),
@@ -575,8 +595,8 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                 ),
-                child: const Text(
-                  'Guardar',
+                child: Text(
+                  l10n.actionSave,
                   style: TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 13),
                 ),
@@ -619,6 +639,7 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
   @override
   Widget build(BuildContext context) {
     final cc = widget.contrastColor;
+    final l10n = context.l10n;
     final loggedToday = <MentalState>{
       MentalState.anxiety,
       MentalState.emotionalEnergy,
@@ -651,7 +672,7 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Detalles mentales',
+                    l10n.sectionMentalDetails,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -793,7 +814,7 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Intensidad ahora',
+                  context.l10n.mentalIntensitySubtitle,
                   style: TextStyle(
                     color: widget.contrastColor.withValues(alpha: 0.6),
                     fontSize: 12,
@@ -934,6 +955,7 @@ class _NarrativeSummary extends StatelessWidget {
     final doses = profile.getDosesForDay(selectedDate);
     final mentals = profile.getMentalForDay(selectedDate);
     final emaMoods = profile.getMoodForDay(selectedDate); // NUEVO
+    final l10n = context.l10n;
 
     final sentences = _buildSentences(
       syms: syms,
@@ -959,7 +981,7 @@ class _NarrativeSummary extends StatelessWidget {
                   size: 16, color: contrastColor.withValues(alpha: 0.6)),
               const SizedBox(width: 6),
               Text(
-                'Tu día en pocas palabras',
+                l10n.summaryTitle,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
@@ -1073,6 +1095,7 @@ class _WisdomBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return InkWell(
       onTap: onChange,
       borderRadius: BorderRadius.circular(12),
@@ -1088,7 +1111,7 @@ class _WisdomBlock extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  '✨ Sabiduría cebra 🦓',
+                  l10n.wisdomBannerTitle,
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.bold,
@@ -1125,6 +1148,149 @@ class _WisdomBlock extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// PHASE 5.1 — Bowel counter
+// =============================================================================
+
+/// Passive chip that surfaces `daysSinceLastBM` from the profile.
+///
+/// Renders nothing when bowel history is empty (null). Once data exists,
+/// shows "última evacuación: hoy" / "ayer" / "hace N días". Visual weight
+/// matches the weather chip — no urgency styling. The distention banner
+/// (phase 5.2) will handle alerting when delays cross clinical thresholds.
+class _BowelCounter extends StatelessWidget {
+  final Profile profile;
+  final Color contrastColor;
+
+  const _BowelCounter({
+    required this.profile,
+    required this.contrastColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final days = profile.daysSinceLastBM;
+    final l10n = context.l10n;
+    if (days == null) return const SizedBox.shrink();
+
+    final label = switch (days) {
+      0 => 'última evacuación: hoy',
+      1 => 'última evacuación: ayer',
+      _ => 'última evacuación: hace $days días',
+    };
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          border: Border.all(color: contrastColor.withValues(alpha: 0.4)),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.timeline,
+                color: contrastColor.withValues(alpha: 0.7), size: 14),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                  color: contrastColor.withValues(alpha: 0.7), fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
+// PHASE 5.2a — Distention banner
+// =============================================================================
+
+/// Soft-tone banner shown on Hoy when bowel transit has been absent for
+/// `_thresholdDays` or more. Informational, never alarming — no red colors,
+/// no exclamation marks, no countdown anxiety. Includes a shortcut button
+/// that takes the user to the Síntomas tab to register.
+///
+/// The threshold of 3 days is aligned with the Rome IV clinical definition
+/// of constipation (≥3 days without a bowel movement is the lower bound for
+/// chronic constipation criteria). Below 3 days, this widget renders nothing.
+///
+/// Research grounding: Palsson et al. (2012) — defecation-vs-distention pain
+/// mechanism separation; distention pain accumulates without a discrete trigger.
+class _DistentionBanner extends StatelessWidget {
+  final Profile profile;
+  final Color contrastColor;
+  final VoidCallback onTapRegister;
+
+  static const int _thresholdDays = 3;
+
+  const _DistentionBanner({
+    required this.profile,
+    required this.contrastColor,
+    required this.onTapRegister,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final days = profile.daysSinceLastBM;
+    final l10n = context.l10n;
+    if (days == null || days < _thresholdDays) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: contrastColor, width: 1.5),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.info_outline, color: contrastColor, size: 18),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l10n.distentionBannerMessage(days),
+                  style: TextStyle(
+                    color: contrastColor,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: OutlinedButton.icon(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: contrastColor),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              ),
+              icon: Icon(Icons.arrow_forward, color: contrastColor, size: 14),
+              label: Text(
+                l10n.distentionBannerAction,
+                style: TextStyle(
+                  color: contrastColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onPressed: onTapRegister,
+            ),
+          ),
+        ],
       ),
     );
   }

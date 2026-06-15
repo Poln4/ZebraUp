@@ -44,7 +44,8 @@ class ImportException implements Exception {
 /// Handles ARCO-rights operations on a profile: export, import, delete.
 /// Schema version is embedded so future changes can be migrated.
 class ProfileIoService {
-  static const int schemaVersion = 2;
+  // PHASE 5.2d — schema v3 (fever readings added; v1/v2 imports upcast)
+  static const int schemaVersion = 3;
 
   // ---------------------------------------------------------------------------
   // EXPORT
@@ -118,12 +119,14 @@ class ProfileIoService {
     if (data['schemaVersion'] is! int) {
       throw ImportException(ImportErrorCode.unknownSchema);
     }
-    // PHASE 5.0 — schema v2 migration
-    // Accept v1 exports verbatim: Profile.fromMap is additive-safe, so any
-    // v1 payload upcasts to v2 by having the new collections come back
-    // empty. Future versions (v3+) still mismatch.
+    // PHASE 5.0 / 5.2d — schema version acceptance.
+    // All historical versions are additive-safe: Profile.fromMap tolerates
+    // missing keys, so v1 and v2 payloads upcast to v3 by having the new
+    // collections come back empty. Extend `acceptedVersions` whenever a
+    // new schema version is introduced and the upcast remains lossless.
     final importedVersion = data['schemaVersion'] as int;
-    if (importedVersion != schemaVersion && importedVersion != 1) {
+    const acceptedVersions = {1, 2, 3};
+    if (!acceptedVersions.contains(importedVersion)) {
       throw ImportException(
         ImportErrorCode.schemaMismatch,
         importedVersion.toString(),
@@ -242,54 +245,63 @@ class ProfileIoService {
   // PHASE 5.0 — Box migration
   // ---------------------------------------------------------------------------
 
-  /// Migrates the local Hive box from schema v1 to v2 if needed.
+  /// Migrates the local Hive box from any prior schema version to the
+  /// current `schemaVersion`. Handles all upcast paths (v1->v3, v2->v3)
+  /// from a single code path because every schema bump in Phase 5 is
+  /// additive — only new collections appear, no existing field shapes
+  /// change.
   ///
   /// Idempotent: if the box is already at the current schema version (or
   /// newer), returns immediately without writing anything.
   ///
   /// Before stamping the new version, this method snapshots every existing
   /// key/value pair into a single backup entry at
-  /// `zebraBox_v1_backup_<timestamp>` so a user can roll back manually if
-  /// migration ever proves catastrophic. The backup is preserved for the
-  /// rest of the v2 lifecycle.
+  /// `zebraBox_v{currentVersion}_backup_<timestamp>` so a user can roll
+  /// back manually if migration ever proves catastrophic. The from-version
+  /// is encoded in the backup key so historical migrations leave
+  /// distinguishable artifacts (a v1->v3 backup vs a v2->v3 backup).
   ///
   /// Wire this from main.dart at startup: AFTER `Hive.openBox('zebraBox')`
-  /// completes and BEFORE any read that depends on the new schema. The call
-  /// is safe to make on every startup — repeated calls after the first are
-  /// no-ops.
+  /// completes and BEFORE any read that depends on the new schema. The
+  /// call is safe to make on every startup — repeated calls after the
+  /// first are no-ops.
   ///
-  /// Static because the method depends only on Hive, not on instance state.
-  /// Throws [StateError] if the backup write fails — the version stamp is
-  /// only applied after the backup is durable.
+  /// Static because the method depends only on Hive, not on instance
+  /// state. Throws [StateError] if the backup write fails — the version
+  /// stamp is only applied after the backup is durable.
   static Future<void> migrateBoxIfNeeded() async {
     final box = Hive.box('zebraBox');
     final currentVersion = box.get('schemaVersion') as int? ?? 1;
     if (currentVersion >= schemaVersion) return;
 
     // Snapshot every existing key/value before any new write. Skip prior
-    // backup entries and the schemaVersion key itself so backups stay small
-    // and the schemaVersion isn't double-recorded.
+    // backup entries (regardless of source version) and the schemaVersion
+    // key itself so backups stay small and the version isn't double-recorded.
     final snapshot = <String, dynamic>{};
     for (final key in box.keys) {
       final keyStr = key.toString();
-      if (keyStr.startsWith('zebraBox_v1_backup_')) continue;
+      if (keyStr.startsWith('zebraBox_v') && keyStr.contains('_backup_')) {
+        continue;
+      }
       if (keyStr == 'schemaVersion') continue;
       snapshot[keyStr] = box.get(key);
     }
 
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final backupKey = 'zebraBox_v1_backup_$timestamp';
+    // Dynamic key: encodes the FROM-version so backups are self-describing.
+    final backupKey = 'zebraBox_v${currentVersion}_backup_$timestamp';
 
     try {
       await box.put(backupKey, snapshot);
     } catch (e) {
-      // Backup failed — do NOT stamp v2. Leave the box untouched so the
-      // user can retry on next launch (or roll back the app version).
+      // Backup failed — do NOT stamp the new version. Leave the box
+      // untouched so the user can retry on next launch (or roll back the
+      // app version).
       throw StateError(
-          'zebraBox v1->v2 backup failed; migration aborted: $e');
+          'zebraBox v$currentVersion->v$schemaVersion backup failed; migration aborted: $e');
     }
 
-    // Only stamp v2 AFTER the backup is durable.
+    // Only stamp the new schemaVersion AFTER the backup is durable.
     await box.put('schemaVersion', schemaVersion);
   }
 }

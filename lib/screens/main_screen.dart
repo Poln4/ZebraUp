@@ -631,6 +631,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           todayWeather: _todayWeather,
           showHint: _shouldShowHoyHint,
           onDismissHint: _dismissHoyHint,
+          // PHASE 5.2a — wire navigation for distention banner shortcut
+          onNavigate: (idx) => setState(() => _currentNavIndex = idx),
         );
       case 1:
         return _buildSintomasTab(cc, ic);
@@ -1312,6 +1314,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             children: [
               (const Locale('es'), 'Español'),
               (const Locale('en'), 'English'),
+              (const Locale('zh', 'TW'), '繁體中文')
             ].map((opt) {
               final isSelected = widget.locale.languageCode == opt.$1.languageCode;
               return InkWell(

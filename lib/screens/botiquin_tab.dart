@@ -31,6 +31,8 @@ import '../widgets/group_form.dart';
 import '../widgets/med_form.dart';
 import '../widgets/severity_picker.dart';
 import 'timestamp_picker.dart';
+import '../extensions/context_ext.dart';
+import '../l10n/app_localizations.dart';
 
 class BotiquinTab extends StatelessWidget {
   final Profile profile;
@@ -60,6 +62,7 @@ class BotiquinTab extends StatelessWidget {
       medicationsToday: medsToday,
       conditions: profile.conditions,
     );
+    final l10n = context.l10n;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -97,7 +100,7 @@ class BotiquinTab extends StatelessWidget {
 
         // 3. Med list
         _SectionHeader(
-          title: 'Tu botiquín',
+          title: l10n.botiquinTabTitle,
           badge: profile.botiquin.isEmpty
               ? null
               : '${profile.botiquin.length}',
@@ -129,7 +132,7 @@ class BotiquinTab extends StatelessWidget {
           onPressed: () => _openCreateMed(context),
           icon: Icon(Icons.add, color: contrastColor, size: 18),
           label: Text(
-            'Crear medicamento',
+            l10n.botiquinActionCreate,
             style:
                 TextStyle(color: contrastColor, fontWeight: FontWeight.w600),
           ),
@@ -292,6 +295,7 @@ class _GroupsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cc = contrastColor;
+    final l10n = context.l10n;
     final groups = profile.medicationGroups;
 
     return Column(
@@ -314,7 +318,7 @@ class _GroupsSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '🌙 Meds de la noche · ☀️ Meds de la mañana',
+                  l10n.botiquinGroupsEmptyHeadline,
                   style: TextStyle(
                     color: cc.withValues(alpha: 0.85),
                     fontSize: 13,
@@ -323,7 +327,7 @@ class _GroupsSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Agrupa los medicamentos que tomas juntos. Un toque registra todas las dosis a la vez.',
+                  l10n.botiquinGroupsEmptyBody,
                   style: TextStyle(
                     color: cc.withValues(alpha: 0.6),
                     fontSize: 12,
@@ -350,7 +354,7 @@ class _GroupsSection extends StatelessWidget {
           onPressed: () => _openCreateGroup(context),
           icon: Icon(Icons.add, size: 16, color: cc.withValues(alpha: 0.7)),
           label: Text(
-            'Crear grupo',
+            l10n.botiquinActionCreateGroup,
             style: TextStyle(
               color: cc.withValues(alpha: 0.7),
               fontSize: 13,
@@ -377,10 +381,10 @@ class _GroupsSection extends StatelessWidget {
           backgroundColor: inverseContrastColor,
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16)),
-          title: Text('Sin medicamentos',
+          title: Text(context.l10n.botiquinNoMedsDialogTitle,
               style: TextStyle(color: contrastColor)),
           content: Text(
-            'Crea al menos un medicamento en tu botiquín antes de formar un grupo.',
+            context.l10n.botiquinNoMedsDialogBody,
             style: TextStyle(
                 color: contrastColor.withValues(alpha: 0.8),
                 height: 1.45),
@@ -610,6 +614,7 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
   @override
   Widget build(BuildContext context) {
     final cc = widget.contrastColor;
+    final l10n = context.l10n;
     final viewInsets = MediaQuery.of(context).viewInsets;
     final entries = widget.group.entries;
     final orphanCount = entries.where((e) =>
@@ -638,7 +643,7 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Registrar grupo',
+                          l10n.botiquinBatchSheetTitle,
                           style: TextStyle(
                             color: cc.withValues(alpha: 0.6),
                             fontSize: 12,
@@ -665,7 +670,7 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Se registrarán estas dosis:',
+                l10n.botiquinBatchSheetSubtitle,
                 style: TextStyle(
                   color: cc.withValues(alpha: 0.7),
                   fontSize: 12,
@@ -798,6 +803,7 @@ class _EmptyMedsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -810,14 +816,14 @@ class _EmptyMedsCard extends StatelessWidget {
               size: 40, color: contrastColor.withValues(alpha: 0.35)),
           const SizedBox(height: 10),
           Text(
-            'Aún no has añadido medicamentos',
+            l10n.botiquinEmptyStateHeadline,
             style: TextStyle(
                 color: contrastColor.withValues(alpha: 0.7),
                 fontSize: 13),
           ),
           const SizedBox(height: 4),
           Text(
-            'Crea uno con el botón de abajo.',
+            l10n.botiquinEmptyStateSubtitle,
             style: TextStyle(
               color: contrastColor.withValues(alpha: 0.5),
               fontSize: 12,
@@ -853,6 +859,7 @@ class _MedRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cc = contrastColor;
+    final l10n = context.l10n;
     final qtyToday = profile.getDoseQuantityForDayAndMed(
         selectedDate, med.name);
     final subtitle = med.notes?.isNotEmpty == true
@@ -924,7 +931,7 @@ class _MedRow extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      '${_formatQty(qtyToday)} hoy',
+                      l10n.botiquinDoseLoggedTodayBadge(_formatQty(qtyToday)),
                       style: const TextStyle(
                         color: Color(0xFF2E7D32),
                         fontSize: 11,
@@ -960,23 +967,23 @@ class _MedRow extends StatelessWidget {
         backgroundColor: inverseContrastColor,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16)),
-        title: Text('¿Eliminar ${med.name}?',
+        title: Text(context.l10n.botiquinDeleteConfirmTitle(med.name),
             style: TextStyle(color: contrastColor)),
         content: Text(
-          'Se conservará el historial de dosis para tus reportes, pero ${med.name} se quitará de tu botiquín.',
+          context.l10n.botiquinDeleteConfirmBody(med.name),
           style: TextStyle(
               color: contrastColor.withValues(alpha: 0.8), height: 1.45),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cancelar',
+            child: Text(context.l10n.actionCancel,
                 style: TextStyle(
                     color: contrastColor.withValues(alpha: 0.7))),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text('Eliminar',
+            child: Text(context.l10n.botiquinActionDelete,
                 style: TextStyle(
                     color: const Color(0xFFE57373),
                     fontWeight: FontWeight.bold)),
@@ -1131,6 +1138,7 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
   Widget build(BuildContext context) {
     final cc = widget.contrastColor;
     final med = widget.med;
+    final l10n = context.l10n;
     final recent = widget.profile.recentSignificantSymptoms();
     final viewInsets = MediaQuery.of(context).viewInsets;
 
@@ -1154,7 +1162,7 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Registrar dosis',
+                          l10n.botiquinLogDoseSheetTitle,
                           style: TextStyle(
                             color: cc.withValues(alpha: 0.6),
                             fontSize: 12,
@@ -1207,7 +1215,7 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
               // Linked symptom (only if recent symptoms exist)
               if (recent.isNotEmpty) ...[
                 Text(
-                  '¿Para un síntoma específico?',
+                  l10n.botiquinLogDoseSymptomPrompt,
                   style: TextStyle(
                     color: cc.withValues(alpha: 0.7),
                     fontSize: 12,
@@ -1249,7 +1257,7 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            'Preguntar en ${med.outcomeCheckHours}h si ayudó',
+                            l10n.botiquinLogDoseTrackOutcomeToggle(med.outcomeCheckHours!),
                             style: TextStyle(
                               color: cc.withValues(alpha: 0.8),
                               fontSize: 13,
@@ -1305,8 +1313,8 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text(
-                    'Registrar dosis',
+                  child: Text(
+                    l10n.botiquinLogDoseSheetTitle,
                     style: TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 15),
                   ),
@@ -1386,6 +1394,7 @@ class _TodaysDoses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cc = contrastColor;
+    final l10n = context.l10n;
     final sorted = [...doses]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     return Column(
@@ -1394,7 +1403,7 @@ class _TodaysDoses extends StatelessWidget {
         Row(
           children: [
             Text(
-              'Dosis de hoy',
+              l10n.botiquinDoseListTitle,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.bold,
@@ -1472,7 +1481,7 @@ class _TodaysDoses extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          'Toca × para eliminar una dosis específica (útil si registraste mal el nombre).',
+          l10n.botiquinDoseListFootnote,
           style: TextStyle(
               color: cc.withValues(alpha: 0.5), fontSize: 11, fontStyle: FontStyle.italic),
         ),
@@ -1481,20 +1490,20 @@ class _TodaysDoses extends StatelessWidget {
   }
 
   Future<void> _confirmDelete(BuildContext context, DoseEvent d) async {
+    final l10n = context.l10n;
+    final timeStr = '${d.timestamp.hour.toString().padLeft(2, '0')}:${d.timestamp.minute.toString().padLeft(2, '0')}';
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Eliminar esta dosis'),
+        title: Text(l10n.botiquinDoseItemDeleteConfirmTitle),
         content: Text(
-            '¿Eliminar la dosis de ${d.medicationName} registrada a las '
-            '${d.timestamp.hour.toString().padLeft(2, '0')}:${d.timestamp.minute.toString().padLeft(2, '0')}? '
-            'Esta acción no se puede deshacer.'),
+            l10n.botiquinDoseItemDeleteConfirmBody(d.medicationName, timeStr)),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
+              onPressed: () => Navigator.pop(ctx, false), child: Text(context.l10n.actionCancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Eliminar', style: TextStyle(color: Colors.redAccent)),
+            child: Text(context.l10n.botiquinActionDelete, style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),

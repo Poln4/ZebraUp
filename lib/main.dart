@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/main_screen.dart';
+import 'services/profile_io_service.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
