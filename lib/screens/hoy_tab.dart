@@ -24,6 +24,7 @@ import '../models/models.dart';
 import '../widgets/severity_picker.dart';
 import '../widgets/mood_picker_sheet.dart';
 import '../l10n/app_localizations.dart';
+import '../services/fever_analysis.dart';
 
 // Hardcoded Spanish to avoid requiring initializeDateFormatting('es') in main().
 const _diasSemana = [
@@ -107,6 +108,7 @@ class HoyTab extends StatelessWidget {
     final isPacing = profile.pacingDays.contains(_dateKey(selectedDate));
     final dueOutcomes = _isToday() ? profile.getDueOutcomes() : <MedicationOutcome>[];
     final l10n = context.l10n;
+    final feverInfo = FeverAnalysis.latestForChip(profile.feverHistory);
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -180,6 +182,16 @@ class HoyTab extends StatelessWidget {
                 ),
               )),
           const SizedBox(height: 24),
+        ],
+
+        // PHASE 5.2d.3a — Fever chip
+        if (feverInfo != null) ...[
+          _FeverChip(
+            info: feverInfo,
+            contrastColor: contrastColor,
+            onNavigate: onNavigate,
+          ),
+          const SizedBox(height: 20),
         ],
 
         if (todayWeather != null) ...[
@@ -1293,5 +1305,113 @@ class _DistentionBanner extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+// =============================================================================
+// PHASE 5.2d.3a — Fever chip
+// =============================================================================
+
+/// Compact status chip surfacing the most recent fever reading.
+///
+/// Renders nothing when no reading exists within the last
+/// `FeverAnalysis.chipMaxAgeHours` (24h by default). Visual weight matches
+/// the bowel counter — outlined pill, no urgency styling. The temperature
+/// number itself is the signal; we deliberately avoid color/bold variation
+/// by severity to keep the B&W aesthetic consistent.
+///
+/// Tap navigates to Síntomas (tab index 1) — same shortcut pattern as the
+/// distention banner. From there the user can log another reading or
+/// review history.
+///
+/// Trend arrow uses a 0.1°C deadband (computed in LatestFeverInfo) so
+/// noise-level fluctuations don't trigger flicker between ↑ and ↓.
+class _FeverChip extends StatelessWidget {
+  final LatestFeverInfo info;
+  final Color contrastColor;
+  final ValueChanged<int> onNavigate;
+
+  const _FeverChip({
+    required this.info,
+    required this.contrastColor,
+    required this.onNavigate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final r = info.reading;
+    final timeAgo = DateTime.now().difference(r.timestamp);
+    final trend = info.trend;
+    final delta = info.delta;
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: InkWell(
+        onTap: () => onNavigate(1),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border.all(color: contrastColor.withValues(alpha: 0.4)),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.thermostat,
+                  color: contrastColor.withValues(alpha: 0.7), size: 14),
+              const SizedBox(width: 6),
+              Text(
+                '${r.temperatureC.toStringAsFixed(1)}°C',
+                style: TextStyle(
+                  color: contrastColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                ' · ${r.site.label(l10n)}',
+                style: TextStyle(
+                  color: contrastColor.withValues(alpha: 0.65),
+                  fontSize: 12,
+                ),
+              ),
+              Text(
+                ' · ${_formatTimeAgo(timeAgo, l10n)}',
+                style: TextStyle(
+                  color: contrastColor.withValues(alpha: 0.65),
+                  fontSize: 12,
+                ),
+              ),
+              if (trend != null && delta != null) ...[
+                const SizedBox(width: 4),
+                Text(
+                  '· ${_formatTrend(trend, delta)}',
+                  style: TextStyle(
+                    color: contrastColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatTimeAgo(Duration d, AppLocalizations l10n) {
+    if (d.inHours >= 1) return l10n.timeAgoHours(d.inHours);
+    return l10n.timeAgoMinutes(d.inMinutes.clamp(1, 59));
+  }
+
+  String _formatTrend(FeverTrend trend, double delta) {
+    return switch (trend) {
+      FeverTrend.rising => '↑${delta.toStringAsFixed(1)}',
+      FeverTrend.falling => '↓${delta.abs().toStringAsFixed(1)}',
+      FeverTrend.steady => '→',
+    };
   }
 }

@@ -366,6 +366,28 @@
   "feverSiteOral": "oral",
   "feverSiteTympanic": "timpánica",
   "feverSiteRectal": "rectal",
-  "feverSiteForehead": "frente"
+  "feverSiteForehead": "frente",
+
+  "timeAgoMinutes": "hace {minutes} min",
+  "@timeAgoMinutes": { "placeholders": { "minutes": { "type": "int" } } },
+  "timeAgoHours": "hace {hours}h",
+  "@timeAgoHours": { "placeholders": { "hours": { "type": "int" } } },
+
+  "researchEmptyConfig": "Añade un diagnóstico en configuración para ver investigación relevante.",
+  "researchTitleRecent": "Resultados recientes de PubMed",
+  "researchDisclaimer": "Desliza para actualizar. Solo informativo, no es consejo médico.",
+  "researchTooltipOffline": "Resultados guardados (sin conexión)",
+  "researchStateNoData": "Sin datos. Tira hacia abajo para buscar.",
+  "researchStateNoResults": "No se encontraron resultados recientes.",
+  "researchLastUpdated": "Actualizado: {time}",
+  "@researchLastUpdated": { "placeholders": { "time": { "type": "String" } } },
+  "researchActionSaved": "Guardado",
+  "researchActionSave": "Guardar",
+  "researchActionOpenPubMed": "Abrir en PubMed",
+  "researchActionCopyPmid": "Copiar PMID",
+  "researchSnackPmidCopied": "PMID {pmid} copiado.",
+  "@researchSnackPmidCopied": { "placeholders": { "pmid": { "type": "String" } } },
+  "researchLoadingAbstract": "Cargando resumen…",
+  "researchEmptyAbstract": "Resumen no disponible. Abre el artículo en PubMed para más detalles."
 
 }

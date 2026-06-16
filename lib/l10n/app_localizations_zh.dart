@@ -962,6 +962,66 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get feverSiteForehead => '額溫';
+
+  @override
+  String timeAgoMinutes(int minutes) {
+    return '$minutes 分鐘前';
+  }
+
+  @override
+  String timeAgoHours(int hours) {
+    return '$hours 小時前';
+  }
+
+  @override
+  String get researchEmptyConfig =>
+      'Añade un diagnóstico en configuración para ver investigación relevante.';
+
+  @override
+  String get researchTitleRecent => 'Resultados recientes de PubMed';
+
+  @override
+  String get researchDisclaimer =>
+      'Desliza para actualizar. Solo informativo, no es consejo médico.';
+
+  @override
+  String get researchTooltipOffline => 'Resultados guardados (sin conexión)';
+
+  @override
+  String get researchStateNoData => 'Sin datos. Tira hacia abajo para buscar.';
+
+  @override
+  String get researchStateNoResults =>
+      'No se encontraron resultados recientes.';
+
+  @override
+  String researchLastUpdated(String time) {
+    return 'Actualizado: $time';
+  }
+
+  @override
+  String get researchActionSaved => 'Guardado';
+
+  @override
+  String get researchActionSave => 'Guardar';
+
+  @override
+  String get researchActionOpenPubMed => 'Abrir en PubMed';
+
+  @override
+  String get researchActionCopyPmid => 'Copiar PMID';
+
+  @override
+  String researchSnackPmidCopied(String pmid) {
+    return 'PMID $pmid copiado.';
+  }
+
+  @override
+  String get researchLoadingAbstract => 'Cargando resumen…';
+
+  @override
+  String get researchEmptyAbstract =>
+      'Resumen no disponible. Abre el artículo en PubMed para más detalles.';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -1824,4 +1884,60 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get feverSiteForehead => '額溫';
+
+  @override
+  String timeAgoMinutes(int minutes) {
+    return '$minutes 分鐘前';
+  }
+
+  @override
+  String timeAgoHours(int hours) {
+    return '$hours 小時前';
+  }
+
+  @override
+  String get researchEmptyConfig => '請在設定中新增診斷，以查看相關研究。';
+
+  @override
+  String get researchTitleRecent => '最新 PubMed 研究結果';
+
+  @override
+  String get researchDisclaimer => '下拉更新。僅供參考，不構成醫療建議。';
+
+  @override
+  String get researchTooltipOffline => '已儲存的結果（離線）';
+
+  @override
+  String get researchStateNoData => '尚無資料。請下拉以取得研究。';
+
+  @override
+  String get researchStateNoResults => '找不到最近的研究結果。';
+
+  @override
+  String researchLastUpdated(String time) {
+    return '最後更新：$time';
+  }
+
+  @override
+  String get researchActionSaved => '已儲存';
+
+  @override
+  String get researchActionSave => '儲存';
+
+  @override
+  String get researchActionOpenPubMed => '在 PubMed 開啟';
+
+  @override
+  String get researchActionCopyPmid => '複製 PMID';
+
+  @override
+  String researchSnackPmidCopied(String pmid) {
+    return '已複製 PMID $pmid。';
+  }
+
+  @override
+  String get researchLoadingAbstract => '正在載入摘要…';
+
+  @override
+  String get researchEmptyAbstract => '無法取得摘要。請在 PubMed 中開啟文章查看詳情。';
 }

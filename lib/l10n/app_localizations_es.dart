@@ -1032,4 +1032,64 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get feverSiteForehead => 'frente';
+
+  @override
+  String timeAgoMinutes(int minutes) {
+    return 'hace $minutes min';
+  }
+
+  @override
+  String timeAgoHours(int hours) {
+    return 'hace ${hours}h';
+  }
+
+  @override
+  String get researchEmptyConfig =>
+      'Añade un diagnóstico en configuración para ver investigación relevante.';
+
+  @override
+  String get researchTitleRecent => 'Resultados recientes de PubMed';
+
+  @override
+  String get researchDisclaimer =>
+      'Desliza para actualizar. Solo informativo, no es consejo médico.';
+
+  @override
+  String get researchTooltipOffline => 'Resultados guardados (sin conexión)';
+
+  @override
+  String get researchStateNoData => 'Sin datos. Tira hacia abajo para buscar.';
+
+  @override
+  String get researchStateNoResults =>
+      'No se encontraron resultados recientes.';
+
+  @override
+  String researchLastUpdated(String time) {
+    return 'Actualizado: $time';
+  }
+
+  @override
+  String get researchActionSaved => 'Guardado';
+
+  @override
+  String get researchActionSave => 'Guardar';
+
+  @override
+  String get researchActionOpenPubMed => 'Abrir en PubMed';
+
+  @override
+  String get researchActionCopyPmid => 'Copiar PMID';
+
+  @override
+  String researchSnackPmidCopied(String pmid) {
+    return 'PMID $pmid copiado.';
+  }
+
+  @override
+  String get researchLoadingAbstract => 'Cargando resumen…';
+
+  @override
+  String get researchEmptyAbstract =>
+      'Resumen no disponible. Abre el artículo en PubMed para más detalles.';
 }

@@ -24,21 +24,12 @@ import '../models/models.dart';
 import '../screens/timestamp_picker.dart';
 import '../extensions/context_ext.dart';
 import '../l10n/app_localizations.dart';
+import '../services/fever_analysis.dart';
 
-/// Public extension so callers (e.g. the Sintomas tab when rendering
-/// today's logged readings) can localize site labels using the same
-/// l10n keys this sheet uses.
-extension FeverSiteLocalization on FeverSite {
-  String label(AppLocalizations l10n) {
-    return switch (this) {
-      FeverSite.axillary => l10n.feverSiteAxillary,
-      FeverSite.oral => l10n.feverSiteOral,
-      FeverSite.tympanic => l10n.feverSiteTympanic,
-      FeverSite.rectal => l10n.feverSiteRectal,
-      FeverSite.forehead => l10n.feverSiteForehead,
-    };
-  }
-}
+// Re-export FeverSiteLocalization so existing callers that import this
+// file (e.g. sintomas_tab.dart) continue to see the extension. The
+// authoritative definition now lives in services/fever_analysis.dart.
+export '../services/fever_analysis.dart' show FeverSiteLocalization;
 
 /// Opens the fever form sheet. Returns the new/edited FeverReading, or
 /// null if the user dismissed the sheet.

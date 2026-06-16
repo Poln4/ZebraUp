@@ -24,6 +24,8 @@ import 'package:intl/intl.dart';
 import '../models/models.dart';
 import '../widgets/therapy_logger_sheet.dart';
 import 'timestamp_picker.dart';
+import '../extensions/context_ext.dart';
+import '../l10n/app_localizations.dart';
 
 class MovimientoTab extends StatefulWidget {
   final Profile profile;
@@ -73,6 +75,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.l10n;
     final isPacing = _p.pacingDays.contains(_getDateKey(widget.selectedDate));
     final todaysActivity = _p.getActivityForDay(widget.selectedDate);
     final todaysTherapy = _p.getTherapyForDay(widget.selectedDate);
@@ -100,7 +103,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    "Hoy es día de descanso. Descansar también cuenta.",
+                    l10n.movementSectionPacingActive,
                     style: TextStyle(color: _cc, fontSize: 13, fontWeight: FontWeight.w500),
                   ),
                 ),
@@ -112,7 +115,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
 
         // 2. COMBINED TODAY LOG
         if (combined.isNotEmpty) ...[
-          Text("HOY HICISTE…",
+          Text(l10n.movementSectionHistoryTitle,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   letterSpacing: 1,
@@ -127,7 +130,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
             ),
           ),
           const SizedBox(height: 4),
-          Text("Mantén presionado un registro para editar.",
+          Text(l10n.movementFootnoteLongPressEdit,
               style: TextStyle(
                   color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic)),
           const SizedBox(height: 28),
@@ -142,12 +145,12 @@ class _MovimientoTabState extends State<MovimientoTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Movimiento y recuperación son lo mismo.",
+                Text(l10n.movementEmptyStateHeadline,
                     style: TextStyle(
                         color: _cc, fontSize: 14, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 Text(
-                  "Caminar, estirar, una sesión de kinesio, un masaje — todo cuenta como cuidado del cuerpo.",
+                  l10n.movementEmptyStateSubtitle,
                   style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
                 ),
               ],
@@ -157,7 +160,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
         ],
 
         // 3. ACTIVITY CATALOG
-        Text("ACTIVIDAD",
+        Text(l10n.movementSectionActivityTitle,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
@@ -185,7 +188,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => _addCustomExercise(),
           decoration: InputDecoration(
-            hintText: "+ Añadir actividad (natación, bici, baile…)",
+            hintText: l10n.movementActivityPlaceholder,
             hintStyle: const TextStyle(color: Colors.grey),
             suffixIcon: IconButton(
               icon: Icon(Icons.add, color: _cc),
@@ -196,7 +199,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
 
         // 4. THERAPY CATALOG
         const SizedBox(height: 28),
-        Text("TERAPIA",
+        Text(l10n.movementSectionTherapyTitle,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1,
@@ -224,7 +227,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => _addCustomTherapyModality(),
           decoration: InputDecoration(
-            hintText: "+ Añadir modalidad (reiki, flotación…)",
+            hintText: l10n.movementTherapyPlaceholder,
             hintStyle: const TextStyle(color: Colors.grey),
             suffixIcon: IconButton(
               icon: Icon(Icons.add, color: _cc),
@@ -510,13 +513,13 @@ class _MovimientoTabState extends State<MovimientoTab> {
                           padding: EdgeInsets.zero, minimumSize: Size.zero),
                       icon: Icon(Icons.add, color: _cc.withValues(alpha: 0.7), size: 14),
                       label: Text(
-                        "evaluar dolor antes/después (opcional)",
+                        context.l10n.activityActionTogglePainRating,
                         style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 12),
                       ),
                     )
                   else ...[
                     const SizedBox(height: 4),
-                    Text("DOLOR ANTES",
+                    Text(context.l10n.activityLabelPainBefore,
                         style: TextStyle(
                             color: _cc.withValues(alpha: 0.7),
                             fontSize: 11,
@@ -525,7 +528,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
                     const SizedBox(height: 6),
                     _painRow(painBefore, (v) => setSheet(() => painBefore = v)),
                     const SizedBox(height: 12),
-                    Text("DOLOR DESPUÉS",
+                    Text(context.l10n.activityLabelPainAfter,
                         style: TextStyle(
                             color: _cc.withValues(alpha: 0.7),
                             fontSize: 11,
@@ -543,8 +546,8 @@ class _MovimientoTabState extends State<MovimientoTab> {
                   TextField(
                     controller: noteCtrl,
                     style: TextStyle(color: _cc),
-                    decoration: const InputDecoration(
-                        hintText: "Nota opcional",
+                    decoration: InputDecoration(
+                        hintText: context.l10n.symptomsLabelOptionalNoteSimple,
                         hintStyle: TextStyle(color: Colors.grey)),
                   ),
                   const SizedBox(height: 16),
@@ -579,7 +582,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
                       widget.onProfileChanged();
                       Navigator.pop(ctx);
                     },
-                    child: Text(isEdit ? 'GUARDAR CAMBIOS' : 'GUARDAR ACTIVIDAD',
+                    child: Text(isEdit ? context.l10n.symptomsActionSaveChanges : context.l10n.activityActionSubmitLog,
                         style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
                   ),
                 ],

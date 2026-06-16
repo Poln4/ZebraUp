@@ -1804,6 +1804,102 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'frente'**
   String get feverSiteForehead;
+
+  /// No description provided for @timeAgoMinutes.
+  ///
+  /// In es, this message translates to:
+  /// **'hace {minutes} min'**
+  String timeAgoMinutes(int minutes);
+
+  /// No description provided for @timeAgoHours.
+  ///
+  /// In es, this message translates to:
+  /// **'hace {hours}h'**
+  String timeAgoHours(int hours);
+
+  /// No description provided for @researchEmptyConfig.
+  ///
+  /// In es, this message translates to:
+  /// **'Añade un diagnóstico en configuración para ver investigación relevante.'**
+  String get researchEmptyConfig;
+
+  /// No description provided for @researchTitleRecent.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultados recientes de PubMed'**
+  String get researchTitleRecent;
+
+  /// No description provided for @researchDisclaimer.
+  ///
+  /// In es, this message translates to:
+  /// **'Desliza para actualizar. Solo informativo, no es consejo médico.'**
+  String get researchDisclaimer;
+
+  /// No description provided for @researchTooltipOffline.
+  ///
+  /// In es, this message translates to:
+  /// **'Resultados guardados (sin conexión)'**
+  String get researchTooltipOffline;
+
+  /// No description provided for @researchStateNoData.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin datos. Tira hacia abajo para buscar.'**
+  String get researchStateNoData;
+
+  /// No description provided for @researchStateNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron resultados recientes.'**
+  String get researchStateNoResults;
+
+  /// No description provided for @researchLastUpdated.
+  ///
+  /// In es, this message translates to:
+  /// **'Actualizado: {time}'**
+  String researchLastUpdated(String time);
+
+  /// No description provided for @researchActionSaved.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardado'**
+  String get researchActionSaved;
+
+  /// No description provided for @researchActionSave.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get researchActionSave;
+
+  /// No description provided for @researchActionOpenPubMed.
+  ///
+  /// In es, this message translates to:
+  /// **'Abrir en PubMed'**
+  String get researchActionOpenPubMed;
+
+  /// No description provided for @researchActionCopyPmid.
+  ///
+  /// In es, this message translates to:
+  /// **'Copiar PMID'**
+  String get researchActionCopyPmid;
+
+  /// No description provided for @researchSnackPmidCopied.
+  ///
+  /// In es, this message translates to:
+  /// **'PMID {pmid} copiado.'**
+  String researchSnackPmidCopied(String pmid);
+
+  /// No description provided for @researchLoadingAbstract.
+  ///
+  /// In es, this message translates to:
+  /// **'Cargando resumen…'**
+  String get researchLoadingAbstract;
+
+  /// No description provided for @researchEmptyAbstract.
+  ///
+  /// In es, this message translates to:
+  /// **'Resumen no disponible. Abre el artículo en PubMed para más detalles.'**
+  String get researchEmptyAbstract;
 }
 
 class _AppLocalizationsDelegate

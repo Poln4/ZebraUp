@@ -6,6 +6,7 @@ import 'dart:math';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/models.dart';
+import '../services/fever_analysis.dart';
 import '../services/profile_io_service.dart';
 import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
@@ -392,6 +393,168 @@ class _MainAppScreenState extends State<MainAppScreen> {
     }
   }
 
+  // PHASE 5.1d follow-up — Onboarding import flow.
+  //
+  // Self-contained version of the file/paste import flow that returns
+  // a Profile? for the OnboardingScreen to consume. The caller passes
+  // the result to onComplete, which persists via the same path as a
+  // fresh-onboarding profile. Validation logic mirrors
+  // _importProfileFromFile + _importProfileFromPaste +
+  // _confirmAndApplyImport, but skips the snackbar at the end (the
+  // onboarding screen will dismiss itself on success).
+  Future<Profile?> _onboardingImportFlow() async {
+    final t = AppLocalizations.of(context)!;
+
+    // Step 1: pick file vs paste
+    final choice = await showDialog<String>(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: Text(t.onboardingImportChoiceTitle),
+        children: [
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'file'),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  const Icon(Icons.upload_file_outlined),
+                  const SizedBox(width: 12),
+                  Text(t.onboardingImportFromFile),
+                ],
+              ),
+            ),
+          ),
+          SimpleDialogOption(
+            onPressed: () => Navigator.pop(ctx, 'paste'),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Row(
+                children: [
+                  const Icon(Icons.content_paste_go_outlined),
+                  const SizedBox(width: 12),
+                  Text(t.onboardingImportFromPaste),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (choice == null || !mounted) return null;
+
+    // Step 2: get ImportPreview based on chosen method
+    ImportPreview? preview;
+    try {
+      if (choice == 'file') {
+        preview = await _profileIo.pickAndValidateImport();
+      } else {
+        final ctrl = TextEditingController();
+        final raw = await showDialog<String>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text(t.pasteImportTitle),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(t.pasteImportInstructions,
+                    style: const TextStyle(fontSize: 12)),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: ctrl,
+                  maxLines: 6,
+                  autofocus: true,
+                  style: const TextStyle(fontSize: 11, fontFamily: 'Courier'),
+                  decoration: InputDecoration(
+                    hintText: t.pasteImportHint,
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(t.actionCancel)),
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, ctrl.text),
+                  child: Text(t.actionImport)),
+            ],
+          ),
+        );
+        if (raw == null || raw.trim().isEmpty || !mounted) return null;
+        preview = _profileIo.validateJsonString(raw.trim());
+      }
+    } catch (e) {
+      if (!mounted) return null;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(t.importCancelled(_importErrorMessage(e, t)))),
+      );
+      return null;
+    }
+
+    if (preview == null || !mounted) return null;
+    final p = preview; // local alias to satisfy null-safety in dialog builder
+
+    // Step 3: confirmation dialog with preview details
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(t.importDialogTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(t.importDialogName(p.profile.name),
+                style: const TextStyle(fontWeight: FontWeight.bold)),
+            if (p.exportedAt != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                t.importDialogExportedAt(
+                    p.exportedAt!.toLocal().toString().split('.').first),
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            ],
+            const SizedBox(height: 12),
+            Text(t.importDialogContains(p.totalEvents)),
+            const SizedBox(height: 4),
+            Text(
+              '• ${p.symptomCount} ${t.nounSymptoms}\n'
+              '• ${p.doseCount} ${t.nounDoses}\n'
+              '• ${p.structuralCount} ${t.nounStructural}\n'
+              '• ${p.activityCount} ${t.nounActivities}\n'
+              '• ${p.therapyCount} ${t.nounTherapies}\n'
+              '• ${p.moodCount} ${t.nounMoods}\n'
+              '• ${p.mentalCount} ${t.nounMental}',
+              style: const TextStyle(fontSize: 12),
+            ),
+            const SizedBox(height: 12),
+            Text(t.importDialogFootnote,
+                style: const TextStyle(fontSize: 12, color: Colors.grey)),
+          ],
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(t.actionCancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(t.actionImport)),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return null;
+
+    _profileIo.finalizeImport(p);
+
+    // Return Profile with fresh id. The OnboardingScreen will pass this
+    // to onComplete, which handles persistence (setState + _saveData).
+    return Profile.fromMap({
+      ...p.profile.toMap(),
+      'id': '${DateTime.now().millisecondsSinceEpoch}-imported',
+    });
+  }
+
   Future<void> _wipeAllData() async {
     final firstOk = await showDialog<bool>(
       context: context,
@@ -694,6 +857,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         });
         await _fetchTodayWeather();
       },
+      onImportFlow: _onboardingImportFlow,
+      currentLocale: widget.locale,
+      onChangeLocale: widget.onChangeLocale,
     );
   }
 
@@ -850,6 +1016,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final todaysStructs = _activeProfile!.getStructuralForDay(_selectedDate);
     final todaysMental = _activeProfile!.getMentalForDay(_selectedDate);
     final todaysMoods = _activeProfile!.getMoodForDay(_selectedDate); // <--- NUEVO
+    final todaysFever = _activeProfile!.getFeverForDay(_selectedDate);
+    final feverEpisodes = FeverAnalysis.detectEpisodes(_activeProfile!.feverHistory);
 
     final grouped = <String, SymptomSeverity>{};
     for (final s in todaysSymptoms) {
@@ -896,6 +1064,74 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         buf.writeln(" • ${s.key} [${s.value.label.toUpperCase()}]");
       }
     }
+
+    // PHASE 5.2d.3c — FIEBRE
+    if (todaysFever.isNotEmpty) {
+      buf.writeln();
+      buf.writeln("FIEBRE:");
+      for (final r in todaysFever) {
+        final timeStr = DateFormat('HH:mm').format(r.timestamp);
+        final tempStr = r.temperatureC.toStringAsFixed(1);
+        String line = " • [$timeStr] ${tempStr}°C (${r.site.defaultLabel})";
+        if (r.antipyreticTaken) {
+          final apName = r.antipyreticName?.trim();
+          if (apName != null && apName.isNotEmpty) {
+            line += " + antipirético: $apName";
+          } else {
+            line += " + antipirético";
+          }
+        }
+        buf.writeln(line);
+      }
+    }
+
+    // Episode context: find the episode (if any) overlapping _selectedDate.
+    // Last match wins, so if multiple episodes touch the day we surface
+    // the most recent one — important when readings are sparse and a new
+    // episode starts on the same calendar day an old one ended.
+    final feverStartOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+    final feverEndOfDayExcl = feverStartOfDay.add(const Duration(days: 1));
+    FeverEpisode? relevantFeverEpisode;
+    for (final ep in feverEpisodes) {
+      if (ep.start.isBefore(feverEndOfDayExcl) && !ep.end.isBefore(feverStartOfDay)) {
+        relevantFeverEpisode = ep;
+      }
+    }
+
+    if (relevantFeverEpisode != null) {
+      final ep = relevantFeverEpisode;
+      final totalHours = ep.duration.inHours;
+      final days = totalHours ~/ 24;
+      final hours = totalHours % 24;
+      final String durStr;
+      if (days >= 1 && hours > 0) {
+        durStr = "$days ${days == 1 ? 'día' : 'días'} ${hours}h";
+      } else if (days >= 1) {
+        durStr = "$days ${days == 1 ? 'día' : 'días'}";
+      } else if (hours >= 1) {
+        durStr = "${hours}h";
+      } else {
+        final mins = ep.duration.inMinutes;
+        durStr = mins > 0 ? "${mins}min" : "lectura única";
+      }
+      final title = ep.isActive ? "EPISODIO ACTIVO" : "EPISODIO RECIENTE";
+
+      buf.writeln();
+      buf.writeln("$title ($durStr):");
+      buf.writeln(" • Inicio: ${DateFormat('yyyy-MM-dd HH:mm').format(ep.start)}");
+      buf.writeln(" • Pico: ${ep.peakTemperatureC.toStringAsFixed(1)}°C (${ep.peakSite.defaultLabel}) el ${DateFormat('yyyy-MM-dd HH:mm').format(ep.peakTimestamp)}");
+      buf.writeln(" • Total lecturas: ${ep.readingsCount}");
+      if (ep.antipyreticDosesCount > 0) {
+        final String apStr;
+        if (ep.antipyreticsUsed.isNotEmpty) {
+          apStr = "${ep.antipyreticsUsed.join(', ')} (${ep.antipyreticDosesCount} dosis totales)";
+        } else {
+          apStr = "${ep.antipyreticDosesCount} dosis (sin nombre registrado)";
+        }
+        buf.writeln(" • Antipiréticos: $apStr");
+      }
+    }
+
     if (mentalSummary.isNotEmpty) {
       buf.writeln();
       buf.writeln("NIEBLA / FATIGA (máx. del día, 1–5):");

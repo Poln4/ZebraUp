@@ -30,7 +30,21 @@
     "errImportSchemaMismatch",
     "errImportMissingProfile",
     "errImportCorruptProfile",
-    "quadrantCalpleasant"
+    "quadrantCalpleasant",
+    "researchEmptyConfig",
+    "researchTitleRecent",
+    "researchDisclaimer",
+    "researchTooltipOffline",
+    "researchStateNoData",
+    "researchStateNoResults",
+    "researchLastUpdated",
+    "researchActionSaved",
+    "researchActionSave",
+    "researchActionOpenPubMed",
+    "researchActionCopyPmid",
+    "researchSnackPmidCopied",
+    "researchLoadingAbstract",
+    "researchEmptyAbstract"
   ],
 
   "zh_TW": [

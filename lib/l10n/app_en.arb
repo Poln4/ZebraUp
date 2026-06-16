@@ -366,5 +366,25 @@
   "feverSiteOral": "oral",
   "feverSiteTympanic": "tympanic",
   "feverSiteRectal": "rectal",
-  "feverSiteForehead": "forehead"
+  "feverSiteForehead": "forehead",
+
+  "timeAgoMinutes": "{minutes} min ago",
+  "@timeAgoMinutes": { "placeholders": { "minutes": { "type": "int" } } },
+  "timeAgoHours": "{hours}h ago",
+  "@timeAgoHours": { "placeholders": { "hours": { "type": "int" } } },
+
+  "researchEmptyConfig": "Add a diagnosis in settings to see relevant research.",
+  "researchTitleRecent": "Recent PubMed Results",
+  "researchDisclaimer": "Swipe to refresh. Informational only, not medical advice.",
+  "researchTooltipOffline": "Saved results (offline)",
+  "researchStateNoData": "No data. Pull down to fetch.",
+  "researchStateNoResults": "No recent results found.",
+  "researchLastUpdated": "Updated: {time}",
+  "researchActionSaved": "Saved",
+  "researchActionSave": "Save",
+  "researchActionOpenPubMed": "Open in PubMed",
+  "researchActionCopyPmid": "Copy PMID",
+  "researchSnackPmidCopied": "PMID {pmid} copied.",
+  "researchLoadingAbstract": "Loading abstract…",
+  "researchEmptyAbstract": "Abstract unavailable. Open the article in PubMed for more details."
 }

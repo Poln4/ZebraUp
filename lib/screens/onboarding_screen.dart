@@ -15,12 +15,21 @@ class OnboardingScreen extends StatefulWidget {
   // and returns a Profile ready to be persisted via [onComplete].
   final Future<Profile?> Function()? onImportFlow;
 
+  // PHASE 5.1d-lang — optional locale + change callback for the
+  // welcome-step language picker. Both must be non-null for the picker
+  // to render; if either is null, the picker is hidden (backwards
+  // compatible).
+  final Locale? currentLocale;
+  final ValueChanged<Locale>? onChangeLocale;
+
   const OnboardingScreen({
     super.key,
     required this.contrastColor,
     required this.inverseContrastColor,
     required this.onComplete,
     this.onImportFlow,
+    this.currentLocale,
+    this.onChangeLocale,
   });
 
   @override
@@ -209,6 +218,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (widget.currentLocale != null && widget.onChangeLocale != null) ...[
+            _buildLanguagePicker(),
+            const SizedBox(height: 20),
+          ],
           Icon(Icons.medical_information_outlined, color: _cc, size: 48),
           const SizedBox(height: 24),
           Text(context.l10n.onboardingStepWelcomeTitle,
@@ -504,6 +517,71 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
         ],
       ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // PHASE 5.1d-lang — Language picker (welcome step only)
+  // ---------------------------------------------------------------------------
+  //
+  // Each language is labeled in its own writing system — standard UX
+  // convention for language pickers (don't translate "Spanish" into
+  // English for a Spanish-speaker who doesn't read English yet).
+  //
+  // Tapping calls onChangeLocale, which lives at the MaterialApp level
+  // and triggers a rebuild of the whole tree with the new locale —
+  // including this onboarding screen. The picker re-renders with the
+  // new selection highlighted.
+  Widget _buildLanguagePicker() {
+    final loc = widget.currentLocale;
+    final cb = widget.onChangeLocale;
+    if (loc == null || cb == null) return const SizedBox.shrink();
+
+    final options = <(Locale, String)>[
+      (const Locale('es'), 'ES'),
+      (const Locale('en'), 'EN'),
+      (const Locale('zh', 'TW'), '中'),
+    ];
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.language, color: _cc.withValues(alpha: 0.55), size: 16),
+        const SizedBox(width: 8),
+        ...options.map((opt) {
+          final selected = loc.languageCode == opt.$1.languageCode &&
+              (opt.$1.countryCode == null ||
+                  loc.countryCode == opt.$1.countryCode);
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 3),
+            child: InkWell(
+              onTap: () => cb(opt.$1),
+              borderRadius: BorderRadius.circular(14),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 5),
+                decoration: BoxDecoration(
+                  color: selected ? _cc : Colors.transparent,
+                  border: Border.all(
+                    color: _cc.withValues(alpha: selected ? 1.0 : 0.35),
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Text(
+                  opt.$2,
+                  style: TextStyle(
+                    color: selected ? _ic : _cc.withValues(alpha: 0.75),
+                    fontSize: 12,
+                    fontWeight:
+                        selected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ],
     );
   }
 }

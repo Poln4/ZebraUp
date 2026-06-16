@@ -332,6 +332,11 @@
   "feverSiteOral": "口溫",
   "feverSiteTympanic": "耳溫",
   "feverSiteRectal": "肛溫",
-  "feverSiteForehead": "額溫"
+  "feverSiteForehead": "額溫",
+
+  "timeAgoMinutes": "{minutes} 分鐘前",
+  "@timeAgoMinutes": { "placeholders": { "minutes": { "type": "int" } } },
+  "timeAgoHours": "{hours} 小時前",
+  "@timeAgoHours": { "placeholders": { "hours": { "type": "int" } } }
 
 }

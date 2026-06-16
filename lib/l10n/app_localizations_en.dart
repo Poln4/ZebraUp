@@ -1027,4 +1027,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feverSiteForehead => 'forehead';
+
+  @override
+  String timeAgoMinutes(int minutes) {
+    return '$minutes min ago';
+  }
+
+  @override
+  String timeAgoHours(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String get researchEmptyConfig =>
+      'Add a diagnosis in settings to see relevant research.';
+
+  @override
+  String get researchTitleRecent => 'Recent PubMed Results';
+
+  @override
+  String get researchDisclaimer =>
+      'Swipe to refresh. Informational only, not medical advice.';
+
+  @override
+  String get researchTooltipOffline => 'Saved results (offline)';
+
+  @override
+  String get researchStateNoData => 'No data. Pull down to fetch.';
+
+  @override
+  String get researchStateNoResults => 'No recent results found.';
+
+  @override
+  String researchLastUpdated(String time) {
+    return 'Updated: $time';
+  }
+
+  @override
+  String get researchActionSaved => 'Saved';
+
+  @override
+  String get researchActionSave => 'Save';
+
+  @override
+  String get researchActionOpenPubMed => 'Open in PubMed';
+
+  @override
+  String get researchActionCopyPmid => 'Copy PMID';
+
+  @override
+  String researchSnackPmidCopied(String pmid) {
+    return 'PMID $pmid copied.';
+  }
+
+  @override
+  String get researchLoadingAbstract => 'Loading abstract…';
+
+  @override
+  String get researchEmptyAbstract =>
+      'Abstract unavailable. Open the article in PubMed for more details.';
 }
