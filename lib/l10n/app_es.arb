@@ -388,6 +388,18 @@
   "researchSnackPmidCopied": "PMID {pmid} copiado.",
   "@researchSnackPmidCopied": { "placeholders": { "pmid": { "type": "String" } } },
   "researchLoadingAbstract": "Cargando resumen…",
-  "researchEmptyAbstract": "Resumen no disponible. Abre el artículo en PubMed para más detalles."
+  "researchEmptyAbstract": "Resumen no disponible. Abre el artículo en PubMed para más detalles.",
+
+  "reportRangeDay": "1 día",
+  "reportRangeWeek": "7 días",
+  "reportRangeMonth": "30 días",
+  "reportRangeCustomTooltip": "Rango personalizado",
+  "reportRangeCustomActiveLabel": "Rango: {start} → {end}",
+  "@reportRangeCustomActiveLabel": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  }
 
 }

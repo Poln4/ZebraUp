@@ -1900,6 +1900,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Resumen no disponible. Abre el artículo en PubMed para más detalles.'**
   String get researchEmptyAbstract;
+
+  /// No description provided for @reportRangeDay.
+  ///
+  /// In es, this message translates to:
+  /// **'1 día'**
+  String get reportRangeDay;
+
+  /// No description provided for @reportRangeWeek.
+  ///
+  /// In es, this message translates to:
+  /// **'7 días'**
+  String get reportRangeWeek;
+
+  /// No description provided for @reportRangeMonth.
+  ///
+  /// In es, this message translates to:
+  /// **'30 días'**
+  String get reportRangeMonth;
+
+  /// No description provided for @reportRangeCustomTooltip.
+  ///
+  /// In es, this message translates to:
+  /// **'Rango personalizado'**
+  String get reportRangeCustomTooltip;
+
+  /// No description provided for @reportRangeCustomActiveLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Rango: {start} → {end}'**
+  String reportRangeCustomActiveLabel(String start, String end);
 }
 
 class _AppLocalizationsDelegate

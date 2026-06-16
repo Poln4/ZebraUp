@@ -7,6 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import '../models/models.dart';
 import '../services/fever_analysis.dart';
+import '../services/report_trends.dart';
 import '../services/profile_io_service.dart';
 import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
@@ -77,6 +78,14 @@ class _MainAppScreenState extends State<MainAppScreen> {
   int _currentNavIndex = 0;
   DateTime _selectedDate = DateTime.now();
   String _clinicaTabView = "Reporte"; // Reporte | Biblioteca | Investigación
+
+  // PHASE 4a — Report range selector state
+  // _reportRangeDays is the active preset (1, 7, or 30) when _customRange
+  // is null. When _customRange is non-null, the custom range overrides
+  // any preset selection and "Personalizado" is shown as selected in the
+  // UI.
+  int _reportRangeDays = 1;
+  DateTimeRange? _customRange;
 
   final _profileNameController = TextEditingController();
   final _newDiagnosisController = TextEditingController();
@@ -953,6 +962,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       selectedDate: _selectedDate,
       contrastColor: cc,
       inverseContrastColor: ic,
+      medlineService: _medlinePlus,
       onProfileChanged: () {
         setState(() {});
         _saveData();
@@ -1010,6 +1020,117 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     );
   }
 
+  // -------------------------------------------------------------------------
+  // PHASE 4a — Range selector + custom range picker
+  // -------------------------------------------------------------------------
+
+  Widget _buildReportRangeSelector(Color cc, Color ic) {
+    final l10n = AppLocalizations.of(context)!;
+
+    Widget pill(String label, int days) {
+      final selected = _customRange == null && _reportRangeDays == days;
+      return InkWell(
+        onTap: () => setState(() {
+          _reportRangeDays = days;
+          _customRange = null;
+        }),
+        borderRadius: BorderRadius.circular(14),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: selected ? cc : Colors.transparent,
+            border: Border.all(
+                color: cc.withValues(alpha: selected ? 1.0 : 0.4)),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: selected ? ic : cc.withValues(alpha: 0.8),
+              fontSize: 12,
+              fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      );
+    }
+
+    final customSelected = _customRange != null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Wrap(
+          spacing: 6,
+          runSpacing: 6,
+          children: [
+            pill(l10n.reportRangeDay, 1),
+            pill(l10n.reportRangeWeek, 7),
+            pill(l10n.reportRangeMonth, 30),
+            InkWell(
+              onTap: _openCustomRangePicker,
+              borderRadius: BorderRadius.circular(14),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: customSelected ? cc : Colors.transparent,
+                  border: Border.all(
+                      color: cc.withValues(
+                          alpha: customSelected ? 1.0 : 0.4)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Tooltip(
+                  message: l10n.reportRangeCustomTooltip,
+                  child: Icon(
+                    Icons.date_range,
+                    size: 16,
+                    color: customSelected ? ic : cc.withValues(alpha: 0.8),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (customSelected) ...[
+          const SizedBox(height: 4),
+          Text(
+            l10n.reportRangeCustomActiveLabel(
+              DateFormat('yyyy-MM-dd').format(_customRange!.start),
+              DateFormat('yyyy-MM-dd').format(_customRange!.end),
+            ),
+            style: TextStyle(
+              color: cc.withValues(alpha: 0.65),
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Future<void> _openCustomRangePicker() async {
+    final today = DateTime.now();
+    final initial = _customRange ??
+        DateTimeRange(
+          start: _selectedDate
+              .subtract(Duration(days: _reportRangeDays - 1)),
+          end: _selectedDate,
+        );
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: today.subtract(const Duration(days: 365 * 2)),
+      lastDate: today,
+      initialDateRange: initial,
+    );
+    if (picked != null && mounted) {
+      setState(() => _customRange = picked);
+    }
+  }
+
   String _buildReportPlainText() {
     final todaysSymptoms = _activeProfile!.getSymptomsForDay(_selectedDate);
     final todaysDoses = _activeProfile!.getDosesForDay(_selectedDate);
@@ -1018,6 +1139,19 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final todaysMoods = _activeProfile!.getMoodForDay(_selectedDate); // <--- NUEVO
     final todaysFever = _activeProfile!.getFeverForDay(_selectedDate);
     final feverEpisodes = FeverAnalysis.detectEpisodes(_activeProfile!.feverHistory);
+
+    // PHASE 4a — Range + trends computation
+    final rangeEnd = _customRange?.end ?? _selectedDate;
+    final rangeStart = _customRange?.start ??
+        _selectedDate.subtract(Duration(days: _reportRangeDays - 1));
+    final rangeDayCount = DateTime(rangeEnd.year, rangeEnd.month, rangeEnd.day)
+            .difference(DateTime(
+                rangeStart.year, rangeStart.month, rangeStart.day))
+            .inDays +
+        1;
+    final ReportTrends? trends = rangeDayCount > 1
+        ? ReportTrendsService.compute(_activeProfile!, rangeStart, rangeEnd)
+        : null;
 
     final grouped = <String, SymptomSeverity>{};
     for (final s in todaysSymptoms) {
@@ -1041,6 +1175,11 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final buf = StringBuffer();
     buf.writeln("PACIENTE: ${_activeProfile!.name}");
     buf.writeln("FECHA EVALUADA: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}");
+    if (trends != null) {
+      buf.writeln(
+          "TENDENCIAS DE: ${DateFormat('yyyy-MM-dd').format(rangeStart)} → "
+          "${DateFormat('yyyy-MM-dd').format(rangeEnd)} ($rangeDayCount días)");
+    }
     buf.writeln("─────────────────────────────");
     buf.writeln("DIAGNÓSTICOS:");
     for (final c in _activeProfile!.conditions) {
@@ -1159,6 +1298,73 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       }
     }
 
+    // PHASE 4a — TENDENCIAS section
+    if (trends != null && !trends.isEmpty) {
+      buf.writeln();
+      buf.writeln("TENDENCIAS:");
+
+      if (trends.symptoms.isNotEmpty) {
+        buf.writeln(" Síntomas:");
+        for (final t in trends.symptoms) {
+          final dayLabel = t.daysAppeared == 1 ? 'día' : 'días';
+          String line = "  • ${t.name} — ${t.daysAppeared} $dayLabel";
+          if (t.allUnrated) {
+            line += " (sin rating)";
+          } else {
+            line += ", peor: ${t.worstSeverity.label.toUpperCase()}";
+          }
+          buf.writeln(line);
+        }
+      }
+
+      if (trends.doseCountsByMed.isNotEmpty) {
+        buf.writeln(" Dosis:");
+        final sorted = trends.doseCountsByMed.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+        for (final entry in sorted) {
+          final perDay = (entry.value / trends.dayCount).toStringAsFixed(1);
+          buf.writeln(
+              "  • ${entry.key} — ${entry.value} dosis ($perDay/día prom.)");
+        }
+      }
+
+      if (trends.feverEpisodes.isNotEmpty) {
+        buf.writeln(" Fiebre:");
+        final epCount = trends.feverEpisodes.length;
+        final epLabel = epCount == 1 ? 'episodio' : 'episodios';
+        final dayLabel = trends.feverishDayCount == 1 ? 'día' : 'días';
+        buf.writeln(
+            "  • $epCount $epLabel, ${trends.feverishDayCount} $dayLabel con fiebre");
+        for (final ep in trends.feverEpisodes) {
+          final startStr = DateFormat('yyyy-MM-dd').format(ep.start);
+          final endStr = DateFormat('yyyy-MM-dd').format(ep.end);
+          final activeTag = ep.isActive ? " (activo)" : "";
+          buf.writeln(
+              "  • $startStr → $endStr, pico ${ep.peakTemperatureC.toStringAsFixed(1)}°C$activeTag");
+        }
+      }
+
+      if (trends.structuralCountsByZone.isNotEmpty) {
+        buf.writeln(" Estructurales:");
+        final sorted = trends.structuralCountsByZone.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+        for (final entry in sorted) {
+          final evLabel = entry.value == 1 ? 'evento' : 'eventos';
+          buf.writeln("  • ${entry.key} — ${entry.value} $evLabel");
+        }
+      }
+
+      if (trends.mentalAvgByState.isNotEmpty) {
+        buf.writeln(" Mental (promedio):");
+        final sorted = trends.mentalAvgByState.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+        for (final entry in sorted) {
+          buf.writeln(
+              "  • ${entry.key.label}: ${entry.value.toStringAsFixed(1)}/5");
+        }
+      }
+    }
+
     final effPairs = <String>{};
     for (final o in _activeProfile!.medicationOutcomes) {
       effPairs.add('${o.medicationName}→${o.symptomName}');
@@ -1184,6 +1390,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
+        const SizedBox(height: 8),
+        _buildReportRangeSelector(cc, ic),
+        const SizedBox(height: 12),
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(border: Border.all(color: cc)),

@@ -70,99 +70,95 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String exportSuccess(String filename) {
-    return 'Data exported: $filename';
+    return 'Export successful';
   }
 
   @override
   String exportError(String reason) {
-    return 'Export error: $reason';
+    return 'Export failed';
   }
 
   @override
   String importCancelled(String reason) {
-    return 'Import cancelled: $reason';
+    return 'Import cancelled';
   }
 
   @override
-  String get importSuccess => 'Profile imported successfully.';
+  String get importSuccess => 'Import successful';
 
   @override
-  String get importDialogTitle => 'Import this profile';
+  String get importDialogTitle => 'Import Data';
 
   @override
   String importDialogName(String name) {
-    return 'Name: $name';
+    return 'Name: ';
   }
 
   @override
   String importDialogExportedAt(String date) {
-    return 'Exported: $date';
+    return 'Exported at: ';
   }
 
   @override
   String importDialogContains(int count) {
-    return 'Contains $count records:';
+    return 'Contains: ';
   }
 
   @override
-  String get importDialogFootnote =>
-      'This will be added as a new profile. Your current profile is not deleted.';
+  String get importDialogFootnote => 'Please review the data before importing.';
 
   @override
-  String get nounSymptoms => 'symptoms';
+  String get nounSymptoms => 'Symptoms';
 
   @override
-  String get nounDoses => 'doses';
+  String get nounDoses => 'Doses';
 
   @override
-  String get nounStructural => 'structural events';
+  String get nounStructural => 'Structural';
 
   @override
-  String get nounActivities => 'activities';
+  String get nounActivities => 'Activities';
 
   @override
-  String get nounTherapies => 'therapies';
+  String get nounTherapies => 'Therapies';
 
   @override
-  String get nounMoods => 'mood entries';
+  String get nounMoods => 'Moods';
 
   @override
-  String get nounMental => 'mental records';
+  String get nounMental => 'Mental';
 
   @override
-  String get pasteImportTitle => 'Import by pasting text';
+  String get pasteImportTitle => 'Paste to Import';
 
   @override
-  String get pasteImportInstructions =>
-      'Open your exported .json file (for example, from the Files app), select all the text, copy it, and paste it here.';
+  String get pasteImportInstructions => 'Paste your backup data below.';
 
   @override
-  String get pasteImportHint => 'Paste the file contents here…';
+  String get pasteImportHint => 'Paste JSON here...';
 
   @override
-  String get errImportUnreadable => 'The file could not be read.';
+  String get errImportUnreadable => 'File is unreadable.';
 
   @override
-  String get errImportInvalidJson => 'The text is not valid JSON.';
+  String get errImportInvalidJson => 'Invalid JSON format.';
 
   @override
-  String get errImportNotZebra =>
-      'This file does not appear to be from ZebraUpp.';
+  String get errImportNotZebra => 'Not a valid backup file.';
 
   @override
-  String get errImportUnknownSchema => 'Unknown schema version.';
+  String get errImportUnknownSchema => 'Unknown data schema.';
 
   @override
   String errImportSchemaMismatch(String found, String expected) {
-    return 'This file is from a different version (v$found). Expected version: v$expected.';
+    return 'Schema version mismatch.';
   }
 
   @override
-  String get errImportMissingProfile => 'No profile found in the file.';
+  String get errImportMissingProfile => 'Missing profile data.';
 
   @override
-  String get errImportCorruptProfile =>
-      'The profile is damaged or has an unexpected format.';
+  String get errImportCorruptProfile => 'Corrupted profile data.';
 
   @override
   String get actionHide => 'Hide';
@@ -370,7 +366,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quadrantCalmUnpleasant => 'low activation · unpleasant';
 
   @override
-  String get quadrantCalpleasant => 'calma · bienestar';
+  String get quadrantCalpleasant => 'Calm / Pleasant';
 
   @override
   String get quadrantTeaserActivatedUnpleasant => 'tension, anxiety';
@@ -1086,4 +1082,21 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get researchEmptyAbstract =>
       'Abstract unavailable. Open the article in PubMed for more details.';
+
+  @override
+  String get reportRangeDay => '1 day';
+
+  @override
+  String get reportRangeWeek => '7 days';
+
+  @override
+  String get reportRangeMonth => '30 days';
+
+  @override
+  String get reportRangeCustomTooltip => 'Custom range';
+
+  @override
+  String reportRangeCustomActiveLabel(String start, String end) {
+    return 'Range: $start → $end';
+  }
 }

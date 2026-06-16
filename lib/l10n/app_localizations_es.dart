@@ -1092,4 +1092,21 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get researchEmptyAbstract =>
       'Resumen no disponible. Abre el artículo en PubMed para más detalles.';
+
+  @override
+  String get reportRangeDay => '1 día';
+
+  @override
+  String get reportRangeWeek => '7 días';
+
+  @override
+  String get reportRangeMonth => '30 días';
+
+  @override
+  String get reportRangeCustomTooltip => 'Rango personalizado';
+
+  @override
+  String reportRangeCustomActiveLabel(String start, String end) {
+    return 'Rango: $start → $end';
+  }
 }

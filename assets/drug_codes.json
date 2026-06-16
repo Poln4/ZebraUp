@@ -1,0 +1,115 @@
+{
+  "mappings": [
+    {
+      "aliases": [
+        "paracetamol",
+        "acetaminofén",
+        "acetaminofen",
+        "acetaminophen",
+        "tylenol",
+        "panadol"
+      ],
+      "rxcui": "161",
+      "label": "Paracetamol / Acetaminofén",
+      "confidence": "high"
+    },
+    {
+      "aliases": [
+        "duloxetina",
+        "duloxetine",
+        "cymbalta",
+        "yentreve"
+      ],
+      "rxcui": "72625",
+      "label": "Duloxetina",
+      "notes": "SNRI; síndrome de discontinuación significativo si se interrumpe abruptamente. Reducción gradual recomendada.",
+      "confidence": "high"
+    },
+    {
+      "aliases": [
+        "loratadina",
+        "loratadine",
+        "lomidine",
+        "claritin",
+        "clarityne"
+      ],
+      "rxcui": "6315",
+      "label": "Loratadina",
+      "confidence": "high"
+    },
+    {
+      "aliases": [
+        "fexofenadina",
+        "fexofenadine",
+        "alledine",
+        "allegra",
+        "fexofenadine hydrochloride"
+      ],
+      "rxcui": "4053",
+      "label": "Fexofenadina",
+      "confidence": "high"
+    },
+    {
+      "aliases": [
+        "ibuprofeno",
+        "ibuprofen",
+        "advil",
+        "motrin"
+      ],
+      "rxcui": "5640",
+      "label": "Ibuprofeno",
+      "confidence": "high"
+    },
+    {
+      "aliases": [
+        "ácido mefenámico",
+        "acido mefenamico",
+        "mefenamic acid",
+        "ponstan",
+        "ponstan kapseals",
+        "ponstil"
+      ],
+      "rxcui": "6754",
+      "label": "Ácido mefenámico (Ponstan)",
+      "notes": "AINE; verificar interacciones con duloxetina (riesgo de hemorragia).",
+      "confidence": "medium"
+    },
+    {
+      "aliases": [
+        "dextrometorfano",
+        "dextromethorphan",
+        "dextromethorphan hydrobromide",
+        "methon",
+        "methon tablets"
+      ],
+      "rxcui": "3423",
+      "label": "Dextrometorfano",
+      "notes": "Riesgo de síndrome serotoninérgico con duloxetina (combinación SNRI + DXM).",
+      "confidence": "medium"
+    },
+    {
+      "aliases": [
+        "acetilcisteína",
+        "acetilcisteina",
+        "acetylcysteine",
+        "n-acetylcysteine",
+        "nac"
+      ],
+      "rxcui": "209",
+      "label": "Acetilcisteína (NAC)",
+      "confidence": "medium"
+    },
+    {
+      "aliases": [
+        "dienogest",
+        "qlaira",
+        "natazia",
+        "visanne"
+      ],
+      "rxcui": "220419",
+      "label": "Dienogest",
+      "notes": "Progestina usada en endometriosis; interacciones con anticonvulsivantes.",
+      "confidence": "medium"
+    }
+  ]
+}

@@ -26,7 +26,9 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../services/interaction_engine.dart';
+import '../services/medline_plus_service.dart';
 import '../widgets/dose_stepper.dart';
+import '../widgets/drug_info_sheet.dart';
 import '../widgets/group_form.dart';
 import '../widgets/med_form.dart';
 import '../widgets/severity_picker.dart';
@@ -39,6 +41,7 @@ class BotiquinTab extends StatelessWidget {
   final DateTime selectedDate;
   final Color contrastColor;
   final Color inverseContrastColor;
+  final MedlinePlusService medlineService;
 
   /// Called after any mutation (med add/edit/delete, dose logged, etc.).
   /// Parent should setState + persist.
@@ -50,6 +53,7 @@ class BotiquinTab extends StatelessWidget {
     required this.selectedDate,
     required this.contrastColor,
     required this.inverseContrastColor,
+    required this.medlineService,
     required this.onProfileChanged,
   });
 
@@ -120,6 +124,7 @@ class BotiquinTab extends StatelessWidget {
                 selectedDate: selectedDate,
                 contrastColor: contrastColor,
                 inverseContrastColor: inverseContrastColor,
+                medlineService: medlineService,
                 onProfileChanged: onProfileChanged,
               ),
             ),
@@ -845,6 +850,7 @@ class _MedRow extends StatelessWidget {
   final DateTime selectedDate;
   final Color contrastColor;
   final Color inverseContrastColor;
+  final MedlinePlusService medlineService;
   final VoidCallback onProfileChanged;
 
   const _MedRow({
@@ -853,6 +859,7 @@ class _MedRow extends StatelessWidget {
     required this.selectedDate,
     required this.contrastColor,
     required this.inverseContrastColor,
+    required this.medlineService,
     required this.onProfileChanged,
   });
 
@@ -942,6 +949,14 @@ class _MedRow extends StatelessWidget {
                   const SizedBox(width: 4),
                 ],
                 IconButton(
+                  icon: Icon(Icons.info_outline,
+                      size: 18,
+                      color: cc.withValues(alpha: 0.6)),
+                  onPressed: () => _openDrugInfo(context),
+                  tooltip: 'Información',
+                  visualDensity: VisualDensity.compact,
+                ),
+                IconButton(
                   icon: Icon(Icons.edit_outlined,
                       size: 18,
                       color: cc.withValues(alpha: 0.6)),
@@ -1007,6 +1022,16 @@ class _MedRow extends StatelessWidget {
         onProfileChanged();
       }
     }
+  }
+
+  Future<void> _openDrugInfo(BuildContext context) async {
+    showDrugInfoSheet(
+      context: context,
+      med: med,
+      contrastColor: contrastColor,
+      inverseContrastColor: inverseContrastColor,
+      service: medlineService,
+    );
   }
 
   Future<void> _openLogDose(BuildContext context) async {
