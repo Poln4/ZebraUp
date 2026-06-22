@@ -935,7 +935,7 @@ class AppLocalizationsEs extends AppLocalizations {
     String pain,
     Object painSuffix,
   ) {
-    return '$detail · esfuerzo $effort/10 · sentir $feeling/5$painSuffix ';
+    return '$detail · esfuerzo $effort/10 · sentir $feeling/5$painSuffix';
   }
 
   @override
@@ -1109,4 +1109,339 @@ class AppLocalizationsEs extends AppLocalizations {
   String reportRangeCustomActiveLabel(String start, String end) {
     return 'Rango: $start → $end';
   }
+
+  @override
+  String get structKindJoint => 'Articulación';
+
+  @override
+  String get structKindMuscle => 'Músculo';
+
+  @override
+  String get structKindTendon => 'Tendón';
+
+  @override
+  String get structKindLigament => 'Ligamento';
+
+  @override
+  String get structKindSoftTissue => 'Tejido blando';
+
+  @override
+  String get structKindNerve => 'Nervio';
+
+  @override
+  String get structTypeMuscleStrain => 'Tirón muscular';
+
+  @override
+  String get structTypeMuscleDistension => 'Distensión muscular';
+
+  @override
+  String get structTypeMuscleTear => 'Desgarro muscular';
+
+  @override
+  String get structTypeContracture => 'Contractura';
+
+  @override
+  String get structTypeMuscleSpasm => 'Espasmo muscular';
+
+  @override
+  String get structTypeTendinitis => 'Tendinitis';
+
+  @override
+  String get structTypeTendinosis => 'Tendinosis';
+
+  @override
+  String get structTypeBursitis => 'Bursitis';
+
+  @override
+  String get structTypeEnthesitis => 'Entesitis';
+
+  @override
+  String get structTypeTendonFissure => 'Fisura tendinosa';
+
+  @override
+  String get structTypeMildSprain => 'Esguince leve';
+
+  @override
+  String get structTypeSevereSprain => 'Esguince grave';
+
+  @override
+  String get structTypeLigamentTear => 'Desgarro ligamentario';
+
+  @override
+  String get structTypeSuperficialCut => 'Corte superficial';
+
+  @override
+  String get structTypeSkinFissure => 'Fisura cutánea';
+
+  @override
+  String get structTypeDeepWound => 'Herida profunda';
+
+  @override
+  String get structTypeHematoma => 'Hematoma';
+
+  @override
+  String get structTypeContusion => 'Contusión';
+
+  @override
+  String get structTypeBurn => 'Quemadura';
+
+  @override
+  String get structTypeAbrasion => 'Abrasión';
+
+  @override
+  String get structTypeParesthesia => 'Parestesia';
+
+  @override
+  String get sleepSectionTitle => 'SUEÑO';
+
+  @override
+  String get sleepActionAddEntry => '+ registrar sueño';
+
+  @override
+  String get sleepModalLogHeader => 'REGISTRAR SUEÑO';
+
+  @override
+  String get sleepModalEditHeader => 'EDITAR SUEÑO';
+
+  @override
+  String get sleepFieldQualityLabel => 'CALIDAD';
+
+  @override
+  String get sleepFieldDurationLabel => 'DURACIÓN';
+
+  @override
+  String get sleepFieldDurationHint => 'horas (ej. 7.5)';
+
+  @override
+  String get sleepFieldOnsetLatencyLabel => 'TIEMPO EN DORMIRSE';
+
+  @override
+  String get sleepFieldOnsetLatencyHint => 'minutos';
+
+  @override
+  String get sleepFieldWakeCountLabel => 'DESPERTARES';
+
+  @override
+  String get sleepFieldNightmareToggle => 'tuve pesadilla(s)';
+
+  @override
+  String get sleepLogLabelSlept => 'dormí';
+
+  @override
+  String sleepLogLabelHours(String hours) {
+    return '${hours}h';
+  }
+
+  @override
+  String sleepLogLabelWakes(int count) {
+    return '$count× despertares';
+  }
+
+  @override
+  String sleepLogLabelOnsetLatency(int minutes) {
+    return '$minutes min para dormir';
+  }
+
+  @override
+  String get sleepLogLabelWithNightmare => 'pesadilla';
+
+  @override
+  String get settingsOptionalModulesTitle => 'MÓDULOS OPCIONALES';
+
+  @override
+  String get settingsOptionalModulesBlurb =>
+      'Activa solo lo que quieras trackear. Los módulos desactivados no aparecen en Síntomas.';
+
+  @override
+  String get settingsModuleSleepLabel => 'Sueño';
+
+  @override
+  String get settingsModuleSleepDescription =>
+      'Calidad, duración y despertares por noche.';
+
+  @override
+  String get bodyRegionHeadNeck => 'Cabeza y cuello';
+
+  @override
+  String get bodyRegionShouldersUpperBack => 'Hombros y espalda alta';
+
+  @override
+  String get bodyRegionArms => 'Brazos';
+
+  @override
+  String get bodyRegionChestAbdomen => 'Pecho y abdomen';
+
+  @override
+  String get bodyRegionLowerBackPelvis => 'Espalda baja y pelvis';
+
+  @override
+  String get bodyRegionLegs => 'Piernas';
+
+  @override
+  String get zoneJaw => 'Mandíbula';
+
+  @override
+  String get zoneTemple => 'Sien';
+
+  @override
+  String get zoneShoulderBlades => 'Omóplatos';
+
+  @override
+  String get zoneUpperBack => 'Espalda alta';
+
+  @override
+  String get zoneUpperArm => 'Brazo';
+
+  @override
+  String get zoneElbow => 'Codo';
+
+  @override
+  String get zoneForearm => 'Antebrazo';
+
+  @override
+  String get zoneChest => 'Pecho';
+
+  @override
+  String get zoneSide => 'Costado';
+
+  @override
+  String get zoneRibs => 'Costillas';
+
+  @override
+  String get zoneAbdomen => 'Abdomen';
+
+  @override
+  String get zoneGlutes => 'Glúteos';
+
+  @override
+  String get zoneFrontThigh => 'Muslo (delante)';
+
+  @override
+  String get zoneBackThigh => 'Atrás del muslo';
+
+  @override
+  String get zoneCalf => 'Pantorrilla';
+
+  @override
+  String get zoneFeet => 'Pies';
+
+  @override
+  String get hydrationSectionTitle => 'HIDRATACIÓN';
+
+  @override
+  String get hydrationActionAddEntry => '+ registrar hidratación';
+
+  @override
+  String get hydrationModalLogHeader => 'REGISTRAR HIDRATACIÓN';
+
+  @override
+  String get hydrationModalEditHeader => 'EDITAR HIDRATACIÓN';
+
+  @override
+  String get hydrationFieldVolumeLabel => 'CANTIDAD';
+
+  @override
+  String get hydrationFieldVolumeHint => 'ml (ej. 250)';
+
+  @override
+  String get hydrationFieldBeverageLabel => 'BEBIDA';
+
+  @override
+  String get hydrationFieldSodiumLabel => 'SODIO (opcional)';
+
+  @override
+  String hydrationLogLabelVolume(String volume) {
+    return '$volume ml';
+  }
+
+  @override
+  String get hrvSectionTitle => 'HRV';
+
+  @override
+  String get hrvActionAddEntry => '+ registrar HRV';
+
+  @override
+  String get hrvModalLogHeader => 'REGISTRAR LECTURA HRV';
+
+  @override
+  String get hrvModalEditHeader => 'EDITAR LECTURA HRV';
+
+  @override
+  String get hrvFieldRmssdLabel => 'RMSSD';
+
+  @override
+  String get hrvFieldContextLabel => 'CONTEXTO';
+
+  @override
+  String get hrvFieldSourceLabel => 'FUENTE';
+
+  @override
+  String get hrvHintTapToEdit => 'tocá el número para editar';
+
+  @override
+  String get hrvDirectEditDialogTitle => 'Editar RMSSD';
+
+  @override
+  String get hrvDirectEditDialogHint => 'ej. 35';
+
+  @override
+  String hrvLogLabelRmssd(String value) {
+    return '$value ms';
+  }
+
+  @override
+  String get hrvSourceManual => 'manual';
+
+  @override
+  String get hrvSourceAppleWatch => 'Apple Watch';
+
+  @override
+  String get hrvSourceWelltory => 'Welltory';
+
+  @override
+  String get hrvSourceOther => 'otro';
+
+  @override
+  String get settingsModuleHydrationLabel => 'Hidratación';
+
+  @override
+  String get settingsModuleHydrationDescription =>
+      'Volumen, bebida y aporte de sodio.';
+
+  @override
+  String get settingsModuleHrvLabel => 'HRV';
+
+  @override
+  String get settingsModuleHrvDescription =>
+      'Variabilidad cardíaca por contexto y fuente.';
+
+  @override
+  String get sectionHintNoActivity => 'sin registros aún';
+
+  @override
+  String get sectionHintToday => 'último hoy';
+
+  @override
+  String get sectionHintYesterday => 'último ayer';
+
+  @override
+  String sectionHintDaysAgo(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days días',
+      one: '1 día',
+    );
+    return 'último hace $_temp0';
+  }
+
+  @override
+  String get settingsViewPreferencesTitle => 'VISUALIZACIÓN';
+
+  @override
+  String get settingsCarefulModeLabel => 'Modo cuidadoso';
+
+  @override
+  String get settingsCarefulModeDescription =>
+      'Reduce el ruido visual: las secciones empiezan colapsadas. Tap el header para expandir lo que quieras ver.';
 }

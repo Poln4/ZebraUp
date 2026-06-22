@@ -1,42 +1,648 @@
 {
+  "metadata": {
+    "version": "2",
+    "last_updated": "2026-06-16",
+    "icd11_source": "WHO ICD-11 MMS 2024 release — https://icd.who.int/browse11/l-m/en",
+    "verification_note": "Entries with `verify: true` should be confirmed in the ICD-11 browser before clinical reliance. Dual coding lets the app fall back to MedlinePlus (US, ICD-10-based) when ICD-11 has no patient-education resource, while exposing diagnoses like c-PTSD that ICD-10 / DSM-5 do not recognize.",
+    "changelog": {
+      "v2 (2026-06-16)": [
+        "Dual coding (icd10 + icd11) on every entry",
+        "EDS subtype codes CORRECTED: hEDS Q79.62, vEDS Q79.63, clEDS Q79.69 (was incorrectly assigned in v1)",
+        "clEDS label fixed: 'clásico-like (TNXB)' (was 'clásico' — clinically different from classical EDS)",
+        "Added separate entry for classical EDS (COL5A1/A2) at Q79.61",
+        "17 new EDS-related comorbidities added",
+        "Tiroiditis de Hashimoto added as autoimmune adjacency"
+      ],
+      "v1": "Initial release with 38 entries, ICD-10-CM only, EDS subtype codes swapped"
+    }
+  },
   "mappings": [
-    {"aliases": ["hEDS", "SEDh", "SED hipermóvil", "SED hiperlaxo", "Ehlers-Danlos hiperlaxo"], "icd10": "Q79.60", "label": "Síndrome de Ehlers-Danlos, hiperlaxo"},
-    {"aliases": ["clEDS", "EDS clásico", "Ehlers-Danlos clásico"], "icd10": "Q79.61", "label": "Síndrome de Ehlers-Danlos, clásico"},
-    {"aliases": ["vEDS", "EDS vascular", "Ehlers-Danlos vascular"], "icd10": "Q79.62", "label": "Síndrome de Ehlers-Danlos, vascular"},
-    {"aliases": ["EDS", "SED", "Ehlers-Danlos"], "icd10": "Q79.6", "label": "Síndrome de Ehlers-Danlos"},
-    {"aliases": ["HSD", "Hipermovilidad", "Síndrome de hipermovilidad"], "icd10": "M35.7", "label": "Síndrome de hipermovilidad"},
-    {"aliases": ["POTS", "Taquicardia ortostática", "Síndrome de taquicardia ortostática postural"], "icd10": "G90.A", "label": "Síndrome de taquicardia ortostática postural"},
-    {"aliases": ["Dysautonomia", "Disautonomía"], "icd10": "G90.9", "label": "Disautonomía"},
-    {"aliases": ["MCAS", "Síndrome de activación mastocitaria"], "icd10": "D89.40", "label": "Síndrome de activación de mastocitos"},
-    {"aliases": ["Fibromyalgia", "Fibromialgia"], "icd10": "M79.7", "label": "Fibromialgia"},
-    {"aliases": ["Gastroparesis", "Gastroparesia"], "icd10": "K31.84", "label": "Gastroparesia"},
-    {"aliases": ["Adenomyosis", "Adenomiosis"], "icd10": "N80.0", "label": "Adenomiosis"},
-    {"aliases": ["Endometriosis"], "icd10": "N80.9", "label": "Endometriosis"},
-    {"aliases": ["Anemia"], "icd10": "D64.9", "label": "Anemia"},
-    {"aliases": ["Migraine", "Migraña"], "icd10": "G43.9", "label": "Migraña"},
-    {"aliases": ["IBS", "Síndrome de intestino irritable"], "icd10": "K58.9", "label": "Síndrome de colon irritable"},
-    {"aliases": ["Anxiety", "Ansiedad"], "icd10": "F41.9", "label": "Trastorno de ansiedad"},
-    {"aliases": ["Depression", "Depresión"], "icd10": "F32.9", "label": "Trastorno depresivo"},
-    {"aliases": ["ADHD", "TDAH"], "icd10": "F90.9", "label": "Trastorno por déficit de atención e hiperactividad"},
-    {"aliases": ["Autism", "Autismo", "TEA"], "icd10": "F84.0", "label": "Trastorno del espectro autista"},
-    {"aliases": ["CCI", "Inestabilidad craneocervical", "Inestabilidad atlantoaxial", "ICC"], "icd10": "M53.2", "label": "Inestabilidad espinal (Craneocervical)"},
-    {"aliases": ["Chiari", "Malformación de Chiari", "Arnold-Chiari", "CMI"], "icd10": "Q07.0", "label": "Síndrome de Arnold-Chiari"},
-    {"aliases": ["Tethered cord", "Médula anclada", "Síndrome de médula anclada", "SMA"], "icd10": "Q06.8", "label": "Otras malformaciones congénitas de la médula espinal (Médula anclada)"},
-    {"aliases": ["ME/CFS", "SFC", "Síndrome de fatiga crónica", "Encefalomielitis miálgica"], "icd10": "G93.3", "label": "Síndrome de fatiga posviral / Encefalomielitis miálgica"},
-    {"aliases": ["MPS", "Dolor miofascial", "Síndrome de dolor miofascial", "Puntos gatillo"], "icd10": "M79.1", "label": "Mialgia / Síndrome de dolor miofascial"},
-    {"aliases": ["TMJ", "TMD", "ATM", "Trastorno temporomandibular", "Dolor mandibular"], "icd10": "K07.6", "label": "Trastornos de la articulación temporomandibular"},
-    {"aliases": ["Luxaciones recurrentes", "Subluxaciones", "Inestabilidad articular", "Dislocación"], "icd10": "M24.4", "label": "Luxación y subluxación recidivante de la articulación"},
-    {"aliases": ["Osteoartritis prematura", "Artrosis", "Osteoartrosis"], "icd10": "M19.9", "label": "Artrosis, no especificada"},
-    {"aliases": ["Costocondritis", "Dolor de costillas", "Síndrome de Tietze"], "icd10": "M94.0", "label": "Síndrome de la articulación condrocostal (Tietze)"},
-    {"aliases": ["GERD", "ERGE", "Reflujo", "Reflujo gastroesofágico"], "icd10": "K21.9", "label": "Enfermedad por reflujo gastroesofágico sin esofagitis"},
-    {"aliases": ["SIBO", "Sobrecrecimiento bacteriano", "Sobrecrecimiento bacteriano en el intestino delgado"], "icd10": "K90.89", "label": "Otros trastornos de malabsorción intestinal especificados (SIBO)"},
-    {"aliases": ["Hernia de hiato", "Hernia hiatal"], "icd10": "K44.9", "label": "Hernia diafragmática sin obstrucción ni gangrena"},
-    {"aliases": ["OH", "Hipotensión ortostática", "Baja presión al ponerse de pie"], "icd10": "I95.1", "label": "Hipotensión ortostática"},
-    {"aliases": ["MVP", "Prolapso mitral", "Prolapso de la válvula mitral"], "icd10": "I34.1", "label": "Prolapso de la válvula mitral (no reumático)"},
-    {"aliases": ["Raynaud", "Síndrome de Raynaud", "Fenómeno de Raynaud"], "icd10": "I73.0", "label": "Síndrome de Raynaud"},
-    {"aliases": ["RLS", "SPI", "Piernas inquietas", "Síndrome de piernas inquietas"], "icd10": "G25.81", "label": "Síndrome de las piernas inquietas"},
-    {"aliases": ["Sleep Apnea", "Apnea del sueño", "SAOS"], "icd10": "G47.33", "label": "Apnea obstructiva del sueño"},
-    {"aliases": ["PCOS", "SOP", "Síndrome de ovario poliquístico"], "icd10": "E28.2", "label": "Síndrome de ovario poliquístico"},
-    {"aliases": ["Pelvic Organ Prolapse", "POP", "Prolapso pélvico", "Prolapso de órganos pélvicos"], "icd10": "N81.9", "label": "Prolapso genital femenino, no especificado"}
+    {
+      "aliases": [
+        "hEDS",
+        "SEDh",
+        "SED hipermóvil",
+        "SED hiperlaxo",
+        "Ehlers-Danlos hiperlaxo"
+      ],
+      "icd10": "Q79.62",
+      "icd11": "LD28.0",
+      "label": "Síndrome de Ehlers-Danlos, hipermóvil (hEDS)",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "clEDS",
+        "EDS clásico-like",
+        "Ehlers-Danlos clásico-like",
+        "EDS TNXB",
+        "classic-like EDS"
+      ],
+      "icd10": "Q79.69",
+      "icd11": "LD28.2",
+      "label": "Síndrome de Ehlers-Danlos, clásico-like (TNXB)",
+      "verify": true,
+      "note": "clEDS (TNXB-related) is genetically and clinically distinct from classical EDS (COL5A1/A2). ICD-10 has no dedicated code, hence Q79.69 'other'."
+    },
+    {
+      "aliases": [
+        "cEDS",
+        "classical EDS",
+        "EDS clásico",
+        "Ehlers-Danlos clásico",
+        "EDS COL5A1",
+        "EDS COL5A2"
+      ],
+      "icd10": "Q79.61",
+      "icd11": "LD28.1",
+      "label": "Síndrome de Ehlers-Danlos, clásico (COL5A1/A2)",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "vEDS",
+        "EDS vascular",
+        "Ehlers-Danlos vascular"
+      ],
+      "icd10": "Q79.63",
+      "icd11": "LD28.4",
+      "label": "Síndrome de Ehlers-Danlos, vascular",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "EDS",
+        "SED",
+        "Ehlers-Danlos"
+      ],
+      "icd10": "Q79.6",
+      "icd11": "LD28",
+      "label": "Síndrome de Ehlers-Danlos",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "HSD",
+        "Hipermovilidad",
+        "Síndrome de hipermovilidad"
+      ],
+      "icd10": "M35.7",
+      "icd11": "FB91.1Y",
+      "label": "Síndrome de hipermovilidad",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "POTS",
+        "Taquicardia ortostática",
+        "Síndrome de taquicardia ortostática postural"
+      ],
+      "icd10": "G90.A",
+      "icd11": "8D89.2",
+      "label": "Síndrome de taquicardia ortostática postural",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Dysautonomia",
+        "Disautonomía"
+      ],
+      "icd10": "G90.9",
+      "icd11": "8D89.Z",
+      "label": "Disautonomía",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "OH",
+        "Hipotensión ortostática",
+        "Baja presión al ponerse de pie"
+      ],
+      "icd10": "I95.1",
+      "icd11": "8D89.0",
+      "label": "Hipotensión ortostática",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "MVP",
+        "Prolapso mitral",
+        "Prolapso de la válvula mitral"
+      ],
+      "icd10": "I34.1",
+      "icd11": "BC81.0",
+      "label": "Prolapso de la válvula mitral (no reumático)",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Raynaud",
+        "Síndrome de Raynaud",
+        "Fenómeno de Raynaud"
+      ],
+      "icd10": "I73.0",
+      "icd11": "BD42.0",
+      "label": "Síndrome de Raynaud",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Varices",
+        "Várices",
+        "Venas varicosas",
+        "Varicose veins"
+      ],
+      "icd10": "I83.9",
+      "icd11": "BD74.Z",
+      "label": "Varices de las extremidades inferiores",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Dilatación aórtica leve",
+        "Aortic root dilation",
+        "Raíz aórtica dilatada"
+      ],
+      "icd10": "I77.81",
+      "icd11": "BD50.5",
+      "label": "Dilatación aórtica leve",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "CCI",
+        "Inestabilidad craneocervical",
+        "Inestabilidad atlantoaxial",
+        "ICC"
+      ],
+      "icd10": "M53.2",
+      "icd11": "FA20.0",
+      "label": "Inestabilidad espinal (craneocervical)",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Chiari",
+        "Malformación de Chiari",
+        "Arnold-Chiari",
+        "CMI"
+      ],
+      "icd10": "Q07.0",
+      "icd11": "LA05",
+      "label": "Síndrome de Arnold-Chiari",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Tethered cord",
+        "Médula anclada",
+        "Síndrome de médula anclada",
+        "SMA"
+      ],
+      "icd10": "Q06.8",
+      "icd11": "LA02.Y",
+      "label": "Síndrome de médula anclada",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Migraine",
+        "Migraña"
+      ],
+      "icd10": "G43.9",
+      "icd11": "8A80",
+      "label": "Migraña",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "RLS",
+        "SPI",
+        "Piernas inquietas",
+        "Síndrome de piernas inquietas"
+      ],
+      "icd10": "G25.81",
+      "icd11": "7A80",
+      "label": "Síndrome de las piernas inquietas",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Distonía",
+        "Dystonia",
+        "Movimientos involuntarios"
+      ],
+      "icd10": "G24.9",
+      "icd11": "8A02",
+      "label": "Distonía",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Sleep Apnea",
+        "Apnea del sueño",
+        "SAOS"
+      ],
+      "icd10": "G47.33",
+      "icd11": "7A41",
+      "label": "Apnea obstructiva del sueño",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "IBS",
+        "Síndrome de intestino irritable"
+      ],
+      "icd10": "K58.9",
+      "icd11": "DD91.Z",
+      "label": "Síndrome de colon irritable",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "GERD",
+        "ERGE",
+        "Reflujo",
+        "Reflujo gastroesofágico"
+      ],
+      "icd10": "K21.9",
+      "icd11": "DA22",
+      "label": "Enfermedad por reflujo gastroesofágico sin esofagitis",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Gastroparesis",
+        "Gastroparesia"
+      ],
+      "icd10": "K31.84",
+      "icd11": "DA42",
+      "label": "Gastroparesia",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "SIBO",
+        "Sobrecrecimiento bacteriano",
+        "Sobrecrecimiento bacteriano en el intestino delgado"
+      ],
+      "icd10": "K90.89",
+      "icd11": "DA92",
+      "label": "Sobrecrecimiento bacteriano intestinal (SIBO)",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Hernia de hiato",
+        "Hernia hiatal"
+      ],
+      "icd10": "K44.9",
+      "icd11": "DC11",
+      "label": "Hernia diafragmática sin obstrucción ni gangrena",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Dispepsia funcional",
+        "Dispepsia",
+        "Indigestión funcional"
+      ],
+      "icd10": "K30",
+      "icd11": "DD90.30",
+      "label": "Dispepsia funcional",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Disfagia funcional",
+        "Disfagia",
+        "Dificultad para tragar"
+      ],
+      "icd10": "R13.10",
+      "icd11": "MD93.0",
+      "label": "Disfagia",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Prolapso rectal",
+        "Rectal prolapse",
+        "Procidencia rectal"
+      ],
+      "icd10": "K62.3",
+      "icd11": "DB37.0",
+      "label": "Prolapso rectal",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Anemia"
+      ],
+      "icd10": "D64.9",
+      "icd11": "3A9Z",
+      "label": "Anemia, sin especificar",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "MCAS",
+        "Síndrome de activación mastocitaria"
+      ],
+      "icd10": "D89.40",
+      "icd11": "4A85.2",
+      "label": "Síndrome de activación de mastocitos",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Disfunción plaquetaria",
+        "Diátesis hemorrágica",
+        "Bleeding diathesis",
+        "Tendencia hemorrágica"
+      ],
+      "icd10": "D69.1",
+      "icd11": "3B64",
+      "label": "Trastorno funcional de plaquetas",
+      "verify": true,
+      "note": "EDS-specific bleeding pattern: reduced GPVI / impaired integrin signaling. ASH 2023."
+    },
+    {
+      "aliases": [
+        "Hashimoto",
+        "Tiroiditis de Hashimoto",
+        "Hashimoto thyroiditis",
+        "Tiroiditis autoinmune"
+      ],
+      "icd10": "E06.3",
+      "icd11": "5A03.1",
+      "label": "Tiroiditis autoinmune (Hashimoto)",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Anxiety",
+        "Ansiedad"
+      ],
+      "icd10": "F41.9",
+      "icd11": "6B0Z",
+      "label": "Trastorno de ansiedad",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Trastorno de pánico",
+        "Ataques de pánico",
+        "Panic disorder"
+      ],
+      "icd10": "F41.0",
+      "icd11": "6B01",
+      "label": "Trastorno de pánico",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Depression",
+        "Depresión"
+      ],
+      "icd10": "F32.9",
+      "icd11": "6A70.Z",
+      "label": "Trastorno depresivo",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "c-PTSD",
+        "TEPT-C",
+        "Trastorno por estrés postraumático complejo",
+        "TEPT complejo",
+        "PTSD complejo"
+      ],
+      "icd10": null,
+      "icd11": "6B41",
+      "label": "Trastorno por estrés postraumático complejo (TEPT-C)",
+      "verify": false,
+      "note": "c-PTSD exists ONLY in ICD-11 (6B41), not in ICD-10 or DSM-5. Canonical case for dual coding: when icd10 is null, the app must fall back to ICD-11 sources."
+    },
+    {
+      "aliases": [
+        "ADHD",
+        "TDAH"
+      ],
+      "icd10": "F90.9",
+      "icd11": "6A05",
+      "label": "Trastorno por déficit de atención e hiperactividad",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Autism",
+        "Autismo",
+        "TEA"
+      ],
+      "icd10": "F84.0",
+      "icd11": "6A02",
+      "label": "Trastorno del espectro autista",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Fibromyalgia",
+        "Fibromialgia"
+      ],
+      "icd10": "M79.7",
+      "icd11": "MG30.01",
+      "label": "Fibromialgia",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "MPS",
+        "Dolor miofascial",
+        "Síndrome de dolor miofascial",
+        "Puntos gatillo"
+      ],
+      "icd10": "M79.1",
+      "icd11": "ME82.Y",
+      "label": "Mialgia / Síndrome de dolor miofascial",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Sensibilización central",
+        "Central sensitization",
+        "Hiperalgesia central"
+      ],
+      "icd10": "G89.4",
+      "icd11": "MG30.50",
+      "label": "Sensibilización central / dolor crónico primario",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "ME/CFS",
+        "SFC",
+        "Síndrome de fatiga crónica",
+        "Encefalomielitis miálgica"
+      ],
+      "icd10": "G93.3",
+      "icd11": "8E49",
+      "label": "Síndrome de fatiga posviral / encefalomielitis miálgica",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "TMJ",
+        "TMD",
+        "ATM",
+        "Trastorno temporomandibular",
+        "Dolor mandibular"
+      ],
+      "icd10": "K07.6",
+      "icd11": "DA0E.3",
+      "label": "Trastornos de la articulación temporomandibular",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Luxaciones recurrentes",
+        "Subluxaciones",
+        "Inestabilidad articular",
+        "Dislocación"
+      ],
+      "icd10": "M24.4",
+      "icd11": "FB73",
+      "label": "Luxación y subluxación recidivante de la articulación",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Osteoartritis prematura",
+        "Artrosis",
+        "Osteoartrosis"
+      ],
+      "icd10": "M19.9",
+      "icd11": "FA05",
+      "label": "Artrosis, no especificada",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Costocondritis",
+        "Dolor de costillas",
+        "Síndrome de Tietze"
+      ],
+      "icd10": "M94.0",
+      "icd11": "FB54",
+      "label": "Síndrome de la articulación condrocostal (Tietze)",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Adenomyosis",
+        "Adenomiosis"
+      ],
+      "icd10": "N80.0",
+      "icd11": "GA13",
+      "label": "Adenomiosis",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Endometriosis"
+      ],
+      "icd10": "N80.9",
+      "icd11": "GA10",
+      "label": "Endometriosis",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "PCOS",
+        "SOP",
+        "Síndrome de ovario poliquístico"
+      ],
+      "icd10": "E28.2",
+      "icd11": "5A80.1",
+      "label": "Síndrome de ovario poliquístico",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Pelvic Organ Prolapse",
+        "POP",
+        "Prolapso pélvico",
+        "Prolapso de órganos pélvicos"
+      ],
+      "icd10": "N81.9",
+      "icd11": "GC40.Z",
+      "label": "Prolapso genital femenino, no especificado",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Dismenorrea primaria",
+        "Dismenorrea severa",
+        "Períodos dolorosos"
+      ],
+      "icd10": "N94.4",
+      "icd11": "GA34.3",
+      "label": "Dismenorrea primaria",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Vulvodinia",
+        "Vulvodynia",
+        "Dolor vulvar"
+      ],
+      "icd10": "N94.81",
+      "icd11": "GA34.0Y",
+      "label": "Vulvodinia",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Lipedema",
+        "Síndrome lipedematoso"
+      ],
+      "icd10": "E88.2",
+      "icd11": "EF02",
+      "label": "Lipedema",
+      "verify": true,
+      "note": "Lipedema lacks a dedicated ICD-10 code globally; E88.2 (lipomatosis NOS) or R60.9 (oedema NOS) are imperfect approximations. ICD-11 EF02 is dedicated."
+    },
+    {
+      "aliases": [
+        "Cicatrices atróficas",
+        "Piel papel cigarrillo",
+        "Atrophic scarring",
+        "Cigarette paper scarring"
+      ],
+      "icd10": "L90.5",
+      "icd11": "EE60.0Y",
+      "label": "Cicatrices atróficas (piel papel cigarrillo)",
+      "verify": true
+    },
+    {
+      "aliases": [
+        "Astigmatismo",
+        "Astigmatism"
+      ],
+      "icd10": "H52.20",
+      "icd11": "9D00.2",
+      "label": "Astigmatismo",
+      "verify": false
+    },
+    {
+      "aliases": [
+        "Miopía",
+        "Myopia",
+        "Nearsightedness"
+      ],
+      "icd10": "H52.10",
+      "icd11": "9D00.0",
+      "label": "Miopía",
+      "verify": false
+    }
   ]
 }

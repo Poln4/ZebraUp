@@ -1616,7 +1616,7 @@ abstract class AppLocalizations {
   /// No description provided for @logSubtitleActivityTemplate.
   ///
   /// In es, this message translates to:
-  /// **'{detail} · esfuerzo {effort}/10 · sentir {feeling}/5{painSuffix} }'**
+  /// **'{detail} · esfuerzo {effort}/10 · sentir {feeling}/5{painSuffix}'**
   String logSubtitleActivityTemplate(
     String detail,
     int effort,
@@ -1930,6 +1930,630 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Rango: {start} → {end}'**
   String reportRangeCustomActiveLabel(String start, String end);
+
+  /// No description provided for @structKindJoint.
+  ///
+  /// In es, this message translates to:
+  /// **'Articulación'**
+  String get structKindJoint;
+
+  /// No description provided for @structKindMuscle.
+  ///
+  /// In es, this message translates to:
+  /// **'Músculo'**
+  String get structKindMuscle;
+
+  /// No description provided for @structKindTendon.
+  ///
+  /// In es, this message translates to:
+  /// **'Tendón'**
+  String get structKindTendon;
+
+  /// No description provided for @structKindLigament.
+  ///
+  /// In es, this message translates to:
+  /// **'Ligamento'**
+  String get structKindLigament;
+
+  /// No description provided for @structKindSoftTissue.
+  ///
+  /// In es, this message translates to:
+  /// **'Tejido blando'**
+  String get structKindSoftTissue;
+
+  /// No description provided for @structKindNerve.
+  ///
+  /// In es, this message translates to:
+  /// **'Nervio'**
+  String get structKindNerve;
+
+  /// No description provided for @structTypeMuscleStrain.
+  ///
+  /// In es, this message translates to:
+  /// **'Tirón muscular'**
+  String get structTypeMuscleStrain;
+
+  /// No description provided for @structTypeMuscleDistension.
+  ///
+  /// In es, this message translates to:
+  /// **'Distensión muscular'**
+  String get structTypeMuscleDistension;
+
+  /// No description provided for @structTypeMuscleTear.
+  ///
+  /// In es, this message translates to:
+  /// **'Desgarro muscular'**
+  String get structTypeMuscleTear;
+
+  /// No description provided for @structTypeContracture.
+  ///
+  /// In es, this message translates to:
+  /// **'Contractura'**
+  String get structTypeContracture;
+
+  /// No description provided for @structTypeMuscleSpasm.
+  ///
+  /// In es, this message translates to:
+  /// **'Espasmo muscular'**
+  String get structTypeMuscleSpasm;
+
+  /// No description provided for @structTypeTendinitis.
+  ///
+  /// In es, this message translates to:
+  /// **'Tendinitis'**
+  String get structTypeTendinitis;
+
+  /// No description provided for @structTypeTendinosis.
+  ///
+  /// In es, this message translates to:
+  /// **'Tendinosis'**
+  String get structTypeTendinosis;
+
+  /// No description provided for @structTypeBursitis.
+  ///
+  /// In es, this message translates to:
+  /// **'Bursitis'**
+  String get structTypeBursitis;
+
+  /// No description provided for @structTypeEnthesitis.
+  ///
+  /// In es, this message translates to:
+  /// **'Entesitis'**
+  String get structTypeEnthesitis;
+
+  /// No description provided for @structTypeTendonFissure.
+  ///
+  /// In es, this message translates to:
+  /// **'Fisura tendinosa'**
+  String get structTypeTendonFissure;
+
+  /// No description provided for @structTypeMildSprain.
+  ///
+  /// In es, this message translates to:
+  /// **'Esguince leve'**
+  String get structTypeMildSprain;
+
+  /// No description provided for @structTypeSevereSprain.
+  ///
+  /// In es, this message translates to:
+  /// **'Esguince grave'**
+  String get structTypeSevereSprain;
+
+  /// No description provided for @structTypeLigamentTear.
+  ///
+  /// In es, this message translates to:
+  /// **'Desgarro ligamentario'**
+  String get structTypeLigamentTear;
+
+  /// No description provided for @structTypeSuperficialCut.
+  ///
+  /// In es, this message translates to:
+  /// **'Corte superficial'**
+  String get structTypeSuperficialCut;
+
+  /// No description provided for @structTypeSkinFissure.
+  ///
+  /// In es, this message translates to:
+  /// **'Fisura cutánea'**
+  String get structTypeSkinFissure;
+
+  /// No description provided for @structTypeDeepWound.
+  ///
+  /// In es, this message translates to:
+  /// **'Herida profunda'**
+  String get structTypeDeepWound;
+
+  /// No description provided for @structTypeHematoma.
+  ///
+  /// In es, this message translates to:
+  /// **'Hematoma'**
+  String get structTypeHematoma;
+
+  /// No description provided for @structTypeContusion.
+  ///
+  /// In es, this message translates to:
+  /// **'Contusión'**
+  String get structTypeContusion;
+
+  /// No description provided for @structTypeBurn.
+  ///
+  /// In es, this message translates to:
+  /// **'Quemadura'**
+  String get structTypeBurn;
+
+  /// No description provided for @structTypeAbrasion.
+  ///
+  /// In es, this message translates to:
+  /// **'Abrasión'**
+  String get structTypeAbrasion;
+
+  /// No description provided for @structTypeParesthesia.
+  ///
+  /// In es, this message translates to:
+  /// **'Parestesia'**
+  String get structTypeParesthesia;
+
+  /// No description provided for @sleepSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'SUEÑO'**
+  String get sleepSectionTitle;
+
+  /// No description provided for @sleepActionAddEntry.
+  ///
+  /// In es, this message translates to:
+  /// **'+ registrar sueño'**
+  String get sleepActionAddEntry;
+
+  /// No description provided for @sleepModalLogHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'REGISTRAR SUEÑO'**
+  String get sleepModalLogHeader;
+
+  /// No description provided for @sleepModalEditHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'EDITAR SUEÑO'**
+  String get sleepModalEditHeader;
+
+  /// No description provided for @sleepFieldQualityLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'CALIDAD'**
+  String get sleepFieldQualityLabel;
+
+  /// No description provided for @sleepFieldDurationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'DURACIÓN'**
+  String get sleepFieldDurationLabel;
+
+  /// No description provided for @sleepFieldDurationHint.
+  ///
+  /// In es, this message translates to:
+  /// **'horas (ej. 7.5)'**
+  String get sleepFieldDurationHint;
+
+  /// No description provided for @sleepFieldOnsetLatencyLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'TIEMPO EN DORMIRSE'**
+  String get sleepFieldOnsetLatencyLabel;
+
+  /// No description provided for @sleepFieldOnsetLatencyHint.
+  ///
+  /// In es, this message translates to:
+  /// **'minutos'**
+  String get sleepFieldOnsetLatencyHint;
+
+  /// No description provided for @sleepFieldWakeCountLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'DESPERTARES'**
+  String get sleepFieldWakeCountLabel;
+
+  /// No description provided for @sleepFieldNightmareToggle.
+  ///
+  /// In es, this message translates to:
+  /// **'tuve pesadilla(s)'**
+  String get sleepFieldNightmareToggle;
+
+  /// No description provided for @sleepLogLabelSlept.
+  ///
+  /// In es, this message translates to:
+  /// **'dormí'**
+  String get sleepLogLabelSlept;
+
+  /// No description provided for @sleepLogLabelHours.
+  ///
+  /// In es, this message translates to:
+  /// **'{hours}h'**
+  String sleepLogLabelHours(String hours);
+
+  /// No description provided for @sleepLogLabelWakes.
+  ///
+  /// In es, this message translates to:
+  /// **'{count}× despertares'**
+  String sleepLogLabelWakes(int count);
+
+  /// No description provided for @sleepLogLabelOnsetLatency.
+  ///
+  /// In es, this message translates to:
+  /// **'{minutes} min para dormir'**
+  String sleepLogLabelOnsetLatency(int minutes);
+
+  /// No description provided for @sleepLogLabelWithNightmare.
+  ///
+  /// In es, this message translates to:
+  /// **'pesadilla'**
+  String get sleepLogLabelWithNightmare;
+
+  /// No description provided for @settingsOptionalModulesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'MÓDULOS OPCIONALES'**
+  String get settingsOptionalModulesTitle;
+
+  /// No description provided for @settingsOptionalModulesBlurb.
+  ///
+  /// In es, this message translates to:
+  /// **'Activa solo lo que quieras trackear. Los módulos desactivados no aparecen en Síntomas.'**
+  String get settingsOptionalModulesBlurb;
+
+  /// No description provided for @settingsModuleSleepLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Sueño'**
+  String get settingsModuleSleepLabel;
+
+  /// No description provided for @settingsModuleSleepDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Calidad, duración y despertares por noche.'**
+  String get settingsModuleSleepDescription;
+
+  /// No description provided for @bodyRegionHeadNeck.
+  ///
+  /// In es, this message translates to:
+  /// **'Cabeza y cuello'**
+  String get bodyRegionHeadNeck;
+
+  /// No description provided for @bodyRegionShouldersUpperBack.
+  ///
+  /// In es, this message translates to:
+  /// **'Hombros y espalda alta'**
+  String get bodyRegionShouldersUpperBack;
+
+  /// No description provided for @bodyRegionArms.
+  ///
+  /// In es, this message translates to:
+  /// **'Brazos'**
+  String get bodyRegionArms;
+
+  /// No description provided for @bodyRegionChestAbdomen.
+  ///
+  /// In es, this message translates to:
+  /// **'Pecho y abdomen'**
+  String get bodyRegionChestAbdomen;
+
+  /// No description provided for @bodyRegionLowerBackPelvis.
+  ///
+  /// In es, this message translates to:
+  /// **'Espalda baja y pelvis'**
+  String get bodyRegionLowerBackPelvis;
+
+  /// No description provided for @bodyRegionLegs.
+  ///
+  /// In es, this message translates to:
+  /// **'Piernas'**
+  String get bodyRegionLegs;
+
+  /// No description provided for @zoneJaw.
+  ///
+  /// In es, this message translates to:
+  /// **'Mandíbula'**
+  String get zoneJaw;
+
+  /// No description provided for @zoneTemple.
+  ///
+  /// In es, this message translates to:
+  /// **'Sien'**
+  String get zoneTemple;
+
+  /// No description provided for @zoneShoulderBlades.
+  ///
+  /// In es, this message translates to:
+  /// **'Omóplatos'**
+  String get zoneShoulderBlades;
+
+  /// No description provided for @zoneUpperBack.
+  ///
+  /// In es, this message translates to:
+  /// **'Espalda alta'**
+  String get zoneUpperBack;
+
+  /// No description provided for @zoneUpperArm.
+  ///
+  /// In es, this message translates to:
+  /// **'Brazo'**
+  String get zoneUpperArm;
+
+  /// No description provided for @zoneElbow.
+  ///
+  /// In es, this message translates to:
+  /// **'Codo'**
+  String get zoneElbow;
+
+  /// No description provided for @zoneForearm.
+  ///
+  /// In es, this message translates to:
+  /// **'Antebrazo'**
+  String get zoneForearm;
+
+  /// No description provided for @zoneChest.
+  ///
+  /// In es, this message translates to:
+  /// **'Pecho'**
+  String get zoneChest;
+
+  /// No description provided for @zoneSide.
+  ///
+  /// In es, this message translates to:
+  /// **'Costado'**
+  String get zoneSide;
+
+  /// No description provided for @zoneRibs.
+  ///
+  /// In es, this message translates to:
+  /// **'Costillas'**
+  String get zoneRibs;
+
+  /// No description provided for @zoneAbdomen.
+  ///
+  /// In es, this message translates to:
+  /// **'Abdomen'**
+  String get zoneAbdomen;
+
+  /// No description provided for @zoneGlutes.
+  ///
+  /// In es, this message translates to:
+  /// **'Glúteos'**
+  String get zoneGlutes;
+
+  /// No description provided for @zoneFrontThigh.
+  ///
+  /// In es, this message translates to:
+  /// **'Muslo (delante)'**
+  String get zoneFrontThigh;
+
+  /// No description provided for @zoneBackThigh.
+  ///
+  /// In es, this message translates to:
+  /// **'Atrás del muslo'**
+  String get zoneBackThigh;
+
+  /// No description provided for @zoneCalf.
+  ///
+  /// In es, this message translates to:
+  /// **'Pantorrilla'**
+  String get zoneCalf;
+
+  /// No description provided for @zoneFeet.
+  ///
+  /// In es, this message translates to:
+  /// **'Pies'**
+  String get zoneFeet;
+
+  /// No description provided for @hydrationSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'HIDRATACIÓN'**
+  String get hydrationSectionTitle;
+
+  /// No description provided for @hydrationActionAddEntry.
+  ///
+  /// In es, this message translates to:
+  /// **'+ registrar hidratación'**
+  String get hydrationActionAddEntry;
+
+  /// No description provided for @hydrationModalLogHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'REGISTRAR HIDRATACIÓN'**
+  String get hydrationModalLogHeader;
+
+  /// No description provided for @hydrationModalEditHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'EDITAR HIDRATACIÓN'**
+  String get hydrationModalEditHeader;
+
+  /// No description provided for @hydrationFieldVolumeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'CANTIDAD'**
+  String get hydrationFieldVolumeLabel;
+
+  /// No description provided for @hydrationFieldVolumeHint.
+  ///
+  /// In es, this message translates to:
+  /// **'ml (ej. 250)'**
+  String get hydrationFieldVolumeHint;
+
+  /// No description provided for @hydrationFieldBeverageLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'BEBIDA'**
+  String get hydrationFieldBeverageLabel;
+
+  /// No description provided for @hydrationFieldSodiumLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'SODIO (opcional)'**
+  String get hydrationFieldSodiumLabel;
+
+  /// No description provided for @hydrationLogLabelVolume.
+  ///
+  /// In es, this message translates to:
+  /// **'{volume} ml'**
+  String hydrationLogLabelVolume(String volume);
+
+  /// No description provided for @hrvSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'HRV'**
+  String get hrvSectionTitle;
+
+  /// No description provided for @hrvActionAddEntry.
+  ///
+  /// In es, this message translates to:
+  /// **'+ registrar HRV'**
+  String get hrvActionAddEntry;
+
+  /// No description provided for @hrvModalLogHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'REGISTRAR LECTURA HRV'**
+  String get hrvModalLogHeader;
+
+  /// No description provided for @hrvModalEditHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'EDITAR LECTURA HRV'**
+  String get hrvModalEditHeader;
+
+  /// No description provided for @hrvFieldRmssdLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'RMSSD'**
+  String get hrvFieldRmssdLabel;
+
+  /// No description provided for @hrvFieldContextLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'CONTEXTO'**
+  String get hrvFieldContextLabel;
+
+  /// No description provided for @hrvFieldSourceLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'FUENTE'**
+  String get hrvFieldSourceLabel;
+
+  /// No description provided for @hrvHintTapToEdit.
+  ///
+  /// In es, this message translates to:
+  /// **'tocá el número para editar'**
+  String get hrvHintTapToEdit;
+
+  /// No description provided for @hrvDirectEditDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar RMSSD'**
+  String get hrvDirectEditDialogTitle;
+
+  /// No description provided for @hrvDirectEditDialogHint.
+  ///
+  /// In es, this message translates to:
+  /// **'ej. 35'**
+  String get hrvDirectEditDialogHint;
+
+  /// No description provided for @hrvLogLabelRmssd.
+  ///
+  /// In es, this message translates to:
+  /// **'{value} ms'**
+  String hrvLogLabelRmssd(String value);
+
+  /// No description provided for @hrvSourceManual.
+  ///
+  /// In es, this message translates to:
+  /// **'manual'**
+  String get hrvSourceManual;
+
+  /// No description provided for @hrvSourceAppleWatch.
+  ///
+  /// In es, this message translates to:
+  /// **'Apple Watch'**
+  String get hrvSourceAppleWatch;
+
+  /// No description provided for @hrvSourceWelltory.
+  ///
+  /// In es, this message translates to:
+  /// **'Welltory'**
+  String get hrvSourceWelltory;
+
+  /// No description provided for @hrvSourceOther.
+  ///
+  /// In es, this message translates to:
+  /// **'otro'**
+  String get hrvSourceOther;
+
+  /// No description provided for @settingsModuleHydrationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Hidratación'**
+  String get settingsModuleHydrationLabel;
+
+  /// No description provided for @settingsModuleHydrationDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Volumen, bebida y aporte de sodio.'**
+  String get settingsModuleHydrationDescription;
+
+  /// No description provided for @settingsModuleHrvLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'HRV'**
+  String get settingsModuleHrvLabel;
+
+  /// No description provided for @settingsModuleHrvDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Variabilidad cardíaca por contexto y fuente.'**
+  String get settingsModuleHrvDescription;
+
+  /// No description provided for @sectionHintNoActivity.
+  ///
+  /// In es, this message translates to:
+  /// **'sin registros aún'**
+  String get sectionHintNoActivity;
+
+  /// No description provided for @sectionHintToday.
+  ///
+  /// In es, this message translates to:
+  /// **'último hoy'**
+  String get sectionHintToday;
+
+  /// No description provided for @sectionHintYesterday.
+  ///
+  /// In es, this message translates to:
+  /// **'último ayer'**
+  String get sectionHintYesterday;
+
+  /// No description provided for @sectionHintDaysAgo.
+  ///
+  /// In es, this message translates to:
+  /// **'último hace {days, plural, =1{1 día} other{{days} días}}'**
+  String sectionHintDaysAgo(int days);
+
+  /// No description provided for @settingsViewPreferencesTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'VISUALIZACIÓN'**
+  String get settingsViewPreferencesTitle;
+
+  /// No description provided for @settingsCarefulModeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo cuidadoso'**
+  String get settingsCarefulModeLabel;
+
+  /// No description provided for @settingsCarefulModeDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Reduce el ruido visual: las secciones empiezan colapsadas. Tap el header para expandir lo que quieras ver.'**
+  String get settingsCarefulModeDescription;
 }
 
 class _AppLocalizationsDelegate

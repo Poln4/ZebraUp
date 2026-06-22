@@ -1,406 +1,840 @@
 {
   "@@locale": "zh_TW",
-
-  "navHoy": "今日",
-  "navSintomas": "症狀記錄",
-  "navMovimiento": "活動動態",
-  "navBotiquin": "隨身藥箱",
-  "navClinica": "臨床數據",
-
+  "navHoy": "今天",
+  "navSintomas": "症狀",
+  "navMovimiento": "活動量",
+  "navBotiquin": "藥箱",
+  "navClinica": "診所",
   "actionCancel": "取消",
   "actionSave": "儲存",
   "actionImport": "匯入",
   "actionContinue": "繼續",
-  "actionUnderstood": "我知道了",
-  "actionHide": "隱藏",
-
-  "languageSectionTitle": "IDIOMA / 語言設定 ",
-  "languageFootnote": "語言變更將套用至全域應用程式，這不會影響您的既有數據。",
-
-  "myDataTitle": "我的數據資產",
-  "arcoRightsBlurb": "您有權隨時查閱、導出、匯入或永久刪除您的個人紀錄。",
-  "exportDataButton": "導出我的數據",
+  "actionUnderstood": "知道了",
+  "languageSectionTitle": "語言 / LANGUAGE",
+  "languageFootnote": "語言設定將套用至整個應用程式。您的資料不會改變。",
+  "myDataTitle": "我的資料",
+  "arcoRightsBlurb": "您有權隨時存取、匯出、匯入或刪除您的資料。",
+  "exportDataButton": "匯出我的資料",
   "importFileButton": "從檔案匯入",
   "importPasteButton": "貼上文字匯入",
-  "wipeAllButton": "清空所有資料",
-  "wipeWarningFootnote": "此操作將清除所有使用者檔案、紀錄與設定。此清除不可逆。",
-
-  "hintTapTip": "提示：在「症狀記錄」中，點擊庫存項目即可記錄。長按特定項目可進行編輯。",
-  "sectionPending": "待辦核對",
-  "sectionWeather": "今日氣象摘要",
+  "wipeAllButton": "清除所有資料",
+  "wipeWarningFootnote": "此操作將清除所有個人檔案、紀錄與設定。此動作無法復原。",
+  "exportSuccess": "資料已匯出：{filename}",
+  "@exportSuccess": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
+  "exportError": "匯出失敗：{reason}",
+  "@exportError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "importCancelled": "匯入已取消：{reason}",
+  "@importCancelled": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "importSuccess": "個人檔案已成功匯入。",
+  "importDialogTitle": "匯入此個人檔案",
+  "importDialogName": "姓名：{name}",
+  "@importDialogName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importDialogExportedAt": "匯出時間：{date}",
+  "@importDialogExportedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "importDialogContains": "內含 {count} 筆紀錄：",
+  "@importDialogContains": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "importDialogFootnote": "這將作為新的個人檔案新增。您目前的個人檔案不會被刪除。",
+  "nounSymptoms": "症狀",
+  "nounDoses": "劑量",
+  "nounStructural": "結構事件",
+  "nounActivities": "活動",
+  "nounTherapies": "治療",
+  "nounMoods": "情緒",
+  "nounMental": "心理紀錄",
+  "pasteImportTitle": "貼上文字匯入",
+  "pasteImportInstructions": "打開您匯出的 .json 檔案（例如透過「檔案」App），選取所有文字並複製，然後貼到此處。",
+  "pasteImportHint": "請在此處貼上檔案內容...",
+  "errImportUnreadable": "無法讀取檔案。",
+  "errImportInvalidJson": "文字非有效的 JSON 格式。",
+  "errImportNotZebra": "此檔案似乎不屬於 ZebraUpp。",
+  "errImportUnknownSchema": "未知的結構版本 (Schema Version)。",
+  "errImportSchemaMismatch": "此檔案版本不符 (發現 v{found})。預期版本：v{expected}。",
+  "@errImportSchemaMismatch": {
+    "placeholders": {
+      "found": {
+        "type": "String"
+      }
+    },
+    "expected": {
+      "type": "String"
+    }
+  },
+  "errImportMissingProfile": "檔案中找不到個人檔案。",
+  "errImportCorruptProfile": "個人檔案已損壞或格式異常。",
+  "actionHide": "隱藏",
+  "hintTapTip": "提示：在「症狀」中，點擊庫存中的標籤即可紀錄。長按某條紀錄可進行編輯。",
+  "sectionPending": "待辦事項",
+  "sectionWeather": "今日天氣",
   "headerTodayIs": "今天是",
-  "pacingActiveState": "休息日 — 允許放空、不設預期",
-  "pacingInactiveState": "標記今日為休息日",
-  
+  "pacingActiveState": "休息日 — 給自己放個假",
+  "pacingInactiveState": "標記為休息日",
   "outcomeCardTimePrefix": "{hours} 小時前您服用了",
-  "@outcomeCardTimePrefix": { "placeholders": { "hours": { "type": "String" } } },
+  "@outcomeCardTimePrefix": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
   "outcomeCardForSymptom": "以緩解您的",
-  "outcomeCardInitialState": "當時嚴重度為",
-  "outcomeCardQuestionNow": "目前感覺如何？",
-  "outcomeCardAttributionQuestion": "您認為當前的轉變主要歸因於？",
-  "outcomeActionAddFactor": "其他伴隨因素",
-  
-  "sectionMentalDetails": "心理與認知細節",
-  "mentalIntensitySubtitle": "當下的強度表現",
-  
-  "summaryTitle": "今日狀態簡要",
-  "summaryEmptyPacing": "🛡️ 休息日。您目前尚未記錄任何內容 — 這很好，請好好放鬆。",
-  "summaryEmptyNormal": "您今天尚未登錄任何數據。目前感覺怎麼樣？",
-  "summarySymptomSingle": "您記錄了 1 項症狀：{name} （狀態：{label}）。",
-  "@summarySymptomSingle": { "placeholders": { "name": { "type": "String" }, "label": { "type": "String" } } },
-  "summarySymptomPlural": "您已記錄 {count} 項症狀 — 其中感受最顯著的是 {name} （狀態：{label}）。",
-  "@summarySymptomPlural": { "placeholders": { "count": { "type": "int" }, "name": { "type": "String" }, "label": { "type": "String" } } },
-  "summaryStructuralSingle": "您在 {zone} 發生了 1 次結構性事件。",
-  "@summaryStructuralSingle": { "placeholders": { "zone": { "type": "String" } } },
-  "summaryStructuralPlural": "您今天共記錄了 {count} 次結構性事件。",
-  "@summaryStructuralPlural": { "placeholders": { "count": { "type": "int" } } },
-  "summaryDosesSentence": "您服用了 {totalDoses} 次藥物：{shown}{extraCount, plural, =0{} other{ 以及其他 {extraCount} 項}}。",
-  "@summaryDosesSentence": { "placeholders": { "totalDoses": { "type": "int" }, "shown": { "type": "String" }, "extraCount": { "type": "int" } } },
-  "summaryMoodSentence": "您記錄的心情與體感反應：{statesStr}{extra}。",
-  "@summaryMoodSentence": { "placeholders": { "statesStr": { "type": "String" }, "extra": { "type": "String" } } },
-  "summaryPacingFooter": "🛡️ 您已選擇適度配速並保留體能。這非常有價值。",
-  
-  "wisdomBannerTitle": "✨ 斑馬哲思 🦓",
+  "outcomeCardInitialState": "當時狀態為 ",
+  "outcomeCardQuestionNow": "現在感覺如何？",
+  "outcomeCardAttributionQuestion": "您認為原因是什麼？",
+  "outcomeActionAddFactor": "其他因素",
+  "sectionMentalDetails": "心理細節",
+  "mentalIntensitySubtitle": "目前的強烈程度",
+  "summaryTitle": "今日簡短總結",
+  "summaryEmptyPacing": "🛡️ 休息日。您今天還沒有紀錄任何內容 — 這很好。",
+  "summaryEmptyNormal": "您今天還沒有紀錄任何內容。一切都還好嗎？",
+  "summarySymptomSingle": "您紀錄了 1 個症狀：{name} ({label})。",
+  "@summarySymptomSingle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "label": {
+      "type": "String"
+    }
+  },
+  "summarySymptomPlural": "您紀錄了 {count} 個症狀 — 最強烈的是 {name} ({label})。",
+  "@summarySymptomPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    },
+    "name": {
+      "type": "String"
+    },
+    "label": {
+      "type": "String"
+    }
+  },
+  "summaryStructuralSingle": "您在 {zone} 發生了 1 次結構事件。",
+  "@summaryStructuralSingle": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "summaryStructuralPlural": "您今天發生了 {count} 次結構事件。",
+  "@summaryStructuralPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "summaryDosesSentence": "您服用了 {totalDoses} 次劑量：{shown}{extraCount, plural, =0{} other{，以及其他 {extraCount} 次}}。",
+  "@summaryDosesSentence": {
+    "placeholders": {
+      "totalDoses": {
+        "type": "int"
+      }
+    },
+    "shown": {
+      "type": "String"
+    },
+    "extraCount": {
+      "type": "int"
+    }
+  },
+  "summaryMoodSentence": "您紀錄的心情與感受：{statesStr}{extra}。",
+  "@summaryMoodSentence": {
+    "placeholders": {
+      "statesStr": {
+        "type": "String"
+      }
+    },
+    "extra": {
+      "type": "String"
+    }
+  },
+  "summaryPacingFooter": "🛡️ 您允許了自己好好休息。這也很重要。",
+  "wisdomBannerTitle": "✨ 斑馬智慧 🦓",
   "bowelCountToday": "最近一次排便：今天",
   "bowelCountYesterday": "最近一次排便：昨天",
-  "bowelCountDaysAgo": "最近一次排便： {days} 天前",
-  "@bowelCountDaysAgo": { "placeholders": { "days": { "type": "int" } } },
-  "distentionBannerMessage": "您已有 {days} 天未進行排便 — 腹脹感與腹部不適感可能會持續累積。",
-  "@distentionBannerMessage": { "placeholders": { "days": { "type": "int" } } },
-  "distentionBannerAction": "前往症狀記錄",
-
-  "severityNone": "無症狀",
-  "severityMild": "輕微",
-  "severityModerate": "中度顯著",
-  "severityIntense": "強烈不適",
+  "bowelCountDaysAgo": "最近一次排便：{days} 天前",
+  "@bowelCountDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "distentionBannerMessage": "您已經 {days} 天沒有排便了 — 腹脹與腹痛症狀可能會開始累積。",
+  "@distentionBannerMessage": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "distentionBannerAction": "前往「症狀」",
+  "severityNone": "無",
+  "severityMild": "輕度",
+  "severityModerate": "中度",
+  "severityIntense": "重度",
   "severityUnbearable": "無法忍受",
-
-  "reasonNatural": "症狀常態性自然轉變",
-  "reasonMedicationHelped": "我認為此藥物發揮了緩解作用",
-  "reasonOtherTrigger": "其他誘發因素（飲食、壓力、天氣等）",
-  "reasonAdditionalMed": "期間亦服用了其他伴隨藥物",
-  "reasonUnsure": "不確定確切原因",
-
-  "mentalStateMood": "整體心境",
-  "mentalStateAnxiety": "焦慮感",
-  "mentalStateBrainFog": "腦霧狀態",
-  "mentalStateDissociation": "解離/失神現象",
-  "mentalStateIrritability": "易怒情緒",
-  "mentalStateEmotionalEnergy": "心理能量能見度",
-
-  "outcomeCoarsePending": "待核對",
-  "outcomeCoarseMuchBetter": "顯著改善",
-  "outcomeCoarseBetter": "有所緩解",
-  "outcomeCoarseEqual": "不變/持平",
-  "outcomeCoarseWorse": "加劇",
-  "outcomeCoarseMuchWorse": "顯著加劇",
-
-  "pubMedNoAuthor": "未登載作者",
-
-  "quadrantActivatedUnpleasant": "高激活 · 不適感",
-  "quadrantActivatedPleasant": "高激活 · 舒適感",
-  "quadrantCalmUnpleasant": "低激活 · 不適感",
-  "quadrantCalmPleasant": "低激活 · 舒適感",
-
+  "reasonNatural": "症狀的自然轉變",
+  "reasonMedicationHelped": "我覺得這款藥物有幫助",
+  "reasonOtherTrigger": "其他誘發因素（食物、壓力、天氣...）",
+  "reasonAdditionalMed": "我也服用了其他藥物",
+  "reasonUnsure": "無法完全確定",
+  "mentalStateMood": "情緒",
+  "mentalStateAnxiety": "焦慮",
+  "mentalStateBrainFog": "腦霧",
+  "mentalStateDissociation": "解離感",
+  "mentalStateIrritability": "易怒",
+  "mentalStateEmotionalEnergy": "情感能量",
+  "outcomeCoarsePending": "待定",
+  "outcomeCoarseMuchBetter": "好很多",
+  "outcomeCoarseBetter": "較好",
+  "outcomeCoarseEqual": "沒變化",
+  "outcomeCoarseWorse": "變差",
+  "outcomeCoarseMuchWorse": "變差很多",
+  "pubMedNoAuthor": "未登記作者",
+  "quadrantActivatedUnpleasant": "亢奮 · 不適",
+  "quadrantActivatedPleasant": "亢奮 · 舒適",
+  "quadrantCalmUnpleasant": "平靜 · 不適",
+  "quadrantCalpleasant": "平靜 · 舒適",
   "quadrantTeaserActivatedUnpleasant": "緊繃、焦慮",
-  "quadrantTeaserActivatedPleasant": "充沛活力、喜悅",
-  "quadrantTeaserCalmUnpleasant": "疲憊耗竭、低落",
-  "quadrantTeaserCalmPleasant": "平靜、祥和",
-
-  "bowelBucketConstipation": "便秘狀態",
-  "bowelBucketNormal": "排便正常",
-  "bowelBucketDiarrea": "腹瀉狀態",
-
-  "sleepQualityBad": "極差",
+  "quadrantTeaserActivatedPleasant": "活力、喜悅",
+  "quadrantTeaserCalmUnpleasant": "精疲力竭、沮喪",
+  "quadrantTeaserCalmPleasant": "放鬆、寧靜",
+  "bowelBucketConstipation": "便秘",
+  "bowelBucketNormal": "正常",
+  "bowelBucketDiarrea": "腹瀉",
+  "sleepQualityBad": "差",
   "sleepQualityRegular": "普通",
-  "sleepQualityGood": "良好",
-  "sleepQualityVeryGood": "極佳",
-
-  "beverageWater": "純水",
-  "beverageElectrolyte": "電解質補充飲",
+  "sleepQualityGood": "好",
+  "sleepQualityVeryGood": "很好",
+  "beverageWater": "水",
+  "beverageElectrolyte": "電解質液",
   "beverageCoffee": "咖啡",
-  "beverageOther": "其他飲品",
-
-  "sodiumPinch": "微量食鹽",
-  "sodiumSachet": "電解質沖泡包",
-  "sodiumSaltySnack": "高鈉鹹味點心",
-
-  "hrvContextMorning": "晨間測量",
-  "hrvContextAfternoon": "午後測量",
-  "hrvContextEvening": "夜間測量",
-  "hrvContextPostExercise": "運動後測量",
-  "hrvContextOther": "其他情境測量",
-
-  "legacyIntensityLabel": "既往強度紀錄：{value}/5",
-  "@legacyIntensityLabel": { "placeholders": { "value": { "type": "String" } } },
-
-  "botiquinTabTitle": "隨身藥箱",
-  "botiquinActionCreate": "新增常備藥物",
-  "botiquinInteractionsTitle": "藥物/病理交互作用警示",
-  "botiquinGroupsTitle": "常備組合群組",
-  "botiquinGroupsEmptyHeadline": "🌙 夜間服藥組合 · ☀️ 晨間服藥組合",
-  "botiquinGroupsEmptyBody": "將您經常同時服用的幾種藥物歸類為同一組合。一鍵即可快速登錄全組劑量紀錄。",
-  "botiquinActionCreateGroup": "建立新組合",
-  "botiquinNoMedsDialogTitle": "藥箱目前無常備藥",
-  "botiquinNoMedsDialogBody": "在建立常備組合前，請先在您的隨身藥箱中新增至少一項藥物紀錄。",
-  "botiquinRowMedsCountLabel": "內含 {count} 項藥物",
-  "@botiquinRowMedsCountLabel": { "placeholders": { "count": { "type": "int" } } },
-  "botiquinActionEditTooltip": "編輯變更",
-  "botiquinBatchSheetTitle": "批量登錄群組",
-  "botiquinBatchSheetSubtitle": "系統即將記錄以下劑量數據：",
-  "botiquinBatchOrphanWarning": "⚠️ 組合內包含 {count} 項已自藥箱移除的藥物，系統登錄時將自動跳過。",
-  "@botiquinBatchOrphanWarning": { "placeholders": { "count": { "type": "int" } } },
-  "botiquinBatchActionSubmit": "登錄這 {count} 筆劑量數據",
-  "@botiquinBatchActionSubmit": { "placeholders": { "count": { "type": "int" } } },
-  "botiquinEmptyStateHeadline": "藥箱目前空空如也",
-  "botiquinEmptyStateSubtitle": "點擊下方按鈕即可建立您的第一項常用藥物。",
-  "botiquinDoseLoggedTodayBadge": "今日已服 {qty}",
-  "@botiquinDoseLoggedTodayBadge": { "placeholders": { "qty": { "type": "String" } } },
-  "botiquinDeleteConfirmTitle": "確認移除 {name}？",
-  "@botiquinDeleteConfirmTitle": { "placeholders": { "name": { "type": "String" } } },
-  "botiquinDeleteConfirmBody": "移除後系統仍會保留既往的歷史服藥紀錄以利您的臨床報告分析，但 {name} 將不再出現在常用藥箱列表中。",
-  "@botiquinDeleteConfirmBody": { "placeholders": { "name": { "type": "String" } } },
-  "botiquinActionDelete": "確認確認移除",
-  "botiquinLogDoseSheetTitle": "登錄服藥劑量",
-  "botiquinLogDoseTotalCalculated": "= 當次攝入共 {total} {unit}",
-  "@botiquinLogDoseTotalCalculated": { "placeholders": { "total": { "type": "String" }, "unit": { "type": "String" } } },
-  "botiquinLogDoseSymptomPrompt": "此劑量是否用於特定症狀？",
-  "botiquinLogDoseSymptomNone": "無對應症狀（常規服用）",
-  "botiquinLogDoseTrackOutcomeToggle": "系統將於 {hours} 小時後提醒追蹤此藥物的緩解成效",
-  "@botiquinLogDoseTrackOutcomeToggle": { "placeholders": { "hours": { "type": "int" } } },
-  "botiquinDoseListTitle": "今日服藥紀錄",
-  "botiquinDoseListFootnote": "點擊 × 可單獨刪除某一特定時間的紀錄（這對於修正誤觸登錄非常實用）。",
-  "botiquinDoseItemDeleteConfirmTitle": "刪除此筆服藥紀錄",
-  "botiquinDoseItemDeleteConfirmBody": "您確定要刪除在 {time} 登錄的 {name} 紀錄嗎？此刪除操作無法撤銷。",
-  "@botiquinDoseItemDeleteConfirmBody": { "placeholders": { "name": { "type": "String" }, "time": { "type": "String" } } },
+  "beverageOther": "其他",
+  "sodiumPinch": "一小撮鹽",
+  "sodiumSachet": "電解質粉包",
+  "sodiumSaltySnack": "鹹味點心",
+  "hrvContextMorning": "晨間",
+  "hrvContextAfternoon": "午後",
+  "hrvContextEvening": "晚間",
+  "hrvContextPostExercise": "運動後",
+  "hrvContextOther": "其他",
+  "legacyIntensityLabel": "先前的強烈程度：{value}/5",
+  "@legacyIntensityLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "botiquinTabTitle": "您的藥箱",
+  "botiquinActionCreate": "新增藥物",
+  "botiquinInteractionsTitle": "偵測到藥物交互作用",
+  "botiquinGroupsTitle": "群組",
+  "botiquinGroupsEmptyHeadline": "🌙 夜間藥物 · ☀️ 晨間藥物",
+  "botiquinGroupsEmptyBody": "將您需要同時服用的藥物分組。一鍵即可同時紀錄所有劑量。",
+  "botiquinActionCreateGroup": "建立群組",
+  "botiquinNoMedsDialogTitle": "無藥物",
+  "botiquinNoMedsDialogBody": "在建立群組前，請先在藥箱中至少新增一種藥物。",
+  "botiquinRowMedsCountLabel": "{count} 種藥物",
+  "@botiquinRowMedsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "botiquinActionEditTooltip": "編輯",
+  "botiquinBatchSheetTitle": "紀錄群組藥物",
+  "botiquinBatchSheetSubtitle": "將紀錄以下劑量：",
+  "botiquinBatchOrphanWarning": "⚠️ 藥箱中有 {count} 種藥物已被刪除 — 將會自動跳過。",
+  "@botiquinBatchOrphanWarning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "botiquinBatchActionSubmit": "紀錄 {count} 次劑量",
+  "@botiquinBatchActionSubmit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "botiquinEmptyStateHeadline": "您尚未新增任何藥物",
+  "botiquinEmptyStateSubtitle": "請使用下方的按鈕新增藥物。",
+  "botiquinDoseLoggedTodayBadge": "今天已服用 {qty}",
+  "@botiquinDoseLoggedTodayBadge": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "botiquinDeleteConfirmTitle": "刪除 {name}？",
+  "@botiquinDeleteConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "botiquinDeleteConfirmBody": "系統將會保留劑量歷史紀錄以供報告使用，但 {name} 將會自您的藥箱中移除。",
+  "@botiquinDeleteConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "botiquinActionDelete": "刪除",
+  "botiquinLogDoseSheetTitle": "紀錄劑量",
+  "botiquinLogDoseTotalCalculated": "= 總計 {total} {unit}",
+  "@botiquinLogDoseTotalCalculated": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    },
+    "unit": {
+      "type": "String"
+    }
+  },
+  "botiquinLogDoseSymptomPrompt": "是為了解緩某個特定症狀嗎？",
+  "botiquinLogDoseSymptomNone": "無",
+  "botiquinLogDoseTrackOutcomeToggle": "在 {hours} 小時後詢問是否有效",
+  "@botiquinLogDoseTrackOutcomeToggle": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "botiquinDoseListTitle": "今天的劑量紀錄",
+  "botiquinDoseListFootnote": "點擊 × 可刪除特定的劑量（若名稱紀錄錯誤時非常實用）。",
+  "botiquinDoseItemDeleteConfirmTitle": "刪除此劑量",
+  "botiquinDoseItemDeleteConfirmBody": "確定要刪除在 {time} 紀錄的 {name} 劑量嗎？此操作無法撤銷。",
+  "@botiquinDoseItemDeleteConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "time": {
+      "type": "String"
+    }
+  },
   "botiquinTimeTodayAt": "今天 {time}",
-  "@botiquinTimeTodayAt": { "placeholders": { "time": { "type": "String" } } },
-  "botiquinTimePastAt": "{day}/{month} 於 {time}",
-  "@botiquinTimePastAt": { "placeholders": { "day": { "type": "int" }, "month": { "type": "int" }, "time": { "type": "String" } } },
-
+  "@botiquinTimeTodayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "botiquinTimePastAt": "{month}/{day} {time}",
+  "@botiquinTimePastAt": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      }
+    },
+    "month": {
+      "type": "int"
+    },
+    "time": {
+      "type": "String"
+    }
+  },
   "onboardingActionBack": "返回",
   "onboardingActionSkip": "跳過",
   "onboardingActionNext": "下一步",
   "onboardingActionFinish": "開始使用",
-  "onboardingFallbackProfileName": "我的檔案",
-
+  "onboardingFallbackProfileName": "我的個人檔案",
   "onboardingStepWelcomeTitle": "ZebraUp",
-  "onboardingStepWelcomeSubtitle": "您的就醫專屬數位夥伴。",
-  "onboardingStepWelcomeBody": "門診時間往往很短。在經歷辛苦的一週後，人的記憶力也是。ZebraUp 協助您精確記錄症狀、用藥與健康趨勢，讓您在每次就診時都能提出具體數據——而不是一坐在醫生面前，原本想說的話就忘光了。此外，我們知道您也有照顧他人的需求，因此您也可以將家人或寵物納入記錄管理。",
-  "onboardingStepWelcomePrivacyNote": "您的所有數據皆安全地儲存於本機裝置中，我們絕不會將任何資料上傳至網際網路。",
-  "onboardingStepWelcomeMedicalDisclaimer": "本應用程式並非醫療器材。其內容不具備診斷、治療、緩解或預防任何疾病之醫療效力。",
-
+  "onboardingStepWelcomeSubtitle": "您的就醫看診神助手。",
+  "onboardingStepWelcomeBody": "看診時間總是短暫。在度過艱難的一週後，人的記憶力也是。ZebraUp 能幫您紀錄症狀、用藥和身體規律，讓您每次看診時都能帶著具體的數據報告，而不是在坐在醫生面前後，腦袋一片空白、只剩零星片斷的模糊描述。此外，我們知道您可能還需要照顧他人，因此您也可以在此新增家人或寵物。",
+  "onboardingStepWelcomePrivacyNote": "您的所有資料均儲存在本裝置中。我們不會將任何內容上傳至網路。",
+  "onboardingStepWelcomeMedicalDisclaimer": "本應用程式並非醫療器材。它不具備診斷、治療、緩解、治癒或預防任何醫療狀況的功能。",
   "onboardingStepNameTitle": "讓我們開始吧。",
   "onboardingStepNameQuestion": "我們該如何稱呼您？",
-  "onboardingStepNameFootnote": "此名稱僅用於個人化您的應用程式介面，您隨時可以在日後進行變更。",
+  "onboardingStepNameFootnote": "僅用於個人化應用程式介面。您稍後可以隨時更改。",
   "onboardingStepNameHint": "您的名字或暱稱",
-
-  "onboardingStepConditionsTitle": "既有確診診斷。",
-  "onboardingStepConditionsBody": "您目前面臨哪些健康狀況？這些資訊將用於為您的交互作用與臨床報告提供脈絡。您隨時可以新增、修改或跳過此步驟。",
-  "onboardingStepConditionsHint": "例如：hEDS, POTS, MCAS...",
-  "onboardingStepConditionsEmpty": "目前尚未新增任何診斷。您可以先跳過此步驟。",
-
-  "onboardingStepMedsTitle": "設定常用藥箱。",
-  "onboardingStepMedsBody": "在此新增您的常規服用藥物。設定完成後，您即可在「隨身藥箱」分頁中一鍵快速登錄每次的服藥劑量紀錄。",
+  "onboardingStepConditionsTitle": "您的確診狀況。",
+  "onboardingStepConditionsBody": "您目前有哪些疾病或健康狀況？我們將用這些資訊來輔助說明藥物交互作用和報告。您可以新增、編輯或跳過此步驟。",
+  "onboardingStepConditionsHint": "例如：hEDS、POTS、MCAS...",
+  "onboardingStepConditionsEmpty": "尚未新增任何項目。您可以跳過此步驟。",
+  "onboardingStepMedsTitle": "您的藥箱。",
+  "onboardingStepMedsBody": "新增您定期服用的藥物。之後您只需在「藥箱」標籤頁中點擊一下，即可快速紀錄每次服藥劑量。",
   "onboardingStepMedsNameHint": "藥物名稱",
   "onboardingStepMedsDoseHint": "劑量（例如：400mg）",
-  "onboardingStepMedsEmpty": "目前尚未新增藥物。您可以先跳過此步驟。",
-
-  "symptomsSectionStructuralZones": "關節與結構部位",
-  "symptomsSectionBowelTransit": "腸道排空狀態",
-  "symptomsActionAddHemorrhoid": "痔瘡相關問題",
-  "symptomsSectionTodaysLogs": "今日症狀與體感紀錄",
-  "symptomsFootnoteLongPressEdit": "長按任一項目即可修正記錄時間、嚴重度或備註細節。",
-  "symptomsSectionTrending": "本週高頻趨勢（過去 7 天）",
-  "symptomsTrendingEmpty": "本週尚未累積顯著的重複症狀趨勢。",
-  "symptomsSectionVault": "個人症狀庫庫存",
-  "symptomsVaultPlaceholder": "+ 新增自訂症狀至庫存...",
-  "symptomsModalLogHeader": "記錄部位：{zone}",
-  "@symptomsModalLogHeader": { "placeholders": { "zone": { "type": "String" } } },
+  "onboardingStepMedsEmpty": "目前沒有藥物。您可以跳過此步驟。",
+  "symptomsSectionStructuralZones": "結構區域",
+  "symptomsSectionBowelTransit": "腸道蠕動",
+  "symptomsActionAddHemorrhoid": "痔瘡",
+  "symptomsSectionTodaysLogs": "今天的紀錄",
+  "symptomsFootnoteLongPressEdit": "長按某條紀錄可編輯日期、嚴重程度或備註。",
+  "symptomsSectionTrending": "近期趨勢（過去 7 天）",
+  "symptomsTrendingEmpty": "本週沒有持續出現的症狀。",
+  "symptomsSectionVault": "症狀庫存",
+  "symptomsVaultPlaceholder": "+ 將症狀新增至庫存...",
+  "symptomsModalLogHeader": "紀錄於：{zone}",
+  "@symptomsModalLogHeader": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
   "symptomsModalEditHeader": "編輯：{zone} / {type}",
-  "@symptomsModalEditHeader": { "placeholders": { "zone": { "type": "String" } } },
-  "symptomsModalEditSymptomHeader": "編輯症狀：{name}",
-  "@symptomsModalEditSymptomHeader": { "placeholders": { "name": { "type": "String" } } },
-  "symptomsLabelOptionalNote": "選填備註（情境脈絡、潛在誘因等）",
+  "@symptomsModalEditHeader": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    },
+    "type": {
+      "type": "String"
+    }
+  },
+  "symptomsModalEditSymptomHeader": "編輯：{name}",
+  "@symptomsModalEditSymptomHeader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomsLabelOptionalNote": "選填備註（情境、誘發原因等）",
   "symptomsLabelOptionalNoteSimple": "選填備註",
-  "symptomsLabelSeverityGrading": "嚴重程度評級",
-  "symptomsActionLogUnrated": "僅記錄不評級",
-  "symptomsUnratedLabelSuffix": "未評級",
-  "symptomsUnratedInlineWarning": "此項目目前無嚴重度評級。點擊圓點即可為其指派權重。",
-  "symptomsActionSaveChanges": "確認修改變更",
-  "symptomsActionSave": "確認確認儲存",
-
-  "zoneCervical": "頸椎區域",
-  "zoneHombros": "雙肩關節",
-  "zoneMunecas": "手腕關節",
-  "zoneManos": "手部掌指",
-  "zoneLumbarPelvis": "腰椎/骨盆腔",
+  "symptomsLabelSeverityGrading": "嚴重程度",
+  "symptomsActionLogUnrated": "不評分直接紀錄",
+  "symptomsUnratedLabelSuffix": "未評分",
+  "symptomsUnratedInlineWarning": "此紀錄尚無評分。點擊節點來指定一個級別。",
+  "symptomsActionSaveChanges": "儲存變更",
+  "symptomsActionSave": "儲存",
+  "zoneCervical": "頸椎",
+  "zoneHombros": "肩膀",
+  "zoneMunecas": "手腕",
+  "zoneManos": "手部",
+  "zoneLumbarPelvis": "腰椎/骨盆",
   "zoneCaderas": "髖關節",
-  "zoneRodillas": "雙膝關節",
-  "zoneTobillos": "腳踝關節",
-
-  "structTypeSubluxation": "關節半脫位",
-  "structTypeDislocation": "關節完全脫位",
-  "structTypeInstability": "關節不穩定感",
-  "structTypeJointPain": "關節鈍痛/銳痛",
+  "zoneRodillas": "膝關節",
+  "zoneTobillos": "腳踝",
+  "structTypeSubluxation": "半脫位",
+  "structTypeDislocation": "脫位（脫臼）",
+  "structTypeInstability": "關節不穩定",
+  "structTypeJointPain": "關節疼痛",
   "structTypeMyofascial": "肌筋膜疼痛",
-  "structTypeNeuropathic": "神經源性抽痛",
-
+  "structTypeNeuropathic": "神經性疼痛",
   "bowelLabelBristolType": "布里斯托第 {type} 型",
-  "@bowelLabelBristolType": { "placeholders": { "type": { "type": "String"} } },
-  "bowelLabelUrgency": "伴隨急迫感",
-  "bowelLabelBleeding": "伴隨便血",
-  "bowelLabelIncomplete": "排便不完全感",
-
-  "movementSectionPacingActive": "今日為安排的休息日。適度休息也是體能配速的核心。",
-  "movementSectionHistoryTitle": "今日動態與恢復紀錄",
-  "movementFootnoteLongPressEdit": "長按特定歷史項目即可進行編輯修正。",
-  "movementEmptyStateHeadline": "身體活動與修復放鬆同等重要。",
-  "movementEmptyStateSubtitle": "不論是散步、拉伸、物理治療或按摩，皆是彌足珍貴的身體照顧歷程。",
-  "movementSectionActivityTitle": "自主身體活動",
-  "movementActivityPlaceholder": "+ 新增自訂活動（如：游泳、單車、舞蹈…）",
-  "movementSectionTherapyTitle": "臨床與被動治療",
-  "movementTherapyPlaceholder": "+ 新增特殊治療（如：能量療癒、漂浮…）",
-
-  "activityModalLogHeader": "記錄項目：{name}",
-  "@activityModalLogHeader": { "placeholders": { "name": { "type": "String" } } },
-  "activityModalEditHeader": "編輯項目：{name}",
-  "@activityModalEditHeader": { "placeholders": { "name": { "type": "String" } } },
-  "activityFieldDurationHint": "持續時間（分鐘）",
+  "@bowelLabelBristolType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "bowelLabelUrgency": "急迫感",
+  "bowelLabelBleeding": "出血",
+  "bowelLabelIncomplete": "排不乾淨",
+  "movementSectionPacingActive": "今天是休息日。好好休息也是一種進展。",
+  "movementSectionHistoryTitle": "今天您做了...",
+  "movementFootnoteLongPressEdit": "長按紀錄即可進行編輯。",
+  "movementEmptyStateHeadline": "活動與復原同樣重要。",
+  "movementEmptyStateSubtitle": "散步、伸展、物理治療、按摩 — 這些都是照顧身體的一部分。",
+  "movementSectionActivityTitle": "活動",
+  "movementActivityPlaceholder": "+ 新增活動（游泳、單車、舞蹈...）",
+  "movementSectionTherapyTitle": "治療與調理",
+  "movementTherapyPlaceholder": "+ 新增項目（靈氣、漂浮舒壓...）",
+  "activityModalLogHeader": "紀錄：{name}",
+  "@activityModalLogHeader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityModalEditHeader": "編輯：{name}",
+  "@activityModalEditHeader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "activityFieldDurationHint": "時長（分鐘）",
   "activityFieldSetsHint": "組數",
-  "activityFieldRepsHint": "每組次數",
-  "activityFieldHhrHint": "選填心率區間變化（例如：70→110）",
-  "activityLabelEffortSlider": "自覺運動強度 (RPE)：{value}/10",
-  "@activityLabelEffortSlider": { "placeholders": { "value": { "type": "int" } } },
-  "activityLabelFeelingSlider": "本體心理感受：{value}/5",
-  "@activityLabelFeelingSlider": { "placeholders": { "value": { "type": "int" } } },
-  "activityActionTogglePainRating": "評估運動前後的疼痛指數 e-VAS（選填）",
-  "activityLabelPainBefore": "運動前疼痛評級",
-  "activityLabelPainAfter": "運動後疼痛評級",
-  "activityActionSubmitLog": "確認儲存活動數據",
-  "activityActionSubmitChanges": "確認儲存修改變更",
-
+  "activityFieldRepsHint": "次數",
+  "activityFieldHhrHint": "選填心率（例如：70→110）",
+  "activityLabelEffortSlider": "自覺強度：{value}/10",
+  "@activityLabelEffortSlider": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "activityLabelFeelingSlider": "身體感受：{value}/5",
+  "@activityLabelFeelingSlider": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
+  "activityActionTogglePainRating": "評估活動前/後疼痛（選填）",
+  "activityLabelPainBefore": "活動前疼痛",
+  "activityLabelPainAfter": "活動後疼痛",
+  "activityActionSubmitLog": "儲存活動",
+  "activityActionSubmitChanges": "儲存變更",
   "painLabelNone": "無痛",
-  "painLabelMild": "輕度",
+  "painLabelMild": "輕微",
   "painLabelModerate": "中度",
-  "painLabelIntense": "劇烈",
-  "painLabelSevere": "極度嚴重",
-
-  "painDeltaLabelImproved": "疼痛指數改善了 {count} 個層級",
-  "@painDeltaLabelImproved": { "placeholders": { "count": { "type": "int" } } },
-  "painDeltaLabelWorsened": "疼痛指數加劇了 {count} 個層級",
-  "@painDeltaLabelWorsened": { "placeholders": { "count": { "type": "int" } } },
-  "painDeltaLabelUnchanged": "疼痛指數持平",
-
+  "painLabelIntense": "強烈",
+  "painLabelSevere": "嚴重",
+  "painDeltaLabelImproved": "您的疼痛減輕了 {count} 個層級",
+  "@painDeltaLabelImproved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "painDeltaLabelWorsened": "您的疼痛加劇了 {count} 個層級",
+  "@painDeltaLabelWorsened": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "painDeltaLabelUnchanged": "無變化",
   "logSubtitleMetricDuration": "{minutes} 分鐘",
-  "@logSubtitleMetricDuration": { "placeholders": { "minutes": { "type": "int" } } },
-  "logSubtitleMetricSetsReps": "{sets} 組 × {reps} 次",
-  "@logSubtitleMetricSetsReps": { "placeholders": { "sets": { "type": "String" }, "reps": { "type": "String" } } },
-  "logSubtitleActivityTemplate": "細節：{detail} · 自覺強度 {effort}/10 · 心理體感 {feeling}/5{painSuffix} }",
-  "@logSubtitleActivityTemplate": { "placeholders": { "detail": { "type": "String" }, "effort": { "type": "int" }, "feeling": { "type": "int" }, "pain": { "type": "String" } } },
-  "logSubtitlePainDeltaImproved": "疼痛 ↓{levels} 級",
-  "@logSubtitlePainDeltaImproved": { "placeholders": { "levels": { "type": "int" } } },
-  "logSubtitlePainDeltaWorsened": "疼痛 ↑{levels} 級",
-  "@logSubtitlePainDeltaWorsened": { "placeholders": { "levels": { "type": "int" } } },
-  "logSubtitlePainDeltaUnchanged": "疼痛持平",
-
-  "feelingLabelLevel1": "🤕 伴隨疼痛 / 誘發受傷恐懼",
-  "feelingLabelLevel2": "😟 感到不適 / 動作有所防禦",
-  "feelingLabelLevel3": "😐 狀態表現持平",
-  "feelingLabelLevel4": "😊 身體放鬆舒適",
-  "feelingLabelLevel5": "💪 感覺強壯且充滿安全感",
-
-  "onboardingHaveProfileTitle": "我已經有備份的個人檔案",
-  "onboardingHaveProfileSubtitle": "從既有的 JSON 檔案匯入數據",
-  "onboardingImportChoiceTitle": "請選擇匯入方式",
-  "onboardingImportFromFile": "從檔案取回",
-  "onboardingImportFromPaste": "直接貼上文字",
-
-  "feverSectionTitle": "發燒記錄",
-  "feverActionAddReading": "+ 測量體溫",
-  "feverModalLogHeader": "記錄體溫",
-  "feverModalEditHeader": "編輯數值",
-  "feverFieldSiteLabel": "測量部位",
+  "@logSubtitleMetricDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "logSubtitleMetricSetsReps": "{sets}×{reps}",
+  "@logSubtitleMetricSetsReps": {
+    "placeholders": {
+      "sets": {
+        "type": "String"
+      }
+    },
+    "reps": {
+      "type": "String"
+    }
+  },
+  "logSubtitleActivityTemplate": "{detail} · 強度 {effort}/10 · 感受 {feeling}/5{painSuffix}",
+  "@logSubtitleActivityTemplate": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      },
+      "effort": {
+        "type": "int"
+      },
+      "feeling": {
+        "type": "int"
+      },
+      "pain": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitlePainDeltaImproved": "↓{levels} 級",
+  "@logSubtitlePainDeltaImproved": {
+    "placeholders": {
+      "levels": {
+        "type": "int"
+      }
+    }
+  },
+  "logSubtitlePainDeltaWorsened": "↑{levels} 級",
+  "@logSubtitlePainDeltaWorsened": {
+    "placeholders": {
+      "levels": {
+        "type": "int"
+      }
+    }
+  },
+  "logSubtitlePainDeltaUnchanged": "無變化",
+  "feelingLabelLevel1": "🤕 疼痛不適 / 受傷",
+  "feelingLabelLevel2": "😟 不舒服 / 令人擔憂",
+  "feelingLabelLevel3": "😐 平常心 / 無感",
+  "feelingLabelLevel4": "😊 輕鬆舒適",
+  "feelingLabelLevel5": "💪 充滿力量與安全感",
+  "onboardingHaveProfileTitle": "我已經有儲存的個人檔案",
+  "onboardingHaveProfileSubtitle": "從 JSON 檔案匯入",
+  "onboardingImportChoiceTitle": "要如何匯入？",
+  "onboardingImportFromFile": "從檔案匯入",
+  "onboardingImportFromPaste": "貼上文字",
+  "feverSectionTitle": "發燒紀錄",
+  "feverActionAddReading": "+ 量測體溫",
+  "feverModalLogHeader": "紀錄體溫",
+  "feverModalEditHeader": "編輯體溫紀錄",
+  "feverFieldSiteLabel": "量測部位",
   "feverFieldAntipyreticLabel": "退燒藥",
   "feverFieldAntipyreticToggle": "已服用退燒藥物",
-  "feverFieldAntipyreticNameHint": "名稱（普拿疼、布洛芬...）",
-  "feverHintTapToEdit": "點擊數字即可編輯",
+  "feverFieldAntipyreticNameHint": "藥物名稱（普拿疼、布洛芬等）",
+  "feverHintTapToEdit": "點擊數字即可進行編輯",
   "feverDirectEditDialogTitle": "編輯體溫",
   "feverDirectEditDialogHint": "例如：38.7",
-  "feverLogLabelWithAntipyretic": "已服退燒藥",
+  "feverLogLabelWithAntipyretic": "含退燒藥",
   "feverSiteAxillary": "腋溫",
   "feverSiteOral": "口溫",
   "feverSiteTympanic": "耳溫",
   "feverSiteRectal": "肛溫",
   "feverSiteForehead": "額溫",
-
   "timeAgoMinutes": "{minutes} 分鐘前",
-  "@timeAgoMinutes": { "placeholders": { "minutes": { "type": "int" } } },
+  "@timeAgoMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "timeAgoHours": "{hours} 小時前",
-  "@timeAgoHours": { "placeholders": { "hours": { "type": "int" } } },
-  
-  "researchEmptyConfig": "請在設定中新增診斷，以查看相關研究。",
-  "researchTitleRecent": "最新 PubMed 研究結果",
-  "researchDisclaimer": "下拉更新。僅供參考，不構成醫療建議。",
-  "researchTooltipOffline": "已儲存的結果（離線）",
-  "researchStateNoData": "尚無資料。請下拉以取得研究。",
-  "researchStateNoResults": "找不到最近的研究結果。",
-  "researchLastUpdated": "最後更新：{time}",
+  "@timeAgoHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "researchEmptyConfig": "請在設定中新增您的診斷狀況，以查看相關的醫學研究。",
+  "researchTitleRecent": "PubMed 最新研究結果",
+  "researchDisclaimer": "向下滑動可重新整理。僅供參考，不構成醫療建議。",
+  "researchTooltipOffline": "已儲存的結果（離線模式）",
+  "researchStateNoData": "暫無資料。向下滑動以進行搜尋。",
+  "researchStateNoResults": "未找到近期的相關結果。",
+  "researchLastUpdated": "更新時間：{time}",
+  "@researchLastUpdated": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "researchActionSaved": "已儲存",
   "researchActionSave": "儲存",
-  "researchActionOpenPubMed": "在 PubMed 開啟",
+  "researchActionOpenPubMed": "在 PubMed 中開啟",
   "researchActionCopyPmid": "複製 PMID",
-  "researchSnackPmidCopied": "已複製 PMID {pmid}。",
-  "researchLoadingAbstract": "正在載入摘要…",
-  "researchEmptyAbstract": "無法取得摘要。請在 PubMed 中開啟文章查看詳情。",
-
+  "researchSnackPmidCopied": "PMID {pmid} 已複製。",
+  "@researchSnackPmidCopied": {
+    "placeholders": {
+      "pmid": {
+        "type": "String"
+      }
+    }
+  },
+  "researchLoadingAbstract": "正在載入摘要...",
+  "researchEmptyAbstract": "暫無摘要。請在 PubMed 中打開文章以獲取更多詳細資訊。",
   "reportRangeDay": "1 天",
   "reportRangeWeek": "7 天",
   "reportRangeMonth": "30 天",
   "reportRangeCustomTooltip": "自訂範圍",
   "reportRangeCustomActiveLabel": "範圍：{start} → {end}",
-  "quadrantCalpleasant": "平靜 / 愉悅",
-  
-  "exportSuccess": "匯出成功",
-  "exportError": "匯出失敗",
-  "importCancelled": "匯入已取消",
-  "importSuccess": "匯入成功",
-  "importDialogTitle": "匯入資料",
-  "importDialogName": "名稱：",
-  "importDialogExportedAt": "匯出時間：",
-  "importDialogContains": "包含：",
-  "importDialogFootnote": "請在匯入前確認資料。",
-  "nounSymptoms": "症狀",
-  "nounDoses": "劑量",
-  "nounStructural": "結構性",
-  "nounActivities": "活動",
-  "nounTherapies": "療法",
-  "nounMoods": "情緒",
-  "nounMental": "心理",
-  "pasteImportTitle": "貼上以匯入",
-  "pasteImportInstructions": "請在下方貼上您的備份資料。",
-  "pasteImportHint": "在此貼上 JSON…",
-  "errImportUnreadable": "無法讀取檔案。",
-  "errImportInvalidJson": "JSON 格式無效。",
-  "errImportNotZebra": "不是有效的備份檔案。",
-  "errImportUnknownSchema": "未知的資料架構。",
-  "errImportSchemaMismatch": "架構版本不符。",
-  "errImportMissingProfile": "缺少個人檔案資料。",
-  "errImportCorruptProfile": "個人檔案資料損毀。",
-
-  "researchEmptyConfig": "請在設定中新增診斷，以查看相關研究。",
-  "researchTitleRecent": "最新 PubMed 研究結果",
-  "researchDisclaimer": "下拉更新。僅供參考，不構成醫療建議。",
-  "researchTooltipOffline": "已儲存的結果（離線）",
-  "researchStateNoData": "尚無資料。請下拉以取得研究。",
-  "researchStateNoResults": "找不到最近的研究結果。",
-  "researchLastUpdated": "最後更新：{time}",
-  "researchActionSaved": "已儲存",
-  "researchActionSave": "儲存",
-  "researchActionOpenPubMed": "在 PubMed 開啟",
-  "researchActionCopyPmid": "複製 PMID",
-  "researchSnackPmidCopied": "已複製 PMID {pmid}。",
-  "researchLoadingAbstract": "正在載入摘要…",
-  "researchEmptyAbstract": "無法取得摘要。請在 PubMed 中開啟文章查看詳情。"
-
+  "@reportRangeCustomActiveLabel": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      }
+    },
+    "end": {
+      "type": "String"
+    }
+  },
+  "structKindJoint": "關節",
+  "structKindMuscle": "肌肉",
+  "structKindTendon": "肌腱",
+  "structKindLigament": "韌帶",
+  "structKindSoftTissue": "軟組織",
+  "structKindNerve": "神經",
+  "structTypeMuscleStrain": "肌肉拉傷",
+  "structTypeMuscleDistension": "肌肉挫傷",
+  "structTypeMuscleTear": "肌肉撕裂傷",
+  "structTypeContracture": "肌肉攣縮",
+  "structTypeMuscleSpasm": "肌肉痙攣（抽筋）",
+  "structTypeTendinitis": "肌腱炎",
+  "structTypeTendinosis": "肌腱變性",
+  "structTypeBursitis": "滑囊炎",
+  "structTypeEnthesitis": "附著點炎",
+  "structTypeTendonFissure": "肌腱裂傷",
+  "structTypeMildSprain": "輕度扭傷",
+  "structTypeSevereSprain": "嚴重扭傷",
+  "structTypeLigamentTear": "韌帶撕裂",
+  "structTypeSuperficialCut": "表淺割傷",
+  "structTypeSkinFissure": "皮膚裂傷",
+  "structTypeDeepWound": "深層傷口",
+  "structTypeHematoma": "血腫",
+  "structTypeContusion": "挫傷（瘀青）",
+  "structTypeBurn": "燒燙傷",
+  "structTypeAbrasion": "擦傷",
+  "structTypeParesthesia": "感覺異常（發麻）",
+  "sleepSectionTitle": "睡眠紀錄",
+  "sleepActionAddEntry": "+ 紀錄睡眠",
+  "sleepModalLogHeader": "紀錄睡眠",
+  "sleepModalEditHeader": "編輯睡眠紀錄",
+  "sleepFieldQualityLabel": "睡眠品質",
+  "sleepFieldDurationLabel": "睡眠時長",
+  "sleepFieldDurationHint": "小時（例如：7.5）",
+  "sleepFieldOnsetLatencyLabel": "入睡所需時間",
+  "sleepFieldOnsetLatencyHint": "分鐘",
+  "sleepFieldWakeCountLabel": "醒來次數",
+  "sleepFieldNightmareToggle": "做惡夢",
+  "sleepLogLabelSlept": "睡眠時間",
+  "sleepLogLabelHours": "{hours} 小時",
+  "@sleepLogLabelHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "sleepLogLabelWakes": "醒來 {count} 次",
+  "@sleepLogLabelWakes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepLogLabelOnsetLatency": "花費 {minutes} 分鐘入睡",
+  "@sleepLogLabelOnsetLatency": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepLogLabelWithNightmare": "惡夢",
+  "settingsOptionalModulesTitle": "選配功能模組",
+  "settingsOptionalModulesBlurb": "僅啟用您想要追蹤的項目。關閉的模組將不會出現在「症狀」功能中。",
+  "settingsModuleSleepLabel": "睡眠",
+  "settingsModuleSleepDescription": "追蹤每晚的睡眠品質、時長與夜醒次數。",
+  "bodyRegionHeadNeck": "頭部與頸部",
+  "bodyRegionShouldersUpperBack": "肩膀與上背部",
+  "bodyRegionArms": "手臂",
+  "bodyRegionChestAbdomen": "胸部與腹部",
+  "bodyRegionLowerBackPelvis": "下背部與骨盆",
+  "bodyRegionLegs": "腿部",
+  "zoneJaw": "下顎",
+  "zoneTemple": "太陽穴",
+  "zoneShoulderBlades": "肩胛骨",
+  "zoneUpperBack": "上背部",
+  "zoneUpperArm": "上臂",
+  "zoneElbow": "手肘",
+  "zoneForearm": "前臂",
+  "zoneChest": "胸部",
+  "zoneSide": "側腹 / 身體側邊",
+  "zoneRibs": "肋骨",
+  "zoneAbdomen": "腹部",
+  "zoneGlutes": "臀大肌",
+  "zoneFrontThigh": "大腿前側",
+  "zoneBackThigh": "大腿後側",
+  "zoneCalf": "小腿",
+  "zoneFeet": "雙腳",
+  "hydrationSectionTitle": "水分補充",
+  "hydrationActionAddEntry": "+ 紀錄水分補充",
+  "hydrationModalLogHeader": "紀錄水分補充",
+  "hydrationModalEditHeader": "編輯水分紀錄",
+  "hydrationFieldVolumeLabel": "容量",
+  "hydrationFieldVolumeHint": "毫升 ml（例如：250）",
+  "hydrationFieldBeverageLabel": "飲品類型",
+  "hydrationFieldSodiumLabel": "鈉含量（選填）",
+  "hydrationLogLabelVolume": "{volume} ml",
+  "@hydrationLogLabelVolume": {
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "hrvSectionTitle": "HRV 心率變異率",
+  "hrvActionAddEntry": "+ 紀錄 HRV",
+  "hrvModalLogHeader": "紀錄 HRV 量測值",
+  "hrvModalEditHeader": "編輯 HRV 紀錄",
+  "hrvFieldRmssdLabel": "RMSSD",
+  "hrvFieldContextLabel": "量測情境",
+  "hrvFieldSourceLabel": "資料來源",
+  "hrvHintTapToEdit": "點擊數字即可進行編輯",
+  "hrvDirectEditDialogTitle": "編輯 RMSSD",
+  "hrvDirectEditDialogHint": "例如：35",
+  "hrvLogLabelRmssd": "{value} ms",
+  "@hrvLogLabelRmssd": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "hrvSourceManual": "手動輸入",
+  "hrvSourceAppleWatch": "Apple Watch",
+  "hrvSourceWelltory": "Welltory",
+  "hrvSourceOther": "其他",
+  "settingsModuleHydrationLabel": "水分補充",
+  "settingsModuleHydrationDescription": "追蹤飲水量、飲品類型與鈉攝取量。",
+  "settingsModuleHrvLabel": "HRV 心率變異率",
+  "settingsModuleHrvDescription": "依量測情境與資料來源追蹤心率變異率。",
+  "sectionHintNoActivity": "暫無紀錄",
+  "sectionHintToday": "最新紀錄：今天",
+  "sectionHintYesterday": "最新紀錄：昨天",
+  "sectionHintDaysAgo": "最新紀錄：{days, plural, other{{days} 天前}}",
+  "@sectionHintDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsViewPreferencesTitle": "顯示設定",
+  "settingsCarefulModeLabel": "精簡模式",
+  "settingsCarefulModeDescription": "減少視覺干擾：所有區塊預設為摺疊狀態。點擊標題區塊即可展開您想查看的內容。"
 }

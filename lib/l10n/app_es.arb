@@ -1,21 +1,17 @@
 {
   "@@locale": "es",
-
   "navHoy": "Hoy",
   "navSintomas": "Síntomas",
   "navMovimiento": "Movimiento",
   "navBotiquin": "Botiquín",
   "navClinica": "Clínica",
-
   "actionCancel": "Cancelar",
   "actionSave": "Guardar",
   "actionImport": "Importar",
   "actionContinue": "Continuar",
   "actionUnderstood": "Entendido",
-
   "languageSectionTitle": "IDIOMA / LANGUAGE",
   "languageFootnote": "El idioma se aplica a toda la aplicación. Tus datos no cambian.",
-
   "myDataTitle": "MIS DATOS",
   "arcoRightsBlurb": "Tienes derecho a acceder, exportar, importar o eliminar tus datos en cualquier momento.",
   "exportDataButton": "EXPORTAR MIS DATOS",
@@ -23,24 +19,57 @@
   "importPasteButton": "IMPORTAR PEGANDO TEXTO",
   "wipeAllButton": "BORRAR TODO",
   "wipeWarningFootnote": "Esta acción borra todos los perfiles, registros y configuraciones. Irreversible.",
-
   "exportSuccess": "Datos exportados: {filename}",
-  "@exportSuccess": { "placeholders": { "filename": { "type": "String" } } },
+  "@exportSuccess": {
+    "placeholders": {
+      "filename": {
+        "type": "String"
+      }
+    }
+  },
   "exportError": "Error al exportar: {reason}",
-  "@exportError": { "placeholders": { "reason": { "type": "String" } } },
-
+  "@exportError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "importCancelled": "Importación cancelada: {reason}",
-  "@importCancelled": { "placeholders": { "reason": { "type": "String" } } },
+  "@importCancelled": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
   "importSuccess": "Perfil importado correctamente.",
   "importDialogTitle": "Importar este perfil",
   "importDialogName": "Nombre: {name}",
-  "@importDialogName": { "placeholders": { "name": { "type": "String" } } },
+  "@importDialogName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "importDialogExportedAt": "Exportado: {date}",
-  "@importDialogExportedAt": { "placeholders": { "date": { "type": "String" } } },
+  "@importDialogExportedAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "importDialogContains": "Contiene {count} registros:",
-  "@importDialogContains": { "placeholders": { "count": { "type": "int" } } },
+  "@importDialogContains": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "importDialogFootnote": "Esto se agregará como un perfil nuevo. Tu perfil actual no se borra.",
-
   "nounSymptoms": "síntomas",
   "nounDoses": "dosis",
   "nounStructural": "eventos estructurales",
@@ -48,20 +77,26 @@
   "nounTherapies": "terapias",
   "nounMoods": "estados de ánimo",
   "nounMental": "registros mentales",
-
   "pasteImportTitle": "Importar pegando texto",
   "pasteImportInstructions": "Abre tu archivo .json exportado (por ejemplo, desde la app Archivos), selecciona todo el texto, cópialo y pégalo aquí.",
   "pasteImportHint": "Pega aquí el contenido del archivo…",
-
   "errImportUnreadable": "No se pudo leer el archivo.",
   "errImportInvalidJson": "El texto no es JSON válido.",
   "errImportNotZebra": "Este archivo no parece ser de ZebraUpp.",
   "errImportUnknownSchema": "Versión de esquema desconocida.",
   "errImportSchemaMismatch": "Este archivo es de una versión diferente (v{found}). Versión esperada: v{expected}.",
-  "@errImportSchemaMismatch": { "placeholders": { "found": { "type": "String" }, "expected": { "type": "String" } } },
+  "@errImportSchemaMismatch": {
+    "placeholders": {
+      "found": {
+        "type": "String"
+      },
+      "expected": {
+        "type": "String"
+      }
+    }
+  },
   "errImportMissingProfile": "No se encontró perfil en el archivo.",
   "errImportCorruptProfile": "El perfil está dañado o tiene un formato inesperado.",
-
   "actionHide": "Ocultar",
   "hintTapTip": "Tip: en Síntomas, toca un chip del baúl para registrar. Mantén pulsado un registro para editar.",
   "sectionPending": "Pendientes",
@@ -70,7 +105,13 @@
   "pacingActiveState": "Día de descanso — sin expectativas",
   "pacingInactiveState": "Marcar como día de descanso",
   "outcomeCardTimePrefix": "Hace {hours}h tomaste",
-  "@outcomeCardTimePrefix": { "placeholders": { "hours": { "type": "String" } } },
+  "@outcomeCardTimePrefix": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
   "outcomeCardForSymptom": "para tu",
   "outcomeCardInitialState": "Estaba en ",
   "outcomeCardQuestionNow": "¿Cómo está ahora?",
@@ -82,92 +123,150 @@
   "summaryEmptyPacing": "🛡️ Día de descanso. Aún no has registrado nada — está bien.",
   "summaryEmptyNormal": "Aún no has registrado nada hoy. ¿Cómo va todo?",
   "summarySymptomSingle": "Registraste 1 síntoma: {name} ({label}).",
-  "@summarySymptomSingle": { "placeholders": { "name": { "type": "String" }, "label": { "type": "String" } } },
+  "@summarySymptomSingle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "summarySymptomPlural": "Registraste {count} síntomas — el más fuerte fue {name} ({label}).",
-  "@summarySymptomPlural": { "placeholders": { "count": { "type": "int" }, "name": { "type": "String" }, "label": { "type": "String" } } },
+  "@summarySymptomPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      },
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "summaryStructuralSingle": "Tuviste 1 evento estructural en {zone}.",
-  "@summaryStructuralSingle": { "placeholders": { "zone": { "type": "String" } } },
+  "@summaryStructuralSingle": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
   "summaryStructuralPlural": "Tuviste {count} eventos estructurales hoy.",
-  "@summaryStructuralPlural": { "placeholders": { "count": { "type": "int" } } },
+  "@summaryStructuralPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "summaryDosesSentence": "Tomaste {totalDoses} {totalDoses, plural, one{dosis} other{dosis}}: {shown}{extraCount, plural, =0{} other{ y {extraCount} más}}.",
-  "@summaryDosesSentence": { "placeholders": { "totalDoses": { "type": "int" }, "shown": { "type": "String" }, "extraCount": { "type": "int" } } },
+  "@summaryDosesSentence": {
+    "placeholders": {
+      "totalDoses": {
+        "type": "int"
+      },
+      "shown": {
+        "type": "String"
+      },
+      "extraCount": {
+        "type": "int"
+      }
+    }
+  },
   "summaryMoodSentence": "Tus estados y sensaciones registradas: {statesStr}{extra}.",
-  "@summaryMoodSentence": { "placeholders": { "statesStr": { "type": "String" }, "extra": { "type": "String" } } },
+  "@summaryMoodSentence": {
+    "placeholders": {
+      "statesStr": {
+        "type": "String"
+      },
+      "extra": {
+        "type": "String"
+      }
+    }
+  },
   "summaryPacingFooter": "🛡️ Te diste permiso para descansar. Eso cuenta.",
   "wisdomBannerTitle": "✨ Sabiduría cebra 🦓",
   "bowelCountToday": "última evacuación: hoy",
   "bowelCountYesterday": "última evacuación: ayer",
   "bowelCountDaysAgo": "última evacuación: hace {days} días",
-  "@bowelCountDaysAgo": { "placeholders": { "days": { "type": "int" } } },
+  "@bowelCountDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "distentionBannerMessage": "Llevas {days} días sin tránsito intestinal — la distensión y el dolor abdominal pueden acumularse.",
-  "@distentionBannerMessage": { "placeholders": { "days": { "type": "int" } } },
+  "@distentionBannerMessage": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "distentionBannerAction": "Ir a Síntomas",
-
   "severityNone": "Ninguna",
   "severityMild": "Leve",
   "severityModerate": "Moderada",
   "severityIntense": "Intensa",
   "severityUnbearable": "Insoportable",
-
   "reasonNatural": "Cambio natural del síntoma",
   "reasonMedicationHelped": "Creo que ayudó este medicamento",
   "reasonOtherTrigger": "Otro gatillo (comida, estrés, clima…)",
   "reasonAdditionalMed": "Tomé otro medicamento también",
   "reasonUnsure": "Sin certeza absoluta",
-
   "mentalStateMood": "Ánimo",
   "mentalStateAnxiety": "Ansiedad",
   "mentalStateBrainFog": "Niebla mental",
   "mentalStateDissociation": "Disociación",
   "mentalStateIrritability": "Irritabilidad",
   "mentalStateEmotionalEnergy": "Energía emocional",
-
   "outcomeCoarsePending": "Pendiente",
   "outcomeCoarseMuchBetter": "Mucho mejor",
   "outcomeCoarseBetter": "Mejor",
   "outcomeCoarseEqual": "Igual",
   "outcomeCoarseWorse": "Peor",
   "outcomeCoarseMuchWorse": "Mucho peor",
-
   "pubMedNoAuthor": "Sin autoría registrada",
-
   "quadrantActivatedUnpleasant": "activación · malestar",
   "quadrantActivatedPleasant": "activación · bienestar",
   "quadrantCalmUnpleasant": "calma · malestar",
   "quadrantCalpleasant": "calma · bienestar",
-
   "quadrantTeaserActivatedUnpleasant": "tensión, ansiedad",
   "quadrantTeaserActivatedPleasant": "energía, alegría",
   "quadrantTeaserCalmUnpleasant": "agotamiento, tristeza",
   "quadrantTeaserCalmPleasant": "tranquilidad, paz",
-
   "bowelBucketConstipation": "estreñimiento",
   "bowelBucketNormal": "normal",
   "bowelBucketDiarrea": "diarrea",
-
   "sleepQualityBad": "mal",
   "sleepQualityRegular": "regular",
   "sleepQualityGood": "bien",
   "sleepQualityVeryGood": "muy bien",
-
   "beverageWater": "agua",
   "beverageElectrolyte": "electrolitos",
   "beverageCoffee": "café",
   "beverageOther": "otro",
-
   "sodiumPinch": "pizca de sal",
   "sodiumSachet": "sobre de electrolitos",
   "sodiumSaltySnack": "snack salado",
-
   "hrvContextMorning": "matinal",
   "hrvContextAfternoon": "tarde",
   "hrvContextEvening": "noche",
   "hrvContextPostExercise": "post-ejercicio",
   "hrvContextOther": "otro",
-
   "legacyIntensityLabel": "Intensidad anterior: {value}/5",
-  "@legacyIntensityLabel": { "placeholders": { "value": { "type": "String" } } },
-
+  "@legacyIntensityLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
   "botiquinTabTitle": "Tu botiquín",
   "botiquinActionCreate": "Crear medicamento",
   "botiquinInteractionsTitle": "Interacciones detectadas",
@@ -178,68 +277,140 @@
   "botiquinNoMedsDialogTitle": "Sin medicamentos",
   "botiquinNoMedsDialogBody": "Crea al menos un medicamento en tu botiquín antes de formar un grupo.",
   "botiquinRowMedsCountLabel": "{count} {count, plural, one{medicamento} other{medicamentos}}",
-  "@botiquinRowMedsCountLabel": { "placeholders": { "count": { "type": "int" } } },
+  "@botiquinRowMedsCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "botiquinActionEditTooltip": "Editar",
   "botiquinBatchSheetTitle": "Registrar grupo",
   "botiquinBatchSheetSubtitle": "Se registrarán estas dosis:",
   "botiquinBatchOrphanWarning": "⚠️ {count} {count, plural, one{medicamento eliminado} other{medicamentos eliminados}} del botiquín — se {count, plural, one{omitirá} other{omitirán}}.",
-  "@botiquinBatchOrphanWarning": { "placeholders": { "count": { "type": "int" } } },
+  "@botiquinBatchOrphanWarning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "botiquinBatchActionSubmit": "Registrar {count} {count, plural, one{dosis} other{dosis}}",
-  "@botiquinBatchActionSubmit": { "placeholders": { "count": { "type": "int" } } },
+  "@botiquinBatchActionSubmit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "botiquinEmptyStateHeadline": "Aún no has añadido medicamentos",
   "botiquinEmptyStateSubtitle": "Crea uno con el botón de abajo.",
   "botiquinDoseLoggedTodayBadge": "{qty} hoy",
-  "@botiquinDoseLoggedTodayBadge": { "placeholders": { "qty": { "type": "String" } } },
+  "@botiquinDoseLoggedTodayBadge": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
   "botiquinDeleteConfirmTitle": "¿Eliminar {name}?",
-  "@botiquinDeleteConfirmTitle": { "placeholders": { "name": { "type": "String" } } },
+  "@botiquinDeleteConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "botiquinDeleteConfirmBody": "Se conservará el historial de dosis para tus reportes, pero {name} se quitará de tu botiquín.",
-  "@botiquinDeleteConfirmBody": { "placeholders": { "name": { "type": "String" } } },
+  "@botiquinDeleteConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "botiquinActionDelete": "Eliminar",
   "botiquinLogDoseSheetTitle": "Registrar dosis",
   "botiquinLogDoseTotalCalculated": "= {total} {unit} total",
-  "@botiquinLogDoseTotalCalculated": { "placeholders": { "total": { "type": "String" }, "unit": { "type": "String" } } },
+  "@botiquinLogDoseTotalCalculated": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "botiquinLogDoseSymptomPrompt": "¿Para un síntoma específico?",
   "botiquinLogDoseSymptomNone": "Ninguno",
   "botiquinLogDoseTrackOutcomeToggle": "Preguntar en {hours}h si ayudó",
-  "@botiquinLogDoseTrackOutcomeToggle": { "placeholders": { "hours": { "type": "int" } } },
+  "@botiquinLogDoseTrackOutcomeToggle": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
   "botiquinDoseListTitle": "Dosis de hoy",
   "botiquinDoseListFootnote": "Toca × para eliminar una dosis específica (útil si registraste mal el nombre).",
   "botiquinDoseItemDeleteConfirmTitle": "Eliminar esta dosis",
   "botiquinDoseItemDeleteConfirmBody": "¿Eliminar la dosis de {name} registrada a las {time}? Esta acción no se puede deshacer.",
-  "@botiquinDoseItemDeleteConfirmBody": { "placeholders": { "name": { "type": "String" }, "time": { "type": "String" } } },
+  "@botiquinDoseItemDeleteConfirmBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "botiquinTimeTodayAt": "Hoy a las {time}",
-  "@botiquinTimeTodayAt": { "placeholders": { "time": { "type": "String" } } },
+  "@botiquinTimeTodayAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "botiquinTimePastAt": "{day}/{month} a las {time}",
-  "@botiquinTimePastAt": { "placeholders": { "day": { "type": "int" }, "month": { "type": "int" }, "time": { "type": "String" } } },
-
+  "@botiquinTimePastAt": {
+    "placeholders": {
+      "day": {
+        "type": "int"
+      },
+      "month": {
+        "type": "int"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingActionBack": "atrás",
   "onboardingActionSkip": "saltar",
   "onboardingActionNext": "SIGUIENTE",
   "onboardingActionFinish": "EMPEZAR",
   "onboardingFallbackProfileName": "Mi perfil",
-
   "onboardingStepWelcomeTitle": "ZebraUp",
   "onboardingStepWelcomeSubtitle": "Tu copiloto para las citas médicas.",
   "onboardingStepWelcomeBody": "Las consultas son cortas. Tu memoria, después de una semana difícil, también. ZebraUp registra tus síntomas, medicamentos y patrones para que llegues a cada cita con datos concretos — no con frases sueltas que se te olvidan apenas te sientas frente al médico. Y porque sabemos que cuidas de otros, puedes agregar a tus familiares y mascotas.",
   "onboardingStepWelcomePrivacyNote": "Todos tus datos se guardan en este dispositivo. No subimos nada a internet.",
   "onboardingStepWelcomeMedicalDisclaimer": "Esta aplicación no es un dispositivo médico. No diagnostica, trata, cura ni previene ninguna condición médica.",
-
   "onboardingStepNameTitle": "Empecemos.",
   "onboardingStepNameQuestion": "¿Cómo te llamamos?",
   "onboardingStepNameFootnote": "Solo se usa para personalizar la app. Puedes cambiarlo después.",
   "onboardingStepNameHint": "Tu nombre o apodo",
-
   "onboardingStepConditionsTitle": "Tus diagnósticos.",
   "onboardingStepConditionsBody": "¿Qué condiciones manejas? Las usamos para contextualizar interacciones y reportes. Puedes agregar, editar o saltar este paso.",
   "onboardingStepConditionsHint": "ej. hEDS, POTS, MCAS…",
   "onboardingStepConditionsEmpty": "Aún no agregaste ninguno. Puedes saltar este paso.",
-
   "onboardingStepMedsTitle": "Tu botiquín.",
   "onboardingStepMedsBody": "Agrega los medicamentos que tomas habitualmente. Vas a poder registrar cada dosis con un toque desde la pestaña Botiquín.",
   "onboardingStepMedsNameHint": "Nombre",
   "onboardingStepMedsDoseHint": "Dosis (ej. 400mg)",
   "onboardingStepMedsEmpty": "Sin medicamentos por ahora. Puedes saltar este paso.",
-
   "symptomsSectionStructuralZones": "ZONAS ESTRUCTURALES",
   "symptomsSectionBowelTransit": "TRÁNSITO INTESTINAL",
   "symptomsActionAddHemorrhoid": "hemorroide",
@@ -250,11 +421,32 @@
   "symptomsSectionVault": "BAÚL DE SÍNTOMAS",
   "symptomsVaultPlaceholder": "+ Añadir síntoma al baúl...",
   "symptomsModalLogHeader": "REGISTRAR EN: {zone}",
-  "@symptomsModalLogHeader": { "placeholders": { "zone": { "type": "String" } } },
+  "@symptomsModalLogHeader": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
   "symptomsModalEditHeader": "EDITAR: {zone} / {type}",
-  "@symptomsModalEditHeader": { "placeholders": { "zone": { "type": "String" }, "type": { "type": "String" } } },
+  "@symptomsModalEditHeader": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      },
+      "type": {
+        "type": "String"
+      }
+    }
+  },
   "symptomsModalEditSymptomHeader": "EDITAR: {name}",
-  "@symptomsModalEditSymptomHeader": { "placeholders": { "name": { "type": "String" } } },
+  "@symptomsModalEditSymptomHeader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "symptomsLabelOptionalNote": "Nota opcional (contexto, gatillo, etc.)",
   "symptomsLabelOptionalNoteSimple": "Nota opcional",
   "symptomsLabelSeverityGrading": "GRAVEDAD",
@@ -263,7 +455,6 @@
   "symptomsUnratedInlineWarning": "Este registro no tiene rating. Toca un punto para asignar uno.",
   "symptomsActionSaveChanges": "GUARDAR CAMBIOS",
   "symptomsActionSave": "GUARDAR",
-
   "zoneCervical": "Cervicales",
   "zoneHombros": "Hombros",
   "zoneMunecas": "Muñecas",
@@ -272,20 +463,23 @@
   "zoneCaderas": "Caderas",
   "zoneRodillas": "Rodillas",
   "zoneTobillos": "Tobillos",
-
   "structTypeSubluxation": "Subluxación",
   "structTypeDislocation": "Dislocación",
   "structTypeInstability": "Inestabilidad Articular",
   "structTypeJointPain": "Dolor Articular",
   "structTypeMyofascial": "Dolor Miofascial",
   "structTypeNeuropathic": "Dolor Neuropático",
-
   "bowelLabelBristolType": "tipo {type}",
-  "@bowelLabelBristolType": { "placeholders": { "type": { "type": "String" } } },
+  "@bowelLabelBristolType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
   "bowelLabelUrgency": "urgencia",
   "bowelLabelBleeding": "sangrado",
   "bowelLabelIncomplete": "incompleta",
-
   "movementSectionPacingActive": "Hoy es día de descanso. Descansar también cuenta.",
   "movementSectionHistoryTitle": "HOY HICISTE…",
   "movementFootnoteLongPressEdit": "Mantén presionado un registro para editar.",
@@ -295,61 +489,132 @@
   "movementActivityPlaceholder": "+ Añadir actividad (natación, bici, baile…)",
   "movementSectionTherapyTitle": "TERAPIA",
   "movementTherapyPlaceholder": "+ Añadir modalidad (reiki, flotación…)",
-
   "activityModalLogHeader": "REGISTRAR: {name}",
-  "@activityModalLogHeader": { "placeholders": { "name": { "type": "String" } } },
+  "@activityModalLogHeader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "activityModalEditHeader": "EDITAR: {name}",
-  "@activityModalEditHeader": { "placeholders": { "name": { "type": "String" } } },
+  "@activityModalEditHeader": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "activityFieldDurationHint": "Duración (min)",
   "activityFieldSetsHint": "Sets",
   "activityFieldRepsHint": "Reps",
   "activityFieldHhrHint": "Frecuencia cardíaca opcional (ej. 70→110)",
   "activityLabelEffortSlider": "Esfuerzo: {value}/10",
-  "@activityLabelEffortSlider": { "placeholders": { "value": { "type": "int" } } },
+  "@activityLabelEffortSlider": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "activityLabelFeelingSlider": "Cómo me sentí: {value}/5",
-  "@activityLabelFeelingSlider": { "placeholders": { "value": { "type": "int" } } },
+  "@activityLabelFeelingSlider": {
+    "placeholders": {
+      "value": {
+        "type": "int"
+      }
+    }
+  },
   "activityActionTogglePainRating": "evaluar dolor antes/después (opcional)",
   "activityLabelPainBefore": "DOLOR ANTES",
   "activityLabelPainAfter": "DOLOR DESPUÉS",
   "activityActionSubmitLog": "GUARDAR ACTIVIDAD",
   "activityActionSubmitChanges": "GUARDAR CAMBIOS",
-
   "painLabelNone": "nada",
   "painLabelMild": "leve",
   "painLabelModerate": "moderado",
   "painLabelIntense": "intenso",
   "painLabelSevere": "severo",
-
   "painDeltaLabelImproved": "Mejoraste {count} {count, plural, one{nivel} other{niveles}}",
-  "@painDeltaLabelImproved": { "placeholders": { "count": { "type": "int" } } },
+  "@painDeltaLabelImproved": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "painDeltaLabelWorsened": "Empeoraste {count} {count, plural, one{nivel} other{niveles}}",
-  "@painDeltaLabelWorsened": { "placeholders": { "count": { "type": "int" } } },
+  "@painDeltaLabelWorsened": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "painDeltaLabelUnchanged": "Sin cambios",
-
   "logSubtitleMetricDuration": "{minutes}min",
-  "@logSubtitleMetricDuration": { "placeholders": { "minutes": { "type": "int" } } },
+  "@logSubtitleMetricDuration": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "logSubtitleMetricSetsReps": "{sets}×{reps}",
-  "@logSubtitleMetricSetsReps": { "placeholders": { "sets": { "type": "String" }, "reps": { "type": "String" } } },
-  "logSubtitleActivityTemplate": "{detail} · esfuerzo {effort}/10 · sentir {feeling}/5{painSuffix} }",
-  "@logSubtitleActivityTemplate": { "placeholders": { "detail": { "type": "String" }, "effort": { "type": "int" }, "feeling": { "type": "int" }, "pain": { "type": "String" } } },
+  "@logSubtitleMetricSetsReps": {
+    "placeholders": {
+      "sets": {
+        "type": "String"
+      },
+      "reps": {
+        "type": "String"
+      }
+    }
+  },
+  "logSubtitleActivityTemplate": "{detail} · esfuerzo {effort}/10 · sentir {feeling}/5{painSuffix}",
+  "@logSubtitleActivityTemplate": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      },
+      "effort": {
+        "type": "int"
+      },
+      "feeling": {
+        "type": "int"
+      },
+      "pain": {
+        "type": "String"
+      }
+    }
+  },
   "logSubtitlePainDeltaImproved": "↓{levels} niv.",
-  "@logSubtitlePainDeltaImproved": { "placeholders": { "levels": { "type": "int" } } },
+  "@logSubtitlePainDeltaImproved": {
+    "placeholders": {
+      "levels": {
+        "type": "int"
+      }
+    }
+  },
   "logSubtitlePainDeltaWorsened": "↑{levels} niv.",
-  "@logSubtitlePainDeltaWorsened": { "placeholders": { "levels": { "type": "int" } } },
+  "@logSubtitlePainDeltaWorsened": {
+    "placeholders": {
+      "levels": {
+        "type": "int"
+      }
+    }
+  },
   "logSubtitlePainDeltaUnchanged": "sin cambio",
-
   "feelingLabelLevel1": "🤕 En dolor / lesión",
   "feelingLabelLevel2": "😟 Incomodidad / preocupación",
   "feelingLabelLevel3": "😐 Neutralidad",
   "feelingLabelLevel4": "😊 Relajación",
   "feelingLabelLevel5": "💪 Fuerza y seguridad",
-
   "onboardingHaveProfileTitle": "Ya tengo un perfil guardado",
   "onboardingHaveProfileSubtitle": "Importar desde un archivo JSON",
   "onboardingImportChoiceTitle": "¿Cómo importar?",
   "onboardingImportFromFile": "Desde archivo",
-  "onboardingImportFromPaste": "Pegar texto", 
-
+  "onboardingImportFromPaste": "Pegar texto",
   "feverSectionTitle": "FIEBRE",
   "feverActionAddReading": "+ medir temperatura",
   "feverModalLogHeader": "REGISTRAR TEMPERATURA",
@@ -367,12 +632,22 @@
   "feverSiteTympanic": "timpánica",
   "feverSiteRectal": "rectal",
   "feverSiteForehead": "frente",
-
   "timeAgoMinutes": "hace {minutes} min",
-  "@timeAgoMinutes": { "placeholders": { "minutes": { "type": "int" } } },
+  "@timeAgoMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "timeAgoHours": "hace {hours}h",
-  "@timeAgoHours": { "placeholders": { "hours": { "type": "int" } } },
-
+  "@timeAgoHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
   "researchEmptyConfig": "Añade un diagnóstico en configuración para ver investigación relevante.",
   "researchTitleRecent": "Resultados recientes de PubMed",
   "researchDisclaimer": "Desliza para actualizar. Solo informativo, no es consejo médico.",
@@ -380,16 +655,27 @@
   "researchStateNoData": "Sin datos. Tira hacia abajo para buscar.",
   "researchStateNoResults": "No se encontraron resultados recientes.",
   "researchLastUpdated": "Actualizado: {time}",
-  "@researchLastUpdated": { "placeholders": { "time": { "type": "String" } } },
+  "@researchLastUpdated": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "researchActionSaved": "Guardado",
   "researchActionSave": "Guardar",
   "researchActionOpenPubMed": "Abrir en PubMed",
   "researchActionCopyPmid": "Copiar PMID",
   "researchSnackPmidCopied": "PMID {pmid} copiado.",
-  "@researchSnackPmidCopied": { "placeholders": { "pmid": { "type": "String" } } },
+  "@researchSnackPmidCopied": {
+    "placeholders": {
+      "pmid": {
+        "type": "String"
+      }
+    }
+  },
   "researchLoadingAbstract": "Cargando resumen…",
   "researchEmptyAbstract": "Resumen no disponible. Abre el artículo en PubMed para más detalles.",
-
   "reportRangeDay": "1 día",
   "reportRangeWeek": "7 días",
   "reportRangeMonth": "30 días",
@@ -397,9 +683,158 @@
   "reportRangeCustomActiveLabel": "Rango: {start} → {end}",
   "@reportRangeCustomActiveLabel": {
     "placeholders": {
-      "start": { "type": "String" },
-      "end": { "type": "String" }
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
     }
-  }
-
+  },
+  "structKindJoint": "Articulación",
+  "structKindMuscle": "Músculo",
+  "structKindTendon": "Tendón",
+  "structKindLigament": "Ligamento",
+  "structKindSoftTissue": "Tejido blando",
+  "structKindNerve": "Nervio",
+  "structTypeMuscleStrain": "Tirón muscular",
+  "structTypeMuscleDistension": "Distensión muscular",
+  "structTypeMuscleTear": "Desgarro muscular",
+  "structTypeContracture": "Contractura",
+  "structTypeMuscleSpasm": "Espasmo muscular",
+  "structTypeTendinitis": "Tendinitis",
+  "structTypeTendinosis": "Tendinosis",
+  "structTypeBursitis": "Bursitis",
+  "structTypeEnthesitis": "Entesitis",
+  "structTypeTendonFissure": "Fisura tendinosa",
+  "structTypeMildSprain": "Esguince leve",
+  "structTypeSevereSprain": "Esguince grave",
+  "structTypeLigamentTear": "Desgarro ligamentario",
+  "structTypeSuperficialCut": "Corte superficial",
+  "structTypeSkinFissure": "Fisura cutánea",
+  "structTypeDeepWound": "Herida profunda",
+  "structTypeHematoma": "Hematoma",
+  "structTypeContusion": "Contusión",
+  "structTypeBurn": "Quemadura",
+  "structTypeAbrasion": "Abrasión",
+  "structTypeParesthesia": "Parestesia",
+  "sleepSectionTitle": "SUEÑO",
+  "sleepActionAddEntry": "+ registrar sueño",
+  "sleepModalLogHeader": "REGISTRAR SUEÑO",
+  "sleepModalEditHeader": "EDITAR SUEÑO",
+  "sleepFieldQualityLabel": "CALIDAD",
+  "sleepFieldDurationLabel": "DURACIÓN",
+  "sleepFieldDurationHint": "horas (ej. 7.5)",
+  "sleepFieldOnsetLatencyLabel": "TIEMPO EN DORMIRSE",
+  "sleepFieldOnsetLatencyHint": "minutos",
+  "sleepFieldWakeCountLabel": "DESPERTARES",
+  "sleepFieldNightmareToggle": "tuve pesadilla(s)",
+  "sleepLogLabelSlept": "dormí",
+  "sleepLogLabelHours": "{hours}h",
+  "@sleepLogLabelHours": {
+    "placeholders": {
+      "hours": {
+        "type": "String"
+      }
+    }
+  },
+  "sleepLogLabelWakes": "{count}× despertares",
+  "@sleepLogLabelWakes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepLogLabelOnsetLatency": "{minutes} min para dormir",
+  "@sleepLogLabelOnsetLatency": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sleepLogLabelWithNightmare": "pesadilla",
+  "settingsOptionalModulesTitle": "MÓDULOS OPCIONALES",
+  "settingsOptionalModulesBlurb": "Activa solo lo que quieras trackear. Los módulos desactivados no aparecen en Síntomas.",
+  "settingsModuleSleepLabel": "Sueño",
+  "settingsModuleSleepDescription": "Calidad, duración y despertares por noche.",
+  "bodyRegionHeadNeck": "Cabeza y cuello",
+  "bodyRegionShouldersUpperBack": "Hombros y espalda alta",
+  "bodyRegionArms": "Brazos",
+  "bodyRegionChestAbdomen": "Pecho y abdomen",
+  "bodyRegionLowerBackPelvis": "Espalda baja y pelvis",
+  "bodyRegionLegs": "Piernas",
+  "zoneJaw": "Mandíbula",
+  "zoneTemple": "Sien",
+  "zoneShoulderBlades": "Omóplatos",
+  "zoneUpperBack": "Espalda alta",
+  "zoneUpperArm": "Brazo",
+  "zoneElbow": "Codo",
+  "zoneForearm": "Antebrazo",
+  "zoneChest": "Pecho",
+  "zoneSide": "Costado",
+  "zoneRibs": "Costillas",
+  "zoneAbdomen": "Abdomen",
+  "zoneGlutes": "Glúteos",
+  "zoneFrontThigh": "Muslo (delante)",
+  "zoneBackThigh": "Atrás del muslo",
+  "zoneCalf": "Pantorrilla",
+  "zoneFeet": "Pies",
+  "hydrationSectionTitle": "HIDRATACIÓN",
+  "hydrationActionAddEntry": "+ registrar hidratación",
+  "hydrationModalLogHeader": "REGISTRAR HIDRATACIÓN",
+  "hydrationModalEditHeader": "EDITAR HIDRATACIÓN",
+  "hydrationFieldVolumeLabel": "CANTIDAD",
+  "hydrationFieldVolumeHint": "ml (ej. 250)",
+  "hydrationFieldBeverageLabel": "BEBIDA",
+  "hydrationFieldSodiumLabel": "SODIO (opcional)",
+  "hydrationLogLabelVolume": "{volume} ml",
+  "@hydrationLogLabelVolume": {
+    "placeholders": {
+      "volume": {
+        "type": "String"
+      }
+    }
+  },
+  "hrvSectionTitle": "HRV",
+  "hrvActionAddEntry": "+ registrar HRV",
+  "hrvModalLogHeader": "REGISTRAR LECTURA HRV",
+  "hrvModalEditHeader": "EDITAR LECTURA HRV",
+  "hrvFieldRmssdLabel": "RMSSD",
+  "hrvFieldContextLabel": "CONTEXTO",
+  "hrvFieldSourceLabel": "FUENTE",
+  "hrvHintTapToEdit": "tocá el número para editar",
+  "hrvDirectEditDialogTitle": "Editar RMSSD",
+  "hrvDirectEditDialogHint": "ej. 35",
+  "hrvLogLabelRmssd": "{value} ms",
+  "@hrvLogLabelRmssd": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "hrvSourceManual": "manual",
+  "hrvSourceAppleWatch": "Apple Watch",
+  "hrvSourceWelltory": "Welltory",
+  "hrvSourceOther": "otro",
+  "settingsModuleHydrationLabel": "Hidratación",
+  "settingsModuleHydrationDescription": "Volumen, bebida y aporte de sodio.",
+  "settingsModuleHrvLabel": "HRV",
+  "settingsModuleHrvDescription": "Variabilidad cardíaca por contexto y fuente.",
+  "sectionHintNoActivity": "sin registros aún",
+  "sectionHintToday": "último hoy",
+  "sectionHintYesterday": "último ayer",
+  "sectionHintDaysAgo": "último hace {days, plural, =1{1 día} other{{days} días}}",
+  "@sectionHintDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsViewPreferencesTitle": "VISUALIZACIÓN",
+  "settingsCarefulModeLabel": "Modo cuidadoso",
+  "settingsCarefulModeDescription": "Reduce el ruido visual: las secciones empiezan colapsadas. Tap el header para expandir lo que quieras ver."
 }

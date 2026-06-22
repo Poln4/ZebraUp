@@ -1,4 +1,4 @@
-name: zebratracker
+name: zebraup
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -78,6 +78,7 @@ flutter:
     - assets/zebra_wisdom.json
     - assets/condition_codes.json
     - assets/ema_moods.json
+    - assets/drug_codes.json
 
   # To add assets to your application, add an assets section, like this:
   # assets:

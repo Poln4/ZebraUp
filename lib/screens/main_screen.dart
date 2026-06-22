@@ -15,6 +15,9 @@ import '../services/weather_service.dart';
 import '../services/medline_plus_service.dart';
 import '../widgets/condition_info_sheet.dart';
 import '../widgets/life_event_form_sheet.dart';
+import '../widgets/fever_form_sheet.dart';
+import '../services/structural_taxonomy.dart';
+import '../services/clinical_localizations.dart';
 import '../l10n/app_localizations.dart';
 import 'onboarding_screen.dart';
 import 'hoy_tab.dart';
@@ -1132,6 +1135,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   String _buildReportPlainText() {
+    final l10n = AppLocalizations.of(context)!;
     final todaysSymptoms = _activeProfile!.getSymptomsForDay(_selectedDate);
     final todaysDoses = _activeProfile!.getDosesForDay(_selectedDate);
     final todaysStructs = _activeProfile!.getStructuralForDay(_selectedDate);
@@ -1200,7 +1204,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       buf.writeln(" • —");
     } else {
       for (final s in grouped.entries) {
-        buf.writeln(" • ${s.key} [${s.value.label.toUpperCase()}]");
+        buf.writeln(" • ${s.key} [${s.value.severityLabel(l10n).toUpperCase()}]");
       }
     }
 
@@ -1211,7 +1215,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       for (final r in todaysFever) {
         final timeStr = DateFormat('HH:mm').format(r.timestamp);
         final tempStr = r.temperatureC.toStringAsFixed(1);
-        String line = " • [$timeStr] ${tempStr}°C (${r.site.defaultLabel})";
+        String line = " • [$timeStr] ${tempStr}°C (${r.site.label(l10n)})";
         if (r.antipyreticTaken) {
           final apName = r.antipyreticName?.trim();
           if (apName != null && apName.isNotEmpty) {
@@ -1258,7 +1262,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       buf.writeln();
       buf.writeln("$title ($durStr):");
       buf.writeln(" • Inicio: ${DateFormat('yyyy-MM-dd HH:mm').format(ep.start)}");
-      buf.writeln(" • Pico: ${ep.peakTemperatureC.toStringAsFixed(1)}°C (${ep.peakSite.defaultLabel}) el ${DateFormat('yyyy-MM-dd HH:mm').format(ep.peakTimestamp)}");
+      buf.writeln(" • Pico: ${ep.peakTemperatureC.toStringAsFixed(1)}°C (${ep.peakSite.label(l10n)}) el ${DateFormat('yyyy-MM-dd HH:mm').format(ep.peakTimestamp)}");
       buf.writeln(" • Total lecturas: ${ep.readingsCount}");
       if (ep.antipyreticDosesCount > 0) {
         final String apStr;
@@ -1275,7 +1279,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       buf.writeln();
       buf.writeln("NIEBLA / FATIGA (máx. del día, 1–5):");
       for (final m in mentalSummary.entries) {
-        buf.writeln(" • ${m.key.label}: ${m.value}/5");
+        buf.writeln(" • ${m.key.mentalStateLabel(l10n)}: ${m.value}/5");
       }
     }
     
@@ -1294,7 +1298,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       buf.writeln();
       buf.writeln("EVENTOS ESTRUCTURALES:");
       for (final e in todaysStructs) {
-        buf.writeln(" • [${DateFormat('HH:mm').format(e.timestamp)}] ${e.zone}: ${e.type}");
+        buf.writeln(" • [${DateFormat('HH:mm').format(e.timestamp)}] ${e.zone.bodyZoneLabel(l10n)}: ${e.type.structuralTypeLabel(l10n)}");
       }
     }
 
@@ -1311,7 +1315,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           if (t.allUnrated) {
             line += " (sin rating)";
           } else {
-            line += ", peor: ${t.worstSeverity.label.toUpperCase()}";
+            line += ", peor: ${t.worstSeverity.severityLabel(l10n).toUpperCase()}";
           }
           buf.writeln(line);
         }
@@ -1350,7 +1354,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           ..sort((a, b) => b.value.compareTo(a.value));
         for (final entry in sorted) {
           final evLabel = entry.value == 1 ? 'evento' : 'eventos';
-          buf.writeln("  • ${entry.key} — ${entry.value} $evLabel");
+          buf.writeln("  • ${entry.key.bodyZoneLabel(l10n)} — ${entry.value} $evLabel");
         }
       }
 
@@ -1360,7 +1364,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           ..sort((a, b) => b.value.compareTo(a.value));
         for (final entry in sorted) {
           buf.writeln(
-              "  • ${entry.key.label}: ${entry.value.toStringAsFixed(1)}/5");
+              "  • ${entry.key.mentalStateLabel(l10n)}: ${entry.value.toStringAsFixed(1)}/5");
         }
       }
     }
@@ -1718,6 +1722,123 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             ),
             onPressed: () => _editLocation(),
           ),
+
+          // F6.a + Sleep module: optional trackers section
+          const SizedBox(height: 24),
+          Text(AppLocalizations.of(context)!.settingsOptionalModulesTitle,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: Colors.grey)),
+          const SizedBox(height: 4),
+          Text(
+            AppLocalizations.of(context)!.settingsOptionalModulesBlurb,
+            style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 11,
+                fontStyle: FontStyle.italic),
+          ),
+          const SizedBox(height: 8),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            activeColor: cc,
+            title: Text(
+              AppLocalizations.of(context)!.settingsModuleSleepLabel,
+              style: TextStyle(
+                  color: cc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context)!.settingsModuleSleepDescription,
+              style: TextStyle(
+                  color: cc.withValues(alpha: 0.6), fontSize: 11),
+            ),
+            value: _activeProfile!.optionalTrackers['sleep'] ?? false,
+            onChanged: (v) => setState(() {
+              _activeProfile!.optionalTrackers['sleep'] = v;
+              _saveData();
+            }),
+          ),
+
+          // F6.b: Hidratación toggle
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            activeColor: cc,
+            title: Text(
+              AppLocalizations.of(context)!.settingsModuleHydrationLabel,
+              style: TextStyle(
+                  color: cc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context)!.settingsModuleHydrationDescription,
+              style: TextStyle(
+                  color: cc.withValues(alpha: 0.6), fontSize: 11),
+            ),
+            value: _activeProfile!.optionalTrackers['hydration'] ?? false,
+            onChanged: (v) => setState(() {
+              _activeProfile!.optionalTrackers['hydration'] = v;
+              _saveData();
+            }),
+          ),
+
+          // F6.b: HRV toggle
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            activeColor: cc,
+            title: Text(
+              AppLocalizations.of(context)!.settingsModuleHrvLabel,
+              style: TextStyle(
+                  color: cc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context)!.settingsModuleHrvDescription,
+              style: TextStyle(
+                  color: cc.withValues(alpha: 0.6), fontSize: 11),
+            ),
+            value: _activeProfile!.optionalTrackers['hrv'] ?? false,
+            onChanged: (v) => setState(() {
+              _activeProfile!.optionalTrackers['hrv'] = v;
+              _saveData();
+            }),
+          ),
+
+          // F3: Visualización preferences
+          const SizedBox(height: 24),
+          Text(AppLocalizations.of(context)!.settingsViewPreferencesTitle,
+              style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 12,
+                  color: Colors.grey)),
+          const SizedBox(height: 8),
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            activeColor: cc,
+            title: Text(
+              AppLocalizations.of(context)!.settingsCarefulModeLabel,
+              style: TextStyle(
+                  color: cc, fontSize: 14, fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text(
+              AppLocalizations.of(context)!.settingsCarefulModeDescription,
+              style: TextStyle(
+                  color: cc.withValues(alpha: 0.6), fontSize: 11),
+            ),
+            value: _activeProfile!.optionalTrackers['careful_mode'] ?? false,
+            onChanged: (v) => setState(() {
+              _activeProfile!.optionalTrackers['careful_mode'] = v;
+              _saveData();
+            }),
+          ),
+
           const SizedBox(height: 40),
           OutlinedButton.icon(
             style: OutlinedButton.styleFrom(

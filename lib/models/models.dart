@@ -270,28 +270,335 @@ class DoseEvent {
       );
 }
 
+// =============================================================================
+// PHASE F4 — STRUCTURAL EVENT KIND TAXONOMY
+// =============================================================================
+// Six-kind cascade for structural injury logging. Replaces the flat
+// `_structuralTypes` list previously hardcoded in sintomas_tab.dart.
+//
+// Each StructuralEvent carries both `kind` (broad category) and `type`
+// (specific entry within that category). Legacy events without `kind`
+// have it inferred from `type` via inferKindFromType — no migration
+// step required.
+
+enum StructuralEventKind {
+  joint('Articulación'),
+  muscle('Músculo'),
+  tendon('Tendón'),
+  ligament('Ligamento'),
+  softTissue('Tejido blando'),
+  nerve('Nervio');
+
+  /// Spanish fallback label (LatAm neutral). For user-facing localized
+  /// labels, use the StructuralEventKindLocalization.label(l10n) extension
+  /// in lib/services/structural_taxonomy.dart — the canonical i18n pattern,
+  /// mirroring FeverSiteLocalization.
+  final String defaultLabel;
+  const StructuralEventKind(this.defaultLabel);
+
+  static StructuralEventKind? parse(String? raw) {
+    if (raw == null) return null;
+    for (final k in values) {
+      if (k.name == raw) return k;
+    }
+    return null;
+  }
+}
+
+/// Authoritative kind -> types map. Single source of truth for the
+/// form picker AND for inferring kind from legacy free-text types.
+///
+/// F6.a: type values are now stable snake_case IDs. Display labels come
+/// from `StructuralEventTypeLocalization` in lib/services/structural_taxonomy.dart.
+/// Legacy Spanish strings from v3 storage are migrated silently in
+/// `StructuralEvent.fromMap` via `_migrateStructuralTypeId`.
+const Map<StructuralEventKind, List<String>> kStructuralTaxonomy = {
+  StructuralEventKind.joint: [
+    'subluxation',
+    'dislocation',
+    'joint_instability',
+    'joint_pain',
+  ],
+  StructuralEventKind.muscle: [
+    'muscle_strain',
+    'muscle_distension',
+    'muscle_tear',
+    'contracture',
+    'muscle_spasm',
+    'myofascial_pain',
+  ],
+  StructuralEventKind.tendon: [
+    'tendinitis',
+    'tendinosis',
+    'bursitis',
+    'enthesitis',
+    'tendon_fissure',
+  ],
+  StructuralEventKind.ligament: [
+    'mild_sprain',
+    'severe_sprain',
+    'ligament_tear',
+  ],
+  StructuralEventKind.softTissue: [
+    'superficial_cut',
+    'skin_fissure',
+    'deep_wound',
+    'hematoma',
+    'contusion',
+    'burn',
+    'abrasion',
+  ],
+  StructuralEventKind.nerve: [
+    'neuropathic_pain',
+    'paresthesia',
+  ],
+};
+
+/// F6.a + F6.b: Stable IDs for body zones.
+///
+/// F6.b decision (17-jun-2026): catalog expanded to 24 zones using
+/// *everyday Spanish*, NOT anatomical terminology. "Atrás del muslo"
+/// instead of "isquiotibial", "pantorrilla" instead of "tríceps sural".
+/// Most users don't know specific muscle names; clinical-grade naming
+/// creates a usability barrier without clinical benefit at the data
+/// layer (the doctor can interpret "atrás del muslo" just as well).
+///
+/// Zones are grouped into 6 BodyRegion values for picker UX
+/// (lib/screens/sintomas_tab.dart uses kBodyRegionZones to render
+/// region headers with zone chips beneath, rather than 24 chips flat).
+///
+/// `kBodyZones` is the flat list (kept for migration lookups,
+/// `BodySide` enum support in a future sprint, etc.). Source of truth
+/// for the UI is `kBodyRegionZones` below.
+const List<String> kBodyZones = [
+  // head/neck
+  'cervical',
+  'jaw',
+  'temple',
+  // shoulders/upper back
+  'shoulders',
+  'shoulder_blades',
+  'upper_back',
+  // arms
+  'upper_arm',
+  'elbow',
+  'forearm',
+  'wrists',
+  'hands',
+  // chest/abdomen
+  'chest',
+  'side',
+  'ribs',
+  'abdomen',
+  // lower back/pelvis
+  'lumbar_pelvis',
+  'hips',
+  'glutes',
+  // legs
+  'front_thigh',
+  'back_thigh',
+  'knees',
+  'calf',
+  'ankles',
+  'feet',
+];
+
+/// F6.b: Body regions for the structural picker UX. Display labels
+/// resolved via BodyRegionLocalization extension in
+/// lib/services/structural_taxonomy.dart.
+enum BodyRegion {
+  headNeck,
+  shouldersUpperBack,
+  arms,
+  chestAbdomen,
+  lowerBackPelvis,
+  legs;
+
+  static BodyRegion? parse(String? raw) {
+    if (raw == null) return null;
+    for (final r in values) {
+      if (r.name == raw) return r;
+    }
+    return null;
+  }
+}
+
+/// F6.b: Region → zone IDs map. Mirror of `kBodyZones` grouped. Keep
+/// the flat list and this map in sync when adding zones.
+const Map<BodyRegion, List<String>> kBodyRegionZones = {
+  BodyRegion.headNeck: ['cervical', 'jaw', 'temple'],
+  BodyRegion.shouldersUpperBack: ['shoulders', 'shoulder_blades', 'upper_back'],
+  BodyRegion.arms: ['upper_arm', 'elbow', 'forearm', 'wrists', 'hands'],
+  BodyRegion.chestAbdomen: ['chest', 'side', 'ribs', 'abdomen'],
+  BodyRegion.lowerBackPelvis: ['lumbar_pelvis', 'hips', 'glutes'],
+  BodyRegion.legs: ['front_thigh', 'back_thigh', 'knees', 'calf', 'ankles', 'feet'],
+};
+
+/// Legacy Spanish structural type strings → stable IDs.
+/// Used by `StructuralEvent.fromMap` to migrate v3 events silently on read.
+/// Lower-cased keys; lookup is case-insensitive.
+const Map<String, String> _kLegacyStructuralTypeToId = {
+  'subluxación': 'subluxation',
+  'dislocación': 'dislocation',
+  'inestabilidad articular': 'joint_instability',
+  'dolor articular': 'joint_pain',
+  'tirón muscular': 'muscle_strain',
+  'distensión muscular': 'muscle_distension',
+  'desgarro muscular': 'muscle_tear',
+  'contractura': 'contracture',
+  'espasmo muscular': 'muscle_spasm',
+  'dolor miofascial': 'myofascial_pain',
+  'tendinitis': 'tendinitis',
+  'tendinosis': 'tendinosis',
+  'bursitis': 'bursitis',
+  'entesitis': 'enthesitis',
+  'fisura tendinosa': 'tendon_fissure',
+  'esguince leve': 'mild_sprain',
+  'esguince grave': 'severe_sprain',
+  'desgarro ligamentario': 'ligament_tear',
+  'corte superficial': 'superficial_cut',
+  'fisura cutánea': 'skin_fissure',
+  'herida profunda': 'deep_wound',
+  'hematoma': 'hematoma',
+  'contusión': 'contusion',
+  'quemadura': 'burn',
+  'abrasión': 'abrasion',
+  'dolor neuropático': 'neuropathic_pain',
+  'parestesia': 'paresthesia',
+};
+
+/// Legacy Spanish body zone strings → stable IDs.
+const Map<String, String> _kLegacyZoneToId = {
+  'cervicales': 'cervical',
+  'hombros': 'shoulders',
+  'muñecas': 'wrists',
+  'manos': 'hands',
+  'lumbar/pelvis': 'lumbar_pelvis',
+  'caderas': 'hips',
+  'rodillas': 'knees',
+  'tobillos': 'ankles',
+};
+
+/// Migrate a stored `type` string to its stable ID. Returns the input
+/// unchanged if it's already a valid ID. Returns the legacy mapping if
+/// it matches a known Spanish label (case-insensitive). Returns the
+/// input as-is if neither — graceful degradation for unknown types
+/// (the localization extension also has an unknown-id fallback).
+String _migrateStructuralTypeId(String raw) {
+  for (final list in kStructuralTaxonomy.values) {
+    if (list.contains(raw)) return raw;
+  }
+  final mapped = _kLegacyStructuralTypeToId[raw.toLowerCase().trim()];
+  return mapped ?? raw;
+}
+
+/// Migrate a stored `zone` string to its stable ID. Same fallback strategy
+/// as `_migrateStructuralTypeId`.
+String _migrateZoneId(String raw) {
+  if (kBodyZones.contains(raw)) return raw;
+  final mapped = _kLegacyZoneToId[raw.toLowerCase().trim()];
+  return mapped ?? raw;
+}
+
+/// Infer kind from a `type` string when no `kind` field is stored.
+/// F6.a: now handles both stable IDs (primary path) and legacy Spanish
+/// strings (heuristic fallback). Legacy heuristics retained verbatim
+/// because they ALSO catch typos and pre-F4 capitalizations.
+StructuralEventKind inferKindFromType(String type) {
+  // 1. Exact match against current taxonomy (stable IDs)
+  for (final entry in kStructuralTaxonomy.entries) {
+    if (entry.value.contains(type)) return entry.key;
+  }
+  // 2. Heuristic fallbacks — Spanish strings (legacy v3), typos, edge cases
+  final lower = type.toLowerCase();
+  if (lower.contains('miofascial')) return StructuralEventKind.muscle;
+  if (lower.contains('neurop') || lower.contains('parest')) {
+    return StructuralEventKind.nerve;
+  }
+  if (lower.contains('subluxa') ||
+      lower.contains('disloca') ||
+      lower.contains('luxa') ||
+      lower.contains('articul') ||
+      lower.contains('inestab')) {
+    return StructuralEventKind.joint;
+  }
+  if (lower.contains('tendin') || lower.contains('bursit')) {
+    return StructuralEventKind.tendon;
+  }
+  if (lower.contains('esguince') || lower.contains('ligament')) {
+    return StructuralEventKind.ligament;
+  }
+  if (lower.contains('corte') ||
+      lower.contains('herida') ||
+      lower.contains('hematoma') ||
+      lower.contains('contus') ||
+      lower.contains('quemad') ||
+      lower.contains('abras')) {
+    return StructuralEventKind.softTissue;
+  }
+  if (lower.contains('muscul') ||
+      lower.contains('contrac') ||
+      lower.contains('espasm') ||
+      lower.contains('desgarro') ||
+      lower.contains('distens')) {
+    return StructuralEventKind.muscle;
+  }
+  // Last-resort default
+  return StructuralEventKind.joint;
+}
+
 class StructuralEvent {
   final String id;
   final DateTime timestamp;
   final String zone;
+  final StructuralEventKind kind;
   final String type;
   final String? note;
+
+  /// When the user reports the injury fully healed. Used for healing
+  /// tracking. NOT included in the clinical report by default — per F4
+  /// principle, reports show aggregations + current state, not historical
+  /// per-event detail. Visible only in the event's edit sheet.
+  final DateTime? resolvedAt;
+
+  /// Whether the area still hurts after `resolvedAt` was set. Most events
+  /// transition resolvedAt!=null && stillPainful==false (fully healed).
+  /// stillPainful==true with resolvedAt!=null means "the visible injury
+  /// closed but the pain stayed".
+  final bool stillPainful;
 
   StructuralEvent({
     String? id,
     required this.timestamp,
     required this.zone,
+    StructuralEventKind? kind,
     required this.type,
     this.note,
-  }) : id = id ?? _newId();
+    this.resolvedAt,
+    this.stillPainful = false,
+  })  : id = id ?? _newId(),
+        kind = kind ?? inferKindFromType(type);
 
-  StructuralEvent copyWith({DateTime? timestamp, String? type, String? note}) {
+  bool get isResolved => resolvedAt != null;
+
+  StructuralEvent copyWith({
+    DateTime? timestamp,
+    StructuralEventKind? kind,
+    String? type,
+    String? note,
+    DateTime? resolvedAt,
+    bool clearResolvedAt = false,
+    bool? stillPainful,
+  }) {
     return StructuralEvent(
       id: id,
       timestamp: timestamp ?? this.timestamp,
       zone: zone,
+      kind: kind ?? this.kind,
       type: type ?? this.type,
       note: note ?? this.note,
+      resolvedAt: clearResolvedAt ? null : (resolvedAt ?? this.resolvedAt),
+      stillPainful: stillPainful ?? this.stillPainful,
     );
   }
 
@@ -299,16 +606,27 @@ class StructuralEvent {
         'id': id,
         'timestamp': timestamp.toIso8601String(),
         'zone': zone,
+        'kind': kind.name,
         'type': type,
         'note': note,
+        'resolvedAt': resolvedAt?.toIso8601String(),
+        'stillPainful': stillPainful,
       };
 
+  /// F6.a: applies silent migrations for both `zone` and `type` strings.
+  /// Legacy Spanish events ("Cervicales", "Subluxación", etc.) are converted
+  /// to stable IDs on read; unknown values pass through unchanged.
   factory StructuralEvent.fromMap(Map<String, dynamic> map) => StructuralEvent(
         id: map['id'],
         timestamp: DateTime.parse(map['timestamp']),
-        zone: map['zone'],
-        type: map['type'],
+        zone: _migrateZoneId(map['zone'] as String),
+        kind: StructuralEventKind.parse(map['kind'] as String?),
+        type: _migrateStructuralTypeId(map['type'] as String),
         note: map['note'] as String?,
+        resolvedAt: map['resolvedAt'] != null
+            ? DateTime.parse(map['resolvedAt'] as String)
+            : null,
+        stillPainful: map['stillPainful'] as bool? ?? false,
       );
 }
 
@@ -879,6 +1197,12 @@ class Profile {
   // PHASE 5.2d — fever readings (schema v3, additive)
   List<FeverReading> feverHistory;
 
+  /// Sleep/Hydration/HRV-style optional trackers. Keys are stable IDs
+  /// ('sleep', 'hydration', 'hrv', etc.). All OFF by default; user
+  /// activates per-module in settings. Additive field — empty map for
+  /// pre-F6.a exports. Extensible without schema bumps.
+  Map<String, bool> optionalTrackers;
+
   // Weather
   double? homeLatitude;
   double? homeLongitude;
@@ -920,7 +1244,9 @@ class Profile {
     List<HrvReading>? hrv,
     List<MovementMetric>? movement,
     List<FeverReading>? fever,
-  })  : medicationGroups = medicationGroups ?? <MedicationGroup>[],
+    Map<String, bool>? optionalTrackers,
+  })  : optionalTrackers = optionalTrackers ?? <String, bool>{},
+        medicationGroups = medicationGroups ?? <MedicationGroup>[],
         symptomHistory = symptoms ?? <SymptomEvent>[],
         doseHistory = doses ?? <DoseEvent>[],
         structuralHistory = structural ?? <StructuralEvent>[],
@@ -1034,6 +1360,26 @@ class Profile {
   // PHASE 5.2d — fever day-query helper
   List<FeverReading> getFeverForDay(DateTime date) =>
       feverHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  // Sleep day-query helper. SleepEntry uses `dateKey` (YYYY-MM-DD of the
+  // waking day) rather than raw timestamp matching, so we compare on
+  // that field — an entry logged Monday morning carries Monday's
+  // dateKey and refers to Sunday-night → Monday-morning sleep.
+  List<SleepEntry> getSleepForDay(DateTime date) {
+    final dk = "${date.year}-"
+        "${date.month.toString().padLeft(2, '0')}-"
+        "${date.day.toString().padLeft(2, '0')}";
+    return sleepHistory.where((e) => e.dateKey == dk).toList();
+  }
+
+  // F6.b: Hydration day-query helper. Uses raw timestamp matching since
+  // hydration entries are point-in-time events (not "for a night").
+  List<HydrationEntry> getHydrationForDay(DateTime date) =>
+      hydrationHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  // F6.b: HRV day-query helper. Same pattern as hydration.
+  List<HrvReading> getHrvForDay(DateTime date) =>
+      hrvHistory.where((e) => _sameDay(e.timestamp, date)).toList();
 
   /// Days since the most recent bowel event, computed from `bowelHistory`.
   ///
@@ -1216,6 +1562,7 @@ class Profile {
         'hrvHistory': hrvHistory.map((x) => x.toMap()).toList(),
         'movementHistory': movementHistory.map((x) => x.toMap()).toList(),
         'feverHistory': feverHistory.map((x) => x.toMap()).toList(),
+        'optionalTrackers': optionalTrackers,
       };
 
   factory Profile.fromMap(Map<String, dynamic> map) => Profile(
@@ -1300,6 +1647,9 @@ class Profile {
         fever: List<FeverReading>.from(
           (map['feverHistory'] ?? const []).map(
               (x) => FeverReading.fromMap(Map<String, dynamic>.from(x as Map))),
+        ),
+        optionalTrackers: Map<String, bool>.from(
+          (map['optionalTrackers'] as Map?) ?? const {},
         ),
       );
 }
@@ -1900,8 +2250,11 @@ enum SleepQuality {
   veryGood(4, 'muy bien');
 
   final int value;
-  final String label;
-  const SleepQuality(this.value, this.label);
+  /// Spanish fallback (LatAm neutral). For user-facing localized labels,
+  /// use SleepQualityLocalization.label(l10n) from
+  /// lib/widgets/sleep_form_sheet.dart.
+  final String defaultLabel;
+  const SleepQuality(this.value, this.defaultLabel);
 
   static SleepQuality? parse(String? raw) {
     if (raw == null) return null;
@@ -2005,8 +2358,10 @@ enum HydrationBeverage {
   coffee('café'),
   other('otro');
 
-  final String label;
-  const HydrationBeverage(this.label);
+  /// Spanish fallback. Use HydrationBeverageLocalization.label(l10n) from
+  /// lib/widgets/hydration_form_sheet.dart for the i18n version.
+  final String defaultLabel;
+  const HydrationBeverage(this.defaultLabel);
 
   static HydrationBeverage? parse(String? raw) {
     if (raw == null) return null;
@@ -2024,8 +2379,10 @@ enum SodiumSource {
   sachet('sobre de electrolitos'),
   saltySnack('snack salado');
 
-  final String label;
-  const SodiumSource(this.label);
+  /// Spanish fallback. Use SodiumSourceLocalization.label(l10n) from
+  /// lib/widgets/hydration_form_sheet.dart for the i18n version.
+  final String defaultLabel;
+  const SodiumSource(this.defaultLabel);
 
   static SodiumSource? parse(String? raw) {
     if (raw == null) return null;
@@ -2103,8 +2460,10 @@ enum HrvContext {
   postExercise('post-ejercicio'),
   other('otro');
 
-  final String label;
-  const HrvContext(this.label);
+  /// Spanish fallback. Use HrvContextLocalization.label(l10n) from
+  /// lib/widgets/hrv_form_sheet.dart for the i18n version.
+  final String defaultLabel;
+  const HrvContext(this.defaultLabel);
 
   static HrvContext? parse(String? raw) {
     if (raw == null) return null;
