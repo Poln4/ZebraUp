@@ -53,25 +53,9 @@ class HoyTab extends StatelessWidget {
   final Map<MoodQuadrant, List<EmaMood>> moodDictionary;
 
   final VoidCallback onTogglePacing;
-  final void Function(MentalState state, int severity, {DateTime? timestamp})
-      onLogMental;
-      
-  // ACTUALIZADO: Cambiamos intensity por notes
-  final void Function({
-    required MoodQuadrant primaryQuadrant,
-    required List<String> states,
-    String? notes, 
-  }) onLogMood;
-  
-  final void Function(MoodEntry) onDeleteMood;
-  final void Function(MedicationOutcome outcome,
-      {required int severityAfter, OutcomeReason? reason}) onAnswerOutcome;
-  final VoidCallback onChangeWisdom;
-
-  final bool showHint;
-  final VoidCallback onDismissHint;
-  // PHASE 5.2a — navigate to another tab (banner shortcut uses this).
-  final ValueChanged<int> onNavigate;
+  final void Function(MentalState state, int severity, {DateTime? timestamp}) onLogMental;
+  final void Function(MedicationOutcome outcome, MedicationOutcomeStatus status) onAnswerOutcome;
+  final VoidCallback onChangeWisdom; // <-- NUEVO: Función para cambiar la frase
 
   const HoyTab({
     super.key,
@@ -1400,18 +1384,5 @@ class _FeverChip extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _formatTimeAgo(Duration d, AppLocalizations l10n) {
-    if (d.inHours >= 1) return l10n.timeAgoHours(d.inHours);
-    return l10n.timeAgoMinutes(d.inMinutes.clamp(1, 59));
-  }
-
-  String _formatTrend(FeverTrend trend, double delta) {
-    return switch (trend) {
-      FeverTrend.rising => '↑${delta.toStringAsFixed(1)}',
-      FeverTrend.falling => '↓${delta.abs().toStringAsFixed(1)}',
-      FeverTrend.steady => '→',
-    };
   }
 }
