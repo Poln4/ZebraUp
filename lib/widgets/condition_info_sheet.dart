@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../services/medline_plus_service.dart';
+import '../services/vademecum_service.dart';
 
 void showConditionInfoSheet({
   required BuildContext context,
@@ -53,28 +53,41 @@ class _ConditionInfoSheetBodyState extends State<_ConditionInfoSheetBody> {
   }
 
   Future<void> _load() async {
-    final mapping = await widget.service.resolveCondition(widget.userCondition);
-    if (mapping == null) {
-      if (mounted) {
-        setState(() {
-          _loading = false;
-          _errorMessage = "No tenemos esta condición en nuestro mapa todavía. "
-              "Puedes buscarla manualmente en medlineplus.gov/spanish";
-        });
-      }
-      return;
+  final mapping = await widget.service.resolveCondition(widget.userCondition);
+  if (mapping == null) {
+    if (mounted) {
+      setState(() {
+        _loading = false;
+        _errorMessage = "No tenemos esta condición en nuestro mapa todavía. "
+            "Puedes buscarla manualmente en medlineplus.gov/spanish";
+      });
     }
-    final content = await widget.service.getContent(mapping.icd10);
-    if (!mounted) return;
-    setState(() {
-      _loading = false;
-      _content = content;
-      _resolvedLabel = mapping.label;
-      if (content == null) {
-        _errorMessage = "Sin conexión, o MedlinePlus no respondió. Intenta de nuevo.";
-      }
-    });
+    return;
   }
+  // c-PTSD u otros que solo existen en ICD-11 no tienen código que
+  // MedlinePlus pueda consultar.
+  if (mapping.icd10 == null) {
+    if (mounted) {
+      setState(() {
+        _loading = false;
+        _resolvedLabel = mapping.label;
+        _errorMessage = "Esta condición solo tiene código ICD-11. "
+            "Información en MedlinePlus no disponible.";
+      });
+    }
+    return;
+  }
+  final content = await widget.service.getContent(mapping.icd10!);
+  if (!mounted) return;
+  setState(() {
+    _loading = false;
+    _content = content;
+    _resolvedLabel = mapping.label;
+    if (content == null) {
+      _errorMessage = "Sin conexión, o MedlinePlus no respondió. Intenta de nuevo.";
+    }
+  });
+}
 
   @override
   Widget build(BuildContext context) {

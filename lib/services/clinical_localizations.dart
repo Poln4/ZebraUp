@@ -52,3 +52,66 @@ extension SymptomSeverityLocalization on SymptomSeverity {
         SymptomSeverity.unbearable => l10n.severityUnbearable,
       };
 }
+
+/// F5 — Locale-aware functional anchor for SymptomSeverity.
+///
+/// Returns a short patient-facing string describing what each severity
+/// level means functionally (e.g. "me obliga a bajar el ritmo o pausar"
+/// for moderate). The strings are universal across symptoms — they do
+/// not vary by symptom family.
+///
+/// Method name `severityFunctionalAnchor` is deliberately distinct from
+/// the existing `severityLabel` extension so both coexist on the
+/// SymptomSeverity enum without conflict.
+extension SymptomSeverityFunctionalAnchor on SymptomSeverity {
+  String severityFunctionalAnchor(AppLocalizations l10n) => switch (this) {
+        SymptomSeverity.none => l10n.severityFunctionalAnchorNone,
+        SymptomSeverity.mild => l10n.severityFunctionalAnchorMild,
+        SymptomSeverity.moderate => l10n.severityFunctionalAnchorModerate,
+        SymptomSeverity.intense => l10n.severityFunctionalAnchorIntense,
+        SymptomSeverity.unbearable => l10n.severityFunctionalAnchorUnbearable,
+      };
+}
+
+/// i18n Batch A.1 — Locale-aware label for OutcomeReason.
+///
+/// The enum's `.label` field (Spanish) stays as a fallback used by any
+/// older code paths that haven't migrated to passing AppLocalizations.
+extension OutcomeReasonLocalization on OutcomeReason {
+  String outcomeReasonLabel(AppLocalizations l10n) => switch (this) {
+        OutcomeReason.natural => l10n.outcomeReasonNatural,
+        OutcomeReason.medicationHelped => l10n.outcomeReasonMedicationHelped,
+        OutcomeReason.otherTrigger => l10n.outcomeReasonOtherTrigger,
+        OutcomeReason.additionalMed => l10n.outcomeReasonAdditionalMed,
+        OutcomeReason.unsure => l10n.outcomeReasonUnsure,
+      };
+}
+
+/// i18n Batch A.1 — Locale-aware label for BowelBucket.
+///
+/// Same fallback pattern as OutcomeReasonLocalization above.
+extension BowelBucketLocalization on BowelBucket {
+  String bowelBucketLabel(AppLocalizations l10n) => switch (this) {
+        BowelBucket.constipation => l10n.bowelBucketConstipation,
+        BowelBucket.normal => l10n.bowelBucketNormal,
+        BowelBucket.diarrhea => l10n.bowelBucketDiarrhea,
+      };
+}
+
+/// i18n Batch A.1 — Locale-aware coarse-label for MedicationOutcome.
+///
+/// Method name is `medicationOutcomeCoarseLabel`, NOT `coarseLabel`,
+/// because Dart does not allow an extension method to share its name
+/// with an existing class member (the original getter `coarseLabel`
+/// on MedicationOutcome stays intact as a Spanish fallback).
+extension MedicationOutcomeLocalization on MedicationOutcome {
+  String medicationOutcomeCoarseLabel(AppLocalizations l10n) {
+    final d = delta;
+    if (d == null) return l10n.medicationOutcomeCoarsePending;
+    if (d <= -2) return l10n.medicationOutcomeCoarseMuchBetter;
+    if (d == -1) return l10n.medicationOutcomeCoarseBetter;
+    if (d == 0) return l10n.medicationOutcomeCoarseSame;
+    if (d == 1) return l10n.medicationOutcomeCoarseWorse;
+    return l10n.medicationOutcomeCoarseMuchWorse;
+  }
+}

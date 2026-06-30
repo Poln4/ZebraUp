@@ -375,7 +375,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bowelBucketNormal => '正常';
 
   @override
-  String get bowelBucketDiarrea => '腹瀉';
+  String get bowelBucketDiarrhea => '腹瀉';
 
   @override
   String get sleepQualityBad => '差';
@@ -1363,6 +1363,683 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get settingsCarefulModeDescription =>
       '減少視覺干擾：所有區塊預設為摺疊狀態。點擊標題區塊即可展開您想查看的內容。';
+
+  @override
+  String get drugKindMedication => '藥物';
+
+  @override
+  String get drugKindSupplement => '保健食品';
+
+  @override
+  String get drugKindHerbal => '草藥產品';
+
+  @override
+  String get drugInteractionsInBotiquinHeader => '您藥箱中的交互作用';
+
+  @override
+  String get drugInteractionSeverityHigh => '高';
+
+  @override
+  String get drugInteractionSeverityMedium => '中';
+
+  @override
+  String get drugInteractionSeverityLow => '低';
+
+  @override
+  String get drugNoContentSupplement =>
+      '保健食品 — 未作為藥物受到管制。在與其他治療方法結合使用前，請諮詢您的醫療團隊。';
+
+  @override
+  String get drugNoContentHerbal => '草藥產品 — 臨床證據有限。在與其他治療方法結合使用前，請諮詢您的醫療團隊。';
+
+  @override
+  String drugNoContentMedlineEmpty(String rxcui) {
+    return 'MedlinePlus 未返回此藥物的資訊 (RxCUI $rxcui)。這可能是暫時性問題，或是該資料庫中沒有此代碼的內容。';
+  }
+
+  @override
+  String get drugNoContentUnmapped =>
+      '我們尚無此產品的詳細資訊。您可以手動在 medlineplus.gov 上搜尋。';
+
+  @override
+  String get drugNoContentGeneric => '無法載入資訊。';
+
+  @override
+  String get drugReadMoreMedlinePlus => '在 MedlinePlus 上閱讀更多';
+
+  @override
+  String get drugBrowserOpenError => '無法開啟瀏覽器。請檢查您的網路連線。';
+
+  @override
+  String get drugConfidenceMediumWarning => '中等信賴度映射 — 如果資訊與您的藥物不符，請與您的醫療團隊核實。';
+
+  @override
+  String get drugSourceLocalCurated => '來源：為此應用程式在地整理的臨床資訊。不能取代醫療建議。';
+
+  @override
+  String get drugSourceMedlinePlus => '來源：MedlinePlus，美國國家醫學圖書館。不能取代醫療建議。';
+
+  @override
+  String get drugSourceNoInfo => '我們的來源中沒有可用的臨床資訊。';
+
+  @override
+  String get drugLoadError => '無法載入資訊。';
+
+  @override
+  String get moodQuadrantActivatedUnpleasant => '活躍 · 不快';
+
+  @override
+  String get moodQuadrantActivatedPleasant => '活躍 · 愉悅';
+
+  @override
+  String get moodQuadrantCalmUnpleasant => '平靜 · 不快';
+
+  @override
+  String get moodQuadrantCalmPleasant => '平靜 · 愉悅';
+
+  @override
+  String get moodTeaserActivatedUnpleasant => '緊張、焦慮';
+
+  @override
+  String get moodTeaserActivatedPleasant => '活力、喜悅';
+
+  @override
+  String get moodTeaserCalmUnpleasant => '疲憊、悲傷';
+
+  @override
+  String get moodTeaserCalmPleasant => '寧靜、平和';
+
+  @override
+  String get moodSheetStep1Title => '你感覺如何？';
+
+  @override
+  String get moodSheetCancel => '取消';
+
+  @override
+  String get moodSheetStep2Prompt => '我感覺如何？';
+
+  @override
+  String get moodSheetChangeQuadrant => '切換象限';
+
+  @override
+  String get moodSheetAlsoFeelingHeader => '我也感覺到…';
+
+  @override
+  String get moodSheetNotesHeader => '情境（選填）';
+
+  @override
+  String get moodSheetNotesPlaceholder => '例如：腦霧嚴重的一天…';
+
+  @override
+  String get moodSheetSaveButton => '儲存紀錄';
+
+  @override
+  String get moodDefinitionDialogAction => '了解';
+
+  @override
+  String get moodSectionTitle => '我的狀態';
+
+  @override
+  String get moodSectionPrompt => '你感覺如何？';
+
+  @override
+  String get moodSectionRegisterAnother => '記錄其他狀態';
+
+  @override
+  String get severityFunctionalAnchorNone => '我沒有感覺';
+
+  @override
+  String get severityFunctionalAnchorMild => '有感覺,但不影響我';
+
+  @override
+  String get severityFunctionalAnchorModerate => '讓我必須放慢或暫停';
+
+  @override
+  String get severityFunctionalAnchorIntense => '無法完成原本的計畫';
+
+  @override
+  String get severityFunctionalAnchorUnbearable => '無法正常運作,必須停下來';
+
+  @override
+  String get outcomeReasonNatural => '症狀的自然變化';
+
+  @override
+  String get outcomeReasonMedicationHelped => '我認為這個藥物有幫助';
+
+  @override
+  String get outcomeReasonOtherTrigger => '其他誘因(食物、壓力、天氣等)';
+
+  @override
+  String get outcomeReasonAdditionalMed => '我也服用了其他藥物';
+
+  @override
+  String get outcomeReasonUnsure => '我不確定';
+
+  @override
+  String get medicationOutcomeCoarsePending => '待回答';
+
+  @override
+  String get medicationOutcomeCoarseMuchBetter => '好很多';
+
+  @override
+  String get medicationOutcomeCoarseBetter => '比較好';
+
+  @override
+  String get medicationOutcomeCoarseSame => '一樣';
+
+  @override
+  String get medicationOutcomeCoarseWorse => '比較差';
+
+  @override
+  String get medicationOutcomeCoarseMuchWorse => '差很多';
+
+  @override
+  String get bowelFormTitleNew => '記錄排便';
+
+  @override
+  String get bowelFormTitleEdit => '編輯排便記錄';
+
+  @override
+  String get bowelFormBristolLabel => '布里斯托類型';
+
+  @override
+  String bowelFormBristolLegendTemplate(
+    String constipation,
+    String normal,
+    String diarrhea,
+  ) {
+    return '1-2:$constipation  ·  3-5:$normal  ·  6-7:$diarrhea';
+  }
+
+  @override
+  String get bowelFormHideBristolDetail => '隱藏細節';
+
+  @override
+  String get bowelFormShowBristolDetail => '更多細節(布里斯托量表)';
+
+  @override
+  String get bowelFormSectionObservations => '觀察';
+
+  @override
+  String get bowelFormToggleUrgency => '急迫感';
+
+  @override
+  String get bowelFormToggleIncompleteEvacuation => '排便不完全';
+
+  @override
+  String get bowelFormNoteHint => '選填備註(情境、誘因等)';
+
+  @override
+  String get hemorrhoidalFormTitleNew => '記錄痔瘡';
+
+  @override
+  String get hemorrhoidalFormTitleEdit => '編輯痔瘡記錄';
+
+  @override
+  String get hemorrhoidalFormNoteHint => '選填備註';
+
+  @override
+  String get formSectionHeaderDiscomfort => '不適';
+
+  @override
+  String get formToggleBleeding => '出血';
+
+  @override
+  String get formButtonSave => '儲存';
+
+  @override
+  String get structuralFormFollowupHeader => '追蹤';
+
+  @override
+  String get structuralFormFollowupResolvedQuestion => '已經痊癒了嗎?';
+
+  @override
+  String structuralFormFollowupResolvedDateTemplate(String date) {
+    return '$date 痊癒';
+  }
+
+  @override
+  String get structuralFormFollowupStillPainfulQuestion => '還在痛嗎?';
+
+  @override
+  String get structuralFormFollowupStillPainfulSubtitle => '外觀已癒合但仍會疼痛';
+
+  @override
+  String bowelLogBristolTypeTemplate(int type) {
+    return '類型 $type';
+  }
+
+  @override
+  String get bowelLogTagUrgency => '急迫';
+
+  @override
+  String get bowelLogTagBleeding => '出血';
+
+  @override
+  String get bowelLogTagIncomplete => '不完全';
+
+  @override
+  String get hemorrhoidalLogLabel => '痔瘡';
+
+  @override
+  String get hemorrhoidalLogTagBleeding => '出血';
+
+  @override
+  String get symptomLogTagUnrated => '未評分';
+
+  @override
+  String get hoySectionPendingHeader => '待處理';
+
+  @override
+  String get hoyOutcomeForYour => '用於你的';
+
+  @override
+  String get hoyOutcomeHideReasons => '隱藏';
+
+  @override
+  String get hoyBowelCounterToday => '上次排便:今天';
+
+  @override
+  String get hoyBowelCounterYesterday => '上次排便:昨天';
+
+  @override
+  String hoyBowelCounterDaysAgoTemplate(int days) {
+    return '上次排便:$days 天前';
+  }
+
+  @override
+  String get hoyNarrativeEmptyPacing => '🛡️ 休息日。今天還沒記錄任何事 — 沒關係。';
+
+  @override
+  String get hoyNarrativeEmpty => '今天還沒記錄任何事。一切還好嗎?';
+
+  @override
+  String hoyNarrativeSymptomsSingleTemplate(String name, String severity) {
+    return '記錄了 1 個症狀:$name($severity)。';
+  }
+
+  @override
+  String hoyNarrativeSymptomsManyTemplate(
+    int count,
+    String name,
+    String severity,
+  ) {
+    return '記錄了 $count 個症狀 — 最嚴重的是 $name($severity)。';
+  }
+
+  @override
+  String hoyNarrativeStructuralSingleTemplate(String zone) {
+    return '在$zone有 1 個結構性事件。';
+  }
+
+  @override
+  String hoyNarrativeStructuralManyTemplate(int count) {
+    return '今天有 $count 個結構性事件。';
+  }
+
+  @override
+  String hoyNarrativeDosesSingleTemplate(String meds) {
+    return '用了 1 劑:$meds。';
+  }
+
+  @override
+  String hoyNarrativeDosesManyTemplate(int count, String meds) {
+    return '服用了 $count 劑:$meds。';
+  }
+
+  @override
+  String hoyNarrativeDosesAndMore(int count) {
+    return ',還有 $count 項';
+  }
+
+  @override
+  String hoyNarrativeEmaStatesTemplate(String states) {
+    return '記錄的狀態與感受:$states。';
+  }
+
+  @override
+  String get hoyNarrativeEmaStatesEllipsis => '...';
+
+  @override
+  String get hoyNarrativePacingTrailer => '🛡️ 你允許自己休息。這也算數。';
+
+  @override
+  String get hoyHeaderDatePattern => 'M月d日 EEEE';
+
+  @override
+  String movementModalTitleRegisterTemplate(String name) {
+    return '記錄: $name';
+  }
+
+  @override
+  String movementModalTitleEditTemplate(String name) {
+    return '編輯: $name';
+  }
+
+  @override
+  String get movementModalHintDuration => '時長(分鐘)';
+
+  @override
+  String get movementModalHintSets => '組數';
+
+  @override
+  String get movementModalHintReps => '次數';
+
+  @override
+  String get movementModalHintHeartRate => '心率(選填,例:70→110)';
+
+  @override
+  String movementModalEffortLabelTemplate(int value) {
+    return '費力程度:$value/10';
+  }
+
+  @override
+  String movementModalFeelingLabelTemplate(int value) {
+    return '感受:$value/5';
+  }
+
+  @override
+  String get movementFeelingPainOrInjury => '🤕 疼痛/受傷';
+
+  @override
+  String get movementFeelingUncomfortable => '😟 不舒服/擔心';
+
+  @override
+  String get movementFeelingNeutral => '😐 普通';
+
+  @override
+  String get movementFeelingRelaxed => '😊 放鬆';
+
+  @override
+  String get movementFeelingStrongConfident => '💪 強壯有信心';
+
+  @override
+  String get movementPainLevelNone => '無';
+
+  @override
+  String get movementPainLevelMild => '輕微';
+
+  @override
+  String get movementPainLevelModerate => '中等';
+
+  @override
+  String get movementPainLevelIntense => '強烈';
+
+  @override
+  String get movementPainLevelSevere => '嚴重';
+
+  @override
+  String movementPainDeltaImprovedTemplate(int delta) {
+    String _temp0 = intl.Intl.pluralLogic(
+      delta,
+      locale: localeName,
+      other: '$delta 級',
+    );
+    return '改善了 $_temp0';
+  }
+
+  @override
+  String movementPainDeltaWorseTemplate(int delta) {
+    String _temp0 = intl.Intl.pluralLogic(
+      delta,
+      locale: localeName,
+      other: '$delta 級',
+    );
+    return '惡化了 $_temp0';
+  }
+
+  @override
+  String get movementPainDeltaUnchanged => '沒有變化';
+
+  @override
+  String movementLogEntryEffortTemplate(int value) {
+    return '費力 $value/10';
+  }
+
+  @override
+  String movementLogEntryFeelingTemplate(int value) {
+    return '感受 $value/5';
+  }
+
+  @override
+  String movementLogEntryDeltaImprovedTemplate(int delta) {
+    return '↓$delta 級';
+  }
+
+  @override
+  String movementLogEntryDeltaWorseTemplate(int delta) {
+    return '↑$delta 級';
+  }
+
+  @override
+  String get movementLogEntryDeltaUnchanged => '無變化';
+
+  @override
+  String get movementLogEntryTherapyDeltaSteady => '=';
+
+  @override
+  String get appBarTooltipFontSize => '字體大小';
+
+  @override
+  String get appBarTooltipDarkMode => '深色模式';
+
+  @override
+  String get appBarTooltipLightMode => '淺色模式';
+
+  @override
+  String get appBarTooltipSettings => '設定';
+
+  @override
+  String get actionDelete => '刪除';
+
+  @override
+  String get settingsProfileConfigTitle => '個人檔案設定';
+
+  @override
+  String get settingsMyDataTitle => '我的資料';
+
+  @override
+  String get settingsPatientNameLabel => '患者姓名';
+
+  @override
+  String get settingsConditionsLabel => '共病/診斷';
+
+  @override
+  String get settingsRelationshipLabel => '與此檔案的關係';
+
+  @override
+  String get settingsLifeEventsLabel => '生活事件';
+
+  @override
+  String get settingsLocationLabel => '我的位置(用於天氣)';
+
+  @override
+  String get settingsConditionsHelper => '點 × 移除一項條件。若要閱讀說明,請前往 臨床→指南。';
+
+  @override
+  String get settingsRelationshipHelper => '此檔案是給誰使用的?如果你在為照顧的人記錄,這很實用。';
+
+  @override
+  String get settingsLifeEventsHelper =>
+      '可能影響你身體或心情的事件:旅行、意外、搬家、好的或有壓力的事件。它們會在日曆上顯示為紫色圓點。';
+
+  @override
+  String get settingsDataHelper => '你有權隨時存取、匯出、匯入或刪除你的資料。';
+
+  @override
+  String get settingsWipeAllHelper => '此操作會刪除所有檔案、記錄和設定。無法復原。';
+
+  @override
+  String get settingsRelationshipSelf => '我自己';
+
+  @override
+  String get settingsRelationshipChild => '我的小孩';
+
+  @override
+  String get settingsRelationshipPartner => '我的伴侶';
+
+  @override
+  String get settingsRelationshipParent => '我的父母';
+
+  @override
+  String get settingsRelationshipOther => '其他';
+
+  @override
+  String get settingsRelationshipNone => '— 未指定 —';
+
+  @override
+  String get settingsLifeEventsEmpty => '還沒有記錄任何事件。';
+
+  @override
+  String get settingsAddEventButton => '新增事件';
+
+  @override
+  String get settingsLocationNone => '未設定位置。點此新增。';
+
+  @override
+  String get settingsLocationButtonAdd => '新增座標';
+
+  @override
+  String get settingsLocationButtonEdit => '編輯座標';
+
+  @override
+  String get settingsAddProfileButton => '新增個人檔案';
+
+  @override
+  String get settingsDeleteProfileButton => '刪除此個人檔案';
+
+  @override
+  String get settingsExportDataButton => '匯出我的資料';
+
+  @override
+  String get settingsWipeAllButton => '全部刪除';
+
+  @override
+  String settingsNewProfileNameTemplate(int number) {
+    return '新檔案 $number';
+  }
+
+  @override
+  String get dialogWipeTitle => '刪除所有資料';
+
+  @override
+  String get dialogWipeContent => '此操作會刪除所有個人檔案、記錄、設定和快取。無法復原。\n\n要先匯出嗎?';
+
+  @override
+  String get dialogWipeFinalTitle => '最後確認';
+
+  @override
+  String dialogWipeFinalContentTemplate(String magicWord) {
+    return '輸入 $magicWord 以確認。';
+  }
+
+  @override
+  String get dialogWipeFinalMagicWord => '刪除';
+
+  @override
+  String get dialogWipeFinalButton => '全部刪除';
+
+  @override
+  String get dialogDeleteProfileTitle => '刪除個人檔案';
+
+  @override
+  String dialogDeleteProfileContentTemplate(String name) {
+    return '確定要刪除個人檔案「$name」以及所有相關資料?此操作無法復原。';
+  }
+
+  @override
+  String get dialogLocationTitle => '你的位置';
+
+  @override
+  String get dialogLocationContent =>
+      '需要緯度和經度才能取得天氣資訊。在 Google 地圖找到你的城市,右鍵→複製座標。';
+
+  @override
+  String get dialogLocationHintLat => '緯度(例: -34.61)';
+
+  @override
+  String get dialogLocationHintLng => '經度(例: -58.38)';
+
+  @override
+  String get dialogLocationInvalidSnack => '座標無效。';
+
+  @override
+  String get therapyHintArea => '部位(例:頸部)';
+
+  @override
+  String get therapySectionPainBefore => '治療前疼痛';
+
+  @override
+  String get therapySectionPainAfter => '治療後疼痛';
+
+  @override
+  String get therapyActionMoreDetails => '多細節(治療師、費用、備註)';
+
+  @override
+  String get therapyHintTherapist => '治療師/地點(選填)';
+
+  @override
+  String get therapyHintCost => '費用(選填)';
+
+  @override
+  String get therapyHintNote => '備註(選填)';
+
+  @override
+  String get therapyActionSaveChanges => '儲存變更';
+
+  @override
+  String get therapyActionLog => '記錄';
+
+  @override
+  String get compendiumSectionConditionsHeader => '我的疾病';
+
+  @override
+  String get compendiumSectionConditionsSubtitle =>
+      '點一個閱讀臨床資訊(來源:MedlinePlus)。';
+
+  @override
+  String compendiumSavedArticlesTemplate(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已儲存 $count 篇文章',
+    );
+    return '$_temp0 — 前往研究。';
+  }
+
+  @override
+  String get compendiumSectionDataTitle => '臨床資料';
+
+  @override
+  String get compendiumFactSourceLabel => '來源:';
+
+  @override
+  String investigationConditionArticleCountTemplate(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 篇文章',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get headacheSheetTitle => '頭痛詳細資料';
+
+  @override
+  String get headacheSheetSubtitle => '標記適用的項目。如果你願意,可以跳過此步驟。';
+
+  @override
+  String get actionSkip => '跳過';
+
+  @override
+  String get headacheActionSaveDetail => '儲存詳細資料';
+
+  @override
+  String get headacheThunderclapWarningTitle => '可能的緊急情況';
+
+  @override
+  String get headacheThunderclapWarningConfirm => '我了解,繼續';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -1736,7 +2413,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get bowelBucketNormal => '正常';
 
   @override
-  String get bowelBucketDiarrea => '腹瀉';
+  String get bowelBucketDiarrhea => '腹瀉';
 
   @override
   String get sleepQualityBad => '差';
@@ -2724,4 +3401,681 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get settingsCarefulModeDescription =>
       '減少視覺干擾：所有區塊預設為摺疊狀態。點擊標題區塊即可展開您想查看的內容。';
+
+  @override
+  String get drugKindMedication => '藥物';
+
+  @override
+  String get drugKindSupplement => '保健食品';
+
+  @override
+  String get drugKindHerbal => '草藥產品';
+
+  @override
+  String get drugInteractionsInBotiquinHeader => '您藥箱中的交互作用';
+
+  @override
+  String get drugInteractionSeverityHigh => '高';
+
+  @override
+  String get drugInteractionSeverityMedium => '中';
+
+  @override
+  String get drugInteractionSeverityLow => '低';
+
+  @override
+  String get drugNoContentSupplement =>
+      '保健食品 — 未作為藥物受到管制。在與其他治療方法結合使用前，請諮詢您的醫療團隊。';
+
+  @override
+  String get drugNoContentHerbal => '草藥產品 — 臨床證據有限。在與其他治療方法結合使用前，請諮詢您的醫療團隊。';
+
+  @override
+  String drugNoContentMedlineEmpty(String rxcui) {
+    return 'MedlinePlus 未返回此藥物的資訊 (RxCUI $rxcui)。這可能是暫時性問題，或是該資料庫中沒有此代碼的內容。';
+  }
+
+  @override
+  String get drugNoContentUnmapped =>
+      '我們尚無此產品的詳細資訊。您可以手動在 medlineplus.gov 上搜尋。';
+
+  @override
+  String get drugNoContentGeneric => '無法載入資訊。';
+
+  @override
+  String get drugReadMoreMedlinePlus => '在 MedlinePlus 上閱讀更多';
+
+  @override
+  String get drugBrowserOpenError => '無法開啟瀏覽器。請檢查您的網路連線。';
+
+  @override
+  String get drugConfidenceMediumWarning => '中等信賴度映射 — 如果資訊與您的藥物不符，請與您的醫療團隊核實。';
+
+  @override
+  String get drugSourceLocalCurated => '來源：為此應用程式在地整理的臨床資訊。不能取代醫療建議。';
+
+  @override
+  String get drugSourceMedlinePlus => '來源：MedlinePlus，美國國家醫學圖書館。不能取代醫療建議。';
+
+  @override
+  String get drugSourceNoInfo => '我們的來源中沒有可用的臨床資訊。';
+
+  @override
+  String get drugLoadError => '無法載入資訊。';
+
+  @override
+  String get moodQuadrantActivatedUnpleasant => '活躍 · 不快';
+
+  @override
+  String get moodQuadrantActivatedPleasant => '活躍 · 愉悅';
+
+  @override
+  String get moodQuadrantCalmUnpleasant => '平靜 · 不快';
+
+  @override
+  String get moodQuadrantCalmPleasant => '平靜 · 愉悅';
+
+  @override
+  String get moodTeaserActivatedUnpleasant => '緊張、焦慮';
+
+  @override
+  String get moodTeaserActivatedPleasant => '活力、喜悅';
+
+  @override
+  String get moodTeaserCalmUnpleasant => '疲憊、悲傷';
+
+  @override
+  String get moodTeaserCalmPleasant => '寧靜、平和';
+
+  @override
+  String get moodSheetStep1Title => '你感覺如何？';
+
+  @override
+  String get moodSheetCancel => '取消';
+
+  @override
+  String get moodSheetStep2Prompt => '我感覺如何？';
+
+  @override
+  String get moodSheetChangeQuadrant => '切換象限';
+
+  @override
+  String get moodSheetAlsoFeelingHeader => '我也感覺到…';
+
+  @override
+  String get moodSheetNotesHeader => '情境（選填）';
+
+  @override
+  String get moodSheetNotesPlaceholder => '例如：腦霧嚴重的一天…';
+
+  @override
+  String get moodSheetSaveButton => '儲存紀錄';
+
+  @override
+  String get moodDefinitionDialogAction => '了解';
+
+  @override
+  String get moodSectionTitle => '我的狀態';
+
+  @override
+  String get moodSectionPrompt => '你感覺如何？';
+
+  @override
+  String get moodSectionRegisterAnother => '記錄其他狀態';
+
+  @override
+  String get severityFunctionalAnchorNone => '我沒有感覺';
+
+  @override
+  String get severityFunctionalAnchorMild => '有感覺,但不影響我';
+
+  @override
+  String get severityFunctionalAnchorModerate => '讓我必須放慢或暫停';
+
+  @override
+  String get severityFunctionalAnchorIntense => '無法完成原本的計畫';
+
+  @override
+  String get severityFunctionalAnchorUnbearable => '無法正常運作,必須停下來';
+
+  @override
+  String get outcomeReasonNatural => '症狀的自然變化';
+
+  @override
+  String get outcomeReasonMedicationHelped => '我認為這個藥物有幫助';
+
+  @override
+  String get outcomeReasonOtherTrigger => '其他誘因(食物、壓力、天氣等)';
+
+  @override
+  String get outcomeReasonAdditionalMed => '我也服用了其他藥物';
+
+  @override
+  String get outcomeReasonUnsure => '我不確定';
+
+  @override
+  String get medicationOutcomeCoarsePending => '待回答';
+
+  @override
+  String get medicationOutcomeCoarseMuchBetter => '好很多';
+
+  @override
+  String get medicationOutcomeCoarseBetter => '比較好';
+
+  @override
+  String get medicationOutcomeCoarseSame => '一樣';
+
+  @override
+  String get medicationOutcomeCoarseWorse => '比較差';
+
+  @override
+  String get medicationOutcomeCoarseMuchWorse => '差很多';
+
+  @override
+  String get bowelFormTitleNew => '記錄排便';
+
+  @override
+  String get bowelFormTitleEdit => '編輯排便記錄';
+
+  @override
+  String get bowelFormBristolLabel => '布里斯托類型';
+
+  @override
+  String bowelFormBristolLegendTemplate(
+    String constipation,
+    String normal,
+    String diarrhea,
+  ) {
+    return '1-2:$constipation  ·  3-5:$normal  ·  6-7:$diarrhea';
+  }
+
+  @override
+  String get bowelFormHideBristolDetail => '隱藏細節';
+
+  @override
+  String get bowelFormShowBristolDetail => '更多細節(布里斯托量表)';
+
+  @override
+  String get bowelFormSectionObservations => '觀察';
+
+  @override
+  String get bowelFormToggleUrgency => '急迫感';
+
+  @override
+  String get bowelFormToggleIncompleteEvacuation => '排便不完全';
+
+  @override
+  String get bowelFormNoteHint => '選填備註(情境、誘因等)';
+
+  @override
+  String get hemorrhoidalFormTitleNew => '記錄痔瘡';
+
+  @override
+  String get hemorrhoidalFormTitleEdit => '編輯痔瘡記錄';
+
+  @override
+  String get hemorrhoidalFormNoteHint => '選填備註';
+
+  @override
+  String get formSectionHeaderDiscomfort => '不適';
+
+  @override
+  String get formToggleBleeding => '出血';
+
+  @override
+  String get formButtonSave => '儲存';
+
+  @override
+  String get structuralFormFollowupHeader => '追蹤';
+
+  @override
+  String get structuralFormFollowupResolvedQuestion => '已經痊癒了嗎?';
+
+  @override
+  String structuralFormFollowupResolvedDateTemplate(String date) {
+    return '$date 痊癒';
+  }
+
+  @override
+  String get structuralFormFollowupStillPainfulQuestion => '還在痛嗎?';
+
+  @override
+  String get structuralFormFollowupStillPainfulSubtitle => '外觀已癒合但仍會疼痛';
+
+  @override
+  String bowelLogBristolTypeTemplate(int type) {
+    return '類型 $type';
+  }
+
+  @override
+  String get bowelLogTagUrgency => '急迫';
+
+  @override
+  String get bowelLogTagBleeding => '出血';
+
+  @override
+  String get bowelLogTagIncomplete => '不完全';
+
+  @override
+  String get hemorrhoidalLogLabel => '痔瘡';
+
+  @override
+  String get hemorrhoidalLogTagBleeding => '出血';
+
+  @override
+  String get symptomLogTagUnrated => '未評分';
+
+  @override
+  String get hoySectionPendingHeader => '待處理';
+
+  @override
+  String get hoyOutcomeForYour => '用於你的';
+
+  @override
+  String get hoyOutcomeHideReasons => '隱藏';
+
+  @override
+  String get hoyBowelCounterToday => '上次排便:今天';
+
+  @override
+  String get hoyBowelCounterYesterday => '上次排便:昨天';
+
+  @override
+  String hoyBowelCounterDaysAgoTemplate(int days) {
+    return '上次排便:$days 天前';
+  }
+
+  @override
+  String get hoyNarrativeEmptyPacing => '🛡️ 休息日。今天還沒記錄任何事 — 沒關係。';
+
+  @override
+  String get hoyNarrativeEmpty => '今天還沒記錄任何事。一切還好嗎?';
+
+  @override
+  String hoyNarrativeSymptomsSingleTemplate(String name, String severity) {
+    return '記錄了 1 個症狀:$name($severity)。';
+  }
+
+  @override
+  String hoyNarrativeSymptomsManyTemplate(
+    int count,
+    String name,
+    String severity,
+  ) {
+    return '記錄了 $count 個症狀 — 最嚴重的是 $name($severity)。';
+  }
+
+  @override
+  String hoyNarrativeStructuralSingleTemplate(String zone) {
+    return '在$zone有 1 個結構性事件。';
+  }
+
+  @override
+  String hoyNarrativeStructuralManyTemplate(int count) {
+    return '今天有 $count 個結構性事件。';
+  }
+
+  @override
+  String hoyNarrativeDosesSingleTemplate(String meds) {
+    return '用了 1 劑:$meds。';
+  }
+
+  @override
+  String hoyNarrativeDosesManyTemplate(int count, String meds) {
+    return '服用了 $count 劑:$meds。';
+  }
+
+  @override
+  String hoyNarrativeDosesAndMore(int count) {
+    return ',還有 $count 項';
+  }
+
+  @override
+  String hoyNarrativeEmaStatesTemplate(String states) {
+    return '記錄的狀態與感受:$states。';
+  }
+
+  @override
+  String get hoyNarrativeEmaStatesEllipsis => '...';
+
+  @override
+  String get hoyNarrativePacingTrailer => '🛡️ 你允許自己休息。這也算數。';
+
+  @override
+  String get hoyHeaderDatePattern => 'M月d日 EEEE';
+
+  @override
+  String movementModalTitleRegisterTemplate(String name) {
+    return '記錄: $name';
+  }
+
+  @override
+  String movementModalTitleEditTemplate(String name) {
+    return '編輯: $name';
+  }
+
+  @override
+  String get movementModalHintDuration => '時長(分鐘)';
+
+  @override
+  String get movementModalHintSets => '組數';
+
+  @override
+  String get movementModalHintReps => '次數';
+
+  @override
+  String get movementModalHintHeartRate => '心率(選填,例:70→110)';
+
+  @override
+  String movementModalEffortLabelTemplate(int value) {
+    return '費力程度:$value/10';
+  }
+
+  @override
+  String movementModalFeelingLabelTemplate(int value) {
+    return '感受:$value/5';
+  }
+
+  @override
+  String get movementFeelingPainOrInjury => '🤕 疼痛/受傷';
+
+  @override
+  String get movementFeelingUncomfortable => '😟 不舒服/擔心';
+
+  @override
+  String get movementFeelingNeutral => '😐 普通';
+
+  @override
+  String get movementFeelingRelaxed => '😊 放鬆';
+
+  @override
+  String get movementFeelingStrongConfident => '💪 強壯有信心';
+
+  @override
+  String get movementPainLevelNone => '無';
+
+  @override
+  String get movementPainLevelMild => '輕微';
+
+  @override
+  String get movementPainLevelModerate => '中等';
+
+  @override
+  String get movementPainLevelIntense => '強烈';
+
+  @override
+  String get movementPainLevelSevere => '嚴重';
+
+  @override
+  String movementPainDeltaImprovedTemplate(int delta) {
+    String _temp0 = intl.Intl.pluralLogic(
+      delta,
+      locale: localeName,
+      other: '$delta 級',
+    );
+    return '改善了 $_temp0';
+  }
+
+  @override
+  String movementPainDeltaWorseTemplate(int delta) {
+    String _temp0 = intl.Intl.pluralLogic(
+      delta,
+      locale: localeName,
+      other: '$delta 級',
+    );
+    return '惡化了 $_temp0';
+  }
+
+  @override
+  String get movementPainDeltaUnchanged => '沒有變化';
+
+  @override
+  String movementLogEntryEffortTemplate(int value) {
+    return '費力 $value/10';
+  }
+
+  @override
+  String movementLogEntryFeelingTemplate(int value) {
+    return '感受 $value/5';
+  }
+
+  @override
+  String movementLogEntryDeltaImprovedTemplate(int delta) {
+    return '↓$delta 級';
+  }
+
+  @override
+  String movementLogEntryDeltaWorseTemplate(int delta) {
+    return '↑$delta 級';
+  }
+
+  @override
+  String get movementLogEntryDeltaUnchanged => '無變化';
+
+  @override
+  String get movementLogEntryTherapyDeltaSteady => '=';
+
+  @override
+  String get appBarTooltipFontSize => '字體大小';
+
+  @override
+  String get appBarTooltipDarkMode => '深色模式';
+
+  @override
+  String get appBarTooltipLightMode => '淺色模式';
+
+  @override
+  String get appBarTooltipSettings => '設定';
+
+  @override
+  String get actionDelete => '刪除';
+
+  @override
+  String get settingsProfileConfigTitle => '個人檔案設定';
+
+  @override
+  String get settingsMyDataTitle => '我的資料';
+
+  @override
+  String get settingsPatientNameLabel => '患者姓名';
+
+  @override
+  String get settingsConditionsLabel => '共病/診斷';
+
+  @override
+  String get settingsRelationshipLabel => '與此檔案的關係';
+
+  @override
+  String get settingsLifeEventsLabel => '生活事件';
+
+  @override
+  String get settingsLocationLabel => '我的位置(用於天氣)';
+
+  @override
+  String get settingsConditionsHelper => '點 × 移除一項條件。若要閱讀說明,請前往 臨床→指南。';
+
+  @override
+  String get settingsRelationshipHelper => '此檔案是給誰使用的?如果你在為照顧的人記錄,這很實用。';
+
+  @override
+  String get settingsLifeEventsHelper =>
+      '可能影響你身體或心情的事件:旅行、意外、搬家、好的或有壓力的事件。它們會在日曆上顯示為紫色圓點。';
+
+  @override
+  String get settingsDataHelper => '你有權隨時存取、匯出、匯入或刪除你的資料。';
+
+  @override
+  String get settingsWipeAllHelper => '此操作會刪除所有檔案、記錄和設定。無法復原。';
+
+  @override
+  String get settingsRelationshipSelf => '我自己';
+
+  @override
+  String get settingsRelationshipChild => '我的小孩';
+
+  @override
+  String get settingsRelationshipPartner => '我的伴侶';
+
+  @override
+  String get settingsRelationshipParent => '我的父母';
+
+  @override
+  String get settingsRelationshipOther => '其他';
+
+  @override
+  String get settingsRelationshipNone => '— 未指定 —';
+
+  @override
+  String get settingsLifeEventsEmpty => '還沒有記錄任何事件。';
+
+  @override
+  String get settingsAddEventButton => '新增事件';
+
+  @override
+  String get settingsLocationNone => '未設定位置。點此新增。';
+
+  @override
+  String get settingsLocationButtonAdd => '新增座標';
+
+  @override
+  String get settingsLocationButtonEdit => '編輯座標';
+
+  @override
+  String get settingsAddProfileButton => '新增個人檔案';
+
+  @override
+  String get settingsDeleteProfileButton => '刪除此個人檔案';
+
+  @override
+  String get settingsExportDataButton => '匯出我的資料';
+
+  @override
+  String get settingsWipeAllButton => '全部刪除';
+
+  @override
+  String settingsNewProfileNameTemplate(int number) {
+    return '新檔案 $number';
+  }
+
+  @override
+  String get dialogWipeTitle => '刪除所有資料';
+
+  @override
+  String get dialogWipeContent => '此操作會刪除所有個人檔案、記錄、設定和快取。無法復原。\n\n要先匯出嗎?';
+
+  @override
+  String get dialogWipeFinalTitle => '最後確認';
+
+  @override
+  String dialogWipeFinalContentTemplate(String magicWord) {
+    return '輸入 $magicWord 以確認。';
+  }
+
+  @override
+  String get dialogWipeFinalMagicWord => '刪除';
+
+  @override
+  String get dialogWipeFinalButton => '全部刪除';
+
+  @override
+  String get dialogDeleteProfileTitle => '刪除個人檔案';
+
+  @override
+  String dialogDeleteProfileContentTemplate(String name) {
+    return '確定要刪除個人檔案「$name」以及所有相關資料?此操作無法復原。';
+  }
+
+  @override
+  String get dialogLocationTitle => '你的位置';
+
+  @override
+  String get dialogLocationContent =>
+      '需要緯度和經度才能取得天氣資訊。在 Google 地圖找到你的城市,右鍵→複製座標。';
+
+  @override
+  String get dialogLocationHintLat => '緯度(例: -34.61)';
+
+  @override
+  String get dialogLocationHintLng => '經度(例: -58.38)';
+
+  @override
+  String get dialogLocationInvalidSnack => '座標無效。';
+
+  @override
+  String get therapyHintArea => '部位(例:頸部)';
+
+  @override
+  String get therapySectionPainBefore => '治療前疼痛';
+
+  @override
+  String get therapySectionPainAfter => '治療後疼痛';
+
+  @override
+  String get therapyActionMoreDetails => '多細節(治療師、費用、備註)';
+
+  @override
+  String get therapyHintTherapist => '治療師/地點(選填)';
+
+  @override
+  String get therapyHintCost => '費用(選填)';
+
+  @override
+  String get therapyHintNote => '備註(選填)';
+
+  @override
+  String get therapyActionSaveChanges => '儲存變更';
+
+  @override
+  String get therapyActionLog => '記錄';
+
+  @override
+  String get compendiumSectionConditionsHeader => '我的疾病';
+
+  @override
+  String get compendiumSectionConditionsSubtitle =>
+      '點一個閱讀臨床資訊(來源:MedlinePlus)。';
+
+  @override
+  String compendiumSavedArticlesTemplate(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '已儲存 $count 篇文章',
+    );
+    return '$_temp0 — 前往研究。';
+  }
+
+  @override
+  String get compendiumSectionDataTitle => '臨床資料';
+
+  @override
+  String get compendiumFactSourceLabel => '來源:';
+
+  @override
+  String investigationConditionArticleCountTemplate(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 篇文章',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get headacheSheetTitle => '頭痛詳細資料';
+
+  @override
+  String get headacheSheetSubtitle => '標記適用的項目。如果你願意,可以跳過此步驟。';
+
+  @override
+  String get actionSkip => '跳過';
+
+  @override
+  String get headacheActionSaveDetail => '儲存詳細資料';
+
+  @override
+  String get headacheThunderclapWarningTitle => '可能的緊急情況';
+
+  @override
+  String get headacheThunderclapWarningConfirm => '我了解,繼續';
 }

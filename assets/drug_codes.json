@@ -11,7 +11,15 @@
       ],
       "rxcui": "161",
       "label": "Paracetamol / Acetaminofén",
-      "confidence": "high"
+      "label_en": "Acetaminophen / Paracetamol",
+      "label_zh": "對乙醯氨基酚 / 普拿疼",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Analgésico y antipirético de uso común. Útil para dolor leve a moderado y fiebre. No es antiinflamatorio. La dosis máxima en adultos es 4 g al día; superarla puede causar daño hepático grave. Combinar con alcohol o con otros medicamentos que contengan paracetamol aumenta el riesgo.",
+      "summary_en": "Common analgesic and antipyretic. Useful for mild to moderate pain and fever. Not an anti-inflammatory. Maximum adult dose is 4 g per day; exceeding it can cause severe liver damage. Combining with alcohol or other paracetamol-containing products increases the risk.",
+      "summary_zh": "常用的止痛和退燒藥物。適用於輕度至中度疼痛和發燒。非抗發炎藥。成人每日最大劑量為4克;超過此劑量可能導致嚴重肝損傷。與酒精或其他含對乙醯氨基酚的產品合併使用會增加風險。",
+      "notes": null,
+      "interactions": []
     },
     {
       "aliases": [
@@ -22,8 +30,67 @@
       ],
       "rxcui": "72625",
       "label": "Duloxetina",
-      "notes": "SNRI; síndrome de discontinuación significativo si se interrumpe abruptamente. Reducción gradual recomendada.",
-      "confidence": "high"
+      "label_en": "Duloxetine",
+      "label_zh": "度洛西汀",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Inhibidor de la recaptación de serotonina y noradrenalina (SNRI). Se prescribe para depresión, ansiedad, dolor neuropático y fibromialgia. Su acción terapéutica se establece tras varias semanas. La interrupción abrupta produce síndrome de discontinuación con mareos, parestesias, irritabilidad y síntomas similares a un shock eléctrico cerebral.",
+      "summary_en": "Serotonin-norepinephrine reuptake inhibitor (SNRI). Prescribed for depression, anxiety, neuropathic pain, and fibromyalgia. Therapeutic effect develops over several weeks. Abrupt discontinuation causes a discontinuation syndrome with dizziness, paresthesias, irritability, and brain-zap-like symptoms.",
+      "summary_zh": "血清素-正腎上腺素再攝取抑制劑(SNRI)。用於治療憂鬱症、焦慮症、神經病變疼痛和纖維肌痛症。治療效果需數週才能建立。突然停藥會導致停藥症候群,出現頭暈、感覺異常、易怒和腦電擊般的症狀。",
+      "notes": "Síndrome de discontinuación significativo si se interrumpe abruptamente. Reducción gradual recomendada bajo supervisión médica.",
+      "notes_en": "Significant discontinuation syndrome if stopped abruptly. Gradual taper recommended under medical supervision.",
+      "notes_zh": "突然停藥會出現顯著的停藥症候群。建議在醫師監督下逐漸減量。",
+      "interactions": [
+        {
+          "with": "dextrometorfano",
+          "severity": "high",
+          "description_es": "Riesgo de síndrome serotoninérgico al combinar SNRI con dextrometorfano. Evitar la combinación; si es necesaria, vigilar agitación, fiebre y rigidez muscular.",
+          "description_en": "Risk of serotonin syndrome when combining SNRI with dextromethorphan. Avoid the combination; if necessary, watch for agitation, fever, and muscle rigidity.",
+          "description_zh": "SNRI與右美沙芬合併使用有血清素症候群風險。應避免合併;若必須使用,需注意躁動、發燒和肌肉僵硬。"
+        },
+        {
+          "with": "ácido mefenámico",
+          "severity": "medium",
+          "description_es": "Mayor riesgo de hemorragia gastrointestinal al combinar SNRI con AINEs. Considerar protección gástrica si el uso es prolongado.",
+          "description_en": "Increased risk of gastrointestinal bleeding when combining SNRI with NSAIDs. Consider gastric protection if use is prolonged.",
+          "description_zh": "SNRI與非類固醇抗發炎藥(NSAID)合併使用會增加腸胃出血風險。若長期使用應考慮加用胃黏膜保護劑。"
+        },
+        {
+          "with": "ibuprofeno",
+          "severity": "medium",
+          "description_es": "Mayor riesgo de hemorragia gastrointestinal al combinar SNRI con AINEs. Considerar protección gástrica si el uso es prolongado.",
+          "description_en": "Increased risk of gastrointestinal bleeding when combining SNRI with NSAIDs. Consider gastric protection if use is prolonged.",
+          "description_zh": "SNRI與非類固醇抗發炎藥(NSAID)合併使用會增加腸胃出血風險。若長期使用應考慮加用胃黏膜保護劑。"
+        },
+        {
+          "with": "naproxeno",
+          "severity": "medium",
+          "description_es": "Mayor riesgo de hemorragia gastrointestinal al combinar SNRI con AINEs.",
+          "description_en": "Increased risk of gastrointestinal bleeding when combining SNRI with NSAIDs.",
+          "description_zh": "SNRI與非類固醇抗發炎藥合併使用會增加腸胃出血風險。"
+        },
+        {
+          "with": "tramadol",
+          "severity": "high",
+          "description_es": "Riesgo de síndrome serotoninérgico y disminución del umbral convulsivo. Combinación a evitar salvo necesidad clínica.",
+          "description_en": "Risk of serotonin syndrome and lowered seizure threshold. Combination to avoid unless clinically necessary.",
+          "description_zh": "有血清素症候群風險,且會降低癲癇發作閾值。除非有臨床必要,應避免合併使用。"
+        },
+        {
+          "with": "cúrcuma",
+          "severity": "low",
+          "description_es": "La cúrcuma en dosis altas suplementarias puede potenciar el efecto antiagregante; precaución con sangrado, especialmente si también se toma un AINE.",
+          "description_en": "High-dose turmeric supplements may potentiate antiplatelet effects; bleeding precaution, especially if also taking an NSAID.",
+          "description_zh": "高劑量薑黃補充劑可能增強抗血小板作用;若同時服用非類固醇抗發炎藥,應注意出血風險。"
+        },
+        {
+          "with": "sertralina",
+          "severity": "high",
+          "description_es": "Combinar dos serotoninérgicos (SNRI + ISRS) aumenta riesgo de síndrome serotoninérgico. No se usan juntos salvo transición supervisada.",
+          "description_en": "Combining two serotonergic agents (SNRI + SSRI) increases risk of serotonin syndrome. Not used together except during supervised transition.",
+          "description_zh": "合併兩種血清素類藥物(SNRI + SSRI)會增加血清素症候群風險。除非在醫師監督下進行藥物轉換,否則不應合併使用。"
+        }
+      ]
     },
     {
       "aliases": [
@@ -35,7 +102,15 @@
       ],
       "rxcui": "6315",
       "label": "Loratadina",
-      "confidence": "high"
+      "label_en": "Loratadine",
+      "label_zh": "氯雷他定",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Antihistamínico de segunda generación. Trata síntomas de alergia: estornudos, picazón, secreción nasal y urticaria. Causa poca somnolencia comparado con antihistamínicos antiguos. Efecto típico dentro de la primera hora.",
+      "summary_en": "Second-generation antihistamine. Treats allergy symptoms: sneezing, itching, runny nose, and hives. Causes little drowsiness compared to older antihistamines. Onset typically within the first hour.",
+      "summary_zh": "第二代抗組織胺藥。用於治療過敏症狀:打噴嚏、搔癢、流鼻水和蕁麻疹。與舊型抗組織胺相比較少引起嗜睡。通常於服用後一小時內起效。",
+      "notes": null,
+      "interactions": []
     },
     {
       "aliases": [
@@ -47,7 +122,17 @@
       ],
       "rxcui": "4053",
       "label": "Fexofenadina",
-      "confidence": "high"
+      "label_en": "Fexofenadine",
+      "label_zh": "非索非那定",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Antihistamínico de segunda generación, similar a la loratadina pero con menor sedación residual. Útil para rinitis alérgica y urticaria crónica. Tomar con agua, no con jugos de fruta cítrica que reducen su absorción significativamente.",
+      "summary_en": "Second-generation antihistamine, similar to loratadine but with less residual sedation. Useful for allergic rhinitis and chronic hives. Take with water, not with citrus juices which significantly reduce its absorption.",
+      "summary_zh": "第二代抗組織胺藥,與氯雷他定類似但殘留鎮靜作用更少。用於過敏性鼻炎和慢性蕁麻疹。應配水服用,不要與柑橘類果汁一起服用,後者會顯著降低吸收。",
+      "notes": "No tomar con jugo de naranja, toronja/pomelo o manzana — reducen su absorción hasta en un 30-40%.",
+      "notes_en": "Do not take with orange, grapefruit, or apple juice — they reduce absorption by 30-40%.",
+      "notes_zh": "不要與柳橙汁、葡萄柚汁或蘋果汁一起服用——這些果汁會使吸收率降低30-40%。",
+      "interactions": []
     },
     {
       "aliases": [
@@ -58,7 +143,25 @@
       ],
       "rxcui": "5640",
       "label": "Ibuprofeno",
-      "confidence": "high"
+      "label_en": "Ibuprofen",
+      "label_zh": "布洛芬",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Antiinflamatorio no esteroideo (AINE) usado para dolor, fiebre e inflamación. Se toma con comida para proteger el estómago. Uso prolongado o dosis altas aumentan riesgo de úlcera gástrica, hemorragia digestiva, daño renal e hipertensión.",
+      "summary_en": "Nonsteroidal anti-inflammatory drug (NSAID) used for pain, fever, and inflammation. Take with food to protect the stomach. Prolonged use or high doses increase the risk of gastric ulcer, GI bleeding, kidney damage, and hypertension.",
+      "summary_zh": "非類固醇抗發炎藥(NSAID),用於止痛、退燒和消炎。應隨餐服用以保護胃部。長期使用或高劑量會增加胃潰瘍、消化道出血、腎臟損傷和高血壓的風險。",
+      "notes": "Tomar con comida. Uso prolongado requiere monitoreo de función renal y considerar gastroprotección.",
+      "notes_en": "Take with food. Prolonged use requires renal function monitoring and consideration of gastroprotection.",
+      "notes_zh": "應隨餐服用。長期使用需監測腎功能,並考慮加用胃黏膜保護劑。",
+      "interactions": [
+        {
+          "with": "omega 3",
+          "severity": "low",
+          "description_es": "Omega 3 a dosis altas (>3 g/día) puede potenciar el efecto antiagregante de los AINE; precaución con sangrado.",
+          "description_en": "High-dose omega 3 (>3 g/day) may potentiate antiplatelet effects of NSAIDs; bleeding precaution.",
+          "description_zh": "高劑量Omega 3(每日>3克)可能增強非類固醇抗發炎藥的抗血小板作用;應注意出血風險。"
+        }
+      ]
     },
     {
       "aliases": [
@@ -67,12 +170,22 @@
         "mefenamic acid",
         "ponstan",
         "ponstan kapseals",
-        "ponstil"
+        "ponstil",
+        "nsaid"
       ],
       "rxcui": "6754",
       "label": "Ácido mefenámico (Ponstan)",
-      "notes": "AINE; verificar interacciones con duloxetina (riesgo de hemorragia).",
-      "confidence": "medium"
+      "label_en": "Mefenamic acid (Ponstan)",
+      "label_zh": "甲芬那酸 (Ponstan)",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "AINE útil sobre todo para dolor menstrual y dolor de origen inflamatorio. Por su perfil de irritación gástrica relativamente alto, el uso no debe extenderse más allá de 7 días seguidos sin supervisión. Tomar siempre con comida.",
+      "summary_en": "NSAID particularly useful for menstrual pain and inflammatory pain. Due to its relatively high gastric irritation profile, use should not extend beyond 7 consecutive days without supervision. Always take with food.",
+      "summary_zh": "非類固醇抗發炎藥,特別適用於經痛和發炎性疼痛。由於相對較高的胃腸刺激性,未經醫師監督不應連續使用超過7天。應隨餐服用。",
+      "notes": "AINE; verificar interacciones con duloxetina (riesgo de hemorragia). No usar más de 7 días seguidos sin supervisión.",
+      "notes_en": "NSAID; check interactions with duloxetine (bleeding risk). Do not use more than 7 consecutive days without supervision.",
+      "notes_zh": "非類固醇抗發炎藥;需注意與度洛西汀的交互作用(出血風險)。未經監督不應連續使用超過7天。",
+      "interactions": []
     },
     {
       "aliases": [
@@ -84,8 +197,17 @@
       ],
       "rxcui": "3423",
       "label": "Dextrometorfano",
-      "notes": "Riesgo de síndrome serotoninérgico con duloxetina (combinación SNRI + DXM).",
-      "confidence": "medium"
+      "label_en": "Dextromethorphan",
+      "label_zh": "右美沙芬",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "Antitusivo de acción central usado para tos seca no productiva. Tiene actividad serotoninérgica débil que se vuelve clínicamente relevante en combinación con SNRI, ISRS u otros serotoninérgicos.",
+      "summary_en": "Centrally-acting antitussive used for dry, non-productive cough. Has weak serotonergic activity that becomes clinically relevant in combination with SNRIs, SSRIs, or other serotonergic agents.",
+      "summary_zh": "中樞性鎮咳藥,用於乾咳。具有弱的血清素活性,在與SNRI、SSRI或其他血清素類藥物合併使用時會變得具有臨床意義。",
+      "notes": "Riesgo de síndrome serotoninérgico con duloxetina (combinación SNRI + DXM). Evitar si tomas SNRI, ISRS o tramadol.",
+      "notes_en": "Risk of serotonin syndrome with duloxetine (SNRI + DXM combination). Avoid if taking SNRI, SSRI, or tramadol.",
+      "notes_zh": "與度洛西汀合併使用有血清素症候群風險(SNRI + DXM組合)。若正在服用SNRI、SSRI或曲馬多應避免使用。",
+      "interactions": []
     },
     {
       "aliases": [
@@ -97,7 +219,23 @@
       ],
       "rxcui": "209",
       "label": "Acetilcisteína (NAC)",
-      "confidence": "medium"
+      "label_en": "Acetylcysteine (NAC)",
+      "label_zh": "乙醯半胱胺酸 (NAC)",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "Mucolítico (fluidifica secreciones) y precursor de glutatión, el principal antioxidante celular. Se usa en hipersecreción bronquial, como antídoto de sobredosis de paracetamol, y en algunos contextos como soporte antioxidante.",
+      "summary_en": "Mucolytic (thins secretions) and precursor of glutathione, the main cellular antioxidant. Used for bronchial hypersecretion, as an antidote for paracetamol overdose, and in some contexts as antioxidant support.",
+      "summary_zh": "化痰藥(稀釋分泌物)和穀胱甘肽的前驅物,後者是細胞主要的抗氧化劑。用於支氣管分泌過多、作為對乙醯氨基酚過量的解毒劑,以及在某些情況下作為抗氧化支持。",
+      "notes": null,
+      "interactions": [
+        {
+          "with": "nitratos",
+          "severity": "medium",
+          "description_es": "NAC potencia el efecto vasodilatador de nitratos (nitroglicerina, mononitrato de isosorbide). Puede causar hipotensión y dolor de cabeza intenso.",
+          "description_en": "NAC potentiates the vasodilator effect of nitrates (nitroglycerin, isosorbide mononitrate). May cause hypotension and severe headache.",
+          "description_zh": "NAC會增強硝酸鹽類藥物(硝化甘油、單硝酸異山梨酯)的血管擴張作用,可能導致低血壓和嚴重頭痛。"
+        }
+      ]
     },
     {
       "aliases": [
@@ -108,8 +246,802 @@
       ],
       "rxcui": "220419",
       "label": "Dienogest",
-      "notes": "Progestina usada en endometriosis; interacciones con anticonvulsivantes.",
-      "confidence": "medium"
+      "label_en": "Dienogest",
+      "label_zh": "地諾孕素",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "Progestina usada en endometriosis, adenomiosis y como anticonceptivo. Suprime la actividad endometrial reduciendo dolor menstrual y crecimiento de tejido endometrial ectópico. Efectos comunes incluyen sangrado irregular y cambios de ánimo.",
+      "summary_en": "Progestin used in endometriosis, adenomyosis, and as a contraceptive. Suppresses endometrial activity, reducing menstrual pain and ectopic endometrial tissue growth. Common effects include irregular bleeding and mood changes.",
+      "summary_zh": "孕激素,用於子宮內膜異位症、子宮腺肌症和作為避孕藥。抑制子宮內膜活性,減少經痛和異位子宮內膜組織的生長。常見副作用包括不規則出血和情緒變化。",
+      "notes": "Progestina usada en endometriosis; los anticonvulsivantes inductores enzimáticos (carbamazepina, fenitoína) pueden reducir su eficacia.",
+      "notes_en": "Progestin used in endometriosis; enzyme-inducing anticonvulsants (carbamazepine, phenytoin) may reduce its efficacy.",
+      "notes_zh": "用於子宮內膜異位症的孕激素;肝酵素誘導型抗癲癇藥(卡馬西平、苯妥英)可能降低其療效。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "brotizolam",
+        "lendormin",
+        "戀多眠"
+      ],
+      "rxcui": "1546357",
+      "label": "Brotizolam (Lendormin)",
+      "label_en": "Brotizolam (Lendormin)",
+      "label_zh": "Brotizolam (戀多眠)",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "Hipnótico tienodiazepínico de corta acción usado para insomnio de conciliación. Inicio rápido (15-30 min) y duración aproximada de 6-8 horas. Su uso debe ser de corto plazo (no más de 2-4 semanas) por riesgo de dependencia y tolerancia.",
+      "summary_en": "Short-acting thienodiazepine hypnotic used for sleep-onset insomnia. Rapid onset (15-30 min) and duration of approximately 6-8 hours. Use should be short-term (no more than 2-4 weeks) due to risk of dependence and tolerance.",
+      "summary_zh": "短效的噻吩二氮平類安眠藥,用於入睡困難型失眠。起效快(15-30分鐘),作用時間約6-8小時。由於有依賴性和耐藥性風險,使用時間應限於2-4週以內。",
+      "notes": "Riesgo de dependencia con uso prolongado. No combinar con alcohol u otros depresores del SNC.",
+      "notes_en": "Risk of dependence with prolonged use. Do not combine with alcohol or other CNS depressants.",
+      "notes_zh": "長期使用有依賴性風險。不可與酒精或其他中樞神經抑制劑合併使用。",
+      "interactions": [
+        {
+          "with": "duloxetina",
+          "severity": "low",
+          "description_es": "Posible aumento de sedación. No es contraindicación absoluta pero conviene tomar el hipnótico solo cuando se va a dormir.",
+          "description_en": "Possible increased sedation. Not an absolute contraindication, but take the hypnotic only at bedtime.",
+          "description_zh": "可能增加鎮靜作用。並非絕對禁忌,但應僅在就寢時服用安眠藥。"
+        },
+        {
+          "with": "gabapentina",
+          "severity": "medium",
+          "description_es": "Suma de efectos depresores del SNC: somnolencia diurna, dificultad de concentración. Espaciar las tomas si es posible.",
+          "description_en": "Additive CNS depressant effects: daytime drowsiness, concentration difficulty. Space doses if possible.",
+          "description_zh": "中樞神經抑制作用會疊加:導致日間嗜睡、注意力不集中。若可能應錯開服藥時間。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "noscapine",
+        "noscapina",
+        "noca",
+        "noca tablets"
+      ],
+      "rxcui": "7472",
+      "label": "Noscapina (Noca)",
+      "label_en": "Noscapine (Noca)",
+      "label_zh": "那可丁 (Noca)",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "Antitusivo no opioide derivado del opio pero sin acción narcótica ni adictiva. Útil para tos seca. Mejor tolerado que el dextrometorfano y sin las interacciones serotoninérgicas problemáticas de éste.",
+      "summary_en": "Non-opioid antitussive derived from opium but without narcotic or addictive action. Useful for dry cough. Better tolerated than dextromethorphan and without its problematic serotonergic interactions.",
+      "summary_zh": "非鴉片類鎮咳藥,雖源自鴉片但無麻醉或成癮作用。用於乾咳。耐受性優於右美沙芬,且不具有後者的血清素類交互作用問題。",
+      "notes": "Alternativa preferible a dextrometorfano si tomas SNRI/ISRS por ausencia de actividad serotoninérgica.",
+      "notes_en": "Preferable alternative to dextromethorphan if taking SNRI/SSRI due to lack of serotonergic activity.",
+      "notes_zh": "若正在服用SNRI/SSRI,因不具血清素活性,優於右美沙芬作為替代選擇。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "cephalexin",
+        "cefalexina",
+        "paraflex",
+        "keflex"
+      ],
+      "rxcui": "2231",
+      "label": "Cefalexina (Paraflex)",
+      "label_en": "Cephalexin (Paraflex)",
+      "label_zh": "頭孢氨苄 (Paraflex)",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "Antibiótico cefalosporínico de primera generación. Eficaz contra infecciones cutáneas, de garganta, de oído y urinarias por bacterias susceptibles. Completar el ciclo completo aunque los síntomas mejoren. Personas alérgicas a la penicilina pueden tener reacción cruzada.",
+      "summary_en": "First-generation cephalosporin antibiotic. Effective against skin, throat, ear, and urinary infections caused by susceptible bacteria. Complete the full course even if symptoms improve. People allergic to penicillin may have cross-reactivity.",
+      "summary_zh": "第一代頭孢菌素抗生素。對敏感菌引起的皮膚、咽喉、耳部和泌尿道感染有效。即使症狀改善,也應完成整個療程。對盤尼西林過敏者可能有交叉過敏反應。",
+      "notes": "Completar el ciclo completo. Alergia cruzada con penicilinas en ~5% de los casos.",
+      "notes_en": "Complete the full course. Cross-reactivity with penicillins in approximately 5% of cases.",
+      "notes_zh": "需完成整個療程。約5%的病例會與盤尼西林有交叉過敏反應。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "romicon",
+        "romicon-a",
+        "romicon a"
+      ],
+      "rxcui": null,
+      "label": "Romicon-A (combinación)",
+      "label_en": "Romicon-A (combination)",
+      "label_zh": "Romicon-A (複方)",
+      "kind": "medication",
+      "confidence": "low",
+      "summary_es": "Producto combinado disponible en Taiwán que incluye dextrometorfano (antitusivo), lisozima (enzima antiinflamatoria) y cresolsulfonato de potasio. Por contener dextrometorfano, hereda sus interacciones serotoninérgicas.",
+      "summary_en": "Combination product available in Taiwan containing dextromethorphan (antitussive), lysozyme (anti-inflammatory enzyme), and potassium cresolsulfonate. Because it contains dextromethorphan, it inherits its serotonergic interactions.",
+      "summary_zh": "在台灣可購得的複方產品,含有右美沙芬(鎮咳)、溶菌酶(抗發炎酵素)和對甲酚磺酸鉀。由於含有右美沙芬,因此繼承了其血清素類交互作用。",
+      "notes": "Contiene dextrometorfano — aplica el mismo riesgo serotoninérgico con SNRI/ISRS.",
+      "notes_en": "Contains dextromethorphan — same serotonergic risk with SNRI/SSRI applies.",
+      "notes_zh": "含有右美沙芬——與SNRI/SSRI的血清素症候群風險相同。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "procaterol",
+        "procaterol hydrochloride",
+        "mentin",
+        "mentin-mini"
+      ],
+      "rxcui": "35305",
+      "label": "Procaterol (Mentin-mini)",
+      "label_en": "Procaterol (Mentin-mini)",
+      "label_zh": "丙卡特羅 (Mentin-mini)",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "Broncodilatador β2-agonista de larga acción usado en asma y enfermedad pulmonar obstructiva. Relaja la musculatura bronquial facilitando la respiración. Puede causar temblor fino, taquicardia leve y nerviosismo, especialmente al inicio.",
+      "summary_en": "Long-acting β2-agonist bronchodilator used in asthma and obstructive lung disease. Relaxes bronchial muscle, easing breathing. May cause fine tremor, mild tachycardia, and nervousness, especially when starting.",
+      "summary_zh": "長效β2受體致效劑型支氣管擴張劑,用於氣喘和阻塞性肺病。放鬆支氣管肌肉以改善呼吸。可能引起細微震顫、輕度心搏過速和緊張感,尤其在初始使用時。",
+      "notes": "Puede aumentar la frecuencia cardiaca — relevante en personas con POTS o disautonomía con taquicardia basal.",
+      "notes_en": "May increase heart rate — relevant in people with POTS or dysautonomia with baseline tachycardia.",
+      "notes_zh": "可能增加心率——對於有姿勢性心搏過速症候群(POTS)或自律神經失調合併基礎心搏過速的人具有臨床意義。",
+      "interactions": [
+        {
+          "with": "propranolol",
+          "severity": "high",
+          "description_es": "Antagonismo farmacológico: el propranolol bloquea los receptores β2 que el procaterol activa. Pueden anularse mutuamente o desencadenar broncoespasmo.",
+          "description_en": "Pharmacological antagonism: propranolol blocks the β2 receptors that procaterol activates. They can cancel each other or trigger bronchospasm.",
+          "description_zh": "藥理性拮抗作用:普潘奈會阻斷丙卡特羅作用的β2受體。兩者可能互相抵消作用或誘發支氣管痙攣。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "oxethazaine",
+        "oxetacaina",
+        "oxethazaína",
+        "strocain"
+      ],
+      "rxcui": "7898",
+      "label": "Oxetacaína (Strocain)",
+      "label_en": "Oxetacaine (Strocain)",
+      "label_zh": "歐西卡因 (Strocain)",
+      "kind": "medication",
+      "confidence": "medium",
+      "summary_es": "Anestésico local de uso oral indicado para dolor de origen gastrointestinal alto: úlcera gastroduodenal, esofagitis, gastritis. Produce un alivio sintomático local sin efectos sistémicos significativos. No trata la causa subyacente.",
+      "summary_en": "Oral-use local anesthetic indicated for pain of upper gastrointestinal origin: gastroduodenal ulcer, esophagitis, gastritis. Provides local symptomatic relief without significant systemic effects. Does not treat the underlying cause.",
+      "summary_zh": "口服局部麻醉劑,適用於上消化道來源的疼痛:胃十二指腸潰瘍、食道炎、胃炎。提供局部症狀緩解,無顯著全身性作用。不治療根本原因。",
+      "notes": "Alivio sintomático local. Si el dolor gástrico es recurrente, evaluar causa con un gastroenterólogo.",
+      "notes_en": "Local symptomatic relief. If gastric pain is recurrent, evaluate the cause with a gastroenterologist.",
+      "notes_zh": "提供局部症狀緩解。若胃痛反覆發生,應請腸胃科醫師評估原因。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "u-relax",
+        "u relax",
+        "lactobacillus",
+        "probiótico",
+        "probiotico",
+        "probiotic"
+      ],
+      "rxcui": null,
+      "label": "U-Relax (lactobacilos)",
+      "label_en": "U-Relax (lactobacilli)",
+      "label_zh": "U-Relax (乳酸桿菌)",
+      "kind": "supplement",
+      "confidence": "high",
+      "summary_es": "Suplemento probiótico con cepas de lactobacilos orientado a salud intestinal y eje intestino-cerebro. Los probióticos pueden ayudar con disconfort digestivo, regulación del tránsito y, según evidencia emergente, con síntomas de ansiedad asociados a disbiosis intestinal.",
+      "summary_en": "Probiotic supplement with lactobacillus strains oriented to gut health and the gut-brain axis. Probiotics may help with digestive discomfort, transit regulation, and according to emerging evidence, with anxiety symptoms associated with gut dysbiosis.",
+      "summary_zh": "含有乳酸桿菌菌株的益生菌補充劑,針對腸道健康和腸腦軸線。益生菌可能有助於改善消化不適、調節腸道蠕動,根據新興證據,也可能對與腸道菌群失調相關的焦慮症狀有幫助。",
+      "notes": "Tomar separado de antibióticos (al menos 2 horas) — los antibióticos reducen su eficacia.",
+      "notes_en": "Take separately from antibiotics (at least 2 hours apart) — antibiotics reduce its efficacy.",
+      "notes_zh": "應與抗生素分開服用(至少間隔2小時)——抗生素會降低其療效。",
+      "interactions": [
+        {
+          "with": "cephalexin",
+          "severity": "low",
+          "description_es": "Espaciar al menos 2 horas. El antibiótico puede reducir significativamente la viabilidad del probiótico.",
+          "description_en": "Space at least 2 hours apart. The antibiotic can significantly reduce probiotic viability.",
+          "description_zh": "應間隔至少2小時服用。抗生素會顯著降低益生菌的存活率。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "vitamina c",
+        "vitamin c",
+        "ácido ascórbico",
+        "acido ascorbico",
+        "ascorbic acid"
+      ],
+      "rxcui": null,
+      "label": "Vitamina C",
+      "label_en": "Vitamin C",
+      "label_zh": "維生素C",
+      "kind": "supplement",
+      "confidence": "high",
+      "summary_es": "Vitamina hidrosoluble esencial para síntesis de colágeno, función inmune y absorción de hierro no hemo. Particularmente relevante en personas con Ehlers-Danlos por su rol en la formación de colágeno. Dosis altas (>1 g) pueden causar molestias gastrointestinales.",
+      "summary_en": "Water-soluble vitamin essential for collagen synthesis, immune function, and non-heme iron absorption. Particularly relevant in people with Ehlers-Danlos due to its role in collagen formation. High doses (>1 g) may cause gastrointestinal discomfort.",
+      "summary_zh": "水溶性維生素,對膠原蛋白合成、免疫功能和非血基質鐵的吸收至關重要。由於在膠原蛋白形成中的作用,對Ehlers-Danlos症候群患者特別重要。高劑量(>1克)可能引起腸胃不適。",
+      "notes": "Tomar con hierro para mejorar su absorción. Dosis muy altas no se almacenan — se eliminan por orina.",
+      "notes_en": "Take with iron to improve its absorption. Very high doses are not stored — they are eliminated in urine.",
+      "notes_zh": "與鐵劑一起服用可促進鐵的吸收。極高劑量無法儲存——會經由尿液排出。",
+      "interactions": [
+        {
+          "with": "hierro",
+          "severity": "low",
+          "description_es": "Interacción positiva: la vitamina C aumenta significativamente la absorción del hierro no hemo. Tomarlos juntos.",
+          "description_en": "Positive interaction: vitamin C significantly increases non-heme iron absorption. Take them together.",
+          "description_zh": "正向交互作用:維生素C顯著增加非血基質鐵的吸收。應一起服用。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "vitamina b12",
+        "vitamin b12",
+        "cianocobalamina",
+        "cobalamina",
+        "cyanocobalamin",
+        "cobalamin"
+      ],
+      "rxcui": null,
+      "label": "Vitamina B12",
+      "label_en": "Vitamin B12",
+      "label_zh": "維生素B12",
+      "kind": "supplement",
+      "confidence": "high",
+      "summary_es": "Vitamina esencial para formación de glóbulos rojos y función neurológica. Su deficiencia produce fatiga, parestesias y anemia. Particularmente relevante en personas que toman omeprazol u otros inhibidores de la bomba de protones a largo plazo, ya que reducen su absorción.",
+      "summary_en": "Vitamin essential for red blood cell formation and neurological function. Deficiency causes fatigue, paresthesias, and anemia. Particularly relevant in people taking long-term omeprazole or other proton pump inhibitors, as they reduce its absorption.",
+      "summary_zh": "對紅血球生成和神經功能至關重要的維生素。缺乏會導致疲勞、感覺異常和貧血。對於長期服用奧美拉唑或其他質子幫浦抑制劑的人特別重要,因為這些藥物會降低B12的吸收。",
+      "notes": null,
+      "interactions": [
+        {
+          "with": "omeprazol",
+          "severity": "medium",
+          "description_es": "Los inhibidores de la bomba de protones reducen la absorción de B12 con uso prolongado (>1 año). Considerar suplementación si tomas omeprazol crónicamente.",
+          "description_en": "Proton pump inhibitors reduce B12 absorption with prolonged use (>1 year). Consider supplementation if taking omeprazole chronically.",
+          "description_zh": "質子幫浦抑制劑在長期使用(>1年)時會降低B12的吸收。若長期服用奧美拉唑應考慮補充B12。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "omega 3",
+        "omega-3",
+        "aceite de pescado",
+        "fish oil",
+        "epa",
+        "dha"
+      ],
+      "rxcui": null,
+      "label": "Omega 3",
+      "label_en": "Omega 3",
+      "label_zh": "Omega 3 (魚油)",
+      "kind": "supplement",
+      "confidence": "high",
+      "summary_es": "Ácidos grasos poliinsaturados (EPA y DHA) con efectos antiinflamatorios. Útiles en dolor crónico de origen inflamatorio, salud cardiovascular y función neurológica. Dosis típicas de 1-2 g/día son seguras; dosis altas (>3 g/día) pueden afectar la coagulación.",
+      "summary_en": "Polyunsaturated fatty acids (EPA and DHA) with anti-inflammatory effects. Useful in chronic inflammatory pain, cardiovascular health, and neurological function. Typical doses of 1-2 g/day are safe; high doses (>3 g/day) may affect coagulation.",
+      "summary_zh": "多元不飽和脂肪酸(EPA和DHA),具有抗發炎作用。對發炎性慢性疼痛、心血管健康和神經功能有益。1-2克/日的典型劑量是安全的;高劑量(>3克/日)可能影響凝血功能。",
+      "notes": "Dosis altas (>3 g/día) pueden potenciar el sangrado, especialmente con AINEs o anticoagulantes.",
+      "notes_en": "High doses (>3 g/day) may potentiate bleeding, especially with NSAIDs or anticoagulants.",
+      "notes_zh": "高劑量(>3克/日)可能增加出血風險,特別是與非類固醇抗發炎藥或抗凝血劑合併使用時。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "cúrcuma",
+        "curcuma",
+        "turmeric",
+        "curcumina",
+        "curcumin"
+      ],
+      "rxcui": null,
+      "label": "Cúrcuma / Turmeric",
+      "label_en": "Turmeric / Curcumin",
+      "label_zh": "薑黃 / 薑黃素",
+      "kind": "herbal",
+      "confidence": "high",
+      "summary_es": "Raíz con propiedades antiinflamatorias atribuidas principalmente a la curcumina. Estudiada para dolor articular, inflamación crónica de bajo grado y salud digestiva. Su biodisponibilidad es baja a menos que se combine con piperina (pimienta negra) o se use en formulaciones liposomales.",
+      "summary_en": "Root with anti-inflammatory properties primarily attributed to curcumin. Studied for joint pain, low-grade chronic inflammation, and digestive health. Its bioavailability is low unless combined with piperine (black pepper) or used in liposomal formulations.",
+      "summary_zh": "具有抗發炎特性的根莖植物,主要歸功於薑黃素。已被研究用於關節疼痛、輕度慢性發炎和消化健康。除非與胡椒鹼(黑胡椒)合併使用或採用脂質體配方,否則生物利用度較低。",
+      "notes": "A dosis suplementarias altas tiene efecto antiagregante leve; precaución si tomas AINEs, SNRI o anticoagulantes.",
+      "notes_en": "At high supplement doses it has a mild antiplatelet effect; caution if taking NSAIDs, SNRIs, or anticoagulants.",
+      "notes_zh": "高劑量補充時具有輕度抗血小板作用;若同時服用非類固醇抗發炎藥、SNRI或抗凝血劑應謹慎。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "vitamina d",
+        "vitamina d3",
+        "vitamin d",
+        "vitamin d3",
+        "colecalciferol",
+        "cholecalciferol"
+      ],
+      "rxcui": null,
+      "label": "Vitamina D3",
+      "label_en": "Vitamin D3",
+      "label_zh": "維生素D3",
+      "kind": "supplement",
+      "confidence": "high",
+      "summary_es": "Vitamina liposoluble esencial para metabolismo del calcio, salud ósea, función muscular y modulación inmune. Su deficiencia es común y puede contribuir a dolor musculoesquelético crónico y fatiga. Idealmente se monitorea con un análisis de 25-OH-vitamina D.",
+      "summary_en": "Fat-soluble vitamin essential for calcium metabolism, bone health, muscle function, and immune modulation. Deficiency is common and may contribute to chronic musculoskeletal pain and fatigue. Ideally monitored with a 25-OH-vitamin D blood test.",
+      "summary_zh": "脂溶性維生素,對鈣代謝、骨骼健康、肌肉功能和免疫調節至關重要。缺乏現象很普遍,可能導致慢性肌肉骨骼疼痛和疲勞。理想情況下應透過25-OH-維生素D血液檢查來監測。",
+      "notes": "Tomar con una comida que contenga grasa para mejorar su absorción.",
+      "notes_en": "Take with a meal containing fat to improve its absorption.",
+      "notes_zh": "應與含脂肪的餐食一起服用以促進吸收。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "l-carnitina",
+        "l-carnitine",
+        "carnitina",
+        "carnitine",
+        "l-cartinine"
+      ],
+      "rxcui": null,
+      "label": "L-Carnitina",
+      "label_en": "L-Carnitine",
+      "label_zh": "左旋肉鹼 (L-Carnitine)",
+      "kind": "supplement",
+      "confidence": "high",
+      "summary_es": "Aminoácido derivado que transporta ácidos grasos a las mitocondrias para su uso como energía. Suplementación estudiada en fatiga crónica, función muscular y, en algunos contextos, como soporte cardiovascular. Generalmente bien tolerada.",
+      "summary_en": "Amino acid derivative that transports fatty acids into mitochondria for use as energy. Supplementation studied in chronic fatigue, muscle function, and in some contexts, as cardiovascular support. Generally well tolerated.",
+      "summary_zh": "胺基酸衍生物,將脂肪酸運送至粒線體以作為能量使用。補充劑已被研究用於慢性疲勞、肌肉功能,以及在某些情況下作為心血管支持。一般耐受性良好。",
+      "notes": null,
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "hierro",
+        "iron",
+        "sulfato ferroso",
+        "ferrous sulfate",
+        "bisglicinato de hierro",
+        "iron bisglycinate",
+        "hierro lac",
+        "hierro biocare"
+      ],
+      "rxcui": null,
+      "label": "Hierro (suplemento)",
+      "label_en": "Iron (supplement)",
+      "label_zh": "鐵劑 (補充劑)",
+      "kind": "supplement",
+      "confidence": "high",
+      "summary_es": "Mineral esencial para la formación de hemoglobina y el transporte de oxígeno. Su deficiencia produce anemia, fatiga, intolerancia al ejercicio y dificultad cognitiva. Causas frecuentes en mujeres en edad fértil incluyen sangrado menstrual abundante y trastornos como la adenomiosis.",
+      "summary_en": "Essential mineral for hemoglobin formation and oxygen transport. Deficiency causes anemia, fatigue, exercise intolerance, and cognitive difficulty. Frequent causes in women of reproductive age include heavy menstrual bleeding and conditions like adenomyosis.",
+      "summary_zh": "對血紅蛋白形成和氧氣運送至關重要的礦物質。缺乏會導致貧血、疲勞、運動耐受性降低和認知困難。育齡婦女常見的缺乏原因包括經血過多和子宮腺肌症等疾病。",
+      "notes": "Tomar con vitamina C para mejorar absorción. Evitar café, té y lácteos en la hora cercana a la toma — reducen absorción significativamente.",
+      "notes_en": "Take with vitamin C to improve absorption. Avoid coffee, tea, and dairy within an hour of the dose — they significantly reduce absorption.",
+      "notes_zh": "與維生素C一起服用以促進吸收。服藥前後一小時內避免咖啡、茶和乳製品——這些會顯著降低吸收。",
+      "interactions": [
+        {
+          "with": "omeprazol",
+          "severity": "medium",
+          "description_es": "Los IBP reducen la acidez gástrica necesaria para absorber el hierro. Considerar separar las tomas o usar bisglicinato de hierro (mejor absorbido sin acidez).",
+          "description_en": "PPIs reduce the gastric acidity needed for iron absorption. Consider separating doses or using iron bisglycinate (better absorbed without acidity).",
+          "description_zh": "質子幫浦抑制劑(PPI)會降低吸收鐵所需的胃酸。應考慮錯開服藥時間或使用甘胺酸亞鐵(在無胃酸環境下吸收較佳)。"
+        },
+        {
+          "with": "levotiroxina",
+          "severity": "high",
+          "description_es": "El hierro reduce significativamente la absorción de levotiroxina. Espaciar al menos 4 horas entre las dos tomas.",
+          "description_en": "Iron significantly reduces levothyroxine absorption. Space the two doses at least 4 hours apart.",
+          "description_zh": "鐵劑會顯著降低左旋甲狀腺素的吸收。兩種藥物應間隔至少4小時服用。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "paltomiel",
+        "palto miel",
+        "avocado honey syrup"
+      ],
+      "rxcui": null,
+      "label": "Paltomiel (jarabe tradicional)",
+      "label_en": "Paltomiel (traditional syrup)",
+      "label_zh": "Paltomiel (傳統糖漿)",
+      "kind": "herbal",
+      "confidence": "low",
+      "summary_es": "Jarabe tradicional latinoamericano hecho de palta (aguacate) y miel, usado popularmente para tos y dolor de garganta. La miel tiene efecto demulcente (suaviza mucosas) y antimicrobiano leve documentado en estudios de tos nocturna infantil; la palta aporta consistencia. No tiene evidencia clínica formal, pero su uso es generalmente seguro en adultos.",
+      "summary_en": "Traditional Latin American syrup made of avocado and honey, popularly used for cough and sore throat. Honey has a demulcent (mucosa-soothing) effect and mild documented antimicrobial action in studies of nighttime pediatric cough; avocado provides consistency. No formal clinical evidence, but use is generally safe in adults.",
+      "summary_zh": "傳統的拉丁美洲糖漿,由酪梨和蜂蜜製成,民間用於咳嗽和喉嚨痛。蜂蜜具有黏膜舒緩作用,在兒童夜間咳嗽的研究中也記錄到輕度抗菌作用;酪梨提供質地。沒有正式的臨床證據,但成人使用一般是安全的。",
+      "notes": "No dar miel a menores de 1 año (riesgo de botulismo infantil).",
+      "notes_en": "Do not give honey to children under 1 year (risk of infant botulism).",
+      "notes_zh": "不可給予未滿1歲的嬰兒蜂蜜(有嬰兒肉毒桿菌中毒風險)。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "propóleo",
+        "propoleo",
+        "propolis"
+      ],
+      "rxcui": null,
+      "label": "Propóleo",
+      "label_en": "Propolis",
+      "label_zh": "蜂膠",
+      "kind": "herbal",
+      "confidence": "high",
+      "summary_es": "Resina recolectada por las abejas con propiedades antimicrobianas, antiinflamatorias y cicatrizantes documentadas. Usado tópica y oralmente para afecciones de boca y garganta, heridas menores y soporte inmune. Puede provocar reacciones alérgicas en personas sensibles a productos de la abeja.",
+      "summary_en": "Resin collected by bees with documented antimicrobial, anti-inflammatory, and healing properties. Used topically and orally for mouth and throat conditions, minor wounds, and immune support. May cause allergic reactions in people sensitive to bee products.",
+      "summary_zh": "蜜蜂採集的樹脂,具有已記錄的抗菌、抗發炎和促進癒合的特性。可外用或口服,用於口腔和咽喉疾病、輕微傷口和免疫支持。對蜂產品敏感的人可能引起過敏反應。",
+      "notes": "Suspender uso si aparece sarpullido, picazón o hinchazón — pueden indicar alergia a productos de la abeja.",
+      "notes_en": "Discontinue use if rash, itching, or swelling appear — may indicate allergy to bee products.",
+      "notes_zh": "若出現皮疹、搔癢或腫脹應停止使用——可能表示對蜂產品過敏。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "naproxeno",
+        "naproxen",
+        "naprosyn",
+        "aleve"
+      ],
+      "rxcui": "7258",
+      "label": "Naproxeno",
+      "label_en": "Naproxen",
+      "label_zh": "萘普生",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "AINE de acción prolongada (12 horas) útil para dolor inflamatorio, dolor menstrual y procesos musculoesqueléticos. Mismas precauciones que otros AINE: tomar con comida, vigilar función renal y riesgo gástrico en uso prolongado.",
+      "summary_en": "Long-acting NSAID (12 hours) useful for inflammatory pain, menstrual pain, and musculoskeletal processes. Same precautions as other NSAIDs: take with food, monitor renal function and gastric risk with prolonged use.",
+      "summary_zh": "長效非類固醇抗發炎藥(作用12小時),適用於發炎性疼痛、經痛和肌肉骨骼疾病。與其他NSAID相同的注意事項:隨餐服用,長期使用需監測腎功能和胃部風險。",
+      "notes": "Tomar con comida. Uso prolongado requiere considerar gastroprotección.",
+      "notes_en": "Take with food. Prolonged use requires considering gastroprotection.",
+      "notes_zh": "應隨餐服用。長期使用需考慮加用胃黏膜保護劑。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "ketorolaco",
+        "ketorolac",
+        "toradol"
+      ],
+      "rxcui": "35827",
+      "label": "Ketorolaco",
+      "label_en": "Ketorolac",
+      "label_zh": "酮咯酸",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "AINE potente de uso a corto plazo (máximo 5 días) para dolor moderado-intenso, frecuentemente postquirúrgico o agudo. No usar de forma crónica por alto riesgo de daño renal y gastrointestinal.",
+      "summary_en": "Potent short-term-use NSAID (maximum 5 days) for moderate-to-severe pain, often post-surgical or acute. Do not use chronically due to high risk of renal and gastrointestinal damage.",
+      "summary_zh": "強效短期使用非類固醇抗發炎藥(最多5天),用於中度至重度疼痛,常用於術後或急性疼痛。不可長期使用,有腎臟和腸胃損傷的高風險。",
+      "notes": "Uso máximo 5 días. Riesgo gástrico y renal mayor que otros AINEs.",
+      "notes_en": "Maximum use 5 days. Higher gastric and renal risk than other NSAIDs.",
+      "notes_zh": "最多使用5天。胃部和腎臟風險比其他非類固醇抗發炎藥更高。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "omeprazol",
+        "omeprazole",
+        "prilosec",
+        "losec"
+      ],
+      "rxcui": "7646",
+      "label": "Omeprazol",
+      "label_en": "Omeprazole",
+      "label_zh": "奧美拉唑",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Inhibidor de la bomba de protones que reduce la producción de ácido gástrico. Indicado para reflujo, esofagitis, úlcera y gastritis. Uso prolongado (>1 año) puede reducir absorción de B12, hierro, magnesio y calcio.",
+      "summary_en": "Proton pump inhibitor that reduces gastric acid production. Indicated for reflux, esophagitis, ulcer, and gastritis. Prolonged use (>1 year) may reduce absorption of B12, iron, magnesium, and calcium.",
+      "summary_zh": "質子幫浦抑制劑,減少胃酸分泌。適用於胃食道逆流、食道炎、潰瘍和胃炎。長期使用(>1年)可能降低B12、鐵、鎂和鈣的吸收。",
+      "notes": "Tomar 30 minutos antes del desayuno. Uso prolongado requiere monitoreo de B12 y hierro.",
+      "notes_en": "Take 30 minutes before breakfast. Prolonged use requires monitoring of B12 and iron.",
+      "notes_zh": "應在早餐前30分鐘服用。長期使用需監測B12和鐵的濃度。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "pantoprazol",
+        "pantoprazole",
+        "protonix",
+        "controloc"
+      ],
+      "rxcui": "40790",
+      "label": "Pantoprazol",
+      "label_en": "Pantoprazole",
+      "label_zh": "泮托拉唑",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Inhibidor de la bomba de protones similar al omeprazol pero con menos interacciones farmacológicas (preferido si tomas varios medicamentos). Mismas precauciones a largo plazo: vigilar B12, hierro y magnesio.",
+      "summary_en": "Proton pump inhibitor similar to omeprazole but with fewer drug interactions (preferred if taking several medications). Same long-term precautions: monitor B12, iron, and magnesium.",
+      "summary_zh": "與奧美拉唑類似的質子幫浦抑制劑,但藥物交互作用較少(若服用多種藥物時較佳選擇)。相同的長期注意事項:監測B12、鐵和鎂。",
+      "notes": "Menos interacciones farmacológicas que omeprazol.",
+      "notes_en": "Fewer drug interactions than omeprazole.",
+      "notes_zh": "藥物交互作用比奧美拉唑少。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "propranolol",
+        "inderal",
+        "sumial"
+      ],
+      "rxcui": "8787",
+      "label": "Propranolol",
+      "label_en": "Propranolol",
+      "label_zh": "普潘奈",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Betabloqueante no selectivo usado en taquicardia, POTS, temblor esencial, migraña profiláctica y ansiedad por somatización (palpitaciones, temblor). Reduce la frecuencia cardíaca y la respuesta adrenérgica. Contraindicado en asma y broncoespasmo.",
+      "summary_en": "Non-selective beta-blocker used in tachycardia, POTS, essential tremor, migraine prophylaxis, and somatization anxiety (palpitations, tremor). Reduces heart rate and adrenergic response. Contraindicated in asthma and bronchospasm.",
+      "summary_zh": "非選擇性β受體阻斷劑,用於心搏過速、姿勢性心搏過速症候群(POTS)、原發性顫抖、預防偏頭痛和身體化焦慮(心悸、顫抖)。降低心率和腎上腺素反應。氣喘和支氣管痙攣患者禁用。",
+      "notes": "Contraindicado en asma. No interrumpir abruptamente — puede causar taquicardia rebote y aumento de presión arterial.",
+      "notes_en": "Contraindicated in asthma. Do not stop abruptly — may cause rebound tachycardia and increased blood pressure.",
+      "notes_zh": "氣喘患者禁用。不可突然停藥——可能導致反彈性心搏過速和血壓升高。",
+      "interactions": [
+        {
+          "with": "midodrine",
+          "severity": "medium",
+          "description_es": "Efectos farmacológicos opuestos: propranolol reduce respuesta adrenérgica, midodrine la aumenta. Su uso combinado en POTS es posible pero requiere ajuste cuidadoso.",
+          "description_en": "Opposing pharmacological effects: propranolol reduces adrenergic response, midodrine increases it. Combined use in POTS is possible but requires careful adjustment.",
+          "description_zh": "藥理作用相反:普潘奈降低腎上腺素反應,而米多君增加之。在POTS中合併使用是可能的,但需要謹慎調整劑量。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "midodrine",
+        "midodrina",
+        "proamatine",
+        "gutron"
+      ],
+      "rxcui": "30131",
+      "label": "Midodrine",
+      "label_en": "Midodrine",
+      "label_zh": "米多君",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Agonista α-adrenérgico usado para hipotensión ortostática y POTS. Aumenta la presión arterial al estar de pie, mejorando síntomas como mareo y desmayo. No tomar dentro de las 4 horas previas a acostarse (riesgo de hipertensión supina).",
+      "summary_en": "α-adrenergic agonist used for orthostatic hypotension and POTS. Increases blood pressure when standing, improving symptoms like dizziness and fainting. Do not take within 4 hours before lying down (risk of supine hypertension).",
+      "summary_zh": "α腎上腺素受體致效劑,用於姿勢性低血壓和POTS。在站立時提高血壓,改善頭暈和暈厥等症狀。就寢前4小時內不可服用(有仰臥位高血壓風險)。",
+      "notes": "No tomar dentro de las 4 horas previas a acostarse. Vigilar presión arterial supina.",
+      "notes_en": "Do not take within 4 hours before lying down. Monitor supine blood pressure.",
+      "notes_zh": "就寢前4小時內不可服用。需監測仰臥位血壓。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "ivabradina",
+        "ivabradine",
+        "corlanor",
+        "procoralan"
+      ],
+      "rxcui": "613391",
+      "label": "Ivabradina",
+      "label_en": "Ivabradine",
+      "label_zh": "依伐布雷定",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Reductor de frecuencia cardíaca específico (actúa sobre la corriente If del nodo sinusal) sin efectos sobre presión arterial. Alternativa al propranolol en POTS cuando hay intolerancia a betabloqueantes o asma comórbido. Puede causar fosfenos (destellos visuales pasajeros).",
+      "summary_en": "Specific heart-rate reducer (acts on the sinus node If current) without effects on blood pressure. Alternative to propranolol in POTS when there is intolerance to beta-blockers or comorbid asthma. May cause phosphenes (transient visual flashes).",
+      "summary_zh": "特異性心率降低劑(作用於竇房結的If電流),不影響血壓。當對β受體阻斷劑不耐受或合併氣喘時,可作為普潘奈治療POTS的替代選擇。可能引起光幻視(暫時性視覺閃光)。",
+      "notes": "Alternativa preferible a propranolol si tienes asma o broncoespasmo.",
+      "notes_en": "Preferable alternative to propranolol if you have asthma or bronchospasm.",
+      "notes_zh": "若有氣喘或支氣管痙攣,優於普潘奈作為替代選擇。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "sertralina",
+        "sertraline",
+        "zoloft",
+        "altruline"
+      ],
+      "rxcui": "36437",
+      "label": "Sertralina",
+      "label_en": "Sertraline",
+      "label_zh": "舍曲林",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Inhibidor selectivo de la recaptación de serotonina (ISRS) usado en depresión, ansiedad, trastorno de pánico, TOC y TEPT. Efecto terapéutico se establece en 4-6 semanas. La interrupción debe ser gradual.",
+      "summary_en": "Selective serotonin reuptake inhibitor (SSRI) used in depression, anxiety, panic disorder, OCD, and PTSD. Therapeutic effect develops over 4-6 weeks. Discontinuation should be gradual.",
+      "summary_zh": "選擇性血清素再攝取抑制劑(SSRI),用於憂鬱症、焦慮症、恐慌症、強迫症和創傷後壓力症候群。治療效果需4-6週才能建立。停藥應逐步進行。",
+      "notes": "Síndrome de discontinuación más leve que duloxetina pero existe. Reducción gradual recomendada.",
+      "notes_en": "Discontinuation syndrome milder than duloxetine but exists. Gradual taper recommended.",
+      "notes_zh": "停藥症候群比度洛西汀輕微但仍存在。建議逐步減量。",
+      "interactions": [
+        {
+          "with": "dextrometorfano",
+          "severity": "high",
+          "description_es": "Riesgo de síndrome serotoninérgico. Evitar combinación.",
+          "description_en": "Risk of serotonin syndrome. Avoid combination.",
+          "description_zh": "有血清素症候群風險。應避免合併使用。"
+        },
+        {
+          "with": "tramadol",
+          "severity": "high",
+          "description_es": "Riesgo de síndrome serotoninérgico y disminución del umbral convulsivo.",
+          "description_en": "Risk of serotonin syndrome and lowered seizure threshold.",
+          "description_zh": "有血清素症候群風險,並會降低癲癇發作閾值。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "fluoxetina",
+        "fluoxetine",
+        "prozac",
+        "foxetin"
+      ],
+      "rxcui": "4493",
+      "label": "Fluoxetina",
+      "label_en": "Fluoxetine",
+      "label_zh": "氟西汀",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "ISRS de vida media larga (días, no horas), lo que hace que el síndrome de discontinuación sea menos pronunciado que con otros ISRS. Indicado en depresión, TOC, bulimia y trastorno de pánico.",
+      "summary_en": "SSRI with a long half-life (days, not hours), which makes discontinuation syndrome less pronounced than with other SSRIs. Indicated for depression, OCD, bulimia, and panic disorder.",
+      "summary_zh": "半衰期較長(以天計而非小時)的SSRI,因此停藥症候群比其他SSRI輕微。適用於憂鬱症、強迫症、暴食症和恐慌症。",
+      "notes": "Vida media larga; el síndrome de discontinuación es más leve que sertralina o paroxetina.",
+      "notes_en": "Long half-life; discontinuation syndrome is milder than sertraline or paroxetine.",
+      "notes_zh": "半衰期長;停藥症候群比舍曲林或帕羅西汀輕微。",
+      "interactions": [
+        {
+          "with": "dextrometorfano",
+          "severity": "high",
+          "description_es": "Riesgo de síndrome serotoninérgico.",
+          "description_en": "Risk of serotonin syndrome.",
+          "description_zh": "有血清素症候群風險。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "escitalopram",
+        "lexapro",
+        "cipralex"
+      ],
+      "rxcui": "321988",
+      "label": "Escitalopram",
+      "label_en": "Escitalopram",
+      "label_zh": "依西普崙",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "ISRS frecuentemente bien tolerado, usado en depresión y ansiedad generalizada. Perfil de interacciones más favorable que otros ISRS. Reducción gradual al suspender.",
+      "summary_en": "Generally well-tolerated SSRI, used for depression and generalized anxiety. More favorable interaction profile than other SSRIs. Gradual taper at discontinuation.",
+      "summary_zh": "通常耐受性良好的SSRI,用於憂鬱症和廣泛性焦慮症。藥物交互作用比其他SSRI少。停藥時應逐步減量。",
+      "notes": null,
+      "interactions": [
+        {
+          "with": "dextrometorfano",
+          "severity": "high",
+          "description_es": "Riesgo de síndrome serotoninérgico.",
+          "description_en": "Risk of serotonin syndrome.",
+          "description_zh": "有血清素症候群風險。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "gabapentina",
+        "gabapentin",
+        "neurontin"
+      ],
+      "rxcui": "25480",
+      "label": "Gabapentina",
+      "label_en": "Gabapentin",
+      "label_zh": "加巴噴丁",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Anticonvulsivante usado fuera de etiqueta para dolor neuropático, fibromialgia y ansiedad. Dosis se ajusta gradualmente. Efectos comunes incluyen somnolencia, mareo y aumento de peso.",
+      "summary_en": "Anticonvulsant used off-label for neuropathic pain, fibromyalgia, and anxiety. Dose is adjusted gradually. Common effects include drowsiness, dizziness, and weight gain.",
+      "summary_zh": "抗癲癇藥,作為仿單外使用於神經病變疼痛、纖維肌痛症和焦慮症。劑量需逐步調整。常見副作用包括嗜睡、頭暈和體重增加。",
+      "notes": "Reducir dosis gradualmente al suspender. Suma efectos sedantes con otros depresores del SNC.",
+      "notes_en": "Reduce dose gradually at discontinuation. Additive sedative effects with other CNS depressants.",
+      "notes_zh": "停藥時應逐步減量。與其他中樞神經抑制劑有疊加的鎮靜作用。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "pregabalina",
+        "pregabalin",
+        "lyrica"
+      ],
+      "rxcui": "187832",
+      "label": "Pregabalina",
+      "label_en": "Pregabalin",
+      "label_zh": "普瑞巴林",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Similar a gabapentina pero con absorción más predecible y efecto generalmente más rápido. Aprobada para fibromialgia, dolor neuropático y ansiedad generalizada. Mismo perfil de efectos: somnolencia, mareo, aumento de peso.",
+      "summary_en": "Similar to gabapentin but with more predictable absorption and generally faster effect. Approved for fibromyalgia, neuropathic pain, and generalized anxiety. Same effect profile: drowsiness, dizziness, weight gain.",
+      "summary_zh": "與加巴噴丁類似,但吸收較可預測且效果通常較快。被核准用於纖維肌痛症、神經病變疼痛和廣泛性焦慮症。副作用相似:嗜睡、頭暈、體重增加。",
+      "notes": "Reducir dosis gradualmente al suspender.",
+      "notes_en": "Reduce dose gradually at discontinuation.",
+      "notes_zh": "停藥時應逐步減量。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "piridostigmina",
+        "pyridostigmine",
+        "mestinón",
+        "mestinon"
+      ],
+      "rxcui": "8841",
+      "label": "Piridostigmina (Mestinón)",
+      "label_en": "Pyridostigmine (Mestinon)",
+      "label_zh": "吡啶斯狄明 (Mestinon)",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Inhibidor de la colinesterasa que aumenta la actividad del sistema nervioso parasimpático. Usado en miastenia gravis y, fuera de etiqueta, en POTS y disautonomía para mejorar tono vagal. Efectos colinérgicos: cólicos abdominales, diarrea, sudoración aumentada, salivación.",
+      "summary_en": "Cholinesterase inhibitor that increases parasympathetic nervous system activity. Used in myasthenia gravis and, off-label, in POTS and dysautonomia to improve vagal tone. Cholinergic effects: abdominal cramps, diarrhea, increased sweating, salivation.",
+      "summary_zh": "膽鹼酯酶抑制劑,增加副交感神經系統活性。用於重症肌無力,以及仿單外使用於POTS和自律神經失調以改善迷走神經張力。膽鹼性副作用:腹痛、腹瀉、出汗增加、流涎。",
+      "notes": "Efectos colinérgicos dosis-dependientes. Empezar con dosis bajas y aumentar gradualmente.",
+      "notes_en": "Dose-dependent cholinergic effects. Start with low doses and increase gradually.",
+      "notes_zh": "膽鹼性副作用與劑量相關。應從低劑量開始,逐步增加。",
+      "interactions": [
+        {
+          "with": "propranolol",
+          "severity": "medium",
+          "description_es": "Suma de efectos bradicardizantes: ambos reducen frecuencia cardíaca por mecanismos distintos. Vigilar pulso.",
+          "description_en": "Additive bradycardia effects: both reduce heart rate through different mechanisms. Monitor pulse.",
+          "description_zh": "心搏過緩作用會疊加:兩者透過不同機制降低心率。需監測脈搏。"
+        }
+      ]
+    },
+    {
+      "aliases": [
+        "tramadol",
+        "tramal",
+        "ultram",
+        "tradol"
+      ],
+      "rxcui": "10689",
+      "label": "Tramadol",
+      "label_en": "Tramadol",
+      "label_zh": "曲馬多",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Analgésico opioide débil con actividad serotoninérgica adicional, lo que lo hace particularmente problemático en combinación con SNRI o ISRS. Riesgo de síndrome serotoninérgico, convulsiones y dependencia. Su uso requiere cuidado especial en personas que toman antidepresivos.",
+      "summary_en": "Weak opioid analgesic with additional serotonergic activity, making it particularly problematic in combination with SNRIs or SSRIs. Risk of serotonin syndrome, seizures, and dependence. Its use requires special care in people taking antidepressants.",
+      "summary_zh": "弱效鴉片類止痛藥,具有額外的血清素活性,因此與SNRI或SSRI合併使用特別有問題。有血清素症候群、癲癇發作和依賴性風險。對於正在服用抗憂鬱劑的人,使用時需特別小心。",
+      "notes": "Evitar si tomas duloxetina, sertralina, fluoxetina, escitalopram u otros serotoninérgicos.",
+      "notes_en": "Avoid if taking duloxetine, sertraline, fluoxetine, escitalopram, or other serotonergic agents.",
+      "notes_zh": "若正在服用度洛西汀、舍曲林、氟西汀、依西普崙或其他血清素類藥物應避免使用。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "levotiroxina",
+        "levothyroxine",
+        "synthroid",
+        "eutirox",
+        "letrox",
+        "t4"
+      ],
+      "rxcui": "10582",
+      "label": "Levotiroxina",
+      "label_en": "Levothyroxine",
+      "label_zh": "左旋甲狀腺素",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Hormona tiroidea sintética usada en hipotiroidismo. Su absorción es muy sensible a interacciones: requiere ayuno de 30-60 minutos antes del desayuno y se separa de calcio, hierro, magnesio, café y soja. Su dosis se ajusta con análisis periódico de TSH.",
+      "summary_en": "Synthetic thyroid hormone used in hypothyroidism. Its absorption is very sensitive to interactions: requires 30-60 minutes of fasting before breakfast and must be separated from calcium, iron, magnesium, coffee, and soy. Dose is adjusted with periodic TSH testing.",
+      "summary_zh": "用於甲狀腺機能低下的合成甲狀腺素。吸收對交互作用非常敏感:需在早餐前空腹30-60分鐘服用,並與鈣、鐵、鎂、咖啡和大豆分開。劑量需透過定期TSH檢查來調整。",
+      "notes": "Tomar en ayunas, 30-60 min antes del desayuno. Separar al menos 4 horas de hierro, calcio o magnesio.",
+      "notes_en": "Take on empty stomach, 30-60 min before breakfast. Separate at least 4 hours from iron, calcium, or magnesium.",
+      "notes_zh": "需空腹服用,早餐前30-60分鐘。應與鐵、鈣或鎂間隔至少4小時。",
+      "interactions": []
+    },
+    {
+      "aliases": [
+        "nitroglicerina",
+        "nitroglycerin",
+        "nitratos",
+        "nitrates",
+        "mononitrato de isosorbide",
+        "isosorbide mononitrate"
+      ],
+      "rxcui": "7417",
+      "label": "Nitratos (nitroglicerina, isosorbide)",
+      "label_en": "Nitrates (nitroglycerin, isosorbide)",
+      "label_zh": "硝酸鹽類 (硝化甘油、單硝酸異山梨酯)",
+      "kind": "medication",
+      "confidence": "high",
+      "summary_es": "Vasodilatadores usados en angina, insuficiencia cardíaca y crisis hipertensivas. Producen dolor de cabeza por vasodilatación cerebral, frecuentemente intenso al inicio del tratamiento. Riesgo de hipotensión postural significativa.",
+      "summary_en": "Vasodilators used in angina, heart failure, and hypertensive crises. They cause headache from cerebral vasodilation, often intense at treatment onset. Risk of significant postural hypotension.",
+      "summary_zh": "血管擴張劑,用於心絞痛、心臟衰竭和高血壓危機。會因腦血管擴張導致頭痛,治療初期常較劇烈。有顯著姿勢性低血壓風險。",
+      "notes": "No combinar con sildenafil/tadalafil/vardenafil (riesgo de hipotensión grave).",
+      "notes_en": "Do not combine with sildenafil/tadalafil/vardenafil (risk of severe hypotension).",
+      "notes_zh": "不可與西地那非/他達拉非/伐地那非合併使用(有嚴重低血壓風險)。",
+      "interactions": []
     }
   ]
 }

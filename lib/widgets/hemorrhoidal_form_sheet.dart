@@ -7,10 +7,18 @@
 //
 // EDS-hemorrhoid connective tissue link: Plackett 2014, Parol 2025,
 // Sandler 2019.
+//
+// i18n Batch A.2: fully localized. Shares several keys with the bowel
+// form (formSectionHeaderDiscomfort "MOLESTIA", formToggleBleeding
+// "sangrado", formButtonSave "GUARDAR") since these are visually and
+// semantically identical across both sheets. The note hint and titles
+// are sheet-specific because the hemorrhoidal sheet uses a simpler
+// "Nota opcional" without the bowel sheet's parenthetical examples.
 // =============================================================================
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../models/models.dart';
 import '../screens/timestamp_picker.dart';
 import 'severity_picker.dart';
@@ -93,8 +101,10 @@ class _HemorrhoidalFormState extends State<_HemorrhoidalForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.existing != null;
-    final title = isEdit ? 'EDITAR HEMORROIDE' : 'REGISTRAR HEMORROIDE';
+    final title =
+        isEdit ? l10n.hemorrhoidalFormTitleEdit : l10n.hemorrhoidalFormTitleNew;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -134,7 +144,7 @@ class _HemorrhoidalFormState extends State<_HemorrhoidalForm> {
             ),
             const SizedBox(height: 16),
             Text(
-              'MOLESTIA',
+              l10n.formSectionHeaderDiscomfort,
               style: TextStyle(
                 color: _cc.withValues(alpha: 0.7),
                 fontSize: 11,
@@ -174,7 +184,7 @@ class _HemorrhoidalFormState extends State<_HemorrhoidalForm> {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'sangrado',
+                      l10n.formToggleBleeding,
                       style: TextStyle(
                         color: _bleeding ? _ic : _cc.withValues(alpha: 0.8),
                         fontSize: 13,
@@ -191,9 +201,9 @@ class _HemorrhoidalFormState extends State<_HemorrhoidalForm> {
             TextField(
               controller: _noteCtrl,
               style: TextStyle(color: _cc),
-              decoration: const InputDecoration(
-                hintText: 'Nota opcional',
-                hintStyle: TextStyle(color: Colors.grey),
+              decoration: InputDecoration(
+                hintText: l10n.hemorrhoidalFormNoteHint,
+                hintStyle: const TextStyle(color: Colors.grey),
               ),
             ),
             const SizedBox(height: 16),
@@ -204,7 +214,7 @@ class _HemorrhoidalFormState extends State<_HemorrhoidalForm> {
               ),
               onPressed: _save,
               child: Text(
-                'GUARDAR',
+                l10n.formButtonSave,
                 style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
               ),
             ),

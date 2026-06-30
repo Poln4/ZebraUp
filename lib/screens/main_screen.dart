@@ -12,12 +12,13 @@ import '../services/profile_io_service.dart';
 import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
 import '../services/weather_service.dart';
-import '../services/medline_plus_service.dart';
+import '../services/vademecum_service.dart';
 import '../widgets/condition_info_sheet.dart';
 import '../widgets/life_event_form_sheet.dart';
 import '../widgets/fever_form_sheet.dart';
 import '../services/structural_taxonomy.dart';
 import '../services/clinical_localizations.dart';
+import '../services/condition_labels.dart';
 import '../l10n/app_localizations.dart';
 import 'onboarding_screen.dart';
 import 'hoy_tab.dart';
@@ -55,7 +56,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   // Variables para la Base de Datos Clínica, de Sabiduría y Emociones (EMA)
   List<WisdomQuote> _wisdomDatabase = [];
-  List<ClinicalArticle> _clinicalLibraryDatabase = [];
+  // _clinicalLibraryDatabase removed in C.2 — compendium now reads from
+  // _wisdomDatabase, filtering entries by `source.isNotEmpty` to skip
+  // the 3 hardcoded base quotes.
   Map<MoodQuadrant, List<EmaMood>> _moodDictionary = {}; // <--- NUEVO: Diccionario EMA
   
   WisdomQuote? _currentWisdom;
@@ -129,9 +132,24 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   Future<void> _loadLibraries() async {
     List<WisdomQuote> baseQuotes = [
-      WisdomQuote(text: "Descansar no es rendirse; es una intervención médica necesaria para tu sistema nervioso.", category: "Pacing"),
-      WisdomQuote(text: "Tus síntomas son reales, incluso cuando los exámenes de rutina no los muestran.", category: "Validación"),
-      WisdomQuote(text: "El mundo es tu papa. Hoy toca reparar.", category: "Potato Day"),
+      WisdomQuote(
+        textEs: "Descansar no es rendirse; es una intervención médica necesaria para tu sistema nervioso.",
+        textEn: "Resting is not giving up; it is a necessary medical intervention for your nervous system.",
+        textZh: "休息不是放棄;這是你的神經系統必要的醫療介入。",
+        category: "Pacing",
+      ),
+      WisdomQuote(
+        textEs: "Tus síntomas son reales, incluso cuando los exámenes de rutina no los muestran.",
+        textEn: "Your symptoms are real, even when routine tests don't show them.",
+        textZh: "你的症狀是真實的,即使常規檢查沒有顯示出來。",
+        category: "Validación",
+      ),
+      WisdomQuote(
+        textEs: "El mundo es tu papa. Hoy toca reparar.",
+        textEn: "The world is your potato. Today is for repairing.",
+        textZh: "今天是馬鈴薯日,該修復了。",
+        category: "Potato Day",
+      ),
     ];
 
     // 1. Cargar Zebra Wisdom (Datos clínicos y validación)
@@ -141,26 +159,13 @@ class _MainAppScreenState extends State<MainAppScreen> {
       final List<dynamic> jsonFacts = wisdomData['facts'] ?? [];
 
       setState(() {
-        _clinicalLibraryDatabase = jsonFacts.map((item) {
-          final fact = (item['fact_es'] ?? '').toString().trim();
-          final source = (item['citation'] ?? item['source'] ?? item['reference'] ?? item['url'] ?? '').toString().trim();
-          final firstSentence = fact.split(RegExp(r'[.!?]')).first.trim();
-          final title = firstSentence.isEmpty ? 'Dato clínico' : (firstSentence.length > 80 ? '${firstSentence.substring(0, 77)}…' : firstSentence);
-          final content = source.isEmpty ? fact : '$fact\n\nFuente: $source';
-
-          return ClinicalArticle(
-            category: item['condition'] ?? 'General',
-            title: title,
-            content: content,
-          );
-        }).toList();
-
-        _wisdomDatabase = baseQuotes + jsonFacts.map((item) {
-          return WisdomQuote(
-            text: item['fact_es'] ?? '',
-            category: item['condition'] ?? 'Dato Clínico',
-          );
-        }).toList();
+        // C.2: compendium reads WisdomQuote directly (with `source` field)
+        // — no parallel ClinicalArticle list anymore.
+        _wisdomDatabase = baseQuotes +
+            jsonFacts
+                .map((item) => WisdomQuote.fromJson(
+                    Map<String, dynamic>.from(item as Map)))
+                .toList();
       });
     } catch (e) {
       debugPrint("Error cargando zebra_wisdom.json: $e");
@@ -221,7 +226,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
     do {
       newIdx = _random.nextInt(_wisdomDatabase.length);
       safety++;
-    } while (_currentWisdom != null && _wisdomDatabase[newIdx].text == _currentWisdom!.text && safety < 10);
+    } while (_currentWisdom != null && _wisdomDatabase[newIdx].textEs == _currentWisdom!.textEs && safety < 10);
     box.put('wisdomDateKey', _getDateKey(DateTime.now()));
     box.put('wisdomIndex', newIdx);
     setState(() => _currentWisdom = _wisdomDatabase[newIdx]);
@@ -568,14 +573,21 @@ class _MainAppScreenState extends State<MainAppScreen> {
   }
 
   Future<void> _wipeAllData() async {
+    final t = AppLocalizations.of(context)!;
+    final magicWord = t.dialogWipeFinalMagicWord;
     final firstOk = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Eliminar todos los datos'),
-        content: const Text('Esta acción borra TODOS los perfiles, registros, configuraciones y caché. No se puede deshacer.\n\n¿Quieres exportar primero?'),
+        title: Text(t.dialogWipeTitle),
+        content: Text(t.dialogWipeContent),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Continuar', style: TextStyle(color: Colors.redAccent))),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(t.actionCancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(t.actionContinue,
+                  style: const TextStyle(color: Colors.redAccent))),
         ],
       ),
     );
@@ -586,26 +598,31 @@ class _MainAppScreenState extends State<MainAppScreen> {
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setDlg) => AlertDialog(
-          title: const Text('Última confirmación'),
+          title: Text(t.dialogWipeFinalTitle),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Para confirmar, escribe ELIMINAR abajo.'),
+              Text(t.dialogWipeFinalContentTemplate(magicWord)),
               const SizedBox(height: 12),
               TextField(
                 controller: typedCtrl,
                 autofocus: true,
-                decoration: const InputDecoration(hintText: 'ELIMINAR'),
+                decoration: InputDecoration(hintText: magicWord),
                 onChanged: (_) => setDlg(() {}),
               ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancelar')),
             TextButton(
-              onPressed: typedCtrl.text.trim() == 'ELIMINAR' ? () => Navigator.pop(ctx, true) : null,
-              child: const Text('Borrar todo', style: TextStyle(color: Colors.redAccent)),
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(t.actionCancel)),
+            TextButton(
+              onPressed: typedCtrl.text.trim() == magicWord
+                  ? () => Navigator.pop(ctx, true)
+                  : null,
+              child: Text(t.dialogWipeFinalButton,
+                  style: const TextStyle(color: Colors.redAccent)),
             ),
           ],
         ),
@@ -695,6 +712,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // B.2 fix: keep Intl's global default locale aligned with the active
+    // language so bare DateFormat('pattern') calls elsewhere in the app
+    // render dates in the user's language without having to thread
+    // l10n.localeName through every call site.
+    Intl.defaultLocale = widget.locale.toString();
     final contrastColor = widget.isDarkMode ? Colors.white : Colors.black;
     final inverseContrastColor = widget.isDarkMode ? Colors.black : Colors.white;
 
@@ -731,18 +753,20 @@ class _MainAppScreenState extends State<MainAppScreen> {
         ),
         actions: [
           IconButton(
-            tooltip: "Tamaño de texto",
+            tooltip: AppLocalizations.of(context)!.appBarTooltipFontSize,
             icon: Icon(Icons.text_fields, color: contrastColor),
             onPressed: () => widget.onScaleFont(widget.fontScale >= 1.4 ? 1.0 : widget.fontScale + 0.2),
           ),
           IconButton(
-            tooltip: widget.isDarkMode ? "Modo claro" : "Modo oscuro",
+            tooltip: widget.isDarkMode
+                ? AppLocalizations.of(context)!.appBarTooltipLightMode
+                : AppLocalizations.of(context)!.appBarTooltipDarkMode,
             icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode, color: contrastColor),
             onPressed: widget.onToggleTheme,
           ),
           Builder(
             builder: (ctx) => IconButton(
-              tooltip: "Configuración",
+              tooltip: AppLocalizations.of(context)!.appBarTooltipSettings,
               icon: Icon(Icons.settings_outlined, color: contrastColor, size: 28),
               onPressed: () => Scaffold.of(ctx).openEndDrawer(),
             ),
@@ -793,7 +817,13 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         return HoyTab(
           profile: _activeProfile!,
           selectedDate: _selectedDate,
-          wisdom: _currentWisdom ?? WisdomQuote(text: "Cargando sabiduría...", category: "Loading"),
+          wisdom: _currentWisdom ??
+              WisdomQuote(
+                textEs: "Cargando sabiduría...",
+                textEn: "Loading wisdom...",
+                textZh: "載入智慧中...",
+                category: "Loading",
+              ),
           contrastColor: cc,
           inverseContrastColor: ic,
           moodDictionary: _moodDictionary, // <--- NUEVO: Inyectamos el JSON dict aquí
@@ -1426,8 +1456,40 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Widget _buildCompendiumLibraryContent(Color cc, Color ic) {
+    final l10n = AppLocalizations.of(context)!;
     final savedCount = _activeProfile!.savedArticlePmids.length;
     final conditions = _activeProfile!.conditions;
+    final localeCode = l10n.localeName;
+
+    // Compute domains matched by user's profile conditions.
+    final matchedDomains = <CompendiumDomain>{};
+    for (final c in conditions) {
+      matchedDomains.addAll(domainsForUserCondition(c));
+    }
+
+    // Group facts (non-base WisdomQuotes) by domain. Filter by source so
+    // the 3 hardcoded base quotes (Pacing / Validación / Potato Day)
+    // don't leak into the clinical compendium.
+    final domainFacts = <CompendiumDomain, List<WisdomQuote>>{};
+    for (final quote in _wisdomDatabase) {
+      if (quote.source.isEmpty) continue;
+      final domain = domainForCondition(quote.category);
+      domainFacts.putIfAbsent(domain, () => []).add(quote);
+    }
+
+    // Sort: matched domains first (in enum order), then unmatched
+    // alphabetically by localized label, with "Otros" always last.
+    final allDomains = domainFacts.keys.toList();
+    allDomains.sort((a, b) {
+      if (a == CompendiumDomain.other && b != CompendiumDomain.other) return 1;
+      if (b == CompendiumDomain.other && a != CompendiumDomain.other) return -1;
+      final aMatched = matchedDomains.contains(a);
+      final bMatched = matchedDomains.contains(b);
+      if (aMatched && !bMatched) return -1;
+      if (!aMatched && bMatched) return 1;
+      return localizedDomainLabel(a, l10n)
+          .compareTo(localizedDomainLabel(b, l10n));
+    });
 
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1440,11 +1502,15 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("MIS CONDICIONES",
-                    style: TextStyle(color: cc, fontSize: 12, letterSpacing: 1, fontWeight: FontWeight.bold)),
+                Text(l10n.compendiumSectionConditionsHeader,
+                    style: TextStyle(
+                        color: cc,
+                        fontSize: 12,
+                        letterSpacing: 1,
+                        fontWeight: FontWeight.bold)),
                 const SizedBox(height: 4),
                 Text(
-                  "Toca una para leer información en español (fuente: MedlinePlus/Wiki).",
+                  l10n.compendiumSectionConditionsSubtitle,
                   style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
                 ),
                 const SizedBox(height: 10),
@@ -1455,8 +1521,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                       .map((condition) => ActionChip(
                             backgroundColor: Colors.transparent,
                             side: BorderSide(color: cc),
-                            avatar: Icon(Icons.health_and_safety_outlined, color: cc, size: 14),
-                            label: Text(condition, style: TextStyle(color: cc, fontSize: 13)),
+                            avatar: Icon(Icons.health_and_safety_outlined,
+                                color: cc, size: 14),
+                            label: Text(condition,
+                                style: TextStyle(color: cc, fontSize: 13)),
                             onPressed: () => showConditionInfoSheet(
                               context: context,
                               userCondition: condition,
@@ -1482,30 +1550,83 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 Icon(Icons.bookmark, color: cc, size: 18),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text("$savedCount artículo(s) guardado(s) — ve a Investigación.",
+                  child: Text(
+                      l10n.compendiumSavedArticlesTemplate(savedCount),
                       style: TextStyle(color: cc, fontSize: 12)),
                 ),
               ],
             ),
           ),
 
-        ..._clinicalLibraryDatabase.map((article) => Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(border: Border.all(color: cc)),
-              child: ExpansionTile(
-                iconColor: cc,
-                collapsedIconColor: cc,
-                title: Text(article.title,
-                    style: TextStyle(fontWeight: FontWeight.bold, color: cc, fontSize: 16)),
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: SelectableText(article.content,
-                        style: TextStyle(height: 1.5, color: cc, fontSize: 14)),
-                  ),
-                ],
+        // C.2 — Section header for the clinical-facts library.
+        Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 10),
+          child: Text(
+            l10n.compendiumSectionDataTitle,
+            style: TextStyle(
+              color: cc,
+              fontSize: 12,
+              letterSpacing: 1,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+
+        // C.2 — Domain expanders. User-matched first, auto-expanded.
+        ...allDomains.map((domain) {
+          final facts = domainFacts[domain]!;
+          final label = localizedDomainLabel(domain, l10n);
+          final isMatched = matchedDomains.contains(domain);
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(border: Border.all(color: cc)),
+            child: ExpansionTile(
+              initiallyExpanded: isMatched,
+              iconColor: cc,
+              collapsedIconColor: cc,
+              title: Text(
+                '$label (${facts.length})',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: cc, fontSize: 14),
               ),
-            )),
+              tilePadding: const EdgeInsets.symmetric(horizontal: 14),
+              children: facts.map((quote) {
+                final body = quote.text(localeCode);
+                return Container(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: cc.withValues(alpha: 0.2)),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      SelectableText(
+                        body,
+                        style: TextStyle(
+                            height: 1.5, color: cc, fontSize: 14),
+                      ),
+                      if (quote.source.isNotEmpty) ...[
+                        const SizedBox(height: 8),
+                        SelectableText(
+                          '${l10n.compendiumFactSourceLabel} ${quote.source}',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontStyle: FontStyle.italic,
+                            color: cc.withValues(alpha: 0.6),
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                );
+              }).toList(),
+            ),
+          );
+        }),
       ],
     );
   }
@@ -1521,12 +1642,12 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 40),
-          Text("CONFIGURACIÓN DE PERFIL",
+          Text(AppLocalizations.of(context)!.settingsProfileConfigTitle,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1, color: cc)),
           Divider(color: cc),
           const SizedBox(height: 16),
-          const Text("NOMBRE DEL PACIENTE",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(AppLocalizations.of(context)!.settingsPatientNameLabel,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
           TextField(
             controller: _profileNameController,
             style: TextStyle(color: cc, fontSize: 16),
@@ -1536,8 +1657,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             }),
           ),
           const SizedBox(height: 24),
-          const Text("COMORBILIDADES / DIAGNÓSTICOS",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(AppLocalizations.of(context)!.settingsConditionsLabel,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
           Row(
             children: [
               Expanded(
@@ -1561,9 +1682,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             ],
           ),
           const SizedBox(height: 4),
-          const Text(
-            "Toca la × para eliminar una condición. Para leer sobre ellas, ve a Clínica → Compendio.",
-            style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+          Text(
+            AppLocalizations.of(context)!.settingsConditionsHelper,
+            style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 8),
           Wrap(
@@ -1582,22 +1703,36 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 .toList(),
           ),
           const SizedBox(height: 24),
-          const Text("RELACIÓN CON ESTE PERFIL",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(AppLocalizations.of(context)!.settingsRelationshipLabel,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 4),
-          const Text(
-            "¿Para quién es este perfil? Útil si registras a alguien que cuidas.",
-            style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+          Text(
+            AppLocalizations.of(context)!.settingsRelationshipHelper,
+            style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 8),
-          Wrap(
+          Builder(builder: (ctx) {
+            final t = AppLocalizations.of(ctx)!;
+            // (storage value, display label) pairs. Storage values stay in
+            // Spanish so existing profiles keep their relationship intact
+            // across language switches.
+            final relOptions = <(String?, String)>[
+              (null, t.settingsRelationshipNone),
+              ('Yo', t.settingsRelationshipSelf),
+              ('Mi hijo/a', t.settingsRelationshipChild),
+              ('Mi pareja', t.settingsRelationshipPartner),
+              ('Mi madre/padre', t.settingsRelationshipParent),
+              ('Otro', t.settingsRelationshipOther),
+            ];
+            return Wrap(
             spacing: 6,
             runSpacing: 6,
-            children: <String?>[null, 'Yo', 'Mi hijo/a', 'Mi pareja', 'Mi madre/padre', 'Otro']
-                .map((rel) {
+            children: relOptions
+                .map((opt) {
+              final rel = opt.$1;
               final isSelected = _activeProfile!.relationship == rel ||
                   (rel == null && _activeProfile!.relationship == null);
-              final label = rel ?? '— sin especificar —';
+              final label = opt.$2;
               return InkWell(
                 onTap: () => setState(() {
                   _activeProfile!.relationship = rel;
@@ -1619,20 +1754,21 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 ),
               );
             }).toList(),
-          ),
+          );
+          }),
 
           const SizedBox(height: 24),
-          const Text("EVENTOS DE VIDA",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(AppLocalizations.of(context)!.settingsLifeEventsLabel,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 4),
-          const Text(
-            "Cosas que pueden haber impactado tu cuerpo o ánimo: viajes, accidentes, mudanzas, eventos buenos o estresantes. Aparecen como puntos morados en el calendario.",
-            style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+          Text(
+            AppLocalizations.of(context)!.settingsLifeEventsHelper,
+            style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 8),
           if (_activeProfile!.lifeEvents.isEmpty)
-            const Text("Aún no hay eventos registrados.",
-                style: TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic))
+            Text(AppLocalizations.of(context)!.settingsLifeEventsEmpty,
+                style: const TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic))
           else
             Column(
               children: (_activeProfile!.lifeEvents.toList()
@@ -1697,17 +1833,17 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
             icon: Icon(Icons.add, color: cc),
-            label: Text("AÑADIR EVENTO",
+            label: Text(AppLocalizations.of(context)!.settingsAddEventButton,
                 style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12)),
             onPressed: () => _addLifeEvent(cc, ic),
           ),
           const SizedBox(height: 24),
-          const Text("MI UBICACIÓN (PARA EL CLIMA)",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(AppLocalizations.of(context)!.settingsLocationLabel,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
           const SizedBox(height: 4),
           Text(
             _activeProfile!.homeLatitude == null
-                ? "Sin ubicación. Toca para añadir."
+                ? AppLocalizations.of(context)!.settingsLocationNone
                 : "lat ${_activeProfile!.homeLatitude!.toStringAsFixed(2)}, "
                     "lng ${_activeProfile!.homeLongitude!.toStringAsFixed(2)}",
             style: TextStyle(color: cc, fontSize: 13),
@@ -1717,7 +1853,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             style: OutlinedButton.styleFrom(side: BorderSide(color: cc)),
             icon: Icon(Icons.place_outlined, color: cc),
             label: Text(
-              _activeProfile!.homeLatitude == null ? "AÑADIR COORDENADAS" : "EDITAR COORDENADAS",
+              _activeProfile!.homeLatitude == null
+                  ? AppLocalizations.of(context)!.settingsLocationButtonAdd
+                  : AppLocalizations.of(context)!.settingsLocationButtonEdit,
               style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12),
             ),
             onPressed: () => _editLocation(),
@@ -1846,7 +1984,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             icon: Icon(Icons.person_add_alt_1_rounded, color: cc),
-            label: Text("AÑADIR NUEVO PERFIL",
+            label: Text(AppLocalizations.of(context)!.settingsAddProfileButton,
                 style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 14)),
             onPressed: () {
               _createNewProfile();
@@ -1861,8 +1999,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-              label: const Text("ELIMINAR ESTE PERFIL",
-                  style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 14)),
+              label: Text(AppLocalizations.of(context)!.settingsDeleteProfileButton,
+                  style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 14)),
               onPressed: () => _confirmDeleteProfile(),
             ),
           ],
@@ -1912,12 +2050,12 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                   fontSize: 11,
                   fontStyle: FontStyle.italic)),
           const SizedBox(height: 32),
-          Text("MIS DATOS",
+          Text(AppLocalizations.of(context)!.settingsMyDataTitle,
               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1, color: cc)),
           Divider(color: cc),
           const SizedBox(height: 8),
           Text(
-            "Tienes derecho a acceder, exportar, importar o eliminar tus datos en cualquier momento.",
+            AppLocalizations.of(context)!.settingsDataHelper,
             style: TextStyle(color: cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
           ),
           const SizedBox(height: 16),
@@ -1927,7 +2065,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
             icon: Icon(Icons.download_outlined, color: cc),
-            label: Text("EXPORTAR MIS DATOS",
+            label: Text(AppLocalizations.of(context)!.settingsExportDataButton,
                 style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13)),
             onPressed: _exportActiveProfile,
           ),
@@ -1960,15 +2098,15 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
             icon: const Icon(Icons.delete_forever_outlined, color: Colors.redAccent),
-            label: const Text(
-              "BORRAR TODO",
-              style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 13),
+            label: Text(
+              AppLocalizations.of(context)!.settingsWipeAllButton,
+              style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 13),
             ),
             onPressed: _wipeAllData,
           ),
           const SizedBox(height: 8),
           Text(
-            "Esta acción borra todos los perfiles, registros y configuraciones. Irreversible.",
+            AppLocalizations.of(context)!.settingsWipeAllHelper,
             style: TextStyle(color: cc.withValues(alpha: 0.5), fontSize: 11, fontStyle: FontStyle.italic),
           ),
         ],
@@ -1981,7 +2119,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       final newId = "${DateTime.now().millisecondsSinceEpoch}-${_profiles.length + 1}";
       final newProfile = Profile(
         id: newId,
-        name: "NUEVO PERFIL ${_profiles.length + 1}",
+        name: AppLocalizations.of(context)!
+            .settingsNewProfileNameTemplate(_profiles.length + 1),
         conditions: [],
         botiquin: [],
         symptomVault: [],
@@ -1994,16 +2133,21 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Future<void> _confirmDeleteProfile() async {
+    final t = AppLocalizations.of(context)!;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Eliminar perfil"),
-        content: Text("¿Eliminar el perfil \"${_activeProfile!.name}\" y todos sus datos? Esta acción no se puede deshacer."),
+        title: Text(t.dialogDeleteProfileTitle),
+        content: Text(
+            t.dialogDeleteProfileContentTemplate(_activeProfile!.name)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Cancelar")),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(t.actionCancel)),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text("Eliminar", style: TextStyle(color: Colors.redAccent)),
+            child: Text(t.actionDelete,
+                style: const TextStyle(color: Colors.redAccent)),
           ),
         ],
       ),
@@ -2022,34 +2166,38 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final latCtrl = TextEditingController(text: _activeProfile!.homeLatitude?.toString() ?? '');
     final lngCtrl = TextEditingController(text: _activeProfile!.homeLongitude?.toString() ?? '');
 
+    final t = AppLocalizations.of(context)!;
     final saved = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("Tu ubicación"),
+        title: Text(t.dialogLocationTitle),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Necesito latitud y longitud para traer el clima. "
-              "Busca tu ciudad en Google Maps, click derecho → copiar coordenadas.",
-              style: TextStyle(fontSize: 12),
+            Text(
+              t.dialogLocationContent,
+              style: const TextStyle(fontSize: 12),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: latCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-              decoration: const InputDecoration(hintText: "Latitud (ej. -34.61)"),
+              decoration: InputDecoration(hintText: t.dialogLocationHintLat),
             ),
             TextField(
               controller: lngCtrl,
               keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
-              decoration: const InputDecoration(hintText: "Longitud (ej. -58.38)"),
+              decoration: InputDecoration(hintText: t.dialogLocationHintLng),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Cancelar")),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Guardar")),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(t.actionCancel)),
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: Text(t.actionSave)),
         ],
       ),
     );
@@ -2059,7 +2207,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final lng = double.tryParse(lngCtrl.text.trim());
     if (lat == null || lng == null || lat.abs() > 90 || lng.abs() > 180) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Coordenadas inválidas.")));
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(t.dialogLocationInvalidSnack)));
       }
       return;
     }

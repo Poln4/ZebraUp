@@ -390,7 +390,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get bowelBucketNormal => 'normal';
 
   @override
-  String get bowelBucketDiarrea => 'diarrea';
+  String get bowelBucketDiarrhea => 'diarrea';
 
   @override
   String get sleepQualityBad => 'mal';
@@ -1444,4 +1444,708 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsCarefulModeDescription =>
       'Reduce el ruido visual: las secciones empiezan colapsadas. Tap el header para expandir lo que quieras ver.';
+
+  @override
+  String get drugKindMedication => 'Medicamento';
+
+  @override
+  String get drugKindSupplement => 'Suplemento';
+
+  @override
+  String get drugKindHerbal => 'Producto herbal';
+
+  @override
+  String get drugInteractionsInBotiquinHeader => 'Interacciones en tu botiquín';
+
+  @override
+  String get drugInteractionSeverityHigh => 'Alta';
+
+  @override
+  String get drugInteractionSeverityMedium => 'Media';
+
+  @override
+  String get drugInteractionSeverityLow => 'Baja';
+
+  @override
+  String get drugNoContentSupplement =>
+      'Suplemento — no regulado como medicamento. Consulta con tu equipo médico antes de combinarlo con otros tratamientos.';
+
+  @override
+  String get drugNoContentHerbal =>
+      'Producto herbal — evidencia clínica limitada. Consulta con tu equipo médico antes de combinarlo con otros tratamientos.';
+
+  @override
+  String drugNoContentMedlineEmpty(String rxcui) {
+    return 'MedlinePlus no devolvió información para este medicamento (RxCUI $rxcui). Puede ser un problema temporal o que la base no tenga contenido para este código.';
+  }
+
+  @override
+  String get drugNoContentUnmapped =>
+      'Aún no tenemos información detallada para este producto. Puedes buscarlo manualmente en medlineplus.gov/spanish.';
+
+  @override
+  String get drugNoContentGeneric => 'No se pudo cargar la información.';
+
+  @override
+  String get drugReadMoreMedlinePlus => 'Leer más en MedlinePlus';
+
+  @override
+  String get drugBrowserOpenError =>
+      'No se pudo abrir el navegador. Revisa tu conexión.';
+
+  @override
+  String get drugConfidenceMediumWarning =>
+      'Mapeo de confianza media — verifica con tu equipo médico si la información no coincide con tu medicamento.';
+
+  @override
+  String get drugSourceLocalCurated =>
+      'Fuente: información clínica curada localmente para esta app. No reemplaza consejo médico.';
+
+  @override
+  String get drugSourceMedlinePlus =>
+      'Fuente: MedlinePlus, Biblioteca Nacional de Medicina de EE.UU. No reemplaza consejo médico.';
+
+  @override
+  String get drugSourceNoInfo =>
+      'Sin información clínica disponible en nuestras fuentes.';
+
+  @override
+  String get drugLoadError => 'No se pudo cargar la información.';
+
+  @override
+  String get moodQuadrantActivatedUnpleasant => 'activación · malestar';
+
+  @override
+  String get moodQuadrantActivatedPleasant => 'activación · bienestar';
+
+  @override
+  String get moodQuadrantCalmUnpleasant => 'calma · malestar';
+
+  @override
+  String get moodQuadrantCalmPleasant => 'calma · bienestar';
+
+  @override
+  String get moodTeaserActivatedUnpleasant => 'tensión, ansiedad';
+
+  @override
+  String get moodTeaserActivatedPleasant => 'energía, alegría';
+
+  @override
+  String get moodTeaserCalmUnpleasant => 'agotamiento, tristeza';
+
+  @override
+  String get moodTeaserCalmPleasant => 'tranquilidad, paz';
+
+  @override
+  String get moodSheetStep1Title => '¿CÓMO TE SIENTES?';
+
+  @override
+  String get moodSheetCancel => 'cancelar';
+
+  @override
+  String get moodSheetStep2Prompt => '¿cómo me siento?';
+
+  @override
+  String get moodSheetChangeQuadrant => 'cambiar cuadrante';
+
+  @override
+  String get moodSheetAlsoFeelingHeader => 'TAMBIÉN SIENTO…';
+
+  @override
+  String get moodSheetNotesHeader => 'CONTEXTO (OPCIONAL)';
+
+  @override
+  String get moodSheetNotesPlaceholder => 'Ej. Día con mucha niebla mental…';
+
+  @override
+  String get moodSheetSaveButton => 'GUARDAR REGISTRO';
+
+  @override
+  String get moodDefinitionDialogAction => 'Entendido';
+
+  @override
+  String get moodSectionTitle => 'CÓMO ESTOY';
+
+  @override
+  String get moodSectionPrompt => '¿Cómo te sientes?';
+
+  @override
+  String get moodSectionRegisterAnother => 'Registrar otro estado';
+
+  @override
+  String get severityFunctionalAnchorNone => 'no lo noto';
+
+  @override
+  String get severityFunctionalAnchorMild => 'lo noto, pero no me detiene';
+
+  @override
+  String get severityFunctionalAnchorModerate =>
+      'me obliga a bajar el ritmo o pausar';
+
+  @override
+  String get severityFunctionalAnchorIntense =>
+      'no puedo hacer lo que tenía planeado';
+
+  @override
+  String get severityFunctionalAnchorUnbearable =>
+      'no puedo funcionar; necesito detenerme';
+
+  @override
+  String get outcomeReasonNatural => 'Cambio natural del síntoma';
+
+  @override
+  String get outcomeReasonMedicationHelped => 'Creo que ayudó este medicamento';
+
+  @override
+  String get outcomeReasonOtherTrigger =>
+      'Otro gatillo (comida, estrés, clima…)';
+
+  @override
+  String get outcomeReasonAdditionalMed => 'Tomé otro medicamento también';
+
+  @override
+  String get outcomeReasonUnsure => 'No estoy seguro/a';
+
+  @override
+  String get medicationOutcomeCoarsePending => 'Pendiente';
+
+  @override
+  String get medicationOutcomeCoarseMuchBetter => 'Mucho mejor';
+
+  @override
+  String get medicationOutcomeCoarseBetter => 'Mejor';
+
+  @override
+  String get medicationOutcomeCoarseSame => 'Igual';
+
+  @override
+  String get medicationOutcomeCoarseWorse => 'Peor';
+
+  @override
+  String get medicationOutcomeCoarseMuchWorse => 'Mucho peor';
+
+  @override
+  String get bowelFormTitleNew => 'REGISTRAR TRÁNSITO';
+
+  @override
+  String get bowelFormTitleEdit => 'EDITAR TRÁNSITO';
+
+  @override
+  String get bowelFormBristolLabel => 'tipo Bristol';
+
+  @override
+  String bowelFormBristolLegendTemplate(
+    String constipation,
+    String normal,
+    String diarrhea,
+  ) {
+    return '1-2: $constipation  ·  3-5: $normal  ·  6-7: $diarrhea';
+  }
+
+  @override
+  String get bowelFormHideBristolDetail => 'ocultar detalle';
+
+  @override
+  String get bowelFormShowBristolDetail => 'más detalle (escala de Bristol)';
+
+  @override
+  String get bowelFormSectionObservations => 'OBSERVACIONES';
+
+  @override
+  String get bowelFormToggleUrgency => 'urgencia';
+
+  @override
+  String get bowelFormToggleIncompleteEvacuation => 'evacuación incompleta';
+
+  @override
+  String get bowelFormNoteHint => 'Nota opcional (contexto, gatillo, etc.)';
+
+  @override
+  String get hemorrhoidalFormTitleNew => 'REGISTRAR HEMORROIDE';
+
+  @override
+  String get hemorrhoidalFormTitleEdit => 'EDITAR HEMORROIDE';
+
+  @override
+  String get hemorrhoidalFormNoteHint => 'Nota opcional';
+
+  @override
+  String get formSectionHeaderDiscomfort => 'MOLESTIA';
+
+  @override
+  String get formToggleBleeding => 'sangrado';
+
+  @override
+  String get formButtonSave => 'GUARDAR';
+
+  @override
+  String get structuralFormFollowupHeader => 'SEGUIMIENTO';
+
+  @override
+  String get structuralFormFollowupResolvedQuestion => '¿Está resuelto?';
+
+  @override
+  String structuralFormFollowupResolvedDateTemplate(String date) {
+    return 'Resuelto el $date';
+  }
+
+  @override
+  String get structuralFormFollowupStillPainfulQuestion => '¿Todavía duele?';
+
+  @override
+  String get structuralFormFollowupStillPainfulSubtitle =>
+      'Cerró visiblemente pero el dolor sigue';
+
+  @override
+  String bowelLogBristolTypeTemplate(int type) {
+    return 'tipo $type';
+  }
+
+  @override
+  String get bowelLogTagUrgency => 'urgencia';
+
+  @override
+  String get bowelLogTagBleeding => 'sangrado';
+
+  @override
+  String get bowelLogTagIncomplete => 'incompleta';
+
+  @override
+  String get hemorrhoidalLogLabel => 'hemorroide';
+
+  @override
+  String get hemorrhoidalLogTagBleeding => 'sangrado';
+
+  @override
+  String get symptomLogTagUnrated => 'sin rating';
+
+  @override
+  String get hoySectionPendingHeader => 'Pendientes';
+
+  @override
+  String get hoyOutcomeForYour => ' para tu ';
+
+  @override
+  String get hoyOutcomeHideReasons => 'Ocultar';
+
+  @override
+  String get hoyBowelCounterToday => 'última evacuación: hoy';
+
+  @override
+  String get hoyBowelCounterYesterday => 'última evacuación: ayer';
+
+  @override
+  String hoyBowelCounterDaysAgoTemplate(int days) {
+    return 'última evacuación: hace $days días';
+  }
+
+  @override
+  String get hoyNarrativeEmptyPacing =>
+      '🛡️ Día de descanso. Aún no has registrado nada — está bien.';
+
+  @override
+  String get hoyNarrativeEmpty =>
+      'Aún no has registrado nada hoy. ¿Cómo va todo?';
+
+  @override
+  String hoyNarrativeSymptomsSingleTemplate(String name, String severity) {
+    return 'Registraste 1 síntoma: $name ($severity).';
+  }
+
+  @override
+  String hoyNarrativeSymptomsManyTemplate(
+    int count,
+    String name,
+    String severity,
+  ) {
+    return 'Registraste $count síntomas — el más fuerte fue $name ($severity).';
+  }
+
+  @override
+  String hoyNarrativeStructuralSingleTemplate(String zone) {
+    return 'Tuviste 1 evento estructural en $zone.';
+  }
+
+  @override
+  String hoyNarrativeStructuralManyTemplate(int count) {
+    return 'Tuviste $count eventos estructurales hoy.';
+  }
+
+  @override
+  String hoyNarrativeDosesSingleTemplate(String meds) {
+    return 'Tomaste 1 dosis: $meds.';
+  }
+
+  @override
+  String hoyNarrativeDosesManyTemplate(int count, String meds) {
+    return 'Tomaste $count dosis: $meds.';
+  }
+
+  @override
+  String hoyNarrativeDosesAndMore(int count) {
+    return ' y $count más';
+  }
+
+  @override
+  String hoyNarrativeEmaStatesTemplate(String states) {
+    return 'Tus estados y sensaciones registradas: $states.';
+  }
+
+  @override
+  String get hoyNarrativeEmaStatesEllipsis => '...';
+
+  @override
+  String get hoyNarrativePacingTrailer =>
+      '🛡️ Te diste permiso para descansar. Eso cuenta.';
+
+  @override
+  String get hoyHeaderDatePattern => 'EEEE d \'de\' MMMM';
+
+  @override
+  String movementModalTitleRegisterTemplate(String name) {
+    return 'REGISTRAR: $name';
+  }
+
+  @override
+  String movementModalTitleEditTemplate(String name) {
+    return 'EDITAR: $name';
+  }
+
+  @override
+  String get movementModalHintDuration => 'Duración (min)';
+
+  @override
+  String get movementModalHintSets => 'Sets';
+
+  @override
+  String get movementModalHintReps => 'Reps';
+
+  @override
+  String get movementModalHintHeartRate =>
+      'Frecuencia cardíaca opcional (ej. 70→110)';
+
+  @override
+  String movementModalEffortLabelTemplate(int value) {
+    return 'Esfuerzo: $value/10';
+  }
+
+  @override
+  String movementModalFeelingLabelTemplate(int value) {
+    return 'Cómo me sentí: $value/5';
+  }
+
+  @override
+  String get movementFeelingPainOrInjury => '🤕 Con dolor / lesión';
+
+  @override
+  String get movementFeelingUncomfortable =>
+      '😟 Con incomodidad / preocupación';
+
+  @override
+  String get movementFeelingNeutral => '😐 Neutral';
+
+  @override
+  String get movementFeelingRelaxed => '😊 Bien';
+
+  @override
+  String get movementFeelingStrongConfident => '💪 Con fuerza y seguridad';
+
+  @override
+  String get movementPainLevelNone => 'nada';
+
+  @override
+  String get movementPainLevelMild => 'leve';
+
+  @override
+  String get movementPainLevelModerate => 'moderado';
+
+  @override
+  String get movementPainLevelIntense => 'intenso';
+
+  @override
+  String get movementPainLevelSevere => 'severo';
+
+  @override
+  String movementPainDeltaImprovedTemplate(int delta) {
+    String _temp0 = intl.Intl.pluralLogic(
+      delta,
+      locale: localeName,
+      other: '$delta niveles',
+      one: '1 nivel',
+    );
+    return 'Mejoraste $_temp0';
+  }
+
+  @override
+  String movementPainDeltaWorseTemplate(int delta) {
+    String _temp0 = intl.Intl.pluralLogic(
+      delta,
+      locale: localeName,
+      other: '$delta niveles',
+      one: '1 nivel',
+    );
+    return 'Empeoraste $_temp0';
+  }
+
+  @override
+  String get movementPainDeltaUnchanged => 'Sin cambios';
+
+  @override
+  String movementLogEntryEffortTemplate(int value) {
+    return 'esfuerzo $value/10';
+  }
+
+  @override
+  String movementLogEntryFeelingTemplate(int value) {
+    return 'sentir $value/5';
+  }
+
+  @override
+  String movementLogEntryDeltaImprovedTemplate(int delta) {
+    return '↓$delta niv.';
+  }
+
+  @override
+  String movementLogEntryDeltaWorseTemplate(int delta) {
+    return '↑$delta niv.';
+  }
+
+  @override
+  String get movementLogEntryDeltaUnchanged => 'sin cambio';
+
+  @override
+  String get movementLogEntryTherapyDeltaSteady => '=';
+
+  @override
+  String get appBarTooltipFontSize => 'Tamaño de texto';
+
+  @override
+  String get appBarTooltipDarkMode => 'Modo oscuro';
+
+  @override
+  String get appBarTooltipLightMode => 'Modo claro';
+
+  @override
+  String get appBarTooltipSettings => 'Configuración';
+
+  @override
+  String get actionDelete => 'Eliminar';
+
+  @override
+  String get settingsProfileConfigTitle => 'CONFIGURACIÓN DE PERFIL';
+
+  @override
+  String get settingsMyDataTitle => 'MIS DATOS';
+
+  @override
+  String get settingsPatientNameLabel => 'NOMBRE DEL PACIENTE';
+
+  @override
+  String get settingsConditionsLabel => 'COMORBILIDADES / DIAGNÓSTICOS';
+
+  @override
+  String get settingsRelationshipLabel => 'RELACIÓN CON ESTE PERFIL';
+
+  @override
+  String get settingsLifeEventsLabel => 'EVENTOS DE VIDA';
+
+  @override
+  String get settingsLocationLabel => 'MI UBICACIÓN (PARA EL CLIMA)';
+
+  @override
+  String get settingsConditionsHelper =>
+      'Toca la × para eliminar una condición. Para leer sobre ellas, ve a Clínica → Compendio.';
+
+  @override
+  String get settingsRelationshipHelper =>
+      '¿Para quién es este perfil? Útil si registras a alguien que cuidas.';
+
+  @override
+  String get settingsLifeEventsHelper =>
+      'Cosas que pueden haber impactado tu cuerpo o ánimo: viajes, accidentes, mudanzas, eventos buenos o estresantes. Aparecen como puntos morados en el calendario.';
+
+  @override
+  String get settingsDataHelper =>
+      'Tienes derecho a acceder, exportar, importar o eliminar tus datos en cualquier momento.';
+
+  @override
+  String get settingsWipeAllHelper =>
+      'Esta acción borra todos los perfiles, registros y configuraciones. Irreversible.';
+
+  @override
+  String get settingsRelationshipSelf => 'Yo';
+
+  @override
+  String get settingsRelationshipChild => 'Mi hijo/a';
+
+  @override
+  String get settingsRelationshipPartner => 'Mi pareja';
+
+  @override
+  String get settingsRelationshipParent => 'Mi madre/padre';
+
+  @override
+  String get settingsRelationshipOther => 'Otro';
+
+  @override
+  String get settingsRelationshipNone => '— sin especificar —';
+
+  @override
+  String get settingsLifeEventsEmpty => 'Aún no hay eventos registrados.';
+
+  @override
+  String get settingsAddEventButton => 'AÑADIR EVENTO';
+
+  @override
+  String get settingsLocationNone => 'Sin ubicación. Toca para añadir.';
+
+  @override
+  String get settingsLocationButtonAdd => 'AÑADIR COORDENADAS';
+
+  @override
+  String get settingsLocationButtonEdit => 'EDITAR COORDENADAS';
+
+  @override
+  String get settingsAddProfileButton => 'AÑADIR NUEVO PERFIL';
+
+  @override
+  String get settingsDeleteProfileButton => 'ELIMINAR ESTE PERFIL';
+
+  @override
+  String get settingsExportDataButton => 'EXPORTAR MIS DATOS';
+
+  @override
+  String get settingsWipeAllButton => 'BORRAR TODO';
+
+  @override
+  String settingsNewProfileNameTemplate(int number) {
+    return 'NUEVO PERFIL $number';
+  }
+
+  @override
+  String get dialogWipeTitle => 'Eliminar todos los datos';
+
+  @override
+  String get dialogWipeContent =>
+      'Esta acción borra TODOS los perfiles, registros, configuraciones y caché. No se puede deshacer.\n\n¿Quieres exportar primero?';
+
+  @override
+  String get dialogWipeFinalTitle => 'Última confirmación';
+
+  @override
+  String dialogWipeFinalContentTemplate(String magicWord) {
+    return 'Para confirmar, escribe $magicWord abajo.';
+  }
+
+  @override
+  String get dialogWipeFinalMagicWord => 'ELIMINAR';
+
+  @override
+  String get dialogWipeFinalButton => 'Borrar todo';
+
+  @override
+  String get dialogDeleteProfileTitle => 'Eliminar perfil';
+
+  @override
+  String dialogDeleteProfileContentTemplate(String name) {
+    return '¿Eliminar el perfil \"$name\" y todos sus datos? Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get dialogLocationTitle => 'Tu ubicación';
+
+  @override
+  String get dialogLocationContent =>
+      'Necesito latitud y longitud para traer el clima. Busca tu ciudad en Google Maps, click derecho → copiar coordenadas.';
+
+  @override
+  String get dialogLocationHintLat => 'Latitud (ej. -34.61)';
+
+  @override
+  String get dialogLocationHintLng => 'Longitud (ej. -58.38)';
+
+  @override
+  String get dialogLocationInvalidSnack => 'Coordenadas inválidas.';
+
+  @override
+  String get therapyHintArea => 'Zona (ej. cervicales)';
+
+  @override
+  String get therapySectionPainBefore => 'DOLOR ANTES';
+
+  @override
+  String get therapySectionPainAfter => 'DOLOR DESPUÉS';
+
+  @override
+  String get therapyActionMoreDetails =>
+      'más detalles (terapeuta, costo, nota)';
+
+  @override
+  String get therapyHintTherapist => 'Terapeuta / lugar (opcional)';
+
+  @override
+  String get therapyHintCost => 'Costo (opcional)';
+
+  @override
+  String get therapyHintNote => 'Nota (opcional)';
+
+  @override
+  String get therapyActionSaveChanges => 'GUARDAR CAMBIOS';
+
+  @override
+  String get therapyActionLog => 'REGISTRAR';
+
+  @override
+  String get compendiumSectionConditionsHeader => 'MIS CONDICIONES';
+
+  @override
+  String get compendiumSectionConditionsSubtitle =>
+      'Toca una para leer información clínica (fuente: MedlinePlus).';
+
+  @override
+  String compendiumSavedArticlesTemplate(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count artículos guardados',
+      one: '1 artículo guardado',
+    );
+    return '$_temp0 — ve a Investigación.';
+  }
+
+  @override
+  String get compendiumSectionDataTitle => 'DATOS CLÍNICOS';
+
+  @override
+  String get compendiumFactSourceLabel => 'Fuente:';
+
+  @override
+  String investigationConditionArticleCountTemplate(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count artículos',
+      one: '1 artículo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get headacheSheetTitle => 'Detalle de tu cefalea';
+
+  @override
+  String get headacheSheetSubtitle =>
+      'Marca lo que aplique. Puedes saltar este paso si prefieres.';
+
+  @override
+  String get actionSkip => 'Saltar';
+
+  @override
+  String get headacheActionSaveDetail => 'Guardar detalle';
+
+  @override
+  String get headacheThunderclapWarningTitle => 'Posible emergencia';
+
+  @override
+  String get headacheThunderclapWarningConfirm => 'Lo entiendo, continuar';
 }

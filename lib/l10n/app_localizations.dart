@@ -755,11 +755,11 @@ abstract class AppLocalizations {
   /// **'normal'**
   String get bowelBucketNormal;
 
-  /// No description provided for @bowelBucketDiarrea.
+  /// No description provided for @bowelBucketDiarrhea.
   ///
   /// In es, this message translates to:
   /// **'diarrea'**
-  String get bowelBucketDiarrea;
+  String get bowelBucketDiarrhea;
 
   /// No description provided for @sleepQualityBad.
   ///
@@ -2554,6 +2554,1190 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Reduce el ruido visual: las secciones empiezan colapsadas. Tap el header para expandir lo que quieras ver.'**
   String get settingsCarefulModeDescription;
+
+  /// No description provided for @drugKindMedication.
+  ///
+  /// In es, this message translates to:
+  /// **'Medicamento'**
+  String get drugKindMedication;
+
+  /// No description provided for @drugKindSupplement.
+  ///
+  /// In es, this message translates to:
+  /// **'Suplemento'**
+  String get drugKindSupplement;
+
+  /// No description provided for @drugKindHerbal.
+  ///
+  /// In es, this message translates to:
+  /// **'Producto herbal'**
+  String get drugKindHerbal;
+
+  /// No description provided for @drugInteractionsInBotiquinHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'Interacciones en tu botiquín'**
+  String get drugInteractionsInBotiquinHeader;
+
+  /// No description provided for @drugInteractionSeverityHigh.
+  ///
+  /// In es, this message translates to:
+  /// **'Alta'**
+  String get drugInteractionSeverityHigh;
+
+  /// No description provided for @drugInteractionSeverityMedium.
+  ///
+  /// In es, this message translates to:
+  /// **'Media'**
+  String get drugInteractionSeverityMedium;
+
+  /// No description provided for @drugInteractionSeverityLow.
+  ///
+  /// In es, this message translates to:
+  /// **'Baja'**
+  String get drugInteractionSeverityLow;
+
+  /// No description provided for @drugNoContentSupplement.
+  ///
+  /// In es, this message translates to:
+  /// **'Suplemento — no regulado como medicamento. Consulta con tu equipo médico antes de combinarlo con otros tratamientos.'**
+  String get drugNoContentSupplement;
+
+  /// No description provided for @drugNoContentHerbal.
+  ///
+  /// In es, this message translates to:
+  /// **'Producto herbal — evidencia clínica limitada. Consulta con tu equipo médico antes de combinarlo con otros tratamientos.'**
+  String get drugNoContentHerbal;
+
+  /// No description provided for @drugNoContentMedlineEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'MedlinePlus no devolvió información para este medicamento (RxCUI {rxcui}). Puede ser un problema temporal o que la base no tenga contenido para este código.'**
+  String drugNoContentMedlineEmpty(String rxcui);
+
+  /// No description provided for @drugNoContentUnmapped.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no tenemos información detallada para este producto. Puedes buscarlo manualmente en medlineplus.gov/spanish.'**
+  String get drugNoContentUnmapped;
+
+  /// No description provided for @drugNoContentGeneric.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar la información.'**
+  String get drugNoContentGeneric;
+
+  /// No description provided for @drugReadMoreMedlinePlus.
+  ///
+  /// In es, this message translates to:
+  /// **'Leer más en MedlinePlus'**
+  String get drugReadMoreMedlinePlus;
+
+  /// No description provided for @drugBrowserOpenError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo abrir el navegador. Revisa tu conexión.'**
+  String get drugBrowserOpenError;
+
+  /// No description provided for @drugConfidenceMediumWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Mapeo de confianza media — verifica con tu equipo médico si la información no coincide con tu medicamento.'**
+  String get drugConfidenceMediumWarning;
+
+  /// No description provided for @drugSourceLocalCurated.
+  ///
+  /// In es, this message translates to:
+  /// **'Fuente: información clínica curada localmente para esta app. No reemplaza consejo médico.'**
+  String get drugSourceLocalCurated;
+
+  /// No description provided for @drugSourceMedlinePlus.
+  ///
+  /// In es, this message translates to:
+  /// **'Fuente: MedlinePlus, Biblioteca Nacional de Medicina de EE.UU. No reemplaza consejo médico.'**
+  String get drugSourceMedlinePlus;
+
+  /// No description provided for @drugSourceNoInfo.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin información clínica disponible en nuestras fuentes.'**
+  String get drugSourceNoInfo;
+
+  /// No description provided for @drugLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo cargar la información.'**
+  String get drugLoadError;
+
+  /// No description provided for @moodQuadrantActivatedUnpleasant.
+  ///
+  /// In es, this message translates to:
+  /// **'activación · malestar'**
+  String get moodQuadrantActivatedUnpleasant;
+
+  /// No description provided for @moodQuadrantActivatedPleasant.
+  ///
+  /// In es, this message translates to:
+  /// **'activación · bienestar'**
+  String get moodQuadrantActivatedPleasant;
+
+  /// No description provided for @moodQuadrantCalmUnpleasant.
+  ///
+  /// In es, this message translates to:
+  /// **'calma · malestar'**
+  String get moodQuadrantCalmUnpleasant;
+
+  /// No description provided for @moodQuadrantCalmPleasant.
+  ///
+  /// In es, this message translates to:
+  /// **'calma · bienestar'**
+  String get moodQuadrantCalmPleasant;
+
+  /// No description provided for @moodTeaserActivatedUnpleasant.
+  ///
+  /// In es, this message translates to:
+  /// **'tensión, ansiedad'**
+  String get moodTeaserActivatedUnpleasant;
+
+  /// No description provided for @moodTeaserActivatedPleasant.
+  ///
+  /// In es, this message translates to:
+  /// **'energía, alegría'**
+  String get moodTeaserActivatedPleasant;
+
+  /// No description provided for @moodTeaserCalmUnpleasant.
+  ///
+  /// In es, this message translates to:
+  /// **'agotamiento, tristeza'**
+  String get moodTeaserCalmUnpleasant;
+
+  /// No description provided for @moodTeaserCalmPleasant.
+  ///
+  /// In es, this message translates to:
+  /// **'tranquilidad, paz'**
+  String get moodTeaserCalmPleasant;
+
+  /// No description provided for @moodSheetStep1Title.
+  ///
+  /// In es, this message translates to:
+  /// **'¿CÓMO TE SIENTES?'**
+  String get moodSheetStep1Title;
+
+  /// No description provided for @moodSheetCancel.
+  ///
+  /// In es, this message translates to:
+  /// **'cancelar'**
+  String get moodSheetCancel;
+
+  /// No description provided for @moodSheetStep2Prompt.
+  ///
+  /// In es, this message translates to:
+  /// **'¿cómo me siento?'**
+  String get moodSheetStep2Prompt;
+
+  /// No description provided for @moodSheetChangeQuadrant.
+  ///
+  /// In es, this message translates to:
+  /// **'cambiar cuadrante'**
+  String get moodSheetChangeQuadrant;
+
+  /// No description provided for @moodSheetAlsoFeelingHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'TAMBIÉN SIENTO…'**
+  String get moodSheetAlsoFeelingHeader;
+
+  /// No description provided for @moodSheetNotesHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'CONTEXTO (OPCIONAL)'**
+  String get moodSheetNotesHeader;
+
+  /// No description provided for @moodSheetNotesPlaceholder.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej. Día con mucha niebla mental…'**
+  String get moodSheetNotesPlaceholder;
+
+  /// No description provided for @moodSheetSaveButton.
+  ///
+  /// In es, this message translates to:
+  /// **'GUARDAR REGISTRO'**
+  String get moodSheetSaveButton;
+
+  /// No description provided for @moodDefinitionDialogAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Entendido'**
+  String get moodDefinitionDialogAction;
+
+  /// No description provided for @moodSectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'CÓMO ESTOY'**
+  String get moodSectionTitle;
+
+  /// No description provided for @moodSectionPrompt.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo te sientes?'**
+  String get moodSectionPrompt;
+
+  /// No description provided for @moodSectionRegisterAnother.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar otro estado'**
+  String get moodSectionRegisterAnother;
+
+  /// No description provided for @severityFunctionalAnchorNone.
+  ///
+  /// In es, this message translates to:
+  /// **'no lo noto'**
+  String get severityFunctionalAnchorNone;
+
+  /// No description provided for @severityFunctionalAnchorMild.
+  ///
+  /// In es, this message translates to:
+  /// **'lo noto, pero no me detiene'**
+  String get severityFunctionalAnchorMild;
+
+  /// No description provided for @severityFunctionalAnchorModerate.
+  ///
+  /// In es, this message translates to:
+  /// **'me obliga a bajar el ritmo o pausar'**
+  String get severityFunctionalAnchorModerate;
+
+  /// No description provided for @severityFunctionalAnchorIntense.
+  ///
+  /// In es, this message translates to:
+  /// **'no puedo hacer lo que tenía planeado'**
+  String get severityFunctionalAnchorIntense;
+
+  /// No description provided for @severityFunctionalAnchorUnbearable.
+  ///
+  /// In es, this message translates to:
+  /// **'no puedo funcionar; necesito detenerme'**
+  String get severityFunctionalAnchorUnbearable;
+
+  /// No description provided for @outcomeReasonNatural.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambio natural del síntoma'**
+  String get outcomeReasonNatural;
+
+  /// No description provided for @outcomeReasonMedicationHelped.
+  ///
+  /// In es, this message translates to:
+  /// **'Creo que ayudó este medicamento'**
+  String get outcomeReasonMedicationHelped;
+
+  /// No description provided for @outcomeReasonOtherTrigger.
+  ///
+  /// In es, this message translates to:
+  /// **'Otro gatillo (comida, estrés, clima…)'**
+  String get outcomeReasonOtherTrigger;
+
+  /// No description provided for @outcomeReasonAdditionalMed.
+  ///
+  /// In es, this message translates to:
+  /// **'Tomé otro medicamento también'**
+  String get outcomeReasonAdditionalMed;
+
+  /// No description provided for @outcomeReasonUnsure.
+  ///
+  /// In es, this message translates to:
+  /// **'No estoy seguro/a'**
+  String get outcomeReasonUnsure;
+
+  /// No description provided for @medicationOutcomeCoarsePending.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendiente'**
+  String get medicationOutcomeCoarsePending;
+
+  /// No description provided for @medicationOutcomeCoarseMuchBetter.
+  ///
+  /// In es, this message translates to:
+  /// **'Mucho mejor'**
+  String get medicationOutcomeCoarseMuchBetter;
+
+  /// No description provided for @medicationOutcomeCoarseBetter.
+  ///
+  /// In es, this message translates to:
+  /// **'Mejor'**
+  String get medicationOutcomeCoarseBetter;
+
+  /// No description provided for @medicationOutcomeCoarseSame.
+  ///
+  /// In es, this message translates to:
+  /// **'Igual'**
+  String get medicationOutcomeCoarseSame;
+
+  /// No description provided for @medicationOutcomeCoarseWorse.
+  ///
+  /// In es, this message translates to:
+  /// **'Peor'**
+  String get medicationOutcomeCoarseWorse;
+
+  /// No description provided for @medicationOutcomeCoarseMuchWorse.
+  ///
+  /// In es, this message translates to:
+  /// **'Mucho peor'**
+  String get medicationOutcomeCoarseMuchWorse;
+
+  /// No description provided for @bowelFormTitleNew.
+  ///
+  /// In es, this message translates to:
+  /// **'REGISTRAR TRÁNSITO'**
+  String get bowelFormTitleNew;
+
+  /// No description provided for @bowelFormTitleEdit.
+  ///
+  /// In es, this message translates to:
+  /// **'EDITAR TRÁNSITO'**
+  String get bowelFormTitleEdit;
+
+  /// No description provided for @bowelFormBristolLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'tipo Bristol'**
+  String get bowelFormBristolLabel;
+
+  /// Legend below the Bristol Stool Scale picker, showing which BSS numbers map to which bucket. Placeholders receive the localized BowelBucket labels so the legend stays in sync with the bucket cards above.
+  ///
+  /// In es, this message translates to:
+  /// **'1-2: {constipation}  ·  3-5: {normal}  ·  6-7: {diarrhea}'**
+  String bowelFormBristolLegendTemplate(
+    String constipation,
+    String normal,
+    String diarrhea,
+  );
+
+  /// No description provided for @bowelFormHideBristolDetail.
+  ///
+  /// In es, this message translates to:
+  /// **'ocultar detalle'**
+  String get bowelFormHideBristolDetail;
+
+  /// No description provided for @bowelFormShowBristolDetail.
+  ///
+  /// In es, this message translates to:
+  /// **'más detalle (escala de Bristol)'**
+  String get bowelFormShowBristolDetail;
+
+  /// No description provided for @bowelFormSectionObservations.
+  ///
+  /// In es, this message translates to:
+  /// **'OBSERVACIONES'**
+  String get bowelFormSectionObservations;
+
+  /// No description provided for @bowelFormToggleUrgency.
+  ///
+  /// In es, this message translates to:
+  /// **'urgencia'**
+  String get bowelFormToggleUrgency;
+
+  /// No description provided for @bowelFormToggleIncompleteEvacuation.
+  ///
+  /// In es, this message translates to:
+  /// **'evacuación incompleta'**
+  String get bowelFormToggleIncompleteEvacuation;
+
+  /// No description provided for @bowelFormNoteHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota opcional (contexto, gatillo, etc.)'**
+  String get bowelFormNoteHint;
+
+  /// No description provided for @hemorrhoidalFormTitleNew.
+  ///
+  /// In es, this message translates to:
+  /// **'REGISTRAR HEMORROIDE'**
+  String get hemorrhoidalFormTitleNew;
+
+  /// No description provided for @hemorrhoidalFormTitleEdit.
+  ///
+  /// In es, this message translates to:
+  /// **'EDITAR HEMORROIDE'**
+  String get hemorrhoidalFormTitleEdit;
+
+  /// No description provided for @hemorrhoidalFormNoteHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota opcional'**
+  String get hemorrhoidalFormNoteHint;
+
+  /// No description provided for @formSectionHeaderDiscomfort.
+  ///
+  /// In es, this message translates to:
+  /// **'MOLESTIA'**
+  String get formSectionHeaderDiscomfort;
+
+  /// No description provided for @formToggleBleeding.
+  ///
+  /// In es, this message translates to:
+  /// **'sangrado'**
+  String get formToggleBleeding;
+
+  /// No description provided for @formButtonSave.
+  ///
+  /// In es, this message translates to:
+  /// **'GUARDAR'**
+  String get formButtonSave;
+
+  /// No description provided for @structuralFormFollowupHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'SEGUIMIENTO'**
+  String get structuralFormFollowupHeader;
+
+  /// No description provided for @structuralFormFollowupResolvedQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Está resuelto?'**
+  String get structuralFormFollowupResolvedQuestion;
+
+  /// Label shown below the 'is it resolved?' switch once the user has set a resolved-at date. The {date} placeholder receives a pre-formatted date string from the Dart side (using DateFormat for the active locale).
+  ///
+  /// In es, this message translates to:
+  /// **'Resuelto el {date}'**
+  String structuralFormFollowupResolvedDateTemplate(String date);
+
+  /// No description provided for @structuralFormFollowupStillPainfulQuestion.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Todavía duele?'**
+  String get structuralFormFollowupStillPainfulQuestion;
+
+  /// No description provided for @structuralFormFollowupStillPainfulSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cerró visiblemente pero el dolor sigue'**
+  String get structuralFormFollowupStillPainfulSubtitle;
+
+  /// Suffix shown after the bucket name in the bowel render line when the user has expanded the Bristol detail and picked a 1-7 type. Rendered inline as 'tipo 4', 'type 4', '類型 4'.
+  ///
+  /// In es, this message translates to:
+  /// **'tipo {type}'**
+  String bowelLogBristolTypeTemplate(int type);
+
+  /// No description provided for @bowelLogTagUrgency.
+  ///
+  /// In es, this message translates to:
+  /// **'urgencia'**
+  String get bowelLogTagUrgency;
+
+  /// No description provided for @bowelLogTagBleeding.
+  ///
+  /// In es, this message translates to:
+  /// **'sangrado'**
+  String get bowelLogTagBleeding;
+
+  /// No description provided for @bowelLogTagIncomplete.
+  ///
+  /// In es, this message translates to:
+  /// **'incompleta'**
+  String get bowelLogTagIncomplete;
+
+  /// No description provided for @hemorrhoidalLogLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'hemorroide'**
+  String get hemorrhoidalLogLabel;
+
+  /// No description provided for @hemorrhoidalLogTagBleeding.
+  ///
+  /// In es, this message translates to:
+  /// **'sangrado'**
+  String get hemorrhoidalLogTagBleeding;
+
+  /// No description provided for @symptomLogTagUnrated.
+  ///
+  /// In es, this message translates to:
+  /// **'sin rating'**
+  String get symptomLogTagUnrated;
+
+  /// No description provided for @hoySectionPendingHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'Pendientes'**
+  String get hoySectionPendingHeader;
+
+  /// Connective phrase inside the outcome card RichText. Bridges the medication name with the symptom name. In Spanish it's ' para tu ' (with leading and trailing spaces). zh-TW likely needs no spaces.
+  ///
+  /// In es, this message translates to:
+  /// **' para tu '**
+  String get hoyOutcomeForYour;
+
+  /// No description provided for @hoyOutcomeHideReasons.
+  ///
+  /// In es, this message translates to:
+  /// **'Ocultar'**
+  String get hoyOutcomeHideReasons;
+
+  /// No description provided for @hoyBowelCounterToday.
+  ///
+  /// In es, this message translates to:
+  /// **'última evacuación: hoy'**
+  String get hoyBowelCounterToday;
+
+  /// No description provided for @hoyBowelCounterYesterday.
+  ///
+  /// In es, this message translates to:
+  /// **'última evacuación: ayer'**
+  String get hoyBowelCounterYesterday;
+
+  /// Days-ago label in the bowel counter chip.
+  ///
+  /// In es, this message translates to:
+  /// **'última evacuación: hace {days} días'**
+  String hoyBowelCounterDaysAgoTemplate(int days);
+
+  /// No description provided for @hoyNarrativeEmptyPacing.
+  ///
+  /// In es, this message translates to:
+  /// **'🛡️ Día de descanso. Aún no has registrado nada — está bien.'**
+  String get hoyNarrativeEmptyPacing;
+
+  /// No description provided for @hoyNarrativeEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no has registrado nada hoy. ¿Cómo va todo?'**
+  String get hoyNarrativeEmpty;
+
+  /// Narrative summary when exactly 1 symptom was logged. {name} is the symptom name lowercased, {severity} is the localized severity label lowercased.
+  ///
+  /// In es, this message translates to:
+  /// **'Registraste 1 síntoma: {name} ({severity}).'**
+  String hoyNarrativeSymptomsSingleTemplate(String name, String severity);
+
+  /// Narrative summary when 2+ symptoms were logged.
+  ///
+  /// In es, this message translates to:
+  /// **'Registraste {count} síntomas — el más fuerte fue {name} ({severity}).'**
+  String hoyNarrativeSymptomsManyTemplate(
+    int count,
+    String name,
+    String severity,
+  );
+
+  /// Narrative summary for 1 structural event.
+  ///
+  /// In es, this message translates to:
+  /// **'Tuviste 1 evento estructural en {zone}.'**
+  String hoyNarrativeStructuralSingleTemplate(String zone);
+
+  /// Narrative summary for 2+ structural events.
+  ///
+  /// In es, this message translates to:
+  /// **'Tuviste {count} eventos estructurales hoy.'**
+  String hoyNarrativeStructuralManyTemplate(int count);
+
+  /// Narrative summary for 1 dose. {meds} is a pre-formatted comma-separated string of med names with quantities, e.g. 'Duloxetina (1), Sertralina (2)'.
+  ///
+  /// In es, this message translates to:
+  /// **'Tomaste 1 dosis: {meds}.'**
+  String hoyNarrativeDosesSingleTemplate(String meds);
+
+  /// Narrative summary for 2+ doses.
+  ///
+  /// In es, this message translates to:
+  /// **'Tomaste {count} dosis: {meds}.'**
+  String hoyNarrativeDosesManyTemplate(int count, String meds);
+
+  /// Suffix appended to the meds list when more than 3 distinct meds were taken (the rest are summarised as 'and N more').
+  ///
+  /// In es, this message translates to:
+  /// **' y {count} más'**
+  String hoyNarrativeDosesAndMore(int count);
+
+  /// Narrative summary of mood/EMA states logged. {states} is a pre-formatted comma-separated string.
+  ///
+  /// In es, this message translates to:
+  /// **'Tus estados y sensaciones registradas: {states}.'**
+  String hoyNarrativeEmaStatesTemplate(String states);
+
+  /// No description provided for @hoyNarrativeEmaStatesEllipsis.
+  ///
+  /// In es, this message translates to:
+  /// **'...'**
+  String get hoyNarrativeEmaStatesEllipsis;
+
+  /// No description provided for @hoyNarrativePacingTrailer.
+  ///
+  /// In es, this message translates to:
+  /// **'🛡️ Te diste permiso para descansar. Eso cuenta.'**
+  String get hoyNarrativePacingTrailer;
+
+  /// No description provided for @hoyHeaderDatePattern.
+  ///
+  /// In es, this message translates to:
+  /// **'EEEE d \'de\' MMMM'**
+  String get hoyHeaderDatePattern;
+
+  /// Modal title when logging a new activity. {name} is the exercise name uppercased by the call site.
+  ///
+  /// In es, this message translates to:
+  /// **'REGISTRAR: {name}'**
+  String movementModalTitleRegisterTemplate(String name);
+
+  /// Modal title when editing an existing activity.
+  ///
+  /// In es, this message translates to:
+  /// **'EDITAR: {name}'**
+  String movementModalTitleEditTemplate(String name);
+
+  /// No description provided for @movementModalHintDuration.
+  ///
+  /// In es, this message translates to:
+  /// **'Duración (min)'**
+  String get movementModalHintDuration;
+
+  /// No description provided for @movementModalHintSets.
+  ///
+  /// In es, this message translates to:
+  /// **'Sets'**
+  String get movementModalHintSets;
+
+  /// No description provided for @movementModalHintReps.
+  ///
+  /// In es, this message translates to:
+  /// **'Reps'**
+  String get movementModalHintReps;
+
+  /// Hint text for the optional heart rate field. The example '70→110' (resting → peak) stays in the Spanish string and translates as needed.
+  ///
+  /// In es, this message translates to:
+  /// **'Frecuencia cardíaca opcional (ej. 70→110)'**
+  String get movementModalHintHeartRate;
+
+  /// Slider label showing current effort value out of 10.
+  ///
+  /// In es, this message translates to:
+  /// **'Esfuerzo: {value}/10'**
+  String movementModalEffortLabelTemplate(int value);
+
+  /// Slider label showing current feeling value out of 5.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo me sentí: {value}/5'**
+  String movementModalFeelingLabelTemplate(int value);
+
+  /// No description provided for @movementFeelingPainOrInjury.
+  ///
+  /// In es, this message translates to:
+  /// **'🤕 Con dolor / lesión'**
+  String get movementFeelingPainOrInjury;
+
+  /// No description provided for @movementFeelingUncomfortable.
+  ///
+  /// In es, this message translates to:
+  /// **'😟 Con incomodidad / preocupación'**
+  String get movementFeelingUncomfortable;
+
+  /// No description provided for @movementFeelingNeutral.
+  ///
+  /// In es, this message translates to:
+  /// **'😐 Neutral'**
+  String get movementFeelingNeutral;
+
+  /// No description provided for @movementFeelingRelaxed.
+  ///
+  /// In es, this message translates to:
+  /// **'😊 Bien'**
+  String get movementFeelingRelaxed;
+
+  /// No description provided for @movementFeelingStrongConfident.
+  ///
+  /// In es, this message translates to:
+  /// **'💪 Con fuerza y seguridad'**
+  String get movementFeelingStrongConfident;
+
+  /// No description provided for @movementPainLevelNone.
+  ///
+  /// In es, this message translates to:
+  /// **'nada'**
+  String get movementPainLevelNone;
+
+  /// No description provided for @movementPainLevelMild.
+  ///
+  /// In es, this message translates to:
+  /// **'leve'**
+  String get movementPainLevelMild;
+
+  /// No description provided for @movementPainLevelModerate.
+  ///
+  /// In es, this message translates to:
+  /// **'moderado'**
+  String get movementPainLevelModerate;
+
+  /// No description provided for @movementPainLevelIntense.
+  ///
+  /// In es, this message translates to:
+  /// **'intenso'**
+  String get movementPainLevelIntense;
+
+  /// No description provided for @movementPainLevelSevere.
+  ///
+  /// In es, this message translates to:
+  /// **'severo'**
+  String get movementPainLevelSevere;
+
+  /// Shown when post-activity pain is lower than pre. ICU plural agreement on nivel/niveles.
+  ///
+  /// In es, this message translates to:
+  /// **'Mejoraste {delta, plural, =1{1 nivel} other{{delta} niveles}}'**
+  String movementPainDeltaImprovedTemplate(int delta);
+
+  /// Shown when post-activity pain is higher than pre.
+  ///
+  /// In es, this message translates to:
+  /// **'Empeoraste {delta, plural, =1{1 nivel} other{{delta} niveles}}'**
+  String movementPainDeltaWorseTemplate(int delta);
+
+  /// No description provided for @movementPainDeltaUnchanged.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin cambios'**
+  String get movementPainDeltaUnchanged;
+
+  /// Compact log-row chip showing effort. Lowercased intentionally — it sits in a parts-joined sentence.
+  ///
+  /// In es, this message translates to:
+  /// **'esfuerzo {value}/10'**
+  String movementLogEntryEffortTemplate(int value);
+
+  /// Compact log-row chip showing feeling.
+  ///
+  /// In es, this message translates to:
+  /// **'sentir {value}/5'**
+  String movementLogEntryFeelingTemplate(int value);
+
+  /// Compact arrow notation for level improvement. Used by both activity (pain) and therapy (severity) rows. 'niv.' is the Spanish abbreviation for 'niveles'.
+  ///
+  /// In es, this message translates to:
+  /// **'↓{delta} niv.'**
+  String movementLogEntryDeltaImprovedTemplate(int delta);
+
+  /// Compact arrow notation for level worsening.
+  ///
+  /// In es, this message translates to:
+  /// **'↑{delta} niv.'**
+  String movementLogEntryDeltaWorseTemplate(int delta);
+
+  /// No description provided for @movementLogEntryDeltaUnchanged.
+  ///
+  /// In es, this message translates to:
+  /// **'sin cambio'**
+  String get movementLogEntryDeltaUnchanged;
+
+  /// Compact marker for therapy with no severity change. Single character — '=' is the universal default.
+  ///
+  /// In es, this message translates to:
+  /// **'='**
+  String get movementLogEntryTherapyDeltaSteady;
+
+  /// No description provided for @appBarTooltipFontSize.
+  ///
+  /// In es, this message translates to:
+  /// **'Tamaño de texto'**
+  String get appBarTooltipFontSize;
+
+  /// No description provided for @appBarTooltipDarkMode.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo oscuro'**
+  String get appBarTooltipDarkMode;
+
+  /// No description provided for @appBarTooltipLightMode.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo claro'**
+  String get appBarTooltipLightMode;
+
+  /// No description provided for @appBarTooltipSettings.
+  ///
+  /// In es, this message translates to:
+  /// **'Configuración'**
+  String get appBarTooltipSettings;
+
+  /// No description provided for @actionDelete.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar'**
+  String get actionDelete;
+
+  /// No description provided for @settingsProfileConfigTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'CONFIGURACIÓN DE PERFIL'**
+  String get settingsProfileConfigTitle;
+
+  /// No description provided for @settingsMyDataTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'MIS DATOS'**
+  String get settingsMyDataTitle;
+
+  /// No description provided for @settingsPatientNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'NOMBRE DEL PACIENTE'**
+  String get settingsPatientNameLabel;
+
+  /// No description provided for @settingsConditionsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'COMORBILIDADES / DIAGNÓSTICOS'**
+  String get settingsConditionsLabel;
+
+  /// No description provided for @settingsRelationshipLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'RELACIÓN CON ESTE PERFIL'**
+  String get settingsRelationshipLabel;
+
+  /// No description provided for @settingsLifeEventsLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'EVENTOS DE VIDA'**
+  String get settingsLifeEventsLabel;
+
+  /// No description provided for @settingsLocationLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'MI UBICACIÓN (PARA EL CLIMA)'**
+  String get settingsLocationLabel;
+
+  /// No description provided for @settingsConditionsHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca la × para eliminar una condición. Para leer sobre ellas, ve a Clínica → Compendio.'**
+  String get settingsConditionsHelper;
+
+  /// No description provided for @settingsRelationshipHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Para quién es este perfil? Útil si registras a alguien que cuidas.'**
+  String get settingsRelationshipHelper;
+
+  /// No description provided for @settingsLifeEventsHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Cosas que pueden haber impactado tu cuerpo o ánimo: viajes, accidentes, mudanzas, eventos buenos o estresantes. Aparecen como puntos morados en el calendario.'**
+  String get settingsLifeEventsHelper;
+
+  /// No description provided for @settingsDataHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Tienes derecho a acceder, exportar, importar o eliminar tus datos en cualquier momento.'**
+  String get settingsDataHelper;
+
+  /// No description provided for @settingsWipeAllHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta acción borra todos los perfiles, registros y configuraciones. Irreversible.'**
+  String get settingsWipeAllHelper;
+
+  /// No description provided for @settingsRelationshipSelf.
+  ///
+  /// In es, this message translates to:
+  /// **'Yo'**
+  String get settingsRelationshipSelf;
+
+  /// No description provided for @settingsRelationshipChild.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi hijo/a'**
+  String get settingsRelationshipChild;
+
+  /// No description provided for @settingsRelationshipPartner.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi pareja'**
+  String get settingsRelationshipPartner;
+
+  /// No description provided for @settingsRelationshipParent.
+  ///
+  /// In es, this message translates to:
+  /// **'Mi madre/padre'**
+  String get settingsRelationshipParent;
+
+  /// No description provided for @settingsRelationshipOther.
+  ///
+  /// In es, this message translates to:
+  /// **'Otro'**
+  String get settingsRelationshipOther;
+
+  /// No description provided for @settingsRelationshipNone.
+  ///
+  /// In es, this message translates to:
+  /// **'— sin especificar —'**
+  String get settingsRelationshipNone;
+
+  /// No description provided for @settingsLifeEventsEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no hay eventos registrados.'**
+  String get settingsLifeEventsEmpty;
+
+  /// No description provided for @settingsAddEventButton.
+  ///
+  /// In es, this message translates to:
+  /// **'AÑADIR EVENTO'**
+  String get settingsAddEventButton;
+
+  /// No description provided for @settingsLocationNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin ubicación. Toca para añadir.'**
+  String get settingsLocationNone;
+
+  /// No description provided for @settingsLocationButtonAdd.
+  ///
+  /// In es, this message translates to:
+  /// **'AÑADIR COORDENADAS'**
+  String get settingsLocationButtonAdd;
+
+  /// No description provided for @settingsLocationButtonEdit.
+  ///
+  /// In es, this message translates to:
+  /// **'EDITAR COORDENADAS'**
+  String get settingsLocationButtonEdit;
+
+  /// No description provided for @settingsAddProfileButton.
+  ///
+  /// In es, this message translates to:
+  /// **'AÑADIR NUEVO PERFIL'**
+  String get settingsAddProfileButton;
+
+  /// No description provided for @settingsDeleteProfileButton.
+  ///
+  /// In es, this message translates to:
+  /// **'ELIMINAR ESTE PERFIL'**
+  String get settingsDeleteProfileButton;
+
+  /// No description provided for @settingsExportDataButton.
+  ///
+  /// In es, this message translates to:
+  /// **'EXPORTAR MIS DATOS'**
+  String get settingsExportDataButton;
+
+  /// No description provided for @settingsWipeAllButton.
+  ///
+  /// In es, this message translates to:
+  /// **'BORRAR TODO'**
+  String get settingsWipeAllButton;
+
+  /// Default name for a newly added profile. {number} is 1-indexed count after creation.
+  ///
+  /// In es, this message translates to:
+  /// **'NUEVO PERFIL {number}'**
+  String settingsNewProfileNameTemplate(int number);
+
+  /// No description provided for @dialogWipeTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar todos los datos'**
+  String get dialogWipeTitle;
+
+  /// No description provided for @dialogWipeContent.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta acción borra TODOS los perfiles, registros, configuraciones y caché. No se puede deshacer.\n\n¿Quieres exportar primero?'**
+  String get dialogWipeContent;
+
+  /// No description provided for @dialogWipeFinalTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Última confirmación'**
+  String get dialogWipeFinalTitle;
+
+  /// Prompt inside the typed-confirmation wipe dialog. {magicWord} is the localized confirm word the user must type — the same value provided by dialogWipeFinalMagicWord, so the prompt and the expected input stay in sync per locale.
+  ///
+  /// In es, this message translates to:
+  /// **'Para confirmar, escribe {magicWord} abajo.'**
+  String dialogWipeFinalContentTemplate(String magicWord);
+
+  /// The exact word the user types to confirm wiping all data. Localized: Spanish=ELIMINAR, English=DELETE, zh-TW=刪除. Comparison is case-sensitive against the trimmed input, so use uppercase Latin or a single ideograph as appropriate per locale.
+  ///
+  /// In es, this message translates to:
+  /// **'ELIMINAR'**
+  String get dialogWipeFinalMagicWord;
+
+  /// No description provided for @dialogWipeFinalButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Borrar todo'**
+  String get dialogWipeFinalButton;
+
+  /// No description provided for @dialogDeleteProfileTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Eliminar perfil'**
+  String get dialogDeleteProfileTitle;
+
+  /// Confirmation message for deleting a profile. {name} is the profile display name.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Eliminar el perfil \"{name}\" y todos sus datos? Esta acción no se puede deshacer.'**
+  String dialogDeleteProfileContentTemplate(String name);
+
+  /// No description provided for @dialogLocationTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu ubicación'**
+  String get dialogLocationTitle;
+
+  /// No description provided for @dialogLocationContent.
+  ///
+  /// In es, this message translates to:
+  /// **'Necesito latitud y longitud para traer el clima. Busca tu ciudad en Google Maps, click derecho → copiar coordenadas.'**
+  String get dialogLocationContent;
+
+  /// No description provided for @dialogLocationHintLat.
+  ///
+  /// In es, this message translates to:
+  /// **'Latitud (ej. -34.61)'**
+  String get dialogLocationHintLat;
+
+  /// No description provided for @dialogLocationHintLng.
+  ///
+  /// In es, this message translates to:
+  /// **'Longitud (ej. -58.38)'**
+  String get dialogLocationHintLng;
+
+  /// No description provided for @dialogLocationInvalidSnack.
+  ///
+  /// In es, this message translates to:
+  /// **'Coordenadas inválidas.'**
+  String get dialogLocationInvalidSnack;
+
+  /// No description provided for @therapyHintArea.
+  ///
+  /// In es, this message translates to:
+  /// **'Zona (ej. cervicales)'**
+  String get therapyHintArea;
+
+  /// No description provided for @therapySectionPainBefore.
+  ///
+  /// In es, this message translates to:
+  /// **'DOLOR ANTES'**
+  String get therapySectionPainBefore;
+
+  /// No description provided for @therapySectionPainAfter.
+  ///
+  /// In es, this message translates to:
+  /// **'DOLOR DESPUÉS'**
+  String get therapySectionPainAfter;
+
+  /// No description provided for @therapyActionMoreDetails.
+  ///
+  /// In es, this message translates to:
+  /// **'más detalles (terapeuta, costo, nota)'**
+  String get therapyActionMoreDetails;
+
+  /// No description provided for @therapyHintTherapist.
+  ///
+  /// In es, this message translates to:
+  /// **'Terapeuta / lugar (opcional)'**
+  String get therapyHintTherapist;
+
+  /// No description provided for @therapyHintCost.
+  ///
+  /// In es, this message translates to:
+  /// **'Costo (opcional)'**
+  String get therapyHintCost;
+
+  /// No description provided for @therapyHintNote.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota (opcional)'**
+  String get therapyHintNote;
+
+  /// No description provided for @therapyActionSaveChanges.
+  ///
+  /// In es, this message translates to:
+  /// **'GUARDAR CAMBIOS'**
+  String get therapyActionSaveChanges;
+
+  /// No description provided for @therapyActionLog.
+  ///
+  /// In es, this message translates to:
+  /// **'REGISTRAR'**
+  String get therapyActionLog;
+
+  /// No description provided for @compendiumSectionConditionsHeader.
+  ///
+  /// In es, this message translates to:
+  /// **'MIS CONDICIONES'**
+  String get compendiumSectionConditionsHeader;
+
+  /// No description provided for @compendiumSectionConditionsSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca una para leer información clínica (fuente: MedlinePlus).'**
+  String get compendiumSectionConditionsSubtitle;
+
+  /// Banner shown when user has saved articles from the research tab. ICU plural agreement on artículo/artículos.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 artículo guardado} other{{count} artículos guardados}} — ve a Investigación.'**
+  String compendiumSavedArticlesTemplate(int count);
+
+  /// No description provided for @compendiumSectionDataTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'DATOS CLÍNICOS'**
+  String get compendiumSectionDataTitle;
+
+  /// Label prefix shown before the citation of a clinical fact in the compendium. The actual citation text is appended after a space.
+  ///
+  /// In es, this message translates to:
+  /// **'Fuente:'**
+  String get compendiumFactSourceLabel;
+
+  /// Subtitle shown under each condition's collapsible header in the Investigación tab. ICU plural on artículo/artículos.
+  ///
+  /// In es, this message translates to:
+  /// **'{count, plural, =1{1 artículo} other{{count} artículos}}'**
+  String investigationConditionArticleCountTemplate(int count);
+
+  /// No description provided for @headacheSheetTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de tu cefalea'**
+  String get headacheSheetTitle;
+
+  /// No description provided for @headacheSheetSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Marca lo que aplique. Puedes saltar este paso si prefieres.'**
+  String get headacheSheetSubtitle;
+
+  /// No description provided for @actionSkip.
+  ///
+  /// In es, this message translates to:
+  /// **'Saltar'**
+  String get actionSkip;
+
+  /// No description provided for @headacheActionSaveDetail.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar detalle'**
+  String get headacheActionSaveDetail;
+
+  /// No description provided for @headacheThunderclapWarningTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Posible emergencia'**
+  String get headacheThunderclapWarningTitle;
+
+  /// No description provided for @headacheThunderclapWarningConfirm.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo entiendo, continuar'**
+  String get headacheThunderclapWarningConfirm;
 }
 
 class _AppLocalizationsDelegate

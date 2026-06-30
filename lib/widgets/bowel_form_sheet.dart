@@ -8,14 +8,20 @@
 // Returns the new/edited BowelEvent (caller persists). Returns null if the
 // user dismisses the sheet without saving.
 //
-// Vocabulary is intimate: neutral LatAm tuteo throughout, no Castilian,
+// i18n Batch A.2: fully localized. All user-facing strings now resolve
+// via AppLocalizations and the BowelBucketLocalization extension from
+// clinical_localizations.dart. The Bristol legend uses an ICU template
+// so each locale can rearrange the bucket-name positions if grammar
+// requires it. Vocabulary remains neutral LatAm tuteo — no Castilian,
 // no Rioplatense, no Chilean slang.
 // =============================================================================
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../l10n/app_localizations.dart';
 import '../models/models.dart';
 import '../screens/timestamp_picker.dart';
+import '../services/clinical_localizations.dart';
 import 'severity_picker.dart';
 
 /// Opens the bowel form sheet.
@@ -129,7 +135,14 @@ class _BowelFormState extends State<_BowelForm> {
     Navigator.pop(context, result);
   }
 
-  Widget _bucketCard(BowelBucket bucket, IconData icon, String label) {
+  // i18n Batch A.2: card now takes the BowelBucket and resolves its label
+  // internally via BowelBucketLocalization. No more hardcoded Spanish
+  // `label` string parameter from the caller.
+  Widget _bucketCard(
+    BowelBucket bucket,
+    IconData icon,
+    AppLocalizations l10n,
+  ) {
     final selected = _bucket == bucket;
     return Expanded(
       child: InkWell(
@@ -159,7 +172,7 @@ class _BowelFormState extends State<_BowelForm> {
               Icon(icon, color: selected ? _ic : _cc, size: 32),
               const SizedBox(height: 6),
               Text(
-                label,
+                bucket.bowelBucketLabel(l10n),
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: selected ? _ic : _cc,
@@ -174,12 +187,17 @@ class _BowelFormState extends State<_BowelForm> {
     );
   }
 
-  Widget _bristolPicker() {
+  Widget _bristolPicker(AppLocalizations l10n) {
+    // Resolve the three bucket labels once for use in the inline legend.
+    final cLabel = BowelBucket.constipation.bowelBucketLabel(l10n);
+    final nLabel = BowelBucket.normal.bowelBucketLabel(l10n);
+    final dLabel = BowelBucket.diarrhea.bowelBucketLabel(l10n);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'tipo Bristol',
+          l10n.bowelFormBristolLabel,
           style: TextStyle(
             color: _cc.withValues(alpha: 0.6),
             fontSize: 11,
@@ -235,7 +253,7 @@ class _BowelFormState extends State<_BowelForm> {
         ),
         const SizedBox(height: 4),
         Text(
-          '1-2: estreñimiento  ·  3-5: normal  ·  6-7: diarrea',
+          l10n.bowelFormBristolLegendTemplate(cLabel, nLabel, dLabel),
           style: TextStyle(
             color: _cc.withValues(alpha: 0.5),
             fontSize: 10,
@@ -272,8 +290,9 @@ class _BowelFormState extends State<_BowelForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.existing != null;
-    final title = isEdit ? 'EDITAR TRÁNSITO' : 'REGISTRAR TRÁNSITO';
+    final title = isEdit ? l10n.bowelFormTitleEdit : l10n.bowelFormTitleNew;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -315,9 +334,9 @@ class _BowelFormState extends State<_BowelForm> {
             Row(
               children: [
                 _bucketCard(
-                    BowelBucket.constipation, Icons.remove_circle_outline, 'estreñimiento'),
-                _bucketCard(BowelBucket.normal, Icons.circle_outlined, 'normal'),
-                _bucketCard(BowelBucket.diarrhea, Icons.waves, 'diarrea'),
+                    BowelBucket.constipation, Icons.remove_circle_outline, l10n),
+                _bucketCard(BowelBucket.normal, Icons.circle_outlined, l10n),
+                _bucketCard(BowelBucket.diarrhea, Icons.waves, l10n),
               ],
             ),
             const SizedBox(height: 8),
@@ -330,18 +349,20 @@ class _BowelFormState extends State<_BowelForm> {
                   size: 16,
                 ),
                 label: Text(
-                  _showBristol ? 'ocultar detalle' : 'más detalle (escala de Bristol)',
+                  _showBristol
+                      ? l10n.bowelFormHideBristolDetail
+                      : l10n.bowelFormShowBristolDetail,
                   style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 12),
                 ),
               ),
             ),
             if (_showBristol) ...[
-              _bristolPicker(),
+              _bristolPicker(l10n),
               const SizedBox(height: 16),
             ] else
               const SizedBox(height: 8),
             Text(
-              'MOLESTIA',
+              l10n.formSectionHeaderDiscomfort,
               style: TextStyle(
                 color: _cc.withValues(alpha: 0.7),
                 fontSize: 11,
@@ -357,7 +378,7 @@ class _BowelFormState extends State<_BowelForm> {
             ),
             const SizedBox(height: 16),
             Text(
-              'OBSERVACIONES',
+              l10n.bowelFormSectionObservations,
               style: TextStyle(
                 color: _cc.withValues(alpha: 0.7),
                 fontSize: 11,
@@ -370,11 +391,12 @@ class _BowelFormState extends State<_BowelForm> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _toggleChip('urgencia', _urgency,
+                _toggleChip(l10n.bowelFormToggleUrgency, _urgency,
                     (v) => setState(() => _urgency = v)),
-                _toggleChip('sangrado', _bloodPresent,
+                _toggleChip(l10n.formToggleBleeding, _bloodPresent,
                     (v) => setState(() => _bloodPresent = v)),
-                _toggleChip('evacuación incompleta', _incompleteEvacuation,
+                _toggleChip(l10n.bowelFormToggleIncompleteEvacuation,
+                    _incompleteEvacuation,
                     (v) => setState(() => _incompleteEvacuation = v)),
               ],
             ),
@@ -382,9 +404,9 @@ class _BowelFormState extends State<_BowelForm> {
             TextField(
               controller: _noteCtrl,
               style: TextStyle(color: _cc),
-              decoration: const InputDecoration(
-                hintText: 'Nota opcional (contexto, gatillo, etc.)',
-                hintStyle: TextStyle(color: Colors.grey),
+              decoration: InputDecoration(
+                hintText: l10n.bowelFormNoteHint,
+                hintStyle: const TextStyle(color: Colors.grey),
               ),
             ),
             const SizedBox(height: 16),
@@ -396,7 +418,7 @@ class _BowelFormState extends State<_BowelForm> {
               ),
               onPressed: _bucket == null ? null : _save,
               child: Text(
-                'GUARDAR',
+                l10n.formButtonSave,
                 style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
               ),
             ),

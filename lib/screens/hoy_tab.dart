@@ -19,27 +19,20 @@
 // =============================================================================
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../extensions/context_ext.dart';
 import '../models/models.dart';
 import '../widgets/severity_picker.dart';
 import '../widgets/mood_picker_sheet.dart';
 import '../l10n/app_localizations.dart';
+import '../services/clinical_localizations.dart';
 import '../services/fever_analysis.dart';
+import '../services/structural_taxonomy.dart';
 
-// Hardcoded Spanish to avoid requiring initializeDateFormatting('es') in main().
-const _diasSemana = [
-  'lunes', 'martes', 'miércoles', 'jueves',
-  'viernes', 'sábado', 'domingo',
-];
-const _meses = [
-  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
-];
-String _fechaLarga(DateTime d) {
-  final dia = _diasSemana[d.weekday - 1]; // weekday is 1=Monday..7=Sunday
-  final mes = _meses[d.month - 1];
-  return '$dia ${d.day} de $mes';
-}
+// B.2: Date is now formatted via DateFormat using a locale-driven
+// pattern from the ARB (`hoyHeaderDatePattern`). main.dart must call
+// `initializeDateFormatting()` at startup for each supported locale —
+// without that init, DateFormat in non-default locales throws.
 
 class HoyTab extends StatelessWidget {
   final Profile profile;
@@ -53,9 +46,25 @@ class HoyTab extends StatelessWidget {
   final Map<MoodQuadrant, List<EmaMood>> moodDictionary;
 
   final VoidCallback onTogglePacing;
-  final void Function(MentalState state, int severity, {DateTime? timestamp}) onLogMental;
-  final void Function(MedicationOutcome outcome, MedicationOutcomeStatus status) onAnswerOutcome;
-  final VoidCallback onChangeWisdom; // <-- NUEVO: Función para cambiar la frase
+  final void Function(MentalState state, int severity, {DateTime? timestamp})
+      onLogMental;
+      
+  // ACTUALIZADO: Cambiamos intensity por notes
+  final void Function({
+    required MoodQuadrant primaryQuadrant,
+    required List<String> states,
+    String? notes, 
+  }) onLogMood;
+  
+  final void Function(MoodEntry) onDeleteMood;
+  final void Function(MedicationOutcome outcome,
+      {required int severityAfter, OutcomeReason? reason}) onAnswerOutcome;
+  final VoidCallback onChangeWisdom;
+
+  final bool showHint;
+  final VoidCallback onDismissHint;
+  // PHASE 5.2a — navigate to another tab (banner shortcut uses this).
+  final ValueChanged<int> onNavigate;
 
   const HoyTab({
     super.key,
@@ -150,7 +159,7 @@ class HoyTab extends StatelessWidget {
         // 2. URGENT — pending outcome check-ins.
         if (dueOutcomes.isNotEmpty) ...[
           _SectionHeader(
-            title: 'Pendientes',
+            title: l10n.hoySectionPendingHeader,
             badge: '${dueOutcomes.length}',
             badgeColor: const Color(0xFFE57373),
             contrastColor: contrastColor,
@@ -290,10 +299,19 @@ class _HoyHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateLine = _fechaLarga(date);
     final l10n = context.l10n;
-    final capitalized =
-        dateLine[0].toUpperCase() + dateLine.substring(1);
+    // Each locale controls its own date pattern through the ARB. The
+    // pattern is a DateFormat skeleton (not an ICU template) so
+    // single-quoted literals like 'de' in Spanish pass through verbatim.
+    final dateLine = DateFormat(l10n.hoyHeaderDatePattern, l10n.localeName)
+        .format(date);
+    // Capitalize the first character for languages where the natural
+    // form starts lowercase (Spanish weekday names). Locales whose first
+    // character is already uppercase (English) or non-cased (zh-TW)
+    // are unaffected by this no-op transformation.
+    final capitalized = dateLine.isEmpty
+        ? dateLine
+        : dateLine[0].toUpperCase() + dateLine.substring(1);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,7 +493,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
                 TextSpan(
-                  text: ' para tu ',
+                  text: l10n.hoyOutcomeForYour,
                   style: TextStyle(color: cc.withValues(alpha: 0.8)),
                 ),
                 TextSpan(
@@ -532,7 +550,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                 final sel = _reason == r;
                 return ChoiceChip(
                   selected: sel,
-                  label: Text(r.label, style: const TextStyle(fontSize: 11)),
+                  label: Text(r.outcomeReasonLabel(l10n), style: const TextStyle(fontSize: 11)),
                   onSelected: (v) =>
                       setState(() => _reason = v ? r : null),
                   selectedColor: cc,
@@ -560,7 +578,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                   color: cc.withValues(alpha: 0.7),
                 ),
                 label: Text(
-                  _showReasonPicker ? 'Ocultar' : l10n.outcomeActionAddFactor,
+                  _showReasonPicker ? l10n.hoyOutcomeHideReasons : l10n.outcomeActionAddFactor,
                   style: TextStyle(
                     fontSize: 12,
                     color: cc.withValues(alpha: 0.7),
@@ -760,8 +778,8 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                           ),
                           child: Text(
                             logged
-                                ? '${s.emoji} ${s.label} · $latest'
-                                : '${s.emoji} ${s.label}',
+                                ? '${s.emoji} ${s.mentalStateLabel(l10n)} · $latest'
+                                : '${s.emoji} ${s.mentalStateLabel(l10n)}',
                             style: TextStyle(
                               fontSize: 12,
                               color: cc.withValues(alpha: logged ? 1.0 : 0.7),
@@ -801,7 +819,7 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${state.emoji} ${state.label}',
+                  '${state.emoji} ${state.mentalStateLabel(context.l10n)}',
                   style: TextStyle(
                     color: widget.contrastColor,
                     fontSize: 18,
@@ -859,12 +877,14 @@ class _MentalSlider extends StatelessWidget {
           children: [
             Text(state.emoji, style: const TextStyle(fontSize: 16)),
             const SizedBox(width: 6),
-            Text(
-              state.label,
-              style: TextStyle(
-                color: contrastColor,
-                fontWeight: FontWeight.w600,
-                fontSize: 13,
+            Builder(
+              builder: (ctx) => Text(
+                state.mentalStateLabel(AppLocalizations.of(ctx)!),
+                style: TextStyle(
+                  color: contrastColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
               ),
             ),
             const Spacer(),
@@ -960,6 +980,7 @@ class _NarrativeSummary extends StatelessWidget {
       mentals: mentals,
       emaMoods: emaMoods,
       isPacing: isPacing,
+      l10n: l10n,
     );
 
     return Container(
@@ -1011,13 +1032,12 @@ class _NarrativeSummary extends StatelessWidget {
     required List<MentalEvent> mentals,
     required List<MoodEntry> emaMoods,
     required bool isPacing,
+    required AppLocalizations l10n,
   }) {
     final out = <String>[];
 
     if (syms.isEmpty && structs.isEmpty && doses.isEmpty && mentals.isEmpty && emaMoods.isEmpty) {
-      out.add(isPacing
-          ? '🛡️ Día de descanso. Aún no has registrado nada — está bien.'
-          : 'Aún no has registrado nada hoy. ¿Cómo va todo?');
+      out.add(isPacing ? l10n.hoyNarrativeEmptyPacing : l10n.hoyNarrativeEmpty);
       return out;
     }
 
@@ -1025,18 +1045,23 @@ class _NarrativeSummary extends StatelessWidget {
       final worst = syms.reduce((a, b) =>
           a.severity.value >= b.severity.value ? a : b);
       final n = syms.length;
+      final worstName = worst.name.toLowerCase();
+      final worstSev = worst.severity.severityLabel(l10n).toLowerCase();
       if (n == 1) {
-        out.add('Registraste 1 síntoma: ${worst.name.toLowerCase()} (${worst.severity.label.toLowerCase()}).');
+        out.add(l10n.hoyNarrativeSymptomsSingleTemplate(worstName, worstSev));
       } else {
-        out.add('Registraste $n síntomas — el más fuerte fue ${worst.name.toLowerCase()} (${worst.severity.label.toLowerCase()}).');
+        out.add(l10n.hoyNarrativeSymptomsManyTemplate(n, worstName, worstSev));
       }
     }
 
     if (structs.isNotEmpty) {
       final n = structs.length;
-      out.add(n == 1
-          ? 'Tuviste 1 evento estructural en ${structs.first.zone.toLowerCase()}.'
-          : 'Tuviste $n eventos estructurales hoy.');
+      if (n == 1) {
+        out.add(l10n.hoyNarrativeStructuralSingleTemplate(
+            structs.first.zone.bodyZoneLabel(l10n).toLowerCase()));
+      } else {
+        out.add(l10n.hoyNarrativeStructuralManyTemplate(n));
+      }
     }
 
     if (doses.isNotEmpty) {
@@ -1051,23 +1076,28 @@ class _NarrativeSummary extends StatelessWidget {
         final qStr = q == q.roundToDouble() ? q.toInt().toString() : q.toString();
         return '${e.key} ($qStr)';
       }).join(', ');
-      final extra = sorted.length > 3 ? ' y ${sorted.length - 3} más' : '';
+      final extra =
+          sorted.length > 3 ? l10n.hoyNarrativeDosesAndMore(sorted.length - 3) : '';
       final totalDoses = doses.length;
-      out.add('Tomaste $totalDoses ${totalDoses == 1 ? 'dosis' : 'dosis'}: $shown$extra.');
+      final medsStr = '$shown$extra';
+      if (totalDoses == 1) {
+        out.add(l10n.hoyNarrativeDosesSingleTemplate(medsStr));
+      } else {
+        out.add(l10n.hoyNarrativeDosesManyTemplate(totalDoses, medsStr));
+      }
     }
 
-    // NUEVO: Resumen narrativo con los sustantivos neutros del modelo EMA
     if (emaMoods.isNotEmpty) {
       final allStates = emaMoods.expand((e) => e.states).toSet().toList();
       if (allStates.isNotEmpty) {
         final statesStr = allStates.take(4).join(', ');
-        final extra = allStates.length > 4 ? '...' : '';
-        out.add('Tus estados y sensaciones registradas: $statesStr$extra.');
+        final extra = allStates.length > 4 ? l10n.hoyNarrativeEmaStatesEllipsis : '';
+        out.add(l10n.hoyNarrativeEmaStatesTemplate('$statesStr$extra'));
       }
     }
 
     if (isPacing) {
-      out.add('🛡️ Te diste permiso para descansar. Eso cuenta.');
+      out.add(l10n.hoyNarrativePacingTrailer);
     }
 
     return out;
@@ -1125,7 +1155,7 @@ class _WisdomBlock extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '"${quote.text}"',
+              '"${quote.text(l10n.localeName)}"',
               style: TextStyle(
                 fontSize: 13,
                 fontStyle: FontStyle.italic,
@@ -1175,9 +1205,9 @@ class _BowelCounter extends StatelessWidget {
     if (days == null) return const SizedBox.shrink();
 
     final label = switch (days) {
-      0 => 'última evacuación: hoy',
-      1 => 'última evacuación: ayer',
-      _ => 'última evacuación: hace $days días',
+      0 => l10n.hoyBowelCounterToday,
+      1 => l10n.hoyBowelCounterYesterday,
+      _ => l10n.hoyBowelCounterDaysAgoTemplate(days),
     };
 
     return Align(
@@ -1384,5 +1414,18 @@ class _FeverChip extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatTimeAgo(Duration d, AppLocalizations l10n) {
+    if (d.inHours >= 1) return l10n.timeAgoHours(d.inHours);
+    return l10n.timeAgoMinutes(d.inMinutes.clamp(1, 59));
+  }
+
+  String _formatTrend(FeverTrend trend, double delta) {
+    return switch (trend) {
+      FeverTrend.rising => '↑${delta.toStringAsFixed(1)}',
+      FeverTrend.falling => '↓${delta.abs().toStringAsFixed(1)}',
+      FeverTrend.steady => '→',
+    };
   }
 }

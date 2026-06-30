@@ -26,7 +26,7 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../services/interaction_engine.dart';
-import '../services/medline_plus_service.dart';
+import '../services/vademecum_service.dart';
 import '../widgets/dose_stepper.dart';
 import '../widgets/drug_info_sheet.dart';
 import '../widgets/group_form.dart';
@@ -1031,6 +1031,7 @@ class _MedRow extends StatelessWidget {
       contrastColor: contrastColor,
       inverseContrastColor: inverseContrastColor,
       service: medlineService,
+      botiquin: profile.botiquin,
     );
   }
 

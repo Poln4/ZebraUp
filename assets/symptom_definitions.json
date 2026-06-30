@@ -1,0 +1,246 @@
+{
+  "_metadata": {
+    "version": "1.0",
+    "last_updated": "2026-06-28",
+    "description": "Symptom definitions and chip-level clinical definitions for the symptom-detail layer system. Patients toggle these layers per symptom in settings; layers are off by default. Definitions are surfaced via info-icon dialog on each chip.",
+    "references": [
+      "ICHD-3: International Classification of Headache Disorders, 3rd edition (Olesen 2018, DOI: 10.1016/S1474-4422(18)30085-1)",
+      "SNNOOP10 red flags (Wijeratne 2023, DOI: 10.1016/j.ensci.2023.100473)",
+      "Headache subtypes in EDS / spontaneous CSF leak patterns (Reinstein 2013; Henderson 2017)"
+    ]
+  },
+  "headache": {
+    "aliases": [
+      "cefalea",
+      "dolor de cabeza",
+      "jaqueca",
+      "migraña",
+      "migrañas",
+      "dolor cabeza",
+      "headache",
+      "head pain",
+      "migraine",
+      "migraines",
+      "頭痛",
+      "偏頭痛"
+    ],
+    "master": {
+      "label_es": "Cefalea",
+      "label_en": "Headache",
+      "label_zh": "頭痛",
+      "definition_es": "Dolor en cualquier parte de la cabeza, cuero cabelludo o cuello. Puede sentirse de muchas formas — pulsátil, opresivo, punzante — y tener muchas causas: migraña, cefalea tensional, problemas cervicales, fugas de líquido cefalorraquídeo, entre otras.\n\nEsta app no clasifica el tipo de cefalea: eso lo hace tu médico con la información que registres. Lo que sí ayuda es describir lo que sientes con detalle, sin tratar de adivinar de qué tipo es.",
+      "definition_en": "Pain anywhere in the head, scalp, or neck. It can feel in many ways — pulsating, pressing, stabbing — and have many causes: migraine, tension-type headache, cervical issues, cerebrospinal fluid leaks, among others.\n\nThis app does not classify the type of headache: your doctor does that, using the information you record. What helps is describing what you feel in detail, without trying to guess the type.",
+      "definition_zh": "頭部、頭皮或頸部任何部位的疼痛。可以有多種感受 — 搏動性、壓迫性、刺痛 — 並有多種原因:偏頭痛、緊張型頭痛、頸椎問題、腦脊液漏等。\n\n此應用程式不會分類頭痛的類型:這是由你的醫生根據你記錄的資訊判斷。真正有幫助的是詳細描述你的感受,而不是試圖猜測類型。"
+    },
+    "groups": {
+      "location": {
+        "kind": "multi_select",
+        "header_es": "LOCALIZACIÓN",
+        "header_en": "LOCATION",
+        "header_zh": "位置",
+        "chips": {
+          "unilateral": {
+            "label_es": "Unilateral",
+            "label_en": "Unilateral",
+            "label_zh": "單側",
+            "def_es": "Dolor en un solo lado de la cabeza (derecho o izquierdo). Característico de migraña y de las cefaleas trigémino-autonómicas.",
+            "def_en": "Pain on only one side of the head (right or left). Characteristic of migraine and trigeminal autonomic cephalalgias.",
+            "def_zh": "頭部單側(右側或左側)的疼痛。偏頭痛和三叉神經自主神經性頭痛的特徵。"
+          },
+          "bilateral": {
+            "label_es": "Bilateral",
+            "label_en": "Bilateral",
+            "label_zh": "雙側",
+            "def_es": "Dolor en ambos lados de la cabeza, frecuentemente en banda o por toda la cabeza. Característico de cefalea tensional.",
+            "def_en": "Pain on both sides of the head, often band-like or all over. Characteristic of tension-type headache.",
+            "def_zh": "頭部兩側的疼痛,常呈帶狀或遍布整個頭部。緊張型頭痛的特徵。"
+          },
+          "behind_eyes": {
+            "label_es": "Detrás de los ojos",
+            "label_en": "Behind the eyes",
+            "label_zh": "眼睛後方",
+            "def_es": "Dolor o presión en la zona retroocular, alrededor o detrás de uno o ambos ojos.",
+            "def_en": "Pain or pressure in the retro-ocular area, around or behind one or both eyes.",
+            "def_zh": "眼球後方區域的疼痛或壓力感,在一隻或兩隻眼睛的周圍或後方。"
+          },
+          "neck_occipital": {
+            "label_es": "Nuca / cervical",
+            "label_en": "Neck / occipital",
+            "label_zh": "頸部 / 後腦",
+            "def_es": "Dolor que empieza o se concentra en la base del cráneo o el cuello, a veces irradiando hacia adelante. Puede relacionarse con inestabilidad cervical o tensión muscular.",
+            "def_en": "Pain starting or concentrated at the base of the skull or neck, sometimes radiating forward. May relate to cervical instability or muscle tension.",
+            "def_zh": "從顱底或頸部開始或集中於此的疼痛,有時會向前放射。可能與頸椎不穩定或肌肉緊張有關。"
+          },
+          "temples": {
+            "label_es": "Sienes",
+            "label_en": "Temples",
+            "label_zh": "太陽穴",
+            "def_es": "Dolor en las regiones laterales de la cabeza, sobre las orejas. Puede ser pulsátil.",
+            "def_en": "Pain in the lateral regions of the head, above the ears. May be pulsating.",
+            "def_zh": "頭部側面、耳朵上方區域的疼痛,可能呈搏動性。"
+          },
+          "crown_diffuse": {
+            "label_es": "Corona / generalizado",
+            "label_en": "Crown / diffuse",
+            "label_zh": "頭頂 / 瀰漫性",
+            "def_es": "Dolor en la parte superior de la cabeza o sin un punto claro de origen, difuso.",
+            "def_en": "Pain at the top of the head or with no clear origin point, diffuse.",
+            "def_zh": "頭頂或無明確起點的瀰漫性疼痛。"
+          }
+        }
+      },
+      "quality": {
+        "kind": "single_select",
+        "header_es": "CALIDAD",
+        "header_en": "QUALITY",
+        "header_zh": "性質",
+        "chips": {
+          "pulsating": {
+            "label_es": "Pulsátil",
+            "label_en": "Pulsating",
+            "label_zh": "搏動性",
+            "def_es": "Dolor que late con el ritmo del pulso, como \"tum-tum\". Sensación de que algo palpita en la cabeza. Característico de migraña.",
+            "def_en": "Pain that throbs with the pulse, like \"thump-thump\". Sensation that something is beating in the head. Characteristic of migraine.",
+            "def_zh": "隨脈搏跳動的疼痛,像「咚咚」聲。感覺頭內有什麼在跳動。偏頭痛的特徵。"
+          },
+          "pressing": {
+            "label_es": "Opresivo",
+            "label_en": "Pressing",
+            "label_zh": "壓迫性",
+            "def_es": "Sensación de presión continua, como un casco apretado o una venda alrededor de la cabeza. Característico de cefalea tensional.",
+            "def_en": "Continuous pressure sensation, like a tight helmet or a band around the head. Characteristic of tension-type headache.",
+            "def_zh": "持續性壓力感,像戴著緊頭盔或頭部被緊束。緊張型頭痛的特徵。"
+          },
+          "stabbing": {
+            "label_es": "Punzante",
+            "label_en": "Stabbing",
+            "label_zh": "刺痛",
+            "def_es": "Dolor agudo y breve, como pinchazos o estocadas. Puede aparecer y desaparecer rápido.",
+            "def_en": "Sharp, brief pain, like pinches or stabs. May appear and disappear quickly.",
+            "def_zh": "尖銳、短暫的疼痛,像針刺或戳刺。可能快速出現和消失。"
+          },
+          "brain_zaps": {
+            "label_es": "Brain zaps / eléctrico",
+            "label_en": "Brain zaps / electric",
+            "label_zh": "電擊感",
+            "def_es": "Sensación de descarga eléctrica corta, a veces acompañada de mareo. Puede asociarse con cambios bruscos en medicación serotoninérgica.",
+            "def_en": "Brief electric-shock sensation, sometimes with dizziness. May be associated with abrupt changes in serotonergic medication.",
+            "def_zh": "短暫的電擊感,有時伴隨眩暈。可能與血清素類藥物的突然變化有關。"
+          }
+        }
+      },
+      "accompaniments": {
+        "kind": "multi_select",
+        "header_es": "ACOMPAÑANTES",
+        "header_en": "ACCOMPANIMENTS",
+        "header_zh": "伴隨症狀",
+        "chips": {
+          "nausea": {
+            "label_es": "Náusea",
+            "label_en": "Nausea",
+            "label_zh": "噁心",
+            "def_es": "Sensación de malestar estomacal o ganas de vomitar durante el dolor de cabeza.",
+            "def_en": "Stomach discomfort or urge to vomit during the headache.",
+            "def_zh": "頭痛期間的胃部不適或想吐的感覺。"
+          },
+          "vomiting": {
+            "label_es": "Vómitos",
+            "label_en": "Vomiting",
+            "label_zh": "嘔吐",
+            "def_es": "Episodios de vómito durante o por el dolor.",
+            "def_en": "Vomiting episodes during or because of the pain.",
+            "def_zh": "在疼痛期間或因疼痛而嘔吐。"
+          },
+          "photophobia": {
+            "label_es": "Fotofobia",
+            "label_en": "Photophobia",
+            "label_zh": "畏光",
+            "def_es": "Molestia o dolor ante la luz. La luz normal se siente intensa y empeora el dolor. Búsqueda activa de oscuridad.",
+            "def_en": "Discomfort or pain in response to light. Normal light feels intense and worsens the pain. Active seeking of darkness.",
+            "def_zh": "對光的不適或疼痛。正常的光感覺強烈並加劇疼痛。主動尋求黑暗環境。"
+          },
+          "phonophobia": {
+            "label_es": "Fonofobia",
+            "label_en": "Phonophobia",
+            "label_zh": "畏聲",
+            "def_es": "Molestia o dolor ante el sonido. Los ruidos cotidianos se sienten amplificados o intolerables.",
+            "def_en": "Discomfort or pain in response to sound. Everyday noises feel amplified or intolerable.",
+            "def_zh": "對聲音的不適或疼痛。日常噪音感覺被放大或難以忍受。"
+          },
+          "visual_aura": {
+            "label_es": "Aura visual",
+            "label_en": "Visual aura",
+            "label_zh": "視覺先兆",
+            "def_es": "Síntomas visuales que aparecen antes o durante el dolor: luces, zigzags, manchas brillantes, visión borrosa o pérdida temporal de partes del campo visual. Suele durar entre 5 y 60 minutos.",
+            "def_en": "Visual symptoms appearing before or during the pain: lights, zigzags, bright spots, blurred vision, or temporary loss of parts of the visual field. Usually lasts between 5 and 60 minutes.",
+            "def_zh": "在疼痛之前或期間出現的視覺症狀:光、鋸齒線、亮點、視力模糊或視野部分暫時喪失。通常持續 5 到 60 分鐘。"
+          },
+          "movement_intolerance": {
+            "label_es": "No tolero el movimiento",
+            "label_en": "Movement intolerance",
+            "label_zh": "無法忍受活動",
+            "def_es": "El movimiento (caminar, subir escaleras, agacharse) empeora notablemente el dolor.",
+            "def_en": "Movement (walking, climbing stairs, bending) notably worsens the pain.",
+            "def_zh": "活動(走路、爬樓梯、彎腰)明顯加重疼痛。"
+          },
+          "temp_dysregulation": {
+            "label_es": "Desregulación de temperatura",
+            "label_en": "Temperature dysregulation",
+            "label_zh": "體溫調節異常",
+            "def_es": "Tu cuerpo no logra regular bien su temperatura durante el episodio: sudores fríos, calor súbito, escalofríos sin fiebre o sensación de frío/calor desproporcionados al ambiente. Frecuente en personas con disautonomía durante episodios intensos.",
+            "def_en": "Your body fails to regulate temperature well during the episode: cold sweats, sudden heat, chills without fever, or cold/heat sensations disproportionate to the environment. Common in people with dysautonomia during severe episodes.",
+            "def_zh": "在發作期間身體無法妥善調節體溫:冷汗、突發熱感、無發燒的寒顫,或與環境不相稱的冷熱感受。在自主神經失調者嚴重發作時常見。"
+          }
+        }
+      },
+      "postural_pattern": {
+        "kind": "single_select",
+        "header_es": "PATRÓN POSTURAL",
+        "header_en": "POSTURAL PATTERN",
+        "header_zh": "姿勢模式",
+        "chips": {
+          "worse_upright": {
+            "label_es": "Empeora de pie",
+            "label_en": "Worse upright",
+            "label_zh": "站立時加重",
+            "def_es": "El dolor aumenta significativamente al estar de pie o sentada erguida, y mejora al acostarse. Patrón sugerente de fuga de líquido cefalorraquídeo (LCR) o hipotensión intracraneal.",
+            "def_en": "Pain increases significantly when standing or sitting upright, and improves when lying down. Pattern suggestive of cerebrospinal fluid (CSF) leak or intracranial hypotension.",
+            "def_zh": "站立或直坐時疼痛顯著加劇,躺下時改善。提示腦脊液(CSF)漏或顱內壓過低的模式。"
+          },
+          "worse_recumbent": {
+            "label_es": "Empeora acostada",
+            "label_en": "Worse recumbent",
+            "label_zh": "躺臥時加重",
+            "def_es": "El dolor aumenta al acostarse y mejora al estar de pie o erguida. Patrón sugerente de hipertensión intracraneal.",
+            "def_en": "Pain increases when lying down and improves when standing or upright. Pattern suggestive of intracranial hypertension.",
+            "def_zh": "躺下時疼痛加劇,站立或直坐時改善。提示顱內壓過高的模式。"
+          },
+          "no_postural_pattern": {
+            "label_es": "Sin patrón postural",
+            "label_en": "No postural pattern",
+            "label_zh": "無姿勢模式",
+            "def_es": "El dolor no cambia notablemente con la posición del cuerpo.",
+            "def_en": "The pain does not change notably with body position.",
+            "def_zh": "疼痛不會隨身體姿勢明顯改變。"
+          }
+        }
+      },
+      "onset": {
+        "kind": "single_select",
+        "header_es": "INICIO",
+        "header_en": "ONSET",
+        "header_zh": "發作",
+        "chips": {
+          "thunderclap": {
+            "label_es": "Inicio súbito (thunderclap)",
+            "label_en": "Thunderclap onset",
+            "label_zh": "霹靂性發作",
+            "def_es": "El dolor alcanzó su máxima intensidad en segundos a un minuto desde el inicio. Este patrón se considera una emergencia médica hasta que se descarten causas graves (hemorragia subaracnoidea, trombosis venosa). Si esto está ocurriendo ahora, acude a urgencias.",
+            "def_en": "The pain reached its maximum intensity within seconds to a minute of onset. This pattern is considered a medical emergency until serious causes are ruled out (subarachnoid hemorrhage, venous thrombosis). If this is happening now, go to the emergency room.",
+            "def_zh": "疼痛在發作後數秒至一分鐘內達到最大強度。在排除嚴重原因(蛛網膜下腔出血、靜脈血栓)之前,此模式被視為醫療緊急情況。如果現在正在發生,請立即就醫。"
+          }
+        }
+      }
+    }
+  }
+}

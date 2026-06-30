@@ -82,8 +82,8 @@ class _MovimientoTabState extends State<MovimientoTab> {
 
     // Combined chronological list, newest first.
     final combined = <_DayLogEntry>[
-      ...todaysActivity.map((a) => _DayLogEntry.activity(a)),
-      ...todaysTherapy.map((t) => _DayLogEntry.therapy(t)),
+      ...todaysActivity.map((a) => _DayLogEntry.activity(a, l10n)),
+      ...todaysTherapy.map((t) => _DayLogEntry.therapy(t, l10n)),
     ]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     return ListView(
@@ -357,7 +357,6 @@ class _MovimientoTabState extends State<MovimientoTab> {
   // ACTIVITY (with optional pre/post pain e-VAS)
   // ---------------------------------------------------------------------------
 
-  static const _painLabels = ['nada', 'leve', 'moderado', 'intenso', 'severo'];
   static const _painColors = [
     Color(0xFF81C784), // 0
     Color(0xFFAED581), // 1
@@ -394,14 +393,22 @@ class _MovimientoTabState extends State<MovimientoTab> {
     int? painAfter = existing?.painAfter;
     bool showPain = painBefore != null || painAfter != null;
 
+    final l10n = context.l10n;
     String feelingLabel(int v) => switch (v) {
-          1 => '🤕 En dolor / lesión',
-          2 => '😟 Incómodo / preocupado',
-          3 => '😐 Neutral',
-          4 => '😊 Relajado',
-          5 => '💪 Fuerte y seguro',
+          1 => l10n.movementFeelingPainOrInjury,
+          2 => l10n.movementFeelingUncomfortable,
+          3 => l10n.movementFeelingNeutral,
+          4 => l10n.movementFeelingRelaxed,
+          5 => l10n.movementFeelingStrongConfident,
           _ => '$v',
         };
+    final painLabels = <String>[
+      l10n.movementPainLevelNone,
+      l10n.movementPainLevelMild,
+      l10n.movementPainLevelModerate,
+      l10n.movementPainLevelIntense,
+      l10n.movementPainLevelSevere,
+    ];
 
     showModalBottomSheet(
       context: context,
@@ -418,7 +425,10 @@ class _MovimientoTabState extends State<MovimientoTab> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("${isEdit ? 'EDITAR' : 'REGISTRAR'}: ${name.toUpperCase()}",
+                  Text(
+                      isEdit
+                          ? l10n.movementModalTitleEditTemplate(name.toUpperCase())
+                          : l10n.movementModalTitleRegisterTemplate(name.toUpperCase()),
                       style: TextStyle(color: _cc, fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
@@ -440,8 +450,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
                       controller: durationCtrl,
                       style: TextStyle(color: _cc),
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                          hintText: "Duración (min)", hintStyle: TextStyle(color: Colors.grey)),
+                      decoration: InputDecoration(
+                          hintText: l10n.movementModalHintDuration,
+                          hintStyle: const TextStyle(color: Colors.grey)),
                     )
                   else
                     Row(
@@ -451,8 +462,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
                             controller: setsCtrl,
                             style: TextStyle(color: _cc),
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                                hintText: "Sets", hintStyle: TextStyle(color: Colors.grey)),
+                            decoration: InputDecoration(
+                                hintText: l10n.movementModalHintSets,
+                                hintStyle: const TextStyle(color: Colors.grey)),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -461,8 +473,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
                             controller: repsCtrl,
                             style: TextStyle(color: _cc),
                             keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                                hintText: "Reps", hintStyle: TextStyle(color: Colors.grey)),
+                            decoration: InputDecoration(
+                                hintText: l10n.movementModalHintReps,
+                                hintStyle: const TextStyle(color: Colors.grey)),
                           ),
                         ),
                       ],
@@ -471,14 +484,14 @@ class _MovimientoTabState extends State<MovimientoTab> {
                   TextField(
                     controller: hhrCtrl,
                     style: TextStyle(color: _cc),
-                    decoration: const InputDecoration(
-                        hintText: "Frecuencia cardíaca opcional (ej. 70→110)",
-                        hintStyle: TextStyle(color: Colors.grey)),
+                    decoration: InputDecoration(
+                        hintText: l10n.movementModalHintHeartRate,
+                        hintStyle: const TextStyle(color: Colors.grey)),
                   ),
                   const SizedBox(height: 16),
 
                   // Effort
-                  Text("Esfuerzo: $effort/10",
+                  Text(l10n.movementModalEffortLabelTemplate(effort),
                       style: TextStyle(
                           color: _cc, fontWeight: FontWeight.bold, fontSize: 12)),
                   Slider(
@@ -490,7 +503,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
                   ),
 
                   // Feeling
-                  Text("Cómo me sentí: $feeling/5",
+                  Text(l10n.movementModalFeelingLabelTemplate(feeling),
                       style: TextStyle(
                           color: _cc, fontWeight: FontWeight.bold, fontSize: 12)),
                   Text(feelingLabel(feeling),
@@ -526,7 +539,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
                             letterSpacing: 1,
                             fontWeight: FontWeight.bold)),
                     const SizedBox(height: 6),
-                    _painRow(painBefore, (v) => setSheet(() => painBefore = v)),
+                    _painRow(painBefore, painLabels, (v) => setSheet(() => painBefore = v)),
                     const SizedBox(height: 12),
                     Text(context.l10n.activityLabelPainAfter,
                         style: TextStyle(
@@ -535,7 +548,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
                             letterSpacing: 1,
                             fontWeight: FontWeight.bold)),
                     const SizedBox(height: 6),
-                    _painRow(painAfter, (v) => setSheet(() => painAfter = v)),
+                    _painRow(painAfter, painLabels, (v) => setSheet(() => painAfter = v)),
                     if (painBefore != null && painAfter != null) ...[
                       const SizedBox(height: 8),
                       _painDeltaHint(painBefore!, painAfter!),
@@ -594,7 +607,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
     );
   }
 
-  Widget _painRow(int? value, ValueChanged<int?> onTap) {
+  Widget _painRow(int? value, List<String> painLabels, ValueChanged<int?> onTap) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: List.generate(5, (i) {
@@ -620,7 +633,7 @@ class _MovimientoTabState extends State<MovimientoTab> {
                   ),
                 ),
                 const SizedBox(height: 3),
-                Text(_painLabels[i],
+                Text(painLabels[i],
                     style: TextStyle(
                       color: _cc,
                       fontSize: 9,
@@ -635,20 +648,21 @@ class _MovimientoTabState extends State<MovimientoTab> {
   }
 
   Widget _painDeltaHint(int before, int after) {
+    final l10n = context.l10n;
     final delta = before - after;
     String label;
     Color color;
     IconData icon;
     if (delta > 0) {
-      label = "Mejoraste $delta nivel${delta == 1 ? '' : 'es'}";
+      label = l10n.movementPainDeltaImprovedTemplate(delta);
       color = const Color(0xFF81C784);
       icon = Icons.trending_down;
     } else if (delta < 0) {
-      label = "Empeoraste ${-delta} nivel${(-delta) == 1 ? '' : 'es'}";
+      label = l10n.movementPainDeltaWorseTemplate(-delta);
       color = const Color(0xFFE57373);
       icon = Icons.trending_up;
     } else {
-      label = "Sin cambios";
+      label = l10n.movementPainDeltaUnchanged;
       color = _cc.withValues(alpha: 0.5);
       icon = Icons.trending_flat;
     }
@@ -694,18 +708,22 @@ class _DayLogEntry {
 
   bool get isActivity => activity != null;
 
-  factory _DayLogEntry.activity(ActivityEvent a) {
+  factory _DayLogEntry.activity(ActivityEvent a, AppLocalizations l10n) {
     final detail = (a.durationMinutes != null && a.durationMinutes! > 0)
         ? '${a.durationMinutes}min'
         : '${a.sets ?? "?"}×${a.reps ?? "?"}';
     final parts = <String>[
       detail,
-      'esfuerzo ${a.effort}/10',
-      'sentir ${a.feeling}/5',
+      l10n.movementLogEntryEffortTemplate(a.effort),
+      l10n.movementLogEntryFeelingTemplate(a.feeling),
     ];
     if (a.painDelta != null) {
       final d = a.painDelta!;
-      parts.add(d > 0 ? '↓$d niv.' : d < 0 ? '↑${-d} niv.' : 'sin cambio');
+      parts.add(d > 0
+          ? l10n.movementLogEntryDeltaImprovedTemplate(d)
+          : d < 0
+              ? l10n.movementLogEntryDeltaWorseTemplate(-d)
+              : l10n.movementLogEntryDeltaUnchanged);
     }
     return _DayLogEntry._(
       timestamp: a.timestamp,
@@ -716,13 +734,17 @@ class _DayLogEntry {
     );
   }
 
-  factory _DayLogEntry.therapy(TherapyEvent t) {
+  factory _DayLogEntry.therapy(TherapyEvent t, AppLocalizations l10n) {
     final parts = <String>[];
     if (t.bodyArea != null) parts.add(t.bodyArea!);
     if (t.durationMinutes != null) parts.add('${t.durationMinutes}min');
     if (t.severityDelta != null) {
       final d = t.severityDelta!;
-      parts.add(d > 0 ? '↓$d niv.' : d < 0 ? '↑${-d} niv.' : '=');
+      parts.add(d > 0
+          ? l10n.movementLogEntryDeltaImprovedTemplate(d)
+          : d < 0
+              ? l10n.movementLogEntryDeltaWorseTemplate(-d)
+              : l10n.movementLogEntryTherapyDeltaSteady);
     }
     if (t.therapistOrPlace != null) parts.add(t.therapistOrPlace!);
     if (t.cost != null) parts.add('\$${t.cost}');

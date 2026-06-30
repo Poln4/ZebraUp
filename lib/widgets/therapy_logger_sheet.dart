@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/models.dart';
 import '../screens/timestamp_picker.dart';
+import '../l10n/app_localizations.dart';
 
 /// Returns the logged/edited TherapyEvent, or null if cancelled.
 /// If `existing` is provided, opens in edit mode.
@@ -59,7 +60,7 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
   bool _showExtras = false;
 
   // 0–4 e-VAS scale, matching SymptomSeverity numeric values.
-  static const _severityLabels = ['nada', 'leve', 'moderado', 'intenso', 'severo'];
+  // Labels are now resolved per-locale inside build(); see severityLabels list.
   static const _severityColors = [
     Color(0xFF81C784), // 0 — green
     Color(0xFFAED581), // 1 — light green
@@ -116,6 +117,14 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
     final cc = widget.contrastColor;
     final ic = widget.inverseContrastColor;
     final isEdit = widget.existing != null;
+    final l10n = AppLocalizations.of(context)!;
+    final severityLabels = <String>[
+      l10n.movementPainLevelNone,
+      l10n.movementPainLevelMild,
+      l10n.movementPainLevelModerate,
+      l10n.movementPainLevelIntense,
+      l10n.movementPainLevelSevere,
+    ];
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -127,7 +136,9 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "${isEdit ? 'EDITAR' : 'REGISTRAR'}: ${widget.modality.toUpperCase()}",
+                isEdit
+                    ? l10n.movementModalTitleEditTemplate(widget.modality.toUpperCase())
+                    : l10n.movementModalTitleRegisterTemplate(widget.modality.toUpperCase()),
                 style: TextStyle(color: cc, fontSize: 16, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
@@ -154,9 +165,9 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                     child: TextField(
                       controller: _areaCtrl,
                       style: TextStyle(color: cc),
-                      decoration: const InputDecoration(
-                        hintText: "Zona (ej. cervicales)",
-                        hintStyle: TextStyle(color: Colors.grey),
+                      decoration: InputDecoration(
+                        hintText: l10n.therapyHintArea,
+                        hintStyle: const TextStyle(color: Colors.grey),
                         isDense: true,
                       ),
                     ),
@@ -168,9 +179,9 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                       controller: _durationCtrl,
                       style: TextStyle(color: cc),
                       keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        hintText: "Duración (min)",
-                        hintStyle: TextStyle(color: Colors.grey),
+                      decoration: InputDecoration(
+                        hintText: l10n.movementModalHintDuration,
+                        hintStyle: const TextStyle(color: Colors.grey),
                         isDense: true,
                       ),
                     ),
@@ -180,26 +191,26 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
               const SizedBox(height: 20),
 
               // e-VAS before
-              Text("DOLOR ANTES",
+              Text(l10n.therapySectionPainBefore,
                   style: TextStyle(
                       color: cc.withValues(alpha: 0.7),
                       fontSize: 11,
                       letterSpacing: 1,
                       fontWeight: FontWeight.bold)),
               const SizedBox(height: 6),
-              _severityRow(_before, (v) => setState(() => _before = v)),
+              _severityRow(_before, severityLabels, (v) => setState(() => _before = v)),
 
               const SizedBox(height: 16),
 
               // e-VAS after
-              Text("DOLOR DESPUÉS",
+              Text(l10n.therapySectionPainAfter,
                   style: TextStyle(
                       color: cc.withValues(alpha: 0.7),
                       fontSize: 11,
                       letterSpacing: 1,
                       fontWeight: FontWeight.bold)),
               const SizedBox(height: 6),
-              _severityRow(_after, (v) => setState(() => _after = v)),
+              _severityRow(_after, severityLabels, (v) => setState(() => _after = v)),
 
               // Delta hint
               if (_before != null && _after != null) ...[
@@ -215,16 +226,16 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                   onPressed: () => setState(() => _showExtras = true),
                   style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero),
                   icon: Icon(Icons.add, color: cc.withValues(alpha: 0.7), size: 14),
-                  label: Text("más detalles (terapeuta, costo, nota)",
+                  label: Text(l10n.therapyActionMoreDetails,
                       style: TextStyle(color: cc.withValues(alpha: 0.7), fontSize: 12)),
                 )
               else ...[
                 TextField(
                   controller: _therapistCtrl,
                   style: TextStyle(color: cc),
-                  decoration: const InputDecoration(
-                    hintText: "Terapeuta / lugar (opcional)",
-                    hintStyle: TextStyle(color: Colors.grey),
+                  decoration: InputDecoration(
+                    hintText: l10n.therapyHintTherapist,
+                    hintStyle: const TextStyle(color: Colors.grey),
                     isDense: true,
                   ),
                 ),
@@ -233,9 +244,9 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                   controller: _costCtrl,
                   style: TextStyle(color: cc),
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    hintText: "Costo en CLP (opcional)",
-                    hintStyle: TextStyle(color: Colors.grey),
+                  decoration: InputDecoration(
+                    hintText: l10n.therapyHintCost,
+                    hintStyle: const TextStyle(color: Colors.grey),
                     isDense: true,
                   ),
                 ),
@@ -244,9 +255,9 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                   controller: _noteCtrl,
                   style: TextStyle(color: cc),
                   maxLines: 2,
-                  decoration: const InputDecoration(
-                    hintText: "Nota (opcional)",
-                    hintStyle: TextStyle(color: Colors.grey),
+                  decoration: InputDecoration(
+                    hintText: l10n.therapyHintNote,
+                    hintStyle: const TextStyle(color: Colors.grey),
                     isDense: true,
                   ),
                 ),
@@ -259,14 +270,15 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                   minimumSize: const Size.fromHeight(48),
                 ),
                 onPressed: _save,
-                child: Text(isEdit ? 'GUARDAR CAMBIOS' : 'REGISTRAR',
+                child: Text(isEdit ? l10n.therapyActionSaveChanges : l10n.therapyActionLog,
                     style: TextStyle(color: ic, fontWeight: FontWeight.bold)),
               ),
               const SizedBox(height: 8),
               Center(
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text("cancelar", style: TextStyle(color: cc.withValues(alpha: 0.6))),
+                  child: Text(l10n.actionCancel.toLowerCase(),
+                      style: TextStyle(color: cc.withValues(alpha: 0.6))),
                 ),
               ),
             ],
@@ -276,7 +288,7 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
     );
   }
 
-  Widget _severityRow(int? value, ValueChanged<int?> onTap) {
+  Widget _severityRow(int? value, List<String> severityLabels, ValueChanged<int?> onTap) {
     final cc = widget.contrastColor;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -304,7 +316,7 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  _severityLabels[i],
+                  severityLabels[i],
                   style: TextStyle(
                     color: cc,
                     fontSize: 9,
@@ -320,20 +332,21 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
   }
 
   Widget _deltaHint(Color cc) {
+    final l10n = AppLocalizations.of(context)!;
     final delta = (_before ?? 0) - (_after ?? 0);
     String label;
     Color color;
     IconData icon;
     if (delta > 0) {
-      label = "Mejoraste $delta nivel${delta == 1 ? '' : 'es'}";
+      label = l10n.movementPainDeltaImprovedTemplate(delta);
       color = const Color(0xFF81C784);
       icon = Icons.trending_down;
     } else if (delta < 0) {
-      label = "Empeoraste ${-delta} nivel${(-delta) == 1 ? '' : 'es'}";
+      label = l10n.movementPainDeltaWorseTemplate(-delta);
       color = const Color(0xFFE57373);
       icon = Icons.trending_up;
     } else {
-      label = "Sin cambios";
+      label = l10n.movementPainDeltaUnchanged;
       color = cc.withValues(alpha: 0.5);
       icon = Icons.trending_flat;
     }

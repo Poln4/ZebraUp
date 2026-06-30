@@ -1,0 +1,760 @@
+{
+    "Low-unpleasant": [
+        {
+            "english_term": "Alienated",
+            "spanish_equivalent": "Alienación",
+            "definition_en": "Feeling isolated or estranged from others.",
+            "definition_es": "Sentimiento de aislamiento o distanciamiento de los demás."
+        },
+        {
+            "english_term": "Apathetic",
+            "spanish_equivalent": "Apatía",
+            "definition_en": "Lacking interest, enthusiasm, or concern.",
+            "definition_es": "Falta de interés, entusiasmo o preocupación."
+        },
+        {
+            "english_term": "Ashamed",
+            "spanish_equivalent": "Vergüenza",
+            "definition_en": "Feeling guilt, disgrace, or embarrassment.",
+            "definition_es": "Sentimiento de culpa, deshonra o bochorno."
+        },
+        {
+            "english_term": "Bored",
+            "spanish_equivalent": "Aburrimiento",
+            "definition_en": "Feeling weary and restless through lack of interest.",
+            "definition_es": "Sensación de cansancio e inquietud por falta de interés."
+        },
+        {
+            "english_term": "Burned out",
+            "spanish_equivalent": "Agotamiento",
+            "definition_en": "Completely exhausted from overwork or stress.",
+            "definition_es": "Estado de fatiga profunda por exceso de trabajo o estrés."
+        },
+        {
+            "english_term": "Depressed",
+            "spanish_equivalent": "Depresión",
+            "definition_en": "Feeling severe and persistent sadness or despair.",
+            "definition_es": "Sensación de tristeza o desesperación severa y persistente."
+        },
+        {
+            "english_term": "Despair",
+            "spanish_equivalent": "Desesperanza",
+            "definition_en": "The complete loss or absence of hope.",
+            "definition_es": "La pérdida o ausencia total de esperanza."
+        },
+        {
+            "english_term": "Disappointed",
+            "spanish_equivalent": "Decepción",
+            "definition_en": "Sad or displeased because expectations were not met.",
+            "definition_es": "Tristeza o disgusto por no haberse cumplido las expectativas."
+        },
+        {
+            "english_term": "Disconnected",
+            "spanish_equivalent": "Desconexión",
+            "definition_en": "Feeling detached from reality, oneself, or other people.",
+            "definition_es": "Sensación de distanciamiento de la realidad, de uno mismo o de otros."
+        },
+        {
+            "english_term": "Discouraged",
+            "spanish_equivalent": "Desánimo",
+            "definition_en": "Having lost confidence or enthusiasm.",
+            "definition_es": "Pérdida de la confianza o el entusiasmo."
+        },
+        {
+            "english_term": "Disengaged",
+            "spanish_equivalent": "Desvinculación",
+            "definition_en": "Lacking emotional involvement or commitment.",
+            "definition_es": "Falta de implicación emocional o de compromiso."
+        },
+        {
+            "english_term": "Disheartened",
+            "spanish_equivalent": "Desaliento",
+            "definition_en": "Having lost determination or confidence.",
+            "definition_es": "Pérdida de la determinación o de la confianza."
+        },
+        {
+            "english_term": "Down",
+            "spanish_equivalent": "Decaimiento",
+            "definition_en": "Feeling slightly sad or lacking energy.",
+            "definition_es": "Sensación de ligera tristeza o falta de energía."
+        },
+        {
+            "english_term": "Excluded",
+            "spanish_equivalent": "Exclusión",
+            "definition_en": "Left out of a group, activity, or place.",
+            "definition_es": "Situación de haber sido dejado fuera de un grupo, actividad o lugar."
+        },
+        {
+            "english_term": "Exhausted",
+            "spanish_equivalent": "Extenuación",
+            "definition_en": "Completely drained of physical or mental energy.",
+            "definition_es": "Pérdida completa de energía física o mental."
+        },
+        {
+            "english_term": "Fatigued",
+            "spanish_equivalent": "Fatiga",
+            "definition_en": "Extremely tired, often resulting from mental or physical exertion.",
+            "definition_es": "Sensación de gran cansancio, a menudo por esfuerzo mental o físico."
+        },
+        {
+            "english_term": "Forlorn",
+            "spanish_equivalent": "Desolación",
+            "definition_en": "Pitifully sad, abandoned, or lonely.",
+            "definition_es": "Sentimiento de tristeza lastimosa, abandono o soledad."
+        },
+        {
+            "english_term": "Glum",
+            "spanish_equivalent": "Melancolía",
+            "definition_en": "Looking or feeling dejected and gloomy.",
+            "definition_es": "Estado de abatimiento y pesadumbre."
+        },
+        {
+            "english_term": "Guilty",
+            "spanish_equivalent": "Culpa",
+            "definition_en": "Feeling responsible for a specified wrongdoing.",
+            "definition_es": "Sentimiento de responsabilidad por una mala acción específica."
+        },
+        {
+            "english_term": "Helpless",
+            "spanish_equivalent": "Impotencia",
+            "definition_en": "Unable to defend oneself or to act without help.",
+            "definition_es": "Incapacidad para defenderse o actuar sin ayuda."
+        },
+        {
+            "english_term": "Hopeless",
+            "spanish_equivalent": "Falta de esperanza",
+            "definition_en": "Feeling or causing despair about the future.",
+            "definition_es": "Ausencia de expectativa positiva o desesperación por el futuro."
+        },
+        {
+            "english_term": "Insecure",
+            "spanish_equivalent": "Inseguridad",
+            "definition_en": "Lacking self-confidence or certainty.",
+            "definition_es": "Falta de confianza en uno mismo o de certeza."
+        },
+        {
+            "english_term": "Lonely",
+            "spanish_equivalent": "Soledad",
+            "definition_en": "Sad because one has no friends or company.",
+            "definition_es": "Sentimiento de tristeza por no tener amigos o compañía."
+        },
+        {
+            "english_term": "Lost",
+            "spanish_equivalent": "Desorientación",
+            "definition_en": "Unable to find one's way or lacking a sense of purpose.",
+            "definition_es": "Incapacidad de encontrar el camino o falta de un sentido de propósito."
+        },
+        {
+            "english_term": "Meh",
+            "spanish_equivalent": "Indiferencia",
+            "definition_en": "Unimpressed, apathetic, or lacking enthusiasm.",
+            "definition_es": "Estado de apatía, falta de impresión o de entusiasmo."
+        },
+        {
+            "english_term": "Miserable",
+            "spanish_equivalent": "Miseria emocional",
+            "definition_en": "Wretchedly unhappy or uncomfortable.",
+            "definition_es": "Estado de extrema infelicidad o incomodidad."
+        },
+        {
+            "english_term": "Numb",
+            "spanish_equivalent": "Entumecimiento",
+            "definition_en": "Deprived of the power of sensation or emotion.",
+            "definition_es": "Pérdida temporal de la capacidad de sensación o emoción."
+        },
+        {
+            "english_term": "Pessimistic",
+            "spanish_equivalent": "Pesimismo",
+            "definition_en": "Expecting the worst possible outcome.",
+            "definition_es": "Tendencia a esperar el peor resultado posible."
+        },
+        {
+            "english_term": "Sad",
+            "spanish_equivalent": "Tristeza",
+            "definition_en": "Feeling or showing sorrow or unhappiness.",
+            "definition_es": "Sentimiento de dolor o infelicidad."
+        },
+        {
+            "english_term": "Spent",
+            "spanish_equivalent": "Desgaste",
+            "definition_en": "Having no energy or strength left.",
+            "definition_es": "Falta total de energía o fuerza restante."
+        },
+        {
+            "english_term": "Tired",
+            "spanish_equivalent": "Cansancio",
+            "definition_en": "In need of sleep or rest; weary.",
+            "definition_es": "Necesidad de sueño o descanso; fatiga."
+        },
+        {
+            "english_term": "Trapped",
+            "spanish_equivalent": "Sensación de encierro",
+            "definition_en": "Unable to escape from a restrictive situation.",
+            "definition_es": "Sensación de incapacidad para escapar de una situación restrictiva."
+        },
+        {
+            "english_term": "Vulnerable",
+            "spanish_equivalent": "Vulnerabilidad",
+            "definition_en": "Susceptible to physical or emotional attack or harm.",
+            "definition_es": "Susceptibilidad a ataques o daños físicos o emocionales."
+        }
+    ],
+    "High-unpleasant": [
+        {
+            "english_term": "Angry",
+            "spanish_equivalent": "Enojo",
+            "definition_en": "Feeling or showing strong annoyance or displeasure.",
+            "definition_es": "Sensación de fuerte molestia o desagrado."
+        },
+        {
+            "english_term": "Annoyed",
+            "spanish_equivalent": "Molestia",
+            "definition_en": "Slightly angry or irritated.",
+            "definition_es": "Sensación de irritación o de un ligero enojo."
+        },
+        {
+            "english_term": "Anxious",
+            "spanish_equivalent": "Ansiedad",
+            "definition_en": "Experiencing worry, unease, or nervousness.",
+            "definition_es": "Sentimiento de preocupación, inquietud o nerviosismo."
+        },
+        {
+            "english_term": "Apprehensive",
+            "spanish_equivalent": "Aprensión",
+            "definition_en": "Anxious or fearful that something bad will happen.",
+            "definition_es": "Temor o ansiedad de que algo malo suceda."
+        },
+        {
+            "english_term": "Concerned",
+            "spanish_equivalent": "Preocupación",
+            "definition_en": "Worried, troubled, or anxious about something.",
+            "definition_es": "Inquietud o ansiedad focalizada por algo."
+        },
+        {
+            "english_term": "Confused",
+            "spanish_equivalent": "Confusión",
+            "definition_en": "Unable to think clearly or understand.",
+            "definition_es": "Incapacidad de pensar con claridad o de entender."
+        },
+        {
+            "english_term": "Contempt",
+            "spanish_equivalent": "Desprecio",
+            "definition_en": "The feeling that a person or a thing is beneath consideration.",
+            "definition_es": "El sentimiento de que una persona o cosa no merece consideración."
+        },
+        {
+            "english_term": "Disgusted",
+            "spanish_equivalent": "Disgusto / Asco",
+            "definition_en": "Feeling profound disapproval or revulsion.",
+            "definition_es": "Sensación de profunda desaprobación o repugnancia."
+        },
+        {
+            "english_term": "Embarrassed",
+            "spanish_equivalent": "Bochorno",
+            "definition_en": "Feeling ashamed or self-conscious.",
+            "definition_es": "Sentimiento de vergüenza o turbación frente a otros."
+        },
+        {
+            "english_term": "Enraged",
+            "spanish_equivalent": "Furia",
+            "definition_en": "Very angry; furious.",
+            "definition_es": "Nivel de ira extrema o furor."
+        },
+        {
+            "english_term": "Envious",
+            "spanish_equivalent": "Envidia",
+            "definition_en": "Desiring what someone else has.",
+            "definition_es": "Deseo por lo que otra persona posee."
+        },
+        {
+            "english_term": "FOMO",
+            "spanish_equivalent": "FOMO (Miedo a perderse algo)",
+            "definition_en": "Anxiety that an exciting event is happening elsewhere.",
+            "definition_es": "Ansiedad ante la posibilidad de que un evento emocionante ocurra sin uno."
+        },
+        {
+            "english_term": "Frightened",
+            "spanish_equivalent": "Susto",
+            "definition_en": "Afraid or anxious.",
+            "definition_es": "Sensación de miedo o ansiedad repentina."
+        },
+        {
+            "english_term": "Frustrated",
+            "spanish_equivalent": "Frustración",
+            "definition_en": "Annoyed at being unable to change or achieve something.",
+            "definition_es": "Molestia provocada por la incapacidad de cambiar o lograr algo."
+        },
+        {
+            "english_term": "Furious",
+            "spanish_equivalent": "Ira extrema",
+            "definition_en": "Extremely angry.",
+            "definition_es": "Nivel de enojo extremadamente alto."
+        },
+        {
+            "english_term": "Humiliated",
+            "spanish_equivalent": "Humillación",
+            "definition_en": "Made to feel ashamed and foolish.",
+            "definition_es": "Sensación de haber sido menospreciado o hecho sentir en ridículo."
+        },
+        {
+            "english_term": "Hyper",
+            "spanish_equivalent": "Hiperactividad",
+            "definition_en": "Unusually energetic, restless, or excitable.",
+            "definition_es": "Estado inusualmente enérgico, inquieto o excitable."
+        },
+        {
+            "english_term": "Impassioned",
+            "spanish_equivalent": "Apasionamiento",
+            "definition_en": "Filled with or showing great emotion.",
+            "definition_es": "Demostración de gran emoción o intensidad afectiva."
+        },
+        {
+            "english_term": "Irritated",
+            "spanish_equivalent": "Irritación",
+            "definition_en": "Showing or feeling slight anger; annoyed.",
+            "definition_es": "Demostración o presencia de ligero enojo y exasperación."
+        },
+        {
+            "english_term": "Jealous",
+            "spanish_equivalent": "Celos",
+            "definition_en": "Feeling threatened by a rival or protective of one's rights.",
+            "definition_es": "Sentimiento de amenaza por un rival o actitud protectora excesiva."
+        },
+        {
+            "english_term": "Jittery",
+            "spanish_equivalent": "Inquietud nerviosa",
+            "definition_en": "Nervous or unable to relax.",
+            "definition_es": "Sensación de nerviosismo físico e incapacidad de relajarse."
+        },
+        {
+            "english_term": "Nervous",
+            "spanish_equivalent": "Nerviosismo",
+            "definition_en": "Easily agitated or alarmed.",
+            "definition_es": "Facilidad para agitarse o alarmarse por los nervios."
+        },
+        {
+            "english_term": "Overwhelmed",
+            "spanish_equivalent": "Agobio",
+            "definition_en": "Burdened with too much to handle.",
+            "definition_es": "Sensación de tener una carga demasiado pesada para manejar."
+        },
+        {
+            "english_term": "Panicked",
+            "spanish_equivalent": "Pánico",
+            "definition_en": "Feeling sudden, uncontrollable fear or anxiety.",
+            "definition_es": "Miedo o ansiedad repentinos e incontrolables."
+        },
+        {
+            "english_term": "Peeved",
+            "spanish_equivalent": "Fastidio",
+            "definition_en": "Annoyed or irritated.",
+            "definition_es": "Sensación de molestia o de una irritación leve."
+        },
+        {
+            "english_term": "Pressured",
+            "spanish_equivalent": "Presión",
+            "definition_en": "Feeling forced or coerced to do something.",
+            "definition_es": "Sensación de estar siendo forzado o coaccionado a hacer algo."
+        },
+        {
+            "english_term": "Repulsed",
+            "spanish_equivalent": "Repulsión",
+            "definition_en": "Driven back by intense distaste or disgust.",
+            "definition_es": "Rechazo provocado por un intenso desagrado o repugnancia."
+        },
+        {
+            "english_term": "Restless",
+            "spanish_equivalent": "Inquietud",
+            "definition_en": "Unable to rest or relax as a result of anxiety or boredom.",
+            "definition_es": "Incapacidad de descansar o relajarse debido a la ansiedad o el aburrimiento."
+        },
+        {
+            "english_term": "Scared",
+            "spanish_equivalent": "Miedo",
+            "definition_en": "Fearful or frightened.",
+            "definition_es": "Sensación de temor, inseguridad o susto."
+        },
+        {
+            "english_term": "Shocked",
+            "spanish_equivalent": "Conmoción",
+            "definition_en": "Surprised and upset.",
+            "definition_es": "Estado de fuerte sorpresa y alteración emocional."
+        },
+        {
+            "english_term": "Stressed",
+            "spanish_equivalent": "Estrés",
+            "definition_en": "Experiencing mental or emotional strain.",
+            "definition_es": "Tensión mental o emocional originada por las circunstancias."
+        },
+        {
+            "english_term": "Tense",
+            "spanish_equivalent": "Tensión",
+            "definition_en": "Unable to relax because of nervousness or anxiety.",
+            "definition_es": "Incapacidad para relajar los músculos o la mente debido al nerviosismo."
+        },
+        {
+            "english_term": "Terrified",
+            "spanish_equivalent": "Terror",
+            "definition_en": "Filled with extreme fear.",
+            "definition_es": "Nivel extremo de miedo irracional."
+        },
+        {
+            "english_term": "Troubled",
+            "spanish_equivalent": "Angustia",
+            "definition_en": "Beset by problems, anxiety, or conflict.",
+            "definition_es": "Estado de perturbación constante originado por problemas o conflictos."
+        },
+        {
+            "english_term": "Uneasy",
+            "spanish_equivalent": "Intranquilidad",
+            "definition_en": "Causing or feeling anxiety; troubled or uncomfortable.",
+            "definition_es": "Sensación de malestar, incomodidad o ansiedad latente."
+        },
+        {
+            "english_term": "Worried",
+            "spanish_equivalent": "Preocupación general",
+            "definition_en": "Anxious or troubled about actual or potential problems.",
+            "definition_es": "Ansiedad o turbación frente a problemas que son reales o potenciales."
+        }
+    ],
+    "Low-pleasant": [
+        {
+            "english_term": "Accepted",
+            "spanish_equivalent": "Aceptación",
+            "definition_en": "Received as adequate, valid, or suitable.",
+            "definition_es": "Sensación de ser recibido como alguien adecuado, válido o idóneo."
+        },
+        {
+            "english_term": "Appreciated",
+            "spanish_equivalent": "Aprecio",
+            "definition_en": "Recognized for good qualities or actions.",
+            "definition_es": "Reconocimiento que se recibe por las buenas cualidades o acciones."
+        },
+        {
+            "english_term": "Balanced",
+            "spanish_equivalent": "Equilibrio",
+            "definition_en": "Keeping or showing a proper harmony or proportion.",
+            "definition_es": "Mantenimiento de una armonía o proporción interna adecuada."
+        },
+        {
+            "english_term": "Blessed",
+            "spanish_equivalent": "Dicha / Bendición",
+            "definition_en": "Endowed with divine favor, protection, or a special gift.",
+            "definition_es": "Sensación de poseer protección, profunda suerte o un don especial."
+        },
+        {
+            "english_term": "Calm",
+            "spanish_equivalent": "Calma",
+            "definition_en": "Not showing or feeling nervousness, anger, or strong emotions.",
+            "definition_es": "Ausencia de nerviosismo, ira o emociones fuertes y alterantes."
+        },
+        {
+            "english_term": "Carefree",
+            "spanish_equivalent": "Despreocupación",
+            "definition_en": "Free from anxiety or responsibility.",
+            "definition_es": "Liberación temporal de la ansiedad o las responsabilidades."
+        },
+        {
+            "english_term": "Chill",
+            "spanish_equivalent": "Relajación",
+            "definition_en": "Very relaxed and easygoing.",
+            "definition_es": "Estado de alta distensión y falta de complicaciones."
+        },
+        {
+            "english_term": "Comfortable",
+            "spanish_equivalent": "Comodidad",
+            "definition_en": "Providing physical ease and relaxation.",
+            "definition_es": "Sensación de facilidad y relajación física o mental."
+        },
+        {
+            "english_term": "Compassionate",
+            "spanish_equivalent": "Compasión",
+            "definition_en": "Feeling or showing sympathy and concern for others.",
+            "definition_es": "Sentimiento de simpatía y preocupación activa por los demás."
+        },
+        {
+            "english_term": "Connected",
+            "spanish_equivalent": "Conexión",
+            "definition_en": "United, joined, or having a bond with others.",
+            "definition_es": "Sensación de unión o de tener un vínculo claro con otros."
+        },
+        {
+            "english_term": "Cosy",
+            "spanish_equivalent": "Acogimiento / Calidez",
+            "definition_en": "Giving a feeling of comfort, warmth, and relaxation.",
+            "definition_es": "Sensación de comodidad envolvente, calidez y relajación."
+        },
+        {
+            "english_term": "Empathetic",
+            "spanish_equivalent": "Empatía",
+            "definition_en": "Showing an ability to understand and share the feelings of another.",
+            "definition_es": "Capacidad para comprender y compartir profundamente los sentimientos de otro."
+        },
+        {
+            "english_term": "Fulfilled",
+            "spanish_equivalent": "Plenitud",
+            "definition_en": "Satisfied or happy as a result of fully developing one's abilities or character.",
+            "definition_es": "Satisfacción resultante del desarrollo pleno de las propias capacidades o metas."
+        },
+        {
+            "english_term": "Good",
+            "spanish_equivalent": "Bienestar",
+            "definition_en": "Pleasant, fine, or in a satisfactory state.",
+            "definition_es": "Estado general agradable, positivo o de condición satisfactoria."
+        },
+        {
+            "english_term": "Grateful",
+            "spanish_equivalent": "Gratitud",
+            "definition_en": "Feeling or showing an appreciation of kindness.",
+            "definition_es": "Sentimiento de profundo aprecio o agradecimiento."
+        },
+        {
+            "english_term": "Included",
+            "spanish_equivalent": "Inclusión",
+            "definition_en": "Contained as part of a whole or group.",
+            "definition_es": "Sensación de formar parte activamente de un todo o de un grupo."
+        },
+        {
+            "english_term": "Loved",
+            "spanish_equivalent": "Amor",
+            "definition_en": "Feeling deep affection and care from others.",
+            "definition_es": "Sensación de recibir un profundo afecto y cuidado de parte de los demás."
+        },
+        {
+            "english_term": "Mellow",
+            "spanish_equivalent": "Serenidad suave",
+            "definition_en": "Pleasantly smooth, soft, or relaxed.",
+            "definition_es": "Sensación de relajación suave y fluida."
+        },
+        {
+            "english_term": "Peaceful",
+            "spanish_equivalent": "Paz",
+            "definition_en": "Free from disturbance; tranquil.",
+            "definition_es": "Estado de tranquilidad total y libre de perturbaciones."
+        },
+        {
+            "english_term": "Pleasant",
+            "spanish_equivalent": "Agrado",
+            "definition_en": "Giving a sense of happy satisfaction or enjoyment.",
+            "definition_es": "Sensación de feliz satisfacción o disfrute ante las circunstancias."
+        },
+        {
+            "english_term": "Relieved",
+            "spanish_equivalent": "Alivio",
+            "definition_en": "No longer feeling distressed or anxious.",
+            "definition_es": "Sensación de liberación de una angustia, peso o ansiedad previa."
+        },
+        {
+            "english_term": "Respected",
+            "spanish_equivalent": "Respeto",
+            "definition_en": "Deeply admired for abilities, qualities, or achievements.",
+            "definition_es": "Sensación de ser admirado y validado por las propias capacidades o logros."
+        },
+        {
+            "english_term": "Safe",
+            "spanish_equivalent": "Seguridad",
+            "definition_en": "Protected from or not exposed to danger or risk.",
+            "definition_es": "Sensación de contar con protección y de no estar expuesto a daños o riesgos."
+        },
+        {
+            "english_term": "Satisfied",
+            "spanish_equivalent": "Satisfacción",
+            "definition_en": "Contented or pleased with what has been experienced or received.",
+            "definition_es": "Estado de contentamiento con lo que se ha experimentado o recibido."
+        },
+        {
+            "english_term": "Secure",
+            "spanish_equivalent": "Certeza",
+            "definition_en": "Certain to remain safe and unthreatened.",
+            "definition_es": "Sentimiento estable de encontrarse a salvo y sin ningún tipo de amenaza."
+        },
+        {
+            "english_term": "Serene",
+            "spanish_equivalent": "Serenidad",
+            "definition_en": "Calm, peaceful, and untroubled.",
+            "definition_es": "Estado de tranquilidad profunda, paz y completa ausencia de problemas."
+        },
+        {
+            "english_term": "Supported",
+            "spanish_equivalent": "Apoyo",
+            "definition_en": "Given assistance, encouragement, or approval.",
+            "definition_es": "Sensación de recibir asistencia, ánimo y el respaldo de terceros."
+        },
+        {
+            "english_term": "Sympathetic",
+            "spanish_equivalent": "Comprensión empática",
+            "definition_en": "Feeling, showing, or expressing sympathy and understanding.",
+            "definition_es": "Sentimiento o expresión activa de simpatía y apoyo hacia otros."
+        },
+        {
+            "english_term": "Understood",
+            "spanish_equivalent": "Entendimiento",
+            "definition_en": "Having one's intended meaning correctly perceived.",
+            "definition_es": "Sensación de que el propio significado o perspectiva ha sido percibido correctamente."
+        },
+        {
+            "english_term": "Valued",
+            "spanish_equivalent": "Valoración",
+            "definition_en": "Considered to be important or beneficial.",
+            "definition_es": "Sentimiento de ser considerado importante, útil o de gran beneficio para los demás."
+        }
+    ],
+    "High-pleasant": [
+        {
+            "english_term": "Amazed",
+            "spanish_equivalent": "Asombro",
+            "definition_en": "Greatly surprised or astonished.",
+            "definition_es": "Sensación de enorme sorpresa o admiración."
+        },
+        {
+            "english_term": "Awe",
+            "spanish_equivalent": "Maravilla",
+            "definition_en": "A feeling of reverential respect mixed with fear or wonder.",
+            "definition_es": "Sentimiento de respeto reverencial mezclado con un fuerte asombro."
+        },
+        {
+            "english_term": "Cheerful",
+            "spanish_equivalent": "Alegría",
+            "definition_en": "Noticeably happy and optimistic.",
+            "definition_es": "Estado visible de felicidad, regocijo y optimismo."
+        },
+        {
+            "english_term": "Confident",
+            "spanish_equivalent": "Confianza",
+            "definition_en": "Feeling or showing certainty about oneself.",
+            "definition_es": "Certeza o seguridad arraigada sobre uno mismo y sus capacidades."
+        },
+        {
+            "english_term": "Curious",
+            "spanish_equivalent": "Curiosidad",
+            "definition_en": "Eager to know or learn something.",
+            "definition_es": "Fuerte ansia o deseo por saber y descubrir algo nuevo."
+        },
+        {
+            "english_term": "Delighted",
+            "spanish_equivalent": "Deleite",
+            "definition_en": "Feeling or showing great pleasure.",
+            "definition_es": "Sentimiento de gran placer y agrado con el momento presente."
+        },
+        {
+            "english_term": "Determined",
+            "spanish_equivalent": "Determinación",
+            "definition_en": "Having made a firm decision and being resolved not to change it.",
+            "definition_es": "Firmeza al haber tomado una decisión con la resolución de no cambiarla."
+        },
+        {
+            "english_term": "Ecstatic",
+            "spanish_equivalent": "Éxtasis",
+            "definition_en": "Feeling or expressing overwhelming happiness.",
+            "definition_es": "Sentimiento o expresión de felicidad profunda y abrumadora."
+        },
+        {
+            "english_term": "Elated",
+            "spanish_equivalent": "Euforia",
+            "definition_en": "Ecstatically happy or proud.",
+            "definition_es": "Sensación estática de felicidad o de profundo orgullo."
+        },
+        {
+            "english_term": "Energized",
+            "spanish_equivalent": "Energía",
+            "definition_en": "Filled with vitality and enthusiasm.",
+            "definition_es": "Sensación de estar lleno de vitalidad y fuerzas para la acción."
+        },
+        {
+            "english_term": "Engaged",
+            "spanish_equivalent": "Compromiso",
+            "definition_en": "Actively involved, busy, or occupied with something.",
+            "definition_es": "Participación e involucramiento activo pleno en alguna tarea."
+        },
+        {
+            "english_term": "Enthusiastic",
+            "spanish_equivalent": "Entusiasmo",
+            "definition_en": "Having or showing intense and eager enjoyment.",
+            "definition_es": "Disfrute y exaltación de ánimo frente a alguna actividad o idea."
+        },
+        {
+            "english_term": "Excited",
+            "spanish_equivalent": "Emoción intensa",
+            "definition_en": "Very enthusiastic and eager.",
+            "definition_es": "Estado de mucho entusiasmo, ánimo y expectativa por lo venidero."
+        },
+        {
+            "english_term": "Exhilarated",
+            "spanish_equivalent": "Regocijo",
+            "definition_en": "Very happy, animated, or elated.",
+            "definition_es": "Sentimiento de gran animación, alegría desbordante o euforia."
+        },
+        {
+            "english_term": "Happy",
+            "spanish_equivalent": "Felicidad",
+            "definition_en": "Feeling or showing pleasure or contentment.",
+            "definition_es": "Sensación general de placer, bienestar y gran satisfacción."
+        },
+        {
+            "english_term": "Hopeful",
+            "spanish_equivalent": "Esperanza",
+            "definition_en": "Feeling or inspiring optimism about a future event.",
+            "definition_es": "Sentimiento de optimismo y fe en que un evento futuro será positivo."
+        },
+        {
+            "english_term": "Inspired",
+            "spanish_equivalent": "Inspiración",
+            "definition_en": "Filled with the urge or ability to do something creative.",
+            "definition_es": "Sentimiento o iluminación del impulso para hacer algo creativo o superarse."
+        },
+        {
+            "english_term": "Joyful",
+            "spanish_equivalent": "Gozo",
+            "definition_en": "Feeling, expressing, or causing great pleasure and happiness.",
+            "definition_es": "Expresión o sensación de disfrute intenso y felicidad genuina."
+        },
+        {
+            "english_term": "Motivated",
+            "spanish_equivalent": "Motivación",
+            "definition_en": "Provided with a strong reason or desire to do something.",
+            "definition_es": "Presencia de un fuerte motivo interno o deseo que impulsa a hacer algo."
+        },
+        {
+            "english_term": "Optimistic",
+            "spanish_equivalent": "Optimismo",
+            "definition_en": "Hopeful and confident about the future.",
+            "definition_es": "Tendencia a observar y esperar lo mejor, con plena confianza sobre el futuro."
+        },
+        {
+            "english_term": "Passionate",
+            "spanish_equivalent": "Pasión",
+            "definition_en": "Showing or caused by strong feelings or beliefs.",
+            "definition_es": "Muestra o exaltación de sentimientos o creencias muy fuertes hacia algo."
+        },
+        {
+            "english_term": "Playful",
+            "spanish_equivalent": "Jovialidad / Ganas de jugar",
+            "definition_en": "Fond of games and amusement; lighthearted.",
+            "definition_es": "Actitud alegre e informal, con inclinación a los juegos y la diversión."
+        },
+        {
+            "english_term": "Pleased",
+            "spanish_equivalent": "Complacencia",
+            "definition_en": "Feeling or showing satisfaction.",
+            "definition_es": "Sensación o muestra clara de que algo ha sido muy grato y satisfactorio."
+        },
+        {
+            "english_term": "Proud",
+            "spanish_equivalent": "Orgullo",
+            "definition_en": "Feeling deep pleasure from one's own achievements.",
+            "definition_es": "Sentimiento de profundo placer y satisfacción por los logros o características propias."
+        },
+        {
+            "english_term": "Thrilled",
+            "spanish_equivalent": "Entusiasmo extremo",
+            "definition_en": "Experiencing a sudden feeling of extreme excitement.",
+            "definition_es": "Sensación repentina de extrema emoción, atracción o felicidad por algo puntual."
+        },
+        {
+            "english_term": "Upbeat",
+            "spanish_equivalent": "Buena energía",
+            "definition_en": "Cheerful, optimistic, and positive.",
+            "definition_es": "Estado de ánimo alegre, animado, optimista y rotundamente positivo."
+        }
+    ]
+}

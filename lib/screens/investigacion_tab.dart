@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/models.dart';
 import '../services/pubmed_service.dart';
+import '../l10n/app_localizations.dart';
 
 /// Research tab — auto-fetches PubMed results for each user condition.
 class InvestigacionTab extends StatefulWidget {
@@ -115,44 +116,72 @@ class _InvestigacionTabState extends State<InvestigacionTab>
   Widget _buildConditionSection(String condition, Color cc, Color ic) {
     final result = _results[condition];
     final isLoading = _loading.contains(condition);
+    final l10n = AppLocalizations.of(context)!;
+
+    // Subtitle: article count when loaded, status hint otherwise.
+    Widget? subtitleWidget;
+    if (result != null && result.articles.isNotEmpty) {
+      subtitleWidget = Padding(
+        padding: const EdgeInsets.only(top: 2),
+        child: Text(
+          l10n.investigationConditionArticleCountTemplate(
+              result.articles.length),
+          style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
+        ),
+      );
+    } else if (result == null && !isLoading) {
+      subtitleWidget = Padding(
+        padding: const EdgeInsets.only(top: 2),
+        child: Text(
+          l10n.researchStateNoData,
+          style: const TextStyle(color: Colors.grey, fontSize: 11),
+        ),
+      );
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       decoration: BoxDecoration(border: Border.all(color: cc)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            color: cc.withValues(alpha: 0.05),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    condition.toUpperCase(),
-                    style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1),
-                  ),
+      child: ExpansionTile(
+        iconColor: cc,
+        collapsedIconColor: cc,
+        initiallyExpanded: false,
+        tilePadding: const EdgeInsets.symmetric(horizontal: 12),
+        childrenPadding: EdgeInsets.zero,
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                condition.toUpperCase(),
+                style: TextStyle(
+                    color: cc,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    letterSpacing: 1),
+              ),
+            ),
+            if (result != null && result.fromCache && !isLoading)
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Tooltip(
+                  message: l10n.researchTooltipOffline,
+                  child: Icon(Icons.cloud_off_outlined,
+                      color: Colors.grey, size: 14),
                 ),
-                if (result != null && result.fromCache)
-                  Tooltip(
-                    message: 'Resultados guardados (sin conexión)',
-                    child: Icon(Icons.cloud_off_outlined, color: Colors.grey, size: 16),
-                  ),
-                if (isLoading)
-                  SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: cc),
-                  ),
-              ],
-            ),
-          ),
-          if (result == null && !isLoading)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text("Sin datos. Tira hacia abajo para buscar.",
-                  style: TextStyle(color: Colors.grey, fontSize: 12)),
-            ),
+              ),
+          ],
+        ),
+        subtitle: subtitleWidget,
+        // While loading, replace the chevron with a spinner. Otherwise
+        // null lets ExpansionTile render the default rotating chevron.
+        trailing: isLoading
+            ? SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2, color: cc),
+              )
+            : null,
+        children: [
           if (result != null) ...[
             if (result.error != null)
               Padding(
@@ -172,11 +201,19 @@ class _InvestigacionTabState extends State<InvestigacionTab>
                 padding: const EdgeInsets.all(8),
                 child: Text(
                   "Actualizado: ${DateFormat('d MMM HH:mm').format(result.fetchedAt)}",
-                  style: const TextStyle(color: Colors.grey, fontSize: 10, fontStyle: FontStyle.italic),
+                  style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 10,
+                      fontStyle: FontStyle.italic),
                   textAlign: TextAlign.center,
                 ),
               ),
-          ],
+          ] else if (!isLoading)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text("Sin datos. Tira hacia abajo para buscar.",
+                  style: TextStyle(color: Colors.grey, fontSize: 12)),
+            ),
         ],
       ),
     );

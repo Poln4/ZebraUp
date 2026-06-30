@@ -3,15 +3,21 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'l10n/app_localizations.dart';
 import 'screens/main_screen.dart';
 import 'services/profile_io_service.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'services/symptom_definitions_service.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   await Hive.openBox('zebraBox');
+  await SymptomDefinitionsService.instance.ensureLoaded();
   await ProfileIoService.migrateBoxIfNeeded();
   await Hive.openBox('pubmed_cache');
   runApp(const ZebraUpApp());
+  await initializeDateFormatting('es', null);
+  await initializeDateFormatting('en', null);
+  await initializeDateFormatting('zh_TW', null);
 }
 
 class ZebraUpApp extends StatefulWidget {

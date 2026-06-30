@@ -8,8 +8,10 @@ import '../widgets/fever_form_sheet.dart';
 import '../widgets/sleep_form_sheet.dart';
 import '../widgets/hydration_form_sheet.dart';
 import '../widgets/hrv_form_sheet.dart';
+import '../services/clinical_localizations.dart';
 import '../services/structural_taxonomy.dart';
 import '../widgets/collapsible_section.dart';
+import '../widgets/severity_picker.dart';
 import '../extensions/context_ext.dart';
 import '../l10n/app_localizations.dart';
 
@@ -84,9 +86,8 @@ class _SintomasTabState extends State<SintomasTab> {
   /// "Ninguna" is repurposed as the "I didn't rate it" sentinel per Phase 2C.
   bool _isUnrated(SymptomSeverity sev) => sev.label.toLowerCase() == 'ninguna';
 
-  /// All severities EXCEPT "ninguna" — that one is reached via the skip link instead.
-  List<SymptomSeverity> get _ratableSeverities =>
-      SymptomSeverity.values.where((s) => !_isUnrated(s)).toList();
+  // F5 Batch 2: `_ratableSeverities` getter removed — the SeverityDotPicker
+  // now takes `excludeNone: true` and filters internally.
 
   // ---------------------------------------------------------------------------
   // F3 — Collapsible section helpers
@@ -120,53 +121,9 @@ class _SintomasTabState extends State<SintomasTab> {
     return l10n.sectionHintDaysAgo(daysAgo);
   }
 
-  /// Row of colored severity dots. Single-source dot picker for both
-  /// log + edit flows.
-  Widget _buildDotPicker({
-    SymptomSeverity? selected,
-    required ValueChanged<SymptomSeverity> onTap,
-  }) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: _ratableSeverities.map((sev) {
-        final isSelected = selected == sev;
-        return InkWell(
-          onTap: () => onTap(sev),
-          borderRadius: BorderRadius.circular(24),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 30,
-                  height: 30,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _severityColor(sev),
-                    border: Border.all(
-                      color: isSelected ? _cc : Colors.transparent,
-                      width: 2.5,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  sev.label,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: _cc,
-                    fontSize: 10,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
+  // F5 Batch 2: inline _buildDotPicker removed. The two call sites now
+  // use SeverityDotPicker directly with showFunctionalAnchor: true and
+  // excludeNone: true.
 
   // ---------------------------------------------------------------------------
   // BUILD
@@ -278,9 +235,9 @@ class _SintomasTabState extends State<SintomasTab> {
             children: [
               Row(
                 children: [
-                  _bucketCard(BowelBucket.constipation, Icons.remove_circle_outline, 'estreñimiento'),
-                  _bucketCard(BowelBucket.normal, Icons.circle_outlined, 'normal'),
-                  _bucketCard(BowelBucket.diarrhea, Icons.waves, 'diarrea'),
+                  _bucketCard(BowelBucket.constipation, Icons.remove_circle_outline, l10n),
+                  _bucketCard(BowelBucket.normal, Icons.circle_outlined, l10n),
+                  _bucketCard(BowelBucket.diarrhea, Icons.waves, l10n),
                 ],
               ),
               const SizedBox(height: 10),
@@ -464,11 +421,11 @@ class _SintomasTabState extends State<SintomasTab> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "[${DateFormat('HH:mm').format(e.timestamp)}] ${e.bucket.label}"
-                                    "${e.bristolType != null ? ' · tipo ${e.bristolType}' : ''}"
-                                    "${e.urgency ? ' · urgencia' : ''}"
-                                    "${e.bloodPresent ? ' · sangrado' : ''}"
-                                    "${e.incompleteEvacuation ? ' · incompleta' : ''}",
+                                    "[${DateFormat('HH:mm').format(e.timestamp)}] ${e.bucket.bowelBucketLabel(l10n)}"
+                                    "${e.bristolType != null ? ' · ${l10n.bowelLogBristolTypeTemplate(e.bristolType!)}' : ''}"
+                                    "${e.urgency ? ' · ${l10n.bowelLogTagUrgency}' : ''}"
+                                    "${e.bloodPresent ? ' · ${l10n.bowelLogTagBleeding}' : ''}"
+                                    "${e.incompleteEvacuation ? ' · ${l10n.bowelLogTagIncomplete}' : ''}",
                                     style: TextStyle(color: _cc, fontSize: 13),
                                   ),
                                   if (e.note != null && e.note!.trim().isNotEmpty)
@@ -509,9 +466,9 @@ class _SintomasTabState extends State<SintomasTab> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    "[${DateFormat('HH:mm').format(e.timestamp)}] hemorroide"
-                                    "${e.bleeding ? ' · sangrado' : ''}"
-                                    "${e.severity != SymptomSeverity.none ? ' (${e.severity.label.toLowerCase()})' : ''}",
+                                    "[${DateFormat('HH:mm').format(e.timestamp)}] ${l10n.hemorrhoidalLogLabel}"
+                                    "${e.bleeding ? ' · ${l10n.hemorrhoidalLogTagBleeding}' : ''}"
+                                    "${e.severity != SymptomSeverity.none ? ' (${e.severity.severityLabel(l10n).toLowerCase()})' : ''}",
                                     style: TextStyle(color: _cc, fontSize: 13),
                                   ),
                                   if (e.note != null && e.note!.trim().isNotEmpty)
@@ -726,8 +683,8 @@ class _SintomasTabState extends State<SintomasTab> {
                               children: [
                                 Text(
                                   unrated
-                                      ? "[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} · sin rating"
-                                      : "[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} (${event.severity.label})",
+                                      ? "[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} · ${l10n.symptomLogTagUnrated}"
+                                      : "[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} (${event.severity.severityLabel(l10n)})",
                                   style: TextStyle(
                                     color: _cc,
                                     fontSize: 13,
@@ -976,7 +933,7 @@ class _SintomasTabState extends State<SintomasTab> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 6, bottom: 2),
-                          child: Text('SEGUIMIENTO',
+                          child: Text(context.l10n.structuralFormFollowupHeader,
                               style: TextStyle(
                                 color: _cc.withValues(alpha: 0.55),
                                 fontSize: 10,
@@ -987,7 +944,7 @@ class _SintomasTabState extends State<SintomasTab> {
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
                           dense: true,
-                          title: Text('¿Está resuelto?', style: TextStyle(color: _cc, fontSize: 13)),
+                          title: Text(context.l10n.structuralFormFollowupResolvedQuestion, style: TextStyle(color: _cc, fontSize: 13)),
                           value: resolvedAt != null,
                           activeColor: _cc,
                           onChanged: (v) async {
@@ -1013,7 +970,8 @@ class _SintomasTabState extends State<SintomasTab> {
                           Padding(
                             padding: const EdgeInsets.only(left: 4, bottom: 8),
                             child: Text(
-                              'Resuelto el ${DateFormat('d MMM yyyy').format(resolvedAt!)}',
+                              context.l10n.structuralFormFollowupResolvedDateTemplate(
+                                  DateFormat('d MMM yyyy').format(resolvedAt!)),
                               style: TextStyle(
                                 color: _cc.withValues(alpha: 0.65),
                                 fontSize: 12,
@@ -1024,9 +982,9 @@ class _SintomasTabState extends State<SintomasTab> {
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
                             dense: true,
-                            title: Text('¿Todavía duele?', style: TextStyle(color: _cc, fontSize: 13)),
+                            title: Text(context.l10n.structuralFormFollowupStillPainfulQuestion, style: TextStyle(color: _cc, fontSize: 13)),
                             subtitle: Text(
-                              'Cerró visiblemente pero el dolor sigue',
+                              context.l10n.structuralFormFollowupStillPainfulSubtitle,
                               style: TextStyle(color: _cc.withValues(alpha: 0.5), fontSize: 11),
                             ),
                             value: stillPainful,
@@ -1147,7 +1105,13 @@ class _SintomasTabState extends State<SintomasTab> {
                           letterSpacing: 1,
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  _buildDotPicker(onTap: (sev) => saveWith(sev, ctx)),
+                  SeverityDotPicker(
+                    showLabels: true,
+                    showFunctionalAnchor: true,
+                    excludeNone: true,
+                    contrastColor: _cc,
+                    onSelect: (sev) => saveWith(sev, ctx),
+                  ),
                   const SizedBox(height: 12),
                   Center(
                     child: TextButton(
@@ -1220,9 +1184,13 @@ class _SintomasTabState extends State<SintomasTab> {
                           letterSpacing: 1,
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  _buildDotPicker(
+                  SeverityDotPicker(
+                    showLabels: true,
+                    showFunctionalAnchor: true,
+                    excludeNone: true,
+                    contrastColor: _cc,
                     selected: _isUnrated(sev) ? null : sev,
-                    onTap: (s) => setSheet(() => sev = s),
+                    onSelect: (s) => setSheet(() => sev = s),
                   ),
                   if (_isUnrated(sev))
                     Padding(
@@ -1270,7 +1238,10 @@ class _SintomasTabState extends State<SintomasTab> {
   // PHASE 5.1 — Bowel & hemorrhoidal handlers
   // ---------------------------------------------------------------------------
 
-  Widget _bucketCard(BowelBucket bucket, IconData icon, String label) {
+  // i18n Batch A.3: helper now takes the BowelBucket itself and resolves
+  // its display label via BowelBucketLocalization. No more literal Spanish
+  // 'estreñimiento'/'normal'/'diarrea' strings flowing in from the caller.
+  Widget _bucketCard(BowelBucket bucket, IconData icon, AppLocalizations l10n) {
     return Expanded(
       child: InkWell(
         onTap: () => _openBowelForm(prefilledBucket: bucket),
@@ -1287,7 +1258,7 @@ class _SintomasTabState extends State<SintomasTab> {
               Icon(icon, color: _cc, size: 32),
               const SizedBox(height: 6),
               Text(
-                label,
+                bucket.bowelBucketLabel(l10n),
                 textAlign: TextAlign.center,
                 style: TextStyle(color: _cc, fontSize: 12),
               ),

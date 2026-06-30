@@ -242,7 +242,7 @@
   "quadrantTeaserCalmPleasant": "放鬆、寧靜",
   "bowelBucketConstipation": "便秘",
   "bowelBucketNormal": "正常",
-  "bowelBucketDiarrea": "腹瀉",
+  "bowelBucketDiarrhea": "腹瀉",
   "sleepQualityBad": "差",
   "sleepQualityRegular": "普通",
   "sleepQualityGood": "好",
@@ -836,5 +836,464 @@
   },
   "settingsViewPreferencesTitle": "顯示設定",
   "settingsCarefulModeLabel": "精簡模式",
-  "settingsCarefulModeDescription": "減少視覺干擾：所有區塊預設為摺疊狀態。點擊標題區塊即可展開您想查看的內容。"
+  "settingsCarefulModeDescription": "減少視覺干擾：所有區塊預設為摺疊狀態。點擊標題區塊即可展開您想查看的內容。",
+  "drugKindMedication": "藥物",
+  "drugKindSupplement": "保健食品",
+  "drugKindHerbal": "草藥產品",
+  "drugInteractionsInBotiquinHeader": "您藥箱中的交互作用",
+  "drugInteractionSeverityHigh": "高",
+  "drugInteractionSeverityMedium": "中",
+  "drugInteractionSeverityLow": "低",
+  "drugNoContentSupplement": "保健食品 — 未作為藥物受到管制。在與其他治療方法結合使用前，請諮詢您的醫療團隊。",
+  "drugNoContentHerbal": "草藥產品 — 臨床證據有限。在與其他治療方法結合使用前，請諮詢您的醫療團隊。",
+  "drugNoContentMedlineEmpty": "MedlinePlus 未返回此藥物的資訊 (RxCUI {rxcui})。這可能是暫時性問題，或是該資料庫中沒有此代碼的內容。",
+  "@drugNoContentMedlineEmpty": {
+    "placeholders": {
+      "rxcui": {
+        "type": "String"
+      }
+    }
+  },
+  "drugNoContentUnmapped": "我們尚無此產品的詳細資訊。您可以手動在 medlineplus.gov 上搜尋。",
+  "drugNoContentGeneric": "無法載入資訊。",
+  "drugReadMoreMedlinePlus": "在 MedlinePlus 上閱讀更多",
+  "drugBrowserOpenError": "無法開啟瀏覽器。請檢查您的網路連線。",
+  "drugConfidenceMediumWarning": "中等信賴度映射 — 如果資訊與您的藥物不符，請與您的醫療團隊核實。",
+  "drugSourceLocalCurated": "來源：為此應用程式在地整理的臨床資訊。不能取代醫療建議。",
+  "drugSourceMedlinePlus": "來源：MedlinePlus，美國國家醫學圖書館。不能取代醫療建議。",
+  "drugSourceNoInfo": "我們的來源中沒有可用的臨床資訊。",
+  "drugLoadError": "無法載入資訊。",
+  "moodQuadrantActivatedUnpleasant": "活躍 · 不快",
+  "moodQuadrantActivatedPleasant": "活躍 · 愉悅",
+  "moodQuadrantCalmUnpleasant": "平靜 · 不快",
+  "moodQuadrantCalmPleasant": "平靜 · 愉悅",
+  "moodTeaserActivatedUnpleasant": "緊張、焦慮",
+  "moodTeaserActivatedPleasant": "活力、喜悅",
+  "moodTeaserCalmUnpleasant": "疲憊、悲傷",
+  "moodTeaserCalmPleasant": "寧靜、平和",
+  "moodSheetStep1Title": "你感覺如何？",
+  "moodSheetCancel": "取消",
+  "moodSheetStep2Prompt": "我感覺如何？",
+  "moodSheetChangeQuadrant": "切換象限",
+  "moodSheetAlsoFeelingHeader": "我也感覺到…",
+  "moodSheetNotesHeader": "情境（選填）",
+  "moodSheetNotesPlaceholder": "例如：腦霧嚴重的一天…",
+  "moodSheetSaveButton": "儲存紀錄",
+  "moodDefinitionDialogAction": "了解",
+  "moodSectionTitle": "我的狀態",
+  "moodSectionPrompt": "你感覺如何？",
+  "moodSectionRegisterAnother": "記錄其他狀態",
+  "severityFunctionalAnchorNone": "我沒有感覺",
+  "severityFunctionalAnchorMild": "有感覺,但不影響我",
+  "severityFunctionalAnchorModerate": "讓我必須放慢或暫停",
+  "severityFunctionalAnchorIntense": "無法完成原本的計畫",
+  "severityFunctionalAnchorUnbearable": "無法正常運作,必須停下來",
+  "outcomeReasonNatural": "症狀的自然變化",
+  "outcomeReasonMedicationHelped": "我認為這個藥物有幫助",
+  "outcomeReasonOtherTrigger": "其他誘因(食物、壓力、天氣等)",
+  "outcomeReasonAdditionalMed": "我也服用了其他藥物",
+  "outcomeReasonUnsure": "我不確定",
+  "medicationOutcomeCoarsePending": "待回答",
+  "medicationOutcomeCoarseMuchBetter": "好很多",
+  "medicationOutcomeCoarseBetter": "比較好",
+  "medicationOutcomeCoarseSame": "一樣",
+  "medicationOutcomeCoarseWorse": "比較差",
+  "medicationOutcomeCoarseMuchWorse": "差很多",
+
+
+  "bowelFormTitleNew":                    "記錄排便",
+  "bowelFormTitleEdit":                    "編輯排便記錄",
+  "bowelFormBristolLabel":                 "布里斯托類型",
+  "bowelFormBristolLegendTemplate":        "1-2:{constipation}  ·  3-5:{normal}  ·  6-7:{diarrhea}",
+  "bowelFormHideBristolDetail":            "隱藏細節",
+  "bowelFormShowBristolDetail":            "更多細節(布里斯托量表)",
+  "bowelFormSectionObservations":          "觀察",
+  "bowelFormToggleUrgency":                "急迫感",
+  "bowelFormToggleIncompleteEvacuation":   "排便不完全",
+  "bowelFormNoteHint":                     "選填備註(情境、誘因等)",
+
+  "hemorrhoidalFormTitleNew":              "記錄痔瘡",
+  "hemorrhoidalFormTitleEdit":             "編輯痔瘡記錄",
+  "hemorrhoidalFormNoteHint":              "選填備註",
+
+  "formSectionHeaderDiscomfort":          "不適",
+  "formToggleBleeding":                    "出血",
+  "formButtonSave":                        "儲存",
+
+  "@bowelFormBristolLegendTemplate": {
+    "placeholders": {
+      "constipation": {"type": "String"},
+      "normal": {"type": "String"},
+      "diarrhea": {"type": "String"}
+    }
+  },
+  "structuralFormFollowupHeader": "追蹤",
+  "structuralFormFollowupResolvedQuestion": "已經痊癒了嗎?",
+  "structuralFormFollowupResolvedDateTemplate": "{date} 痊癒",
+  "structuralFormFollowupStillPainfulQuestion": "還在痛嗎?",
+  "structuralFormFollowupStillPainfulSubtitle": "外觀已癒合但仍會疼痛",
+  "bowelLogBristolTypeTemplate": "類型 {type}",
+  "bowelLogTagUrgency": "急迫",
+  "bowelLogTagBleeding": "出血",
+  "bowelLogTagIncomplete": "不完全",
+  "hemorrhoidalLogLabel": "痔瘡",
+  "hemorrhoidalLogTagBleeding": "出血",
+  "symptomLogTagUnrated": "未評分",
+  "@structuralFormFollowupResolvedDateTemplate": {
+    "description": "Label shown below the 'is it resolved?' switch once the user has set a resolved-at date. The {date} placeholder receives a pre-formatted date string from the Dart side (using DateFormat for the active locale).",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "5 jun 2026"
+      }
+    }
+  },
+  "@bowelLogBristolTypeTemplate": {
+    "description": "Suffix shown after the bucket name in the bowel render line when the user has expanded the Bristol detail and picked a 1-7 type. Rendered inline as 'tipo 4', 'type 4', '類型 4'.",
+    "placeholders": {
+      "type": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "hoySectionPendingHeader": "待處理",
+  "hoyOutcomeForYour": "用於你的",
+  "hoyOutcomeHideReasons": "隱藏",
+  "hoyBowelCounterToday": "上次排便:今天",
+  "hoyBowelCounterYesterday": "上次排便:昨天",
+  "hoyBowelCounterDaysAgoTemplate": "上次排便:{days} 天前",
+  "hoyNarrativeEmptyPacing": "🛡️ 休息日。今天還沒記錄任何事 — 沒關係。",
+  "hoyNarrativeEmpty": "今天還沒記錄任何事。一切還好嗎?",
+  "hoyNarrativeSymptomsSingleTemplate": "記錄了 1 個症狀:{name}({severity})。",
+  "hoyNarrativeSymptomsManyTemplate": "記錄了 {count} 個症狀 — 最嚴重的是 {name}({severity})。",
+  "hoyNarrativeStructuralSingleTemplate": "在{zone}有 1 個結構性事件。",
+  "hoyNarrativeStructuralManyTemplate": "今天有 {count} 個結構性事件。",
+  "hoyNarrativeDosesSingleTemplate": "用了 1 劑:{meds}。",
+  "hoyNarrativeDosesManyTemplate": "服用了 {count} 劑:{meds}。",
+  "hoyNarrativeDosesAndMore": ",還有 {count} 項",
+  "hoyNarrativeEmaStatesTemplate": "記錄的狀態與感受:{states}。",
+  "hoyNarrativeEmaStatesEllipsis": "...",
+  "hoyNarrativePacingTrailer": "🛡️ 你允許自己休息。這也算數。",
+  "@hoyBowelCounterDaysAgoTemplate": {
+    "description": "Days-ago label in the bowel counter chip.",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@hoyNarrativeSymptomsSingleTemplate": {
+    "description": "Narrative summary when exactly 1 symptom was logged. {name} is the symptom name lowercased, {severity} is the localized severity label lowercased.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "fatiga"
+      },
+      "severity": {
+        "type": "String",
+        "example": "intensa"
+      }
+    }
+  },
+  "@hoyNarrativeSymptomsManyTemplate": {
+    "description": "Narrative summary when 2+ symptoms were logged.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      },
+      "name": {
+        "type": "String",
+        "example": "fatiga"
+      },
+      "severity": {
+        "type": "String",
+        "example": "intensa"
+      }
+    }
+  },
+  "@hoyNarrativeStructuralSingleTemplate": {
+    "description": "Narrative summary for 1 structural event.",
+    "placeholders": {
+      "zone": {
+        "type": "String",
+        "example": "cervical"
+      }
+    }
+  },
+  "@hoyNarrativeStructuralManyTemplate": {
+    "description": "Narrative summary for 2+ structural events.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@hoyNarrativeDosesSingleTemplate": {
+    "description": "Narrative summary for 1 dose. {meds} is a pre-formatted comma-separated string of med names with quantities, e.g. 'Duloxetina (1), Sertralina (2)'.",
+    "placeholders": {
+      "meds": {
+        "type": "String",
+        "example": "Duloxetina (1)"
+      }
+    }
+  },
+  "@hoyNarrativeDosesManyTemplate": {
+    "description": "Narrative summary for 2+ doses.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      },
+      "meds": {
+        "type": "String",
+        "example": "Duloxetina (1), Sertralina (2)"
+      }
+    }
+  },
+  "@hoyNarrativeDosesAndMore": {
+    "description": "Suffix appended to the meds list when more than 3 distinct meds were taken (the rest are summarised as 'and N more').",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@hoyNarrativeEmaStatesTemplate": {
+    "description": "Narrative summary of mood/EMA states logged. {states} is a pre-formatted comma-separated string.",
+    "placeholders": {
+      "states": {
+        "type": "String",
+        "example": "ansiedad, frustración"
+      }
+    }
+  },
+  "@hoyOutcomeForYour": {
+    "description": "Connective phrase inside the outcome card RichText. Bridges the medication name with the symptom name. In Spanish it's ' para tu ' (with leading and trailing spaces). zh-TW likely needs no spaces."
+  },
+  "hoyHeaderDatePattern": "M月d日 EEEE",
+  "movementModalTitleRegisterTemplate": "記錄: {name}",
+  "movementModalTitleEditTemplate": "編輯: {name}",
+  "movementModalHintDuration": "時長(分鐘)",
+  "movementModalHintSets": "組數",
+  "movementModalHintReps": "次數",
+  "movementModalHintHeartRate": "心率(選填,例:70→110)",
+  "movementModalEffortLabelTemplate": "費力程度:{value}/10",
+  "movementModalFeelingLabelTemplate": "感受:{value}/5",
+  "movementFeelingPainOrInjury": "🤕 疼痛/受傷",
+  "movementFeelingUncomfortable": "😟 不舒服/擔心",
+  "movementFeelingNeutral": "😐 普通",
+  "movementFeelingRelaxed": "😊 放鬆",
+  "movementFeelingStrongConfident": "💪 強壯有信心",
+  "movementPainLevelNone": "無",
+  "movementPainLevelMild": "輕微",
+  "movementPainLevelModerate": "中等",
+  "movementPainLevelIntense": "強烈",
+  "movementPainLevelSevere": "嚴重",
+  "movementPainDeltaImprovedTemplate": "改善了 {delta, plural, other{{delta} 級}}",
+  "movementPainDeltaWorseTemplate": "惡化了 {delta, plural, other{{delta} 級}}",
+  "movementPainDeltaUnchanged": "沒有變化",
+  "movementLogEntryEffortTemplate": "費力 {value}/10",
+  "movementLogEntryFeelingTemplate": "感受 {value}/5",
+  "movementLogEntryDeltaImprovedTemplate": "↓{delta} 級",
+  "movementLogEntryDeltaWorseTemplate": "↑{delta} 級",
+  "movementLogEntryDeltaUnchanged": "無變化",
+  "movementLogEntryTherapyDeltaSteady": "=",
+  "@movementModalTitleRegisterTemplate": {
+    "description": "Modal title when logging a new activity. {name} is the exercise name uppercased by the call site.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "PUSH-UPS"
+      }
+    }
+  },
+  "@movementModalTitleEditTemplate": {
+    "description": "Modal title when editing an existing activity.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "PUSH-UPS"
+      }
+    }
+  },
+  "@movementModalHintHeartRate": {
+    "description": "Hint text for the optional heart rate field. The example '70→110' (resting → peak) stays in the Spanish string and translates as needed."
+  },
+  "@movementModalEffortLabelTemplate": {
+    "description": "Slider label showing current effort value out of 10.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@movementModalFeelingLabelTemplate": {
+    "description": "Slider label showing current feeling value out of 5.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@movementPainDeltaImprovedTemplate": {
+    "description": "Shown when post-activity pain is lower than pre. ICU plural agreement on nivel/niveles.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@movementPainDeltaWorseTemplate": {
+    "description": "Shown when post-activity pain is higher than pre.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "@movementLogEntryEffortTemplate": {
+    "description": "Compact log-row chip showing effort. Lowercased intentionally — it sits in a parts-joined sentence.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@movementLogEntryFeelingTemplate": {
+    "description": "Compact log-row chip showing feeling.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@movementLogEntryDeltaImprovedTemplate": {
+    "description": "Compact arrow notation for level improvement. Used by both activity (pain) and therapy (severity) rows. 'niv.' is the Spanish abbreviation for 'niveles'.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@movementLogEntryDeltaWorseTemplate": {
+    "description": "Compact arrow notation for level worsening.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "@movementLogEntryTherapyDeltaSteady": {
+    "description": "Compact marker for therapy with no severity change. Single character — '=' is the universal default."
+  },
+  "appBarTooltipFontSize": "字體大小",
+  "appBarTooltipDarkMode": "深色模式",
+  "appBarTooltipLightMode": "淺色模式",
+  "appBarTooltipSettings": "設定",
+  "actionDelete": "刪除",
+  "settingsProfileConfigTitle": "個人檔案設定",
+  "settingsMyDataTitle": "我的資料",
+  "settingsPatientNameLabel": "患者姓名",
+  "settingsConditionsLabel": "共病/診斷",
+  "settingsRelationshipLabel": "與此檔案的關係",
+  "settingsLifeEventsLabel": "生活事件",
+  "settingsLocationLabel": "我的位置(用於天氣)",
+  "settingsConditionsHelper": "點 × 移除一項條件。若要閱讀說明,請前往 臨床→指南。",
+  "settingsRelationshipHelper": "此檔案是給誰使用的?如果你在為照顧的人記錄,這很實用。",
+  "settingsLifeEventsHelper": "可能影響你身體或心情的事件:旅行、意外、搬家、好的或有壓力的事件。它們會在日曆上顯示為紫色圓點。",
+  "settingsDataHelper": "你有權隨時存取、匯出、匯入或刪除你的資料。",
+  "settingsWipeAllHelper": "此操作會刪除所有檔案、記錄和設定。無法復原。",
+  "settingsRelationshipSelf": "我自己",
+  "settingsRelationshipChild": "我的小孩",
+  "settingsRelationshipPartner": "我的伴侶",
+  "settingsRelationshipParent": "我的父母",
+  "settingsRelationshipOther": "其他",
+  "settingsRelationshipNone": "— 未指定 —",
+  "settingsLifeEventsEmpty": "還沒有記錄任何事件。",
+  "settingsAddEventButton": "新增事件",
+  "settingsLocationNone": "未設定位置。點此新增。",
+  "settingsLocationButtonAdd": "新增座標",
+  "settingsLocationButtonEdit": "編輯座標",
+  "settingsAddProfileButton": "新增個人檔案",
+  "settingsDeleteProfileButton": "刪除此個人檔案",
+  "settingsExportDataButton": "匯出我的資料",
+  "settingsWipeAllButton": "全部刪除",
+  "settingsNewProfileNameTemplate": "新檔案 {number}",
+  "dialogWipeTitle": "刪除所有資料",
+  "dialogWipeContent": "此操作會刪除所有個人檔案、記錄、設定和快取。無法復原。\n\n要先匯出嗎?",
+  "dialogWipeFinalTitle": "最後確認",
+  "dialogWipeFinalContentTemplate": "輸入 {magicWord} 以確認。",
+  "dialogWipeFinalMagicWord": "刪除",
+  "dialogWipeFinalButton": "全部刪除",
+  "dialogDeleteProfileTitle": "刪除個人檔案",
+  "dialogDeleteProfileContentTemplate": "確定要刪除個人檔案「{name}」以及所有相關資料?此操作無法復原。",
+  "dialogLocationTitle": "你的位置",
+  "dialogLocationContent": "需要緯度和經度才能取得天氣資訊。在 Google 地圖找到你的城市,右鍵→複製座標。",
+  "dialogLocationHintLat": "緯度(例: -34.61)",
+  "dialogLocationHintLng": "經度(例: -58.38)",
+  "dialogLocationInvalidSnack": "座標無效。",
+  "@settingsNewProfileNameTemplate": {
+    "description": "Default name for a newly added profile. {number} is 1-indexed count after creation.",
+    "placeholders": {
+      "number": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@dialogWipeFinalContentTemplate": {
+    "description": "Prompt inside the typed-confirmation wipe dialog. {magicWord} is the localized confirm word the user must type — the same value provided by dialogWipeFinalMagicWord, so the prompt and the expected input stay in sync per locale.",
+    "placeholders": {
+      "magicWord": {
+        "type": "String",
+        "example": "ELIMINAR"
+      }
+    }
+  },
+  "@dialogWipeFinalMagicWord": {
+    "description": "The exact word the user types to confirm wiping all data. Localized: Spanish=ELIMINAR, English=DELETE, zh-TW=刪除. Comparison is case-sensitive against the trimmed input, so use uppercase Latin or a single ideograph as appropriate per locale."
+  },
+  "@dialogDeleteProfileContentTemplate": {
+    "description": "Confirmation message for deleting a profile. {name} is the profile display name.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Pau"
+      }
+    }
+  },
+  "therapyHintArea": "部位(例:頸部)",
+  "therapySectionPainBefore": "治療前疼痛",
+  "therapySectionPainAfter": "治療後疼痛",
+  "therapyActionMoreDetails": "多細節(治療師、費用、備註)",
+  "therapyHintTherapist": "治療師/地點(選填)",
+  "therapyHintCost": "費用(選填)",
+  "therapyHintNote": "備註(選填)",
+  "therapyActionSaveChanges": "儲存變更",
+  "therapyActionLog": "記錄",
+  "compendiumSectionConditionsHeader": "我的疾病",
+  "compendiumSectionConditionsSubtitle": "點一個閱讀臨床資訊(來源:MedlinePlus)。",
+  "compendiumSavedArticlesTemplate": "{count, plural, other{已儲存 {count} 篇文章}} — 前往研究。",
+  "compendiumSectionDataTitle": "臨床資料",
+  "compendiumFactSourceLabel": "來源:",
+  "investigationConditionArticleCountTemplate": "{count, plural, other{{count} 篇文章}}",
+  "headacheSheetTitle": "頭痛詳細資料",
+  "headacheSheetSubtitle": "標記適用的項目。如果你願意,可以跳過此步驟。",
+  "actionSkip": "跳過",
+  "headacheActionSaveDetail": "儲存詳細資料",
+  "headacheThunderclapWarningTitle": "可能的緊急情況",
+  "headacheThunderclapWarningConfirm": "我了解,繼續"
 }

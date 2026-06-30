@@ -236,7 +236,7 @@
   "quadrantTeaserCalmPleasant": "tranquility, peace",
   "bowelBucketConstipation": "constipation",
   "bowelBucketNormal": "normal",
-  "bowelBucketDiarrea": "diarrhea",
+  "bowelBucketDiarrhea": "diarrhea",
   "sleepQualityBad": "poor",
   "sleepQualityRegular": "fair",
   "sleepQualityGood": "good",
@@ -830,5 +830,462 @@
   },
   "settingsViewPreferencesTitle": "DISPLAY PREFERENCES",
   "settingsCarefulModeLabel": "Careful mode",
-  "settingsCarefulModeDescription": "Reduces visual noise: sections start collapsed. Tap the header to expand what you want to see."
+  "settingsCarefulModeDescription": "Reduces visual noise: sections start collapsed. Tap the header to expand what you want to see.",
+  "drugKindMedication": "Medication",
+  "drugKindSupplement": "Supplement",
+  "drugKindHerbal": "Herbal Product",
+  "drugInteractionsInBotiquinHeader": "Interactions in your medicine cabinet",
+  "drugInteractionSeverityHigh": "High",
+  "drugInteractionSeverityMedium": "Medium",
+  "drugInteractionSeverityLow": "Low",
+  "drugNoContentSupplement": "Supplement — not regulated as a medication. Consult with your healthcare team before combining it with other treatments.",
+  "drugNoContentHerbal": "Herbal product — limited clinical evidence. Consult with your healthcare team before combining it with other treatments.",
+  "drugNoContentMedlineEmpty": "MedlinePlus did not return information for this medication (RxCUI {rxcui}). It may be a temporary issue or the database may not have content for this code.",
+  "@drugNoContentMedlineEmpty": {
+    "placeholders": {
+      "rxcui": {
+        "type": "String"
+      }
+    }
+  },
+  "drugNoContentUnmapped": "We don't have detailed information for this product yet. You can search for it manually on medlineplus.gov.",
+  "drugNoContentGeneric": "Information could not be loaded.",
+  "drugReadMoreMedlinePlus": "Read more on MedlinePlus",
+  "drugBrowserOpenError": "Could not open the browser. Check your connection.",
+  "drugConfidenceMediumWarning": "Medium confidence mapping — verify with your healthcare team if the information does not match your medication.",
+  "drugSourceLocalCurated": "Source: clinical information curated locally for this app. Does not replace medical advice.",
+  "drugSourceMedlinePlus": "Source: MedlinePlus, U.S. National Library of Medicine. Does not replace medical advice.",
+  "drugSourceNoInfo": "No clinical information available in our sources.",
+  "drugLoadError": "Information could not be loaded.",
+  "moodQuadrantActivatedUnpleasant": "activated · unpleasant",
+  "moodQuadrantActivatedPleasant": "activated · pleasant",
+  "moodQuadrantCalmUnpleasant": "calm · unpleasant",
+  "moodQuadrantCalmPleasant": "calm · pleasant",
+  "moodTeaserActivatedUnpleasant": "tension, anxiety",
+  "moodTeaserActivatedPleasant": "energy, joy",
+  "moodTeaserCalmUnpleasant": "exhaustion, sadness",
+  "moodTeaserCalmPleasant": "tranquility, peace",
+  "moodSheetStep1Title": "HOW DO YOU FEEL?",
+  "moodSheetCancel": "cancel",
+  "moodSheetStep2Prompt": "how do I feel?",
+  "moodSheetChangeQuadrant": "change quadrant",
+  "moodSheetAlsoFeelingHeader": "I ALSO FEEL…",
+  "moodSheetNotesHeader": "CONTEXT (OPTIONAL)",
+  "moodSheetNotesPlaceholder": "e.g. A day with a lot of brain fog…",
+  "moodSheetSaveButton": "SAVE RECORD",
+  "moodDefinitionDialogAction": "Got it",
+  "moodSectionTitle": "HOW I'M DOING",
+  "moodSectionPrompt": "How do you feel?",
+  "moodSectionRegisterAnother": "Log another state",
+  "severityFunctionalAnchorNone": "I don't notice it",
+  "severityFunctionalAnchorMild": "I notice it, but it doesn't stop me",
+  "severityFunctionalAnchorModerate": "makes me slow down or pause",
+  "severityFunctionalAnchorIntense": "I can't do what I had planned",
+  "severityFunctionalAnchorUnbearable": "I can't function; I need to stop",
+  "outcomeReasonNatural": "Natural change in the symptom",
+  "outcomeReasonMedicationHelped": "I think this medication helped",
+  "outcomeReasonOtherTrigger": "Other trigger (food, stress, weather...)",
+  "outcomeReasonAdditionalMed": "I also took another medication",
+  "outcomeReasonUnsure": "I'm not sure",
+  "medicationOutcomeCoarsePending": "Pending",
+  "medicationOutcomeCoarseMuchBetter": "Much better",
+  "medicationOutcomeCoarseBetter": "Better",
+  "medicationOutcomeCoarseSame": "Same",
+  "medicationOutcomeCoarseWorse": "Worse",
+  "medicationOutcomeCoarseMuchWorse": "Much worse",
+  "bowelFormTitleNew":                     "LOG BOWEL MOVEMENT",
+  "bowelFormTitleEdit":                    "EDIT BOWEL MOVEMENT",
+  "bowelFormBristolLabel":                 "Bristol type",
+  "bowelFormBristolLegendTemplate":        "1-2: {constipation}  ·  3-5: {normal}  ·  6-7: {diarrhea}",
+  "bowelFormHideBristolDetail":            "hide detail",
+  "bowelFormShowBristolDetail":            "more detail (Bristol scale)",
+  "bowelFormSectionObservations":          "OBSERVATIONS",
+  "bowelFormToggleUrgency":                "urgency",
+  "bowelFormToggleIncompleteEvacuation":   "incomplete evacuation",
+  "bowelFormNoteHint":                     "Optional note (context, trigger, etc.)",
+
+  "hemorrhoidalFormTitleNew":              "LOG HEMORRHOID",
+  "hemorrhoidalFormTitleEdit":             "EDIT HEMORRHOID",
+  "hemorrhoidalFormNoteHint":              "Optional note",
+
+  "formSectionHeaderDiscomfort":           "DISCOMFORT",
+  "formToggleBleeding":                    "bleeding",
+  "formButtonSave":                        "SAVE",
+
+  "@bowelFormBristolLegendTemplate": {
+    "placeholders": {
+      "constipation": {"type": "String"},
+      "normal": {"type": "String"},
+      "diarrhea": {"type": "String"}
+    }
+  },
+  "structuralFormFollowupHeader": "FOLLOW-UP",
+  "structuralFormFollowupResolvedQuestion": "Is it resolved?",
+  "structuralFormFollowupResolvedDateTemplate": "Resolved on {date}",
+  "structuralFormFollowupStillPainfulQuestion": "Still painful?",
+  "structuralFormFollowupStillPainfulSubtitle": "Visibly closed but pain remains",
+  "bowelLogBristolTypeTemplate": "type {type}",
+  "bowelLogTagUrgency": "urgency",
+  "bowelLogTagBleeding": "bleeding",
+  "bowelLogTagIncomplete": "incomplete",
+  "hemorrhoidalLogLabel": "hemorrhoid",
+  "hemorrhoidalLogTagBleeding": "bleeding",
+  "symptomLogTagUnrated": "unrated",
+  "@structuralFormFollowupResolvedDateTemplate": {
+    "description": "Label shown below the 'is it resolved?' switch once the user has set a resolved-at date. The {date} placeholder receives a pre-formatted date string from the Dart side (using DateFormat for the active locale).",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "5 jun 2026"
+      }
+    }
+  },
+  "@bowelLogBristolTypeTemplate": {
+    "description": "Suffix shown after the bucket name in the bowel render line when the user has expanded the Bristol detail and picked a 1-7 type. Rendered inline as 'tipo 4', 'type 4', '類型 4'.",
+    "placeholders": {
+      "type": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "hoySectionPendingHeader": "Pending",
+  "hoyOutcomeForYour": " for your ",
+  "hoyOutcomeHideReasons": "Hide",
+  "hoyBowelCounterToday": "last bowel movement: today",
+  "hoyBowelCounterYesterday": "last bowel movement: yesterday",
+  "hoyBowelCounterDaysAgoTemplate": "last bowel movement: {days} days ago",
+  "hoyNarrativeEmptyPacing": "🛡️ Rest day. You haven't logged anything yet — that's ok.",
+  "hoyNarrativeEmpty": "You haven't logged anything today. How's it going?",
+  "hoyNarrativeSymptomsSingleTemplate": "Logged 1 symptom: {name} ({severity}).",
+  "hoyNarrativeSymptomsManyTemplate": "Logged {count} symptoms — the strongest was {name} ({severity}).",
+  "hoyNarrativeStructuralSingleTemplate": "You had 1 structural event in {zone}.",
+  "hoyNarrativeStructuralManyTemplate": "You had {count} structural events today.",
+  "hoyNarrativeDosesSingleTemplate": "Took 1 dose: {meds}.",
+  "hoyNarrativeDosesManyTemplate": "Took {count} doses: {meds}.",
+  "hoyNarrativeDosesAndMore": " and {count} more",
+  "hoyNarrativeEmaStatesTemplate": "Your logged states and sensations: {states}.",
+  "hoyNarrativeEmaStatesEllipsis": "...",
+  "hoyNarrativePacingTrailer": "🛡️ You gave yourself permission to rest. That counts.",
+  "@hoyBowelCounterDaysAgoTemplate": {
+    "description": "Days-ago label in the bowel counter chip.",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@hoyNarrativeSymptomsSingleTemplate": {
+    "description": "Narrative summary when exactly 1 symptom was logged. {name} is the symptom name lowercased, {severity} is the localized severity label lowercased.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "fatiga"
+      },
+      "severity": {
+        "type": "String",
+        "example": "intensa"
+      }
+    }
+  },
+  "@hoyNarrativeSymptomsManyTemplate": {
+    "description": "Narrative summary when 2+ symptoms were logged.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      },
+      "name": {
+        "type": "String",
+        "example": "fatiga"
+      },
+      "severity": {
+        "type": "String",
+        "example": "intensa"
+      }
+    }
+  },
+  "@hoyNarrativeStructuralSingleTemplate": {
+    "description": "Narrative summary for 1 structural event.",
+    "placeholders": {
+      "zone": {
+        "type": "String",
+        "example": "cervical"
+      }
+    }
+  },
+  "@hoyNarrativeStructuralManyTemplate": {
+    "description": "Narrative summary for 2+ structural events.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@hoyNarrativeDosesSingleTemplate": {
+    "description": "Narrative summary for 1 dose. {meds} is a pre-formatted comma-separated string of med names with quantities, e.g. 'Duloxetina (1), Sertralina (2)'.",
+    "placeholders": {
+      "meds": {
+        "type": "String",
+        "example": "Duloxetina (1)"
+      }
+    }
+  },
+  "@hoyNarrativeDosesManyTemplate": {
+    "description": "Narrative summary for 2+ doses.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      },
+      "meds": {
+        "type": "String",
+        "example": "Duloxetina (1), Sertralina (2)"
+      }
+    }
+  },
+  "@hoyNarrativeDosesAndMore": {
+    "description": "Suffix appended to the meds list when more than 3 distinct meds were taken (the rest are summarised as 'and N more').",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@hoyNarrativeEmaStatesTemplate": {
+    "description": "Narrative summary of mood/EMA states logged. {states} is a pre-formatted comma-separated string.",
+    "placeholders": {
+      "states": {
+        "type": "String",
+        "example": "ansiedad, frustración"
+      }
+    }
+  },
+  "@hoyOutcomeForYour": {
+    "description": "Connective phrase inside the outcome card RichText. Bridges the medication name with the symptom name. In Spanish it's ' para tu ' (with leading and trailing spaces). zh-TW likely needs no spaces."
+  },
+  "hoyHeaderDatePattern": "EEEE, MMMM d",
+  "movementModalTitleRegisterTemplate": "LOG: {name}",
+  "movementModalTitleEditTemplate": "EDIT: {name}",
+  "movementModalHintDuration": "Duration (min)",
+  "movementModalHintSets": "Sets",
+  "movementModalHintReps": "Reps",
+  "movementModalHintHeartRate": "Optional heart rate (ej. 70→110)",
+  "movementModalEffortLabelTemplate": "Effort: {value}/10",
+  "movementModalFeelingLabelTemplate": "How I felt: {value}/5",
+  "movementFeelingPainOrInjury": "🤕 In pain / injured",
+  "movementFeelingUncomfortable": "😟 Uncomfortable / worried",
+  "movementFeelingNeutral": "😐 Neutral",
+  "movementFeelingRelaxed": "😊 Relaxed",
+  "movementFeelingStrongConfident": "💪 Strong and confident",
+  "movementPainLevelNone": "none",
+  "movementPainLevelMild": "mild",
+  "movementPainLevelModerate": "moderate",
+  "movementPainLevelIntense": "intense",
+  "movementPainLevelSevere": "severe",
+  "movementPainDeltaImprovedTemplate": "Improved {delta, plural, =1{1 level} other{{delta} levels}}",
+  "movementPainDeltaWorseTemplate": "Worsened {delta, plural, =1{1 level} other{{delta} levels}}",
+  "movementPainDeltaUnchanged": "No change",
+  "movementLogEntryEffortTemplate": "effort {value}/10",
+  "movementLogEntryFeelingTemplate": "feeling {value}/5",
+  "movementLogEntryDeltaImprovedTemplate": "↓{delta} lvl",
+  "movementLogEntryDeltaWorseTemplate": "↑{delta} lvl",
+  "movementLogEntryDeltaUnchanged": "no change",
+  "movementLogEntryTherapyDeltaSteady": "=",
+  "@movementModalTitleRegisterTemplate": {
+    "description": "Modal title when logging a new activity. {name} is the exercise name uppercased by the call site.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "PUSH-UPS"
+      }
+    }
+  },
+  "@movementModalTitleEditTemplate": {
+    "description": "Modal title when editing an existing activity.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "PUSH-UPS"
+      }
+    }
+  },
+  "@movementModalHintHeartRate": {
+    "description": "Hint text for the optional heart rate field. The example '70→110' (resting → peak) stays in the Spanish string and translates as needed."
+  },
+  "@movementModalEffortLabelTemplate": {
+    "description": "Slider label showing current effort value out of 10.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@movementModalFeelingLabelTemplate": {
+    "description": "Slider label showing current feeling value out of 5.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@movementPainDeltaImprovedTemplate": {
+    "description": "Shown when post-activity pain is lower than pre. ICU plural agreement on nivel/niveles.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@movementPainDeltaWorseTemplate": {
+    "description": "Shown when post-activity pain is higher than pre.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "@movementLogEntryEffortTemplate": {
+    "description": "Compact log-row chip showing effort. Lowercased intentionally — it sits in a parts-joined sentence.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@movementLogEntryFeelingTemplate": {
+    "description": "Compact log-row chip showing feeling.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@movementLogEntryDeltaImprovedTemplate": {
+    "description": "Compact arrow notation for level improvement. Used by both activity (pain) and therapy (severity) rows. 'niv.' is the Spanish abbreviation for 'niveles'.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@movementLogEntryDeltaWorseTemplate": {
+    "description": "Compact arrow notation for level worsening.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "@movementLogEntryTherapyDeltaSteady": {
+    "description": "Compact marker for therapy with no severity change. Single character — '=' is the universal default."
+  },
+  "appBarTooltipFontSize": "Text size",
+  "appBarTooltipDarkMode": "Dark mode",
+  "appBarTooltipLightMode": "Light mode",
+  "appBarTooltipSettings": "Settings",
+  "actionDelete": "Delete",
+  "settingsProfileConfigTitle": "PROFILE CONFIGURATION",
+  "settingsMyDataTitle": "MY DATA",
+  "settingsPatientNameLabel": "PATIENT NAME",
+  "settingsConditionsLabel": "COMORBIDITIES / DIAGNOSES",
+  "settingsRelationshipLabel": "RELATIONSHIP TO THIS PROFILE",
+  "settingsLifeEventsLabel": "LIFE EVENTS",
+  "settingsLocationLabel": "MY LOCATION (FOR WEATHER)",
+  "settingsConditionsHelper": "Tap the × to remove a condition. To read about them, go to Clinical → Compendium.",
+  "settingsRelationshipHelper": "Who is this profile for? Useful if you're logging for someone you care for.",
+  "settingsLifeEventsHelper": "Things that may have affected your body or mood: travel, accidents, moves, good or stressful events. They appear as purple dots in the calendar.",
+  "settingsDataHelper": "You have the right to access, export, import, or delete your data at any time.",
+  "settingsWipeAllHelper": "This action deletes all profiles, records, and settings. Irreversible.",
+  "settingsRelationshipSelf": "Me",
+  "settingsRelationshipChild": "My child",
+  "settingsRelationshipPartner": "My partner",
+  "settingsRelationshipParent": "My parent",
+  "settingsRelationshipOther": "Other",
+  "settingsRelationshipNone": "— unspecified —",
+  "settingsLifeEventsEmpty": "No events logged yet.",
+  "settingsAddEventButton": "ADD EVENT",
+  "settingsLocationNone": "No location. Tap to add.",
+  "settingsLocationButtonAdd": "ADD COORDINATES",
+  "settingsLocationButtonEdit": "EDIT COORDINATES",
+  "settingsAddProfileButton": "ADD NEW PROFILE",
+  "settingsDeleteProfileButton": "DELETE THIS PROFILE",
+  "settingsExportDataButton": "EXPORT MY DATA",
+  "settingsWipeAllButton": "DELETE EVERYTHING",
+  "settingsNewProfileNameTemplate": "NEW PROFILE {number}",
+  "dialogWipeTitle": "Delete all data",
+  "dialogWipeContent": "This action erases ALL profiles, records, settings, and cache. It cannot be undone.\n\nWant to export first?",
+  "dialogWipeFinalTitle": "Final confirmation",
+  "dialogWipeFinalContentTemplate": "To confirm, type {magicWord} below.",
+  "dialogWipeFinalMagicWord": "DELETE",
+  "dialogWipeFinalButton": "Delete everything",
+  "dialogDeleteProfileTitle": "Delete profile",
+  "dialogDeleteProfileContentTemplate": "Delete the profile \"{name}\" and all its data? This action cannot be undone.",
+  "dialogLocationTitle": "Your location",
+  "dialogLocationContent": "I need latitude and longitude to fetch the weather. Find your city in Google Maps, right-click → copy coordinates.",
+  "dialogLocationHintLat": "Latitude (e.g. -34.61)",
+  "dialogLocationHintLng": "Longitude (e.g. -58.38)",
+  "dialogLocationInvalidSnack": "Invalid coordinates.",
+  "@settingsNewProfileNameTemplate": {
+    "description": "Default name for a newly added profile. {number} is 1-indexed count after creation.",
+    "placeholders": {
+      "number": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@dialogWipeFinalContentTemplate": {
+    "description": "Prompt inside the typed-confirmation wipe dialog. {magicWord} is the localized confirm word the user must type — the same value provided by dialogWipeFinalMagicWord, so the prompt and the expected input stay in sync per locale.",
+    "placeholders": {
+      "magicWord": {
+        "type": "String",
+        "example": "ELIMINAR"
+      }
+    }
+  },
+  "@dialogWipeFinalMagicWord": {
+    "description": "The exact word the user types to confirm wiping all data. Localized: Spanish=ELIMINAR, English=DELETE, zh-TW=刪除. Comparison is case-sensitive against the trimmed input, so use uppercase Latin or a single ideograph as appropriate per locale."
+  },
+  "@dialogDeleteProfileContentTemplate": {
+    "description": "Confirmation message for deleting a profile. {name} is the profile display name.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Pau"
+      }
+    }
+  },
+  "therapyHintArea": "Area (e.g. cervical)",
+  "therapySectionPainBefore": "PAIN BEFORE",
+  "therapySectionPainAfter": "PAIN AFTER",
+  "therapyActionMoreDetails": "more details (therapist, cost, note)",
+  "therapyHintTherapist": "Therapist / place (optional)",
+  "therapyHintCost": "Cost (optional)",
+  "therapyHintNote": "Note (optional)",
+  "therapyActionSaveChanges": "SAVE CHANGES",
+  "therapyActionLog": "LOG",
+  "compendiumSectionConditionsHeader": "MY CONDITION",
+  "compendiumSectionConditionsSubtitle": "Tap one to read clinical information (source: MedlinePlus).",
+  "compendiumSavedArticlesTemplate": "{count, plural, =1{1 saved article} other{{count} saved articles}} — go to Research.",
+  "compendiumSectionDataTitle": "CLINICAL FACTS",
+  "compendiumFactSourceLabel": "Source:",
+  "investigationConditionArticleCountTemplate": "{count, plural, =1{1 article} other{{count} articles}}",
+  "headacheSheetTitle": "Headache detail",
+  "headacheSheetSubtitle": "Mark what applies. You can skip this step if you prefer.",
+  "actionSkip": "Skip",
+  "headacheActionSaveDetail": "Save detail",
+  "headacheThunderclapWarningTitle": "Possible emergency",
+  "headacheThunderclapWarningConfirm": "I understand, continue"
 }

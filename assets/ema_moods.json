@@ -3,758 +3,1008 @@
         {
             "english_term": "Alienated",
             "spanish_equivalent": "Alienación",
+            "tw_chinese_equivalent": "疏離",
             "definition_en": "Feeling isolated or estranged from others.",
-            "definition_es": "Sentimiento de aislamiento o distanciamiento de los demás."
+            "definition_es": "Sentimiento de aislamiento o distanciamiento de los demás.",
+            "definition_tw": "感到被孤立或與他人疏遠。"
         },
         {
             "english_term": "Apathetic",
             "spanish_equivalent": "Apatía",
+            "tw_chinese_equivalent": "冷漠",
             "definition_en": "Lacking interest, enthusiasm, or concern.",
-            "definition_es": "Falta de interés, entusiasmo o preocupación."
+            "definition_es": "Falta de interés, entusiasmo o preocupación.",
+            "definition_tw": "對事物缺乏興趣、熱情或關心。"
         },
         {
             "english_term": "Ashamed",
             "spanish_equivalent": "Vergüenza",
+            "tw_chinese_equivalent": "羞愧",
             "definition_en": "Feeling guilt, disgrace, or embarrassment.",
-            "definition_es": "Sentimiento de culpa, deshonra o bochorno."
+            "definition_es": "Sentimiento de culpa, deshonra o bochorno.",
+            "definition_tw": "感到內疚、丟臉或難堪。"
         },
         {
             "english_term": "Bored",
             "spanish_equivalent": "Aburrimiento",
+            "tw_chinese_equivalent": "無聊",
             "definition_en": "Feeling weary and restless through lack of interest.",
-            "definition_es": "Sensación de cansancio e inquietud por falta de interés."
+            "definition_es": "Sensación de cansancio e inquietud por falta de interés.",
+            "definition_tw": "因缺乏興趣而感到疲倦和煩躁。"
         },
         {
             "english_term": "Burned out",
             "spanish_equivalent": "Agotamiento",
+            "tw_chinese_equivalent": "倦怠 / 筋疲力盡",
             "definition_en": "Completely exhausted from overwork or stress.",
-            "definition_es": "Estado de fatiga profunda por exceso de trabajo o estrés."
+            "definition_es": "Estado de fatiga profunda por exceso de trabajo o estrés.",
+            "definition_tw": "因過度工作或壓力而完全耗盡精力。"
         },
         {
             "english_term": "Depressed",
             "spanish_equivalent": "Depresión",
+            "tw_chinese_equivalent": "憂鬱",
             "definition_en": "Feeling severe and persistent sadness or despair.",
-            "definition_es": "Sensación de tristeza o desesperación severa y persistente."
+            "definition_es": "Sensación de tristeza o desesperación severa y persistente.",
+            "definition_tw": "感到嚴重且持續的悲傷或絕望。"
         },
         {
             "english_term": "Despair",
             "spanish_equivalent": "Desesperanza",
+            "tw_chinese_equivalent": "絕望",
             "definition_en": "The complete loss or absence of hope.",
-            "definition_es": "La pérdida o ausencia total de esperanza."
+            "definition_es": "La pérdida o ausencia total de esperanza.",
+            "definition_tw": "完全失去希望或感到毫無希望。"
         },
         {
             "english_term": "Disappointed",
             "spanish_equivalent": "Decepción",
+            "tw_chinese_equivalent": "失望",
             "definition_en": "Sad or displeased because expectations were not met.",
-            "definition_es": "Tristeza o disgusto por no haberse cumplido las expectativas."
+            "definition_es": "Tristeza o disgusto por no haberse cumplido las expectativas.",
+            "definition_tw": "因期望落空而感到悲傷或不滿。"
         },
         {
             "english_term": "Disconnected",
             "spanish_equivalent": "Desconexión",
+            "tw_chinese_equivalent": "脫節 / 抽離",
             "definition_en": "Feeling detached from reality, oneself, or other people.",
-            "definition_es": "Sensación de distanciamiento de la realidad, de uno mismo o de otros."
+            "definition_es": "Sensación de distanciamiento de la realidad, de uno mismo o de otros.",
+            "definition_tw": "感到與現實、自己或他人脫離。"
         },
         {
             "english_term": "Discouraged",
             "spanish_equivalent": "Desánimo",
+            "tw_chinese_equivalent": "氣餒",
             "definition_en": "Having lost confidence or enthusiasm.",
-            "definition_es": "Pérdida de la confianza o el entusiasmo."
+            "definition_es": "Pérdida de la confianza o el entusiasmo.",
+            "definition_tw": "失去信心或熱情。"
         },
         {
             "english_term": "Disengaged",
             "spanish_equivalent": "Desvinculación",
+            "tw_chinese_equivalent": "抽離 / 漠不關心",
             "definition_en": "Lacking emotional involvement or commitment.",
-            "definition_es": "Falta de implicación emocional o de compromiso."
+            "definition_es": "Falta de implicación emocional o de compromiso.",
+            "definition_tw": "缺乏情感上的參與或投入。"
         },
         {
             "english_term": "Disheartened",
             "spanish_equivalent": "Desaliento",
+            "tw_chinese_equivalent": "沮喪",
             "definition_en": "Having lost determination or confidence.",
-            "definition_es": "Pérdida de la determinación o de la confianza."
+            "definition_es": "Pérdida de la determinación o de la confianza.",
+            "definition_tw": "失去決心或自信。"
         },
         {
             "english_term": "Down",
             "spanish_equivalent": "Decaimiento",
+            "tw_chinese_equivalent": "低落",
             "definition_en": "Feeling slightly sad or lacking energy.",
-            "definition_es": "Sensación de ligera tristeza o falta de energía."
+            "definition_es": "Sensación de ligera tristeza o falta de energía.",
+            "definition_tw": "感到有些悲傷或缺乏活力。"
         },
         {
             "english_term": "Excluded",
             "spanish_equivalent": "Exclusión",
+            "tw_chinese_equivalent": "被排擠 / 被排除在外",
             "definition_en": "Left out of a group, activity, or place.",
-            "definition_es": "Situación de haber sido dejado fuera de un grupo, actividad o lugar."
+            "definition_es": "Situación de haber sido dejado fuera de un grupo, actividad o lugar.",
+            "definition_tw": "被排除在群體、活動或場所之外。"
         },
         {
             "english_term": "Exhausted",
             "spanish_equivalent": "Extenuación",
+            "tw_chinese_equivalent": "疲憊不堪",
             "definition_en": "Completely drained of physical or mental energy.",
-            "definition_es": "Pérdida completa de energía física o mental."
+            "definition_es": "Pérdida completa de energía física o mental.",
+            "definition_tw": "身體或精神能量完全耗盡。"
         },
         {
             "english_term": "Fatigued",
             "spanish_equivalent": "Fatiga",
+            "tw_chinese_equivalent": "疲勞",
             "definition_en": "Extremely tired, often resulting from mental or physical exertion.",
-            "definition_es": "Sensación de gran cansancio, a menudo por esfuerzo mental o físico."
+            "definition_es": "Sensación de gran cansancio, a menudo por esfuerzo mental o físico.",
+            "definition_tw": "極度疲倦，通常由腦力或體力過度消耗引起。"
         },
         {
             "english_term": "Forlorn",
             "spanish_equivalent": "Desolación",
+            "tw_chinese_equivalent": "孤苦無依 / 淒涼",
             "definition_en": "Pitifully sad, abandoned, or lonely.",
-            "definition_es": "Sentimiento de tristeza lastimosa, abandono o soledad."
+            "definition_es": "Sentimiento de tristeza lastimosa, abandono o soledad.",
+            "definition_tw": "感到可悲的悲傷、被遺棄或孤獨。"
         },
         {
             "english_term": "Glum",
             "spanish_equivalent": "Melancolía",
+            "tw_chinese_equivalent": "悶悶不樂",
             "definition_en": "Looking or feeling dejected and gloomy.",
-            "definition_es": "Estado de abatimiento y pesadumbre."
+            "definition_es": "Estado de abatimiento y pesadumbre.",
+            "definition_tw": "看起來或感到沮喪和陰鬱。"
         },
         {
             "english_term": "Guilty",
             "spanish_equivalent": "Culpa",
+            "tw_chinese_equivalent": "內疚",
             "definition_en": "Feeling responsible for a specified wrongdoing.",
-            "definition_es": "Sentimiento de responsabilidad por una mala acción específica."
+            "definition_es": "Sentimiento de responsabilidad por una mala acción específica.",
+            "definition_tw": "對特定的錯誤行為感到有責任或自責。"
         },
         {
             "english_term": "Helpless",
             "spanish_equivalent": "Impotencia",
+            "tw_chinese_equivalent": "無助",
             "definition_en": "Unable to defend oneself or to act without help.",
-            "definition_es": "Incapacidad para defenderse o actuar sin ayuda."
+            "definition_es": "Incapacidad para defenderse o actuar sin ayuda.",
+            "definition_tw": "無法保護自己或在沒有幫助的情況下行動。"
         },
         {
             "english_term": "Hopeless",
             "spanish_equivalent": "Falta de esperanza",
+            "tw_chinese_equivalent": "不抱希望 / 絕望",
             "definition_en": "Feeling or causing despair about the future.",
-            "definition_es": "Ausencia de expectativa positiva o desesperación por el futuro."
+            "definition_es": "Ausencia de expectativa positiva o desesperación por el futuro.",
+            "definition_tw": "對未來感到或引起絕望。"
         },
         {
             "english_term": "Insecure",
             "spanish_equivalent": "Inseguridad",
+            "tw_chinese_equivalent": "缺乏安全感",
             "definition_en": "Lacking self-confidence or certainty.",
-            "definition_es": "Falta de confianza en uno mismo o de certeza."
+            "definition_es": "Falta de confianza en uno mismo o de certeza.",
+            "definition_tw": "缺乏自信或確定性。"
         },
         {
             "english_term": "Lonely",
             "spanish_equivalent": "Soledad",
+            "tw_chinese_equivalent": "孤單 / 寂寞",
             "definition_en": "Sad because one has no friends or company.",
-            "definition_es": "Sentimiento de tristeza por no tener amigos o compañía."
+            "definition_es": "Sentimiento de tristeza por no tener amigos o compañía.",
+            "definition_tw": "因為沒有朋友或陪伴而感到悲傷。"
         },
         {
             "english_term": "Lost",
             "spanish_equivalent": "Desorientación",
+            "tw_chinese_equivalent": "迷惘",
             "definition_en": "Unable to find one's way or lacking a sense of purpose.",
-            "definition_es": "Incapacidad de encontrar el camino o falta de un sentido de propósito."
+            "definition_es": "Incapacidad de encontrar el camino o falta de un sentido de propósito.",
+            "definition_tw": "找不到方向或缺乏目標感。"
         },
         {
             "english_term": "Meh",
             "spanish_equivalent": "Indiferencia",
+            "tw_chinese_equivalent": "提不起勁 / 無感",
             "definition_en": "Unimpressed, apathetic, or lacking enthusiasm.",
-            "definition_es": "Estado de apatía, falta de impresión o de entusiasmo."
+            "definition_es": "Estado de apatía, falta de impresión o de entusiasmo.",
+            "definition_tw": "覺得普通、冷漠或缺乏熱情。"
         },
         {
             "english_term": "Miserable",
             "spanish_equivalent": "Miseria emocional",
+            "tw_chinese_equivalent": "悲慘 / 痛苦",
             "definition_en": "Wretchedly unhappy or uncomfortable.",
-            "definition_es": "Estado de extrema infelicidad o incomodidad."
+            "definition_es": "Estado de extrema infelicidad o incomodidad.",
+            "definition_tw": "極度不開心或感到不舒服。"
         },
         {
             "english_term": "Numb",
             "spanish_equivalent": "Entumecimiento",
+            "tw_chinese_equivalent": "麻木",
             "definition_en": "Deprived of the power of sensation or emotion.",
-            "definition_es": "Pérdida temporal de la capacidad de sensación o emoción."
+            "definition_es": "Pérdida temporal de la capacidad de sensación o emoción.",
+            "definition_tw": "失去感覺或情緒感受的能力。"
         },
         {
             "english_term": "Pessimistic",
             "spanish_equivalent": "Pesimismo",
+            "tw_chinese_equivalent": "悲觀",
             "definition_en": "Expecting the worst possible outcome.",
-            "definition_es": "Tendencia a esperar el peor resultado posible."
+            "definition_es": "Tendencia a esperar el peor resultado posible.",
+            "definition_tw": "預期會出現最壞的結果。"
         },
         {
             "english_term": "Sad",
             "spanish_equivalent": "Tristeza",
+            "tw_chinese_equivalent": "悲傷 / 難過",
             "definition_en": "Feeling or showing sorrow or unhappiness.",
-            "definition_es": "Sentimiento de dolor o infelicidad."
+            "definition_es": "Sentimiento de dolor o infelicidad.",
+            "definition_tw": "感到或表現出哀傷與不快樂。"
         },
         {
             "english_term": "Spent",
             "spanish_equivalent": "Desgaste",
+            "tw_chinese_equivalent": "耗盡精力",
             "definition_en": "Having no energy or strength left.",
-            "definition_es": "Falta total de energía o fuerza restante."
+            "definition_es": "Falta total de energía o fuerza restante.",
+            "definition_tw": "體力或精力一滴不剩。"
         },
         {
             "english_term": "Tired",
             "spanish_equivalent": "Cansancio",
+            "tw_chinese_equivalent": "疲倦",
             "definition_en": "In need of sleep or rest; weary.",
-            "definition_es": "Necesidad de sueño o descanso; fatiga."
+            "definition_es": "Necesidad de sueño o descanso; fatiga.",
+            "definition_tw": "需要睡眠或休息；感到疲勞。"
         },
         {
             "english_term": "Trapped",
             "spanish_equivalent": "Sensación de encierro",
+            "tw_chinese_equivalent": "被困住",
             "definition_en": "Unable to escape from a restrictive situation.",
-            "definition_es": "Sensación de incapacidad para escapar de una situación restrictiva."
+            "definition_es": "Sensación de incapacidad para escapar de una situación restrictiva.",
+            "definition_tw": "無法從受限或壓抑的處境中逃脫。"
         },
         {
             "english_term": "Vulnerable",
             "spanish_equivalent": "Vulnerabilidad",
+            "tw_chinese_equivalent": "脆弱",
             "definition_en": "Susceptible to physical or emotional attack or harm.",
-            "definition_es": "Susceptibilidad a ataques o daños físicos o emocionales."
+            "definition_es": "Susceptibilidad a ataques o daños físicos o emocionales.",
+            "definition_tw": "容易受到身體或情感上的攻擊與傷害。"
         }
     ],
     "High-unpleasant": [
         {
             "english_term": "Angry",
             "spanish_equivalent": "Enojo",
+            "tw_chinese_equivalent": "生氣 / 憤怒",
             "definition_en": "Feeling or showing strong annoyance or displeasure.",
-            "definition_es": "Sensación de fuerte molestia o desagrado."
+            "definition_es": "Sensación de fuerte molestia o desagrado.",
+            "definition_tw": "感到或表現出強烈的煩躁或不滿。"
         },
         {
             "english_term": "Annoyed",
             "spanish_equivalent": "Molestia",
+            "tw_chinese_equivalent": "煩躁 / 惱怒",
             "definition_en": "Slightly angry or irritated.",
-            "definition_es": "Sensación de irritación o de un ligero enojo."
+            "definition_es": "Sensación de irritación o de un ligero enojo.",
+            "definition_tw": "感到有些生氣或被激怒。"
         },
         {
             "english_term": "Anxious",
             "spanish_equivalent": "Ansiedad",
+            "tw_chinese_equivalent": "焦慮",
             "definition_en": "Experiencing worry, unease, or nervousness.",
-            "definition_es": "Sentimiento de preocupación, inquietud o nerviosismo."
+            "definition_es": "Sentimiento de preocupación, inquietud o nerviosismo.",
+            "definition_tw": "經歷擔憂、不安或緊張的情緒。"
         },
         {
             "english_term": "Apprehensive",
             "spanish_equivalent": "Aprensión",
+            "tw_chinese_equivalent": "憂慮 / 忐忑",
             "definition_en": "Anxious or fearful that something bad will happen.",
-            "definition_es": "Temor o ansiedad de que algo malo suceda."
+            "definition_es": "Temor o ansiedad de que algo malo suceda.",
+            "definition_tw": "對可能發生的壞事感到焦慮或恐懼。"
         },
         {
             "english_term": "Concerned",
             "spanish_equivalent": "Preocupación",
+            "tw_chinese_equivalent": "擔憂",
             "definition_en": "Worried, troubled, or anxious about something.",
-            "definition_es": "Inquietud o ansiedad focalizada por algo."
+            "definition_es": "Inquietud o ansiedad focalizada por algo.",
+            "definition_tw": "對某事感到擔心、煩惱或焦慮。"
         },
         {
             "english_term": "Confused",
             "spanish_equivalent": "Confusión",
+            "tw_chinese_equivalent": "困惑",
             "definition_en": "Unable to think clearly or understand.",
-            "definition_es": "Incapacidad de pensar con claridad o de entender."
+            "definition_es": "Incapacidad de pensar con claridad o de entender.",
+            "definition_tw": "無法清晰思考或理解。"
         },
         {
             "english_term": "Contempt",
             "spanish_equivalent": "Desprecio",
+            "tw_chinese_equivalent": "輕蔑",
             "definition_en": "The feeling that a person or a thing is beneath consideration.",
-            "definition_es": "El sentimiento de que una persona o cosa no merece consideración."
+            "definition_es": "El sentimiento de que una persona o cosa no merece consideración.",
+            "definition_tw": "認為某人或某事不值得理會或尊重的感覺。"
         },
         {
             "english_term": "Disgusted",
             "spanish_equivalent": "Disgusto / Asco",
+            "tw_chinese_equivalent": "厭惡 / 噁心",
             "definition_en": "Feeling profound disapproval or revulsion.",
-            "definition_es": "Sensación de profunda desaprobación o repugnancia."
+            "definition_es": "Sensación de profunda desaprobación o repugnancia.",
+            "definition_tw": "感到強烈的不贊同或反感。"
         },
         {
             "english_term": "Embarrassed",
             "spanish_equivalent": "Bochorno",
+            "tw_chinese_equivalent": "尷尬 / 難堪",
             "definition_en": "Feeling ashamed or self-conscious.",
-            "definition_es": "Sentimiento de vergüenza o turbación frente a otros."
+            "definition_es": "Sentimiento de vergüenza o turbación frente a otros.",
+            "definition_tw": "感到羞愧或局促不安。"
         },
         {
             "english_term": "Enraged",
             "spanish_equivalent": "Furia",
+            "tw_chinese_equivalent": "暴怒",
             "definition_en": "Very angry; furious.",
-            "definition_es": "Nivel de ira extrema o furor."
+            "definition_es": "Nivel de ira extrema o furor.",
+            "definition_tw": "非常生氣；狂怒狀態。"
         },
         {
             "english_term": "Envious",
             "spanish_equivalent": "Envidia",
+            "tw_chinese_equivalent": "嫉妒 / 眼紅",
             "definition_en": "Desiring what someone else has.",
-            "definition_es": "Deseo por lo que otra persona posee."
+            "definition_es": "Deseo por lo que otra persona posee.",
+            "definition_tw": "渴望別人擁有的東西。"
         },
         {
             "english_term": "FOMO",
             "spanish_equivalent": "FOMO (Miedo a perderse algo)",
+            "tw_chinese_equivalent": "錯失恐懼 (FOMO)",
             "definition_en": "Anxiety that an exciting event is happening elsewhere.",
-            "definition_es": "Ansiedad ante la posibilidad de que un evento emocionante ocurra sin uno."
+            "definition_es": "Ansiedad ante la posibilidad de que un evento emocionante ocurra sin uno.",
+            "definition_tw": "擔心令人興奮的事件正在其他地方發生而感到的焦慮。"
         },
         {
             "english_term": "Frightened",
             "spanish_equivalent": "Susto",
+            "tw_chinese_equivalent": "害怕 / 受驚",
             "definition_en": "Afraid or anxious.",
-            "definition_es": "Sensación de miedo o ansiedad repentina."
+            "definition_es": "Sensación de miedo o ansiedad repentina.",
+            "definition_tw": "感到恐懼或焦慮。"
         },
         {
             "english_term": "Frustrated",
             "spanish_equivalent": "Frustración",
+            "tw_chinese_equivalent": "挫折",
             "definition_en": "Annoyed at being unable to change or achieve something.",
-            "definition_es": "Molestia provocada por la incapacidad de cambiar o lograr algo."
+            "definition_es": "Molestia provocada por la incapacidad de cambiar o lograr algo.",
+            "definition_tw": "因無法改變或實現某事而感到煩惱與氣餒。"
         },
         {
             "english_term": "Furious",
             "spanish_equivalent": "Ira extrema",
+            "tw_chinese_equivalent": "狂怒",
             "definition_en": "Extremely angry.",
-            "definition_es": "Nivel de enojo extremadamente alto."
+            "definition_es": "Nivel de enojo extremadamente alto.",
+            "definition_tw": "極度憤怒。"
         },
         {
             "english_term": "Humiliated",
             "spanish_equivalent": "Humillación",
+            "tw_chinese_equivalent": "受屈辱",
             "definition_en": "Made to feel ashamed and foolish.",
-            "definition_es": "Sensación de haber sido menospreciado o hecho sentir en ridículo."
+            "definition_es": "Sensación de haber sido menospreciado o hecho sentir en ridículo.",
+            "definition_tw": "被迫感到羞愧和愚蠢。"
         },
         {
             "english_term": "Hyper",
             "spanish_equivalent": "Hiperactividad",
+            "tw_chinese_equivalent": "亢奮",
             "definition_en": "Unusually energetic, restless, or excitable.",
-            "definition_es": "Estado inusualmente enérgico, inquieto o excitable."
+            "definition_es": "Estado inusualmente enérgico, inquieto o excitable.",
+            "definition_tw": "異常有活力、焦躁不安或容易激動。"
         },
         {
             "english_term": "Impassioned",
             "spanish_equivalent": "Apasionamiento",
+            "tw_chinese_equivalent": "激昂",
             "definition_en": "Filled with or showing great emotion.",
-            "definition_es": "Demostración de gran emoción o intensidad afectiva."
+            "definition_es": "Demostración de gran emoción o intensidad afectiva.",
+            "definition_tw": "充滿或表現出強烈的情感。"
         },
         {
             "english_term": "Irritated",
             "spanish_equivalent": "Irritación",
+            "tw_chinese_equivalent": "惱火",
             "definition_en": "Showing or feeling slight anger; annoyed.",
-            "definition_es": "Demostración o presencia de ligero enojo y exasperación."
+            "definition_es": "Demostración o presencia de ligero enojo y exasperación.",
+            "definition_tw": "表現出或感到輕微的生氣；煩躁。"
         },
         {
             "english_term": "Jealous",
             "spanish_equivalent": "Celos",
+            "tw_chinese_equivalent": "吃醋 / 忌妒",
             "definition_en": "Feeling threatened by a rival or protective of one's rights.",
-            "definition_es": "Sentimiento de amenaza por un rival o actitud protectora excesiva."
+            "definition_es": "Sentimiento de amenaza por un rival o actitud protectora excesiva.",
+            "definition_tw": "感到被競爭對手威脅，或過度保護自己的權利。"
         },
         {
             "english_term": "Jittery",
             "spanish_equivalent": "Inquietud nerviosa",
+            "tw_chinese_equivalent": "緊張不安 / 忐忑不安",
             "definition_en": "Nervous or unable to relax.",
-            "definition_es": "Sensación de nerviosismo físico e incapacidad de relajarse."
+            "definition_es": "Sensación de nerviosismo físico e incapacidad de relajarse.",
+            "definition_tw": "神經緊繃或無法放鬆。"
         },
         {
             "english_term": "Nervous",
             "spanish_equivalent": "Nerviosismo",
+            "tw_chinese_equivalent": "緊張",
             "definition_en": "Easily agitated or alarmed.",
-            "definition_es": "Facilidad para agitarse o alarmarse por los nervios."
+            "definition_es": "Facilidad para agitarse o alarmarse por los nervios.",
+            "definition_tw": "容易激動或驚慌。"
         },
         {
             "english_term": "Overwhelmed",
             "spanish_equivalent": "Agobio",
+            "tw_chinese_equivalent": "喘不過氣 / 負荷過重",
             "definition_en": "Burdened with too much to handle.",
-            "definition_es": "Sensación de tener una carga demasiado pesada para manejar."
+            "definition_es": "Sensación de tener una carga demasiado pesada para manejar.",
+            "definition_tw": "承擔了太多無法應付的事情而感到壓抑。"
         },
         {
             "english_term": "Panicked",
             "spanish_equivalent": "Pánico",
+            "tw_chinese_equivalent": "恐慌",
             "definition_en": "Feeling sudden, uncontrollable fear or anxiety.",
-            "definition_es": "Miedo o ansiedad repentinos e incontrolables."
+            "definition_es": "Miedo o ansiedad repentinos e incontrolables.",
+            "definition_tw": "感到突如其來、無法控制的恐懼或焦慮。"
         },
         {
             "english_term": "Peeved",
             "spanish_equivalent": "Fastidio",
+            "tw_chinese_equivalent": "氣惱 / 惹惱",
             "definition_en": "Annoyed or irritated.",
-            "definition_es": "Sensación de molestia o de una irritación leve."
+            "definition_es": "Sensación de molestia o de una irritación leve.",
+            "definition_tw": "感到煩躁或惱火。"
         },
         {
             "english_term": "Pressured",
             "spanish_equivalent": "Presión",
+            "tw_chinese_equivalent": "備受壓力",
             "definition_en": "Feeling forced or coerced to do something.",
-            "definition_es": "Sensación de estar siendo forzado o coaccionado a hacer algo."
+            "definition_es": "Sensación de estar siendo forzado o coaccionado a hacer algo.",
+            "definition_tw": "感到被迫或受脅迫去做某事。"
         },
         {
             "english_term": "Repulsed",
             "spanish_equivalent": "Repulsión",
+            "tw_chinese_equivalent": "反感",
             "definition_en": "Driven back by intense distaste or disgust.",
-            "definition_es": "Rechazo provocado por un intenso desagrado o repugnancia."
+            "definition_es": "Rechazo provocado por un intenso desagrado o repugnancia.",
+            "definition_tw": "因強烈的厭惡或噁心而退縮。"
         },
         {
             "english_term": "Restless",
             "spanish_equivalent": "Inquietud",
+            "tw_chinese_equivalent": "焦躁不安",
             "definition_en": "Unable to rest or relax as a result of anxiety or boredom.",
-            "definition_es": "Incapacidad de descansar o relajarse debido a la ansiedad o el aburrimiento."
+            "definition_es": "Incapacidad de descansar o relajarse debido a la ansiedad o el aburrimiento.",
+            "definition_tw": "因焦慮或無聊而無法休息或放鬆。"
         },
         {
             "english_term": "Scared",
             "spanish_equivalent": "Miedo",
+            "tw_chinese_equivalent": "恐懼",
             "definition_en": "Fearful or frightened.",
-            "definition_es": "Sensación de temor, inseguridad o susto."
+            "definition_es": "Sensación de temor, inseguridad o susto.",
+            "definition_tw": "害怕或受驚。"
         },
         {
             "english_term": "Shocked",
             "spanish_equivalent": "Conmoción",
+            "tw_chinese_equivalent": "震驚",
             "definition_en": "Surprised and upset.",
-            "definition_es": "Estado de fuerte sorpresa y alteración emocional."
+            "definition_es": "Estado de fuerte sorpresa y alteración emocional.",
+            "definition_tw": "感到驚訝且不安。"
         },
         {
             "english_term": "Stressed",
             "spanish_equivalent": "Estrés",
+            "tw_chinese_equivalent": "壓力大",
             "definition_en": "Experiencing mental or emotional strain.",
-            "definition_es": "Tensión mental o emocional originada por las circunstancias."
+            "definition_es": "Tensión mental o emocional originada por las circunstancias.",
+            "definition_tw": "承受精神或情感上的壓力與緊繃。"
         },
         {
             "english_term": "Tense",
             "spanish_equivalent": "Tensión",
+            "tw_chinese_equivalent": "緊繃",
             "definition_en": "Unable to relax because of nervousness or anxiety.",
-            "definition_es": "Incapacidad para relajar los músculos o la mente debido al nerviosismo."
+            "definition_es": "Incapacidad para relajar los músculos o la mente debido al nerviosismo.",
+            "definition_tw": "因緊張或焦慮而無法放鬆。"
         },
         {
             "english_term": "Terrified",
             "spanish_equivalent": "Terror",
+            "tw_chinese_equivalent": "極度恐懼",
             "definition_en": "Filled with extreme fear.",
-            "definition_es": "Nivel extremo de miedo irracional."
+            "definition_es": "Nivel extremo de miedo irracional.",
+            "definition_tw": "充滿極端的恐懼。"
         },
         {
             "english_term": "Troubled",
             "spanish_equivalent": "Angustia",
+            "tw_chinese_equivalent": "苦惱",
             "definition_en": "Beset by problems, anxiety, or conflict.",
-            "definition_es": "Estado de perturbación constante originado por problemas o conflictos."
+            "definition_es": "Estado de perturbación constante originado por problemas o conflictos.",
+            "definition_tw": "受到問題、焦慮或衝突的困擾。"
         },
         {
             "english_term": "Uneasy",
             "spanish_equivalent": "Intranquilidad",
+            "tw_chinese_equivalent": "不安",
             "definition_en": "Causing or feeling anxiety; troubled or uncomfortable.",
-            "definition_es": "Sensación de malestar, incomodidad o ansiedad latente."
+            "definition_es": "Sensación de malestar, incomodidad o ansiedad latente.",
+            "definition_tw": "引起或感到焦慮；煩惱或不舒服。"
         },
         {
             "english_term": "Worried",
             "spanish_equivalent": "Preocupación general",
+            "tw_chinese_equivalent": "擔心",
             "definition_en": "Anxious or troubled about actual or potential problems.",
-            "definition_es": "Ansiedad o turbación frente a problemas que son reales o potenciales."
+            "definition_es": "Ansiedad o turbación frente a problemas que son reales o potenciales.",
+            "definition_tw": "對實際或潛在的問題感到焦慮或煩惱。"
         }
     ],
     "Low-pleasant": [
         {
             "english_term": "Accepted",
             "spanish_equivalent": "Aceptación",
+            "tw_chinese_equivalent": "被接納",
             "definition_en": "Received as adequate, valid, or suitable.",
-            "definition_es": "Sensación de ser recibido como alguien adecuado, válido o idóneo."
+            "definition_es": "Sensación de ser recibido como alguien adecuado, válido o idóneo.",
+            "definition_tw": "被認為是足夠、有效或合適的。"
         },
         {
             "english_term": "Appreciated",
             "spanish_equivalent": "Aprecio",
+            "tw_chinese_equivalent": "被欣賞 / 受到重視",
             "definition_en": "Recognized for good qualities or actions.",
-            "definition_es": "Reconocimiento que se recibe por las buenas cualidades o acciones."
+            "definition_es": "Reconocimiento que se recibe por las buenas cualidades o acciones.",
+            "definition_tw": "因良好的品質或行為而獲得認可與重視。"
         },
         {
             "english_term": "Balanced",
             "spanish_equivalent": "Equilibrio",
+            "tw_chinese_equivalent": "平衡",
             "definition_en": "Keeping or showing a proper harmony or proportion.",
-            "definition_es": "Mantenimiento de una armonía o proporción interna adecuada."
+            "definition_es": "Mantenimiento de una armonía o proporción interna adecuada.",
+            "definition_tw": "保持或表現出適當的和諧或比例。"
         },
         {
             "english_term": "Blessed",
             "spanish_equivalent": "Dicha / Bendición",
+            "tw_chinese_equivalent": "有福氣 / 蒙福",
             "definition_en": "Endowed with divine favor, protection, or a special gift.",
-            "definition_es": "Sensación de poseer protección, profunda suerte o un don especial."
+            "definition_es": "Sensación de poseer protección, profunda suerte o un don especial.",
+            "definition_tw": "被賦予神聖的恩典、保護或特殊的禮物。"
         },
         {
             "english_term": "Calm",
             "spanish_equivalent": "Calma",
+            "tw_chinese_equivalent": "平靜",
             "definition_en": "Not showing or feeling nervousness, anger, or strong emotions.",
-            "definition_es": "Ausencia de nerviosismo, ira o emociones fuertes y alterantes."
+            "definition_es": "Ausencia de nerviosismo, ira o emociones fuertes y alterantes.",
+            "definition_tw": "沒有表現出或感到緊張、憤怒或強烈的情緒。"
         },
         {
             "english_term": "Carefree",
             "spanish_equivalent": "Despreocupación",
+            "tw_chinese_equivalent": "無憂無慮",
             "definition_en": "Free from anxiety or responsibility.",
-            "definition_es": "Liberación temporal de la ansiedad o las responsabilidades."
+            "definition_es": "Liberación temporal de la ansiedad o las responsabilidades.",
+            "definition_tw": "沒有焦慮或責任負擔。"
         },
         {
             "english_term": "Chill",
             "spanish_equivalent": "Relajación",
+            "tw_chinese_equivalent": "輕鬆自在",
             "definition_en": "Very relaxed and easygoing.",
-            "definition_es": "Estado de alta distensión y falta de complicaciones."
+            "definition_es": "Estado de alta distensión y falta de complicaciones.",
+            "definition_tw": "非常放鬆且隨和。"
         },
         {
             "english_term": "Comfortable",
             "spanish_equivalent": "Comodidad",
+            "tw_chinese_equivalent": "舒服 / 舒適",
             "definition_en": "Providing physical ease and relaxation.",
-            "definition_es": "Sensación de facilidad y relajación física o mental."
+            "definition_es": "Sensación de facilidad y relajación física o mental.",
+            "definition_tw": "提供身體或心理上的輕鬆和放鬆。"
         },
         {
             "english_term": "Compassionate",
             "spanish_equivalent": "Compasión",
+            "tw_chinese_equivalent": "慈悲 / 充滿同情",
             "definition_en": "Feeling or showing sympathy and concern for others.",
-            "definition_es": "Sentimiento de simpatía y preocupación activa por los demás."
+            "definition_es": "Sentimiento de simpatía y preocupación activa por los demás.",
+            "definition_tw": "對他人感到或表現出同情和關心。"
         },
         {
             "english_term": "Connected",
             "spanish_equivalent": "Conexión",
+            "tw_chinese_equivalent": "產生連結",
             "definition_en": "United, joined, or having a bond with others.",
-            "definition_es": "Sensación de unión o de tener un vínculo claro con otros."
+            "definition_es": "Sensación de unión o de tener un vínculo claro con otros.",
+            "definition_tw": "與他人團結、結合或有聯繫感。"
         },
         {
             "english_term": "Cosy",
             "spanish_equivalent": "Acogimiento / Calidez",
+            "tw_chinese_equivalent": "溫馨 / 愜意",
             "definition_en": "Giving a feeling of comfort, warmth, and relaxation.",
-            "definition_es": "Sensación de comodidad envolvente, calidez y relajación."
+            "definition_es": "Sensación de comodidad envolvente, calidez y relajación.",
+            "definition_tw": "給人一種舒適、溫暖和放鬆的感覺。"
         },
         {
             "english_term": "Empathetic",
             "spanish_equivalent": "Empatía",
+            "tw_chinese_equivalent": "有同理心",
             "definition_en": "Showing an ability to understand and share the feelings of another.",
-            "definition_es": "Capacidad para comprender y compartir profundamente los sentimientos de otro."
+            "definition_es": "Capacidad para comprender y compartir profundamente los sentimientos de otro.",
+            "definition_tw": "表現出理解和分享他人感受的能力。"
         },
         {
             "english_term": "Fulfilled",
             "spanish_equivalent": "Plenitud",
+            "tw_chinese_equivalent": "充實 / 滿足",
             "definition_en": "Satisfied or happy as a result of fully developing one's abilities or character.",
-            "definition_es": "Satisfacción resultante del desarrollo pleno de las propias capacidades o metas."
+            "definition_es": "Satisfacción resultante del desarrollo pleno de las propias capacidades o metas.",
+            "definition_tw": "因充分發揮能力或性格而感到滿意或快樂。"
         },
         {
             "english_term": "Good",
             "spanish_equivalent": "Bienestar",
+            "tw_chinese_equivalent": "良好 / 感覺好",
             "definition_en": "Pleasant, fine, or in a satisfactory state.",
-            "definition_es": "Estado general agradable, positivo o de condición satisfactoria."
+            "definition_es": "Estado general agradable, positivo o de condición satisfactoria.",
+            "definition_tw": "令人愉快的、好的或處於滿意的狀態。"
         },
         {
             "english_term": "Grateful",
             "spanish_equivalent": "Gratitud",
+            "tw_chinese_equivalent": "感恩 / 感謝",
             "definition_en": "Feeling or showing an appreciation of kindness.",
-            "definition_es": "Sentimiento de profundo aprecio o agradecimiento."
+            "definition_es": "Sentimiento de profundo aprecio o agradecimiento.",
+            "definition_tw": "感受或表達對善意的感激。"
         },
         {
             "english_term": "Included",
             "spanish_equivalent": "Inclusión",
+            "tw_chinese_equivalent": "有參與感 / 被包含在內",
             "definition_en": "Contained as part of a whole or group.",
-            "definition_es": "Sensación de formar parte activamente de un todo o de un grupo."
+            "definition_es": "Sensación de formar parte activamente de un todo o de un grupo.",
+            "definition_tw": "作為整體或群體的一部分被包含在內。"
         },
         {
             "english_term": "Loved",
             "spanish_equivalent": "Amor",
+            "tw_chinese_equivalent": "被愛",
             "definition_en": "Feeling deep affection and care from others.",
-            "definition_es": "Sensación de recibir un profundo afecto y cuidado de parte de los demás."
+            "definition_es": "Sensación de recibir un profundo afecto y cuidado de parte de los demás.",
+            "definition_tw": "感受到他人深厚的情感和關心。"
         },
         {
             "english_term": "Mellow",
             "spanish_equivalent": "Serenidad suave",
+            "tw_chinese_equivalent": "柔和放鬆",
             "definition_en": "Pleasantly smooth, soft, or relaxed.",
-            "definition_es": "Sensación de relajación suave y fluida."
+            "definition_es": "Sensación de relajación suave y fluida.",
+            "definition_tw": "令人愉悅的平靜、溫和或放鬆。"
         },
         {
             "english_term": "Peaceful",
             "spanish_equivalent": "Paz",
+            "tw_chinese_equivalent": "寧靜 / 平和",
             "definition_en": "Free from disturbance; tranquil.",
-            "definition_es": "Estado de tranquilidad total y libre de perturbaciones."
+            "definition_es": "Estado de tranquilidad total y libre de perturbaciones.",
+            "definition_tw": "免受干擾；平靜無波。"
         },
         {
             "english_term": "Pleasant",
             "spanish_equivalent": "Agrado",
+            "tw_chinese_equivalent": "愉快",
             "definition_en": "Giving a sense of happy satisfaction or enjoyment.",
-            "definition_es": "Sensación de feliz satisfacción o disfrute ante las circunstancias."
+            "definition_es": "Sensación de feliz satisfacción o disfrute ante las circunstancias.",
+            "definition_tw": "給人帶來快樂的滿足感或享受感。"
         },
         {
             "english_term": "Relieved",
             "spanish_equivalent": "Alivio",
+            "tw_chinese_equivalent": "鬆一口氣 / 寬慰",
             "definition_en": "No longer feeling distressed or anxious.",
-            "definition_es": "Sensación de liberación de una angustia, peso o ansiedad previa."
+            "definition_es": "Sensación de liberación de una angustia, peso o ansiedad previa.",
+            "definition_tw": "不再感到苦惱或焦慮。"
         },
         {
             "english_term": "Respected",
             "spanish_equivalent": "Respeto",
+            "tw_chinese_equivalent": "受尊重",
             "definition_en": "Deeply admired for abilities, qualities, or achievements.",
-            "definition_es": "Sensación de ser admirado y validado por las propias capacidades o logros."
+            "definition_es": "Sensación de ser admirado y validado por las propias capacidades o logros.",
+            "definition_tw": "因能力、品質或成就而受到深深的欽佩與重視。"
         },
         {
             "english_term": "Safe",
             "spanish_equivalent": "Seguridad",
+            "tw_chinese_equivalent": "安全",
             "definition_en": "Protected from or not exposed to danger or risk.",
-            "definition_es": "Sensación de contar con protección y de no estar expuesto a daños o riesgos."
+            "definition_es": "Sensación de contar con protección y de no estar expuesto a daños o riesgos.",
+            "definition_tw": "受到保護或未暴露於危險或風險中。"
         },
         {
             "english_term": "Satisfied",
             "spanish_equivalent": "Satisfacción",
+            "tw_chinese_equivalent": "滿意",
             "definition_en": "Contented or pleased with what has been experienced or received.",
-            "definition_es": "Estado de contentamiento con lo que se ha experimentado o recibido."
+            "definition_es": "Estado de contentamiento con lo que se ha experimentado o recibido.",
+            "definition_tw": "對所經歷或收到的事物感到滿足或高興。"
         },
         {
             "english_term": "Secure",
             "spanish_equivalent": "Certeza",
+            "tw_chinese_equivalent": "踏實 / 穩妥",
             "definition_en": "Certain to remain safe and unthreatened.",
-            "definition_es": "Sentimiento estable de encontrarse a salvo y sin ningún tipo de amenaza."
+            "definition_es": "Sentimiento estable de encontrarse a salvo y sin ningún tipo de amenaza.",
+            "definition_tw": "確定保持安全且不受威脅。"
         },
         {
             "english_term": "Serene",
             "spanish_equivalent": "Serenidad",
+            "tw_chinese_equivalent": "安詳 / 恬靜",
             "definition_en": "Calm, peaceful, and untroubled.",
-            "definition_es": "Estado de tranquilidad profunda, paz y completa ausencia de problemas."
+            "definition_es": "Estado de tranquilidad profunda, paz y completa ausencia de problemas.",
+            "definition_tw": "平靜、寧靜且無憂無慮。"
         },
         {
             "english_term": "Supported",
             "spanish_equivalent": "Apoyo",
+            "tw_chinese_equivalent": "受到支持",
             "definition_en": "Given assistance, encouragement, or approval.",
-            "definition_es": "Sensación de recibir asistencia, ánimo y el respaldo de terceros."
+            "definition_es": "Sensación de recibir asistencia, ánimo y el respaldo de terceros.",
+            "definition_tw": "獲得幫助、鼓勵或認可。"
         },
         {
             "english_term": "Sympathetic",
             "spanish_equivalent": "Comprensión empática",
+            "tw_chinese_equivalent": "富有同情心",
             "definition_en": "Feeling, showing, or expressing sympathy and understanding.",
-            "definition_es": "Sentimiento o expresión activa de simpatía y apoyo hacia otros."
+            "definition_es": "Sentimiento o expresión activa de simpatía y apoyo hacia otros.",
+            "definition_tw": "感受、表現或表達同情和理解。"
         },
         {
             "english_term": "Understood",
             "spanish_equivalent": "Entendimiento",
+            "tw_chinese_equivalent": "被理解",
             "definition_en": "Having one's intended meaning correctly perceived.",
-            "definition_es": "Sensación de que el propio significado o perspectiva ha sido percibido correctamente."
+            "definition_es": "Sensación de que el propio significado o perspectiva ha sido percibido correctamente.",
+            "definition_tw": "預期的意圖被正確地感知與體會。"
         },
         {
             "english_term": "Valued",
             "spanish_equivalent": "Valoración",
+            "tw_chinese_equivalent": "受到重視",
             "definition_en": "Considered to be important or beneficial.",
-            "definition_es": "Sentimiento de ser considerado importante, útil o de gran beneficio para los demás."
+            "definition_es": "Sentimiento de ser considerado importante, útil o de gran beneficio para los demás.",
+            "definition_tw": "被認為是重要或有益的。"
         }
     ],
     "High-pleasant": [
         {
             "english_term": "Amazed",
             "spanish_equivalent": "Asombro",
+            "tw_chinese_equivalent": "驚嘆",
             "definition_en": "Greatly surprised or astonished.",
-            "definition_es": "Sensación de enorme sorpresa o admiración."
+            "definition_es": "Sensación de enorme sorpresa o admiración.",
+            "definition_tw": "感到非常驚訝或驚奇。"
         },
         {
             "english_term": "Awe",
             "spanish_equivalent": "Maravilla",
+            "tw_chinese_equivalent": "敬畏",
             "definition_en": "A feeling of reverential respect mixed with fear or wonder.",
-            "definition_es": "Sentimiento de respeto reverencial mezclado con un fuerte asombro."
+            "definition_es": "Sentimiento de respeto reverencial mezclado con un fuerte asombro.",
+            "definition_tw": "充滿敬意並交織著驚奇的感覺。"
         },
         {
             "english_term": "Cheerful",
             "spanish_equivalent": "Alegría",
+            "tw_chinese_equivalent": "歡樂",
             "definition_en": "Noticeably happy and optimistic.",
-            "definition_es": "Estado visible de felicidad, regocijo y optimismo."
+            "definition_es": "Estado visible de felicidad, regocijo y optimismo.",
+            "definition_tw": "明顯地快樂和樂觀。"
         },
         {
             "english_term": "Confident",
             "spanish_equivalent": "Confianza",
+            "tw_chinese_equivalent": "自信",
             "definition_en": "Feeling or showing certainty about oneself.",
-            "definition_es": "Certeza o seguridad arraigada sobre uno mismo y sus capacidades."
+            "definition_es": "Certeza o seguridad arraigada sobre uno mismo y sus capacidades.",
+            "definition_tw": "對自己感到或表現出確定性與信心。"
         },
         {
             "english_term": "Curious",
             "spanish_equivalent": "Curiosidad",
+            "tw_chinese_equivalent": "好奇",
             "definition_en": "Eager to know or learn something.",
-            "definition_es": "Fuerte ansia o deseo por saber y descubrir algo nuevo."
+            "definition_es": "Fuerte ansia o deseo por saber y descubrir algo nuevo.",
+            "definition_tw": "渴望知道或學習某事。"
         },
         {
             "english_term": "Delighted",
             "spanish_equivalent": "Deleite",
+            "tw_chinese_equivalent": "欣喜",
             "definition_en": "Feeling or showing great pleasure.",
-            "definition_es": "Sentimiento de gran placer y agrado con el momento presente."
+            "definition_es": "Sentimiento de gran placer y agrado con el momento presente.",
+            "definition_tw": "感到或表現出極大的快樂與愉悅。"
         },
         {
             "english_term": "Determined",
             "spanish_equivalent": "Determinación",
+            "tw_chinese_equivalent": "堅決",
             "definition_en": "Having made a firm decision and being resolved not to change it.",
-            "definition_es": "Firmeza al haber tomado una decisión con la resolución de no cambiarla."
+            "definition_es": "Firmeza al haber tomado una decisión con la resolución de no cambiarla.",
+            "definition_tw": "做出了堅定的決定並決心不改變它。"
         },
         {
             "english_term": "Ecstatic",
             "spanish_equivalent": "Éxtasis",
+            "tw_chinese_equivalent": "狂喜",
             "definition_en": "Feeling or expressing overwhelming happiness.",
-            "definition_es": "Sentimiento o expresión de felicidad profunda y abrumadora."
+            "definition_es": "Sentimiento o expresión de felicidad profunda y abrumadora.",
+            "definition_tw": "感到或表達壓倒性的快樂。"
         },
         {
             "english_term": "Elated",
             "spanish_equivalent": "Euforia",
+            "tw_chinese_equivalent": "興高采烈",
             "definition_en": "Ecstatically happy or proud.",
-            "definition_es": "Sensación estática de felicidad o de profundo orgullo."
+            "definition_es": "Sensación estática de felicidad o de profundo orgullo.",
+            "definition_tw": "非常快樂或自豪。"
         },
         {
             "english_term": "Energized",
             "spanish_equivalent": "Energía",
+            "tw_chinese_equivalent": "充滿活力",
             "definition_en": "Filled with vitality and enthusiasm.",
-            "definition_es": "Sensación de estar lleno de vitalidad y fuerzas para la acción."
+            "definition_es": "Sensación de estar lleno de vitalidad y fuerzas para la acción.",
+            "definition_tw": "充滿生機與熱情。"
         },
         {
             "english_term": "Engaged",
             "spanish_equivalent": "Compromiso",
+            "tw_chinese_equivalent": "投入",
             "definition_en": "Actively involved, busy, or occupied with something.",
-            "definition_es": "Participación e involucramiento activo pleno en alguna tarea."
+            "definition_es": "Participación e involucramiento activo pleno en alguna tarea.",
+            "definition_tw": "積極參與、忙碌或專注於某事。"
         },
         {
             "english_term": "Enthusiastic",
             "spanish_equivalent": "Entusiasmo",
+            "tw_chinese_equivalent": "熱忱 / 熱心",
             "definition_en": "Having or showing intense and eager enjoyment.",
-            "definition_es": "Disfrute y exaltación de ánimo frente a alguna actividad o idea."
+            "definition_es": "Disfrute y exaltación de ánimo frente a alguna actividad o idea.",
+            "definition_tw": "具有或表現出強烈且渴望的享受。"
         },
         {
             "english_term": "Excited",
             "spanish_equivalent": "Emoción intensa",
+            "tw_chinese_equivalent": "興奮",
             "definition_en": "Very enthusiastic and eager.",
-            "definition_es": "Estado de mucho entusiasmo, ánimo y expectativa por lo venidero."
+            "definition_es": "Estado de mucho entusiasmo, ánimo y expectativa por lo venidero.",
+            "definition_tw": "非常熱情和渴望。"
         },
         {
             "english_term": "Exhilarated",
             "spanish_equivalent": "Regocijo",
+            "tw_chinese_equivalent": "雀躍 / 振奮",
             "definition_en": "Very happy, animated, or elated.",
-            "definition_es": "Sentimiento de gran animación, alegría desbordante o euforia."
+            "definition_es": "Sentimiento de gran animación, alegría desbordante o euforia.",
+            "definition_tw": "非常快樂、充滿生氣或興高采烈。"
         },
         {
             "english_term": "Happy",
             "spanish_equivalent": "Felicidad",
+            "tw_chinese_equivalent": "快樂",
             "definition_en": "Feeling or showing pleasure or contentment.",
-            "definition_es": "Sensación general de placer, bienestar y gran satisfacción."
+            "definition_es": "Sensación general de placer, bienestar y gran satisfacción.",
+            "definition_tw": "感到或表現出愉悅或滿足。"
         },
         {
             "english_term": "Hopeful",
             "spanish_equivalent": "Esperanza",
+            "tw_chinese_equivalent": "充滿希望",
             "definition_en": "Feeling or inspiring optimism about a future event.",
-            "definition_es": "Sentimiento de optimismo y fe en que un evento futuro será positivo."
+            "definition_es": "Sentimiento de optimismo y fe en que un evento futuro será positivo.",
+            "definition_tw": "對未來事件感到或激發樂觀。"
         },
         {
             "english_term": "Inspired",
             "spanish_equivalent": "Inspiración",
+            "tw_chinese_equivalent": "受到啟發",
             "definition_en": "Filled with the urge or ability to do something creative.",
-            "definition_es": "Sentimiento o iluminación del impulso para hacer algo creativo o superarse."
+            "definition_es": "Sentimiento o iluminación del impulso para hacer algo creativo o superarse.",
+            "definition_tw": "充滿做創造性事情的衝動或能力。"
         },
         {
             "english_term": "Joyful",
             "spanish_equivalent": "Gozo",
+            "tw_chinese_equivalent": "喜悅",
             "definition_en": "Feeling, expressing, or causing great pleasure and happiness.",
-            "definition_es": "Expresión o sensación de disfrute intenso y felicidad genuina."
+            "definition_es": "Expresión o sensación de disfrute intenso y felicidad genuina.",
+            "definition_tw": "感受、表達或引起極大的愉悅和幸福。"
         },
         {
             "english_term": "Motivated",
             "spanish_equivalent": "Motivación",
+            "tw_chinese_equivalent": "充滿動力",
             "definition_en": "Provided with a strong reason or desire to do something.",
-            "definition_es": "Presencia de un fuerte motivo interno o deseo que impulsa a hacer algo."
+            "definition_es": "Presencia de un fuerte motivo interno o deseo que impulsa a hacer algo.",
+            "definition_tw": "被賦予強烈的理由或渴望去做某事。"
         },
         {
             "english_term": "Optimistic",
             "spanish_equivalent": "Optimismo",
+            "tw_chinese_equivalent": "樂觀",
             "definition_en": "Hopeful and confident about the future.",
-            "definition_es": "Tendencia a observar y esperar lo mejor, con plena confianza sobre el futuro."
+            "definition_es": "Tendencia a observar y esperar lo mejor, con plena confianza sobre el futuro.",
+            "definition_tw": "對未來充滿希望和信心。"
         },
         {
             "english_term": "Passionate",
             "spanish_equivalent": "Pasión",
+            "tw_chinese_equivalent": "熱情",
             "definition_en": "Showing or caused by strong feelings or beliefs.",
-            "definition_es": "Muestra o exaltación de sentimientos o creencias muy fuertes hacia algo."
+            "definition_es": "Muestra o exaltación de sentimientos o creencias muy fuertes hacia algo.",
+            "definition_tw": "表現出或由強烈的情感或信念引起。"
         },
         {
             "english_term": "Playful",
             "spanish_equivalent": "Jovialidad / Ganas de jugar",
+            "tw_chinese_equivalent": "俏皮 / 愛玩",
             "definition_en": "Fond of games and amusement; lighthearted.",
-            "definition_es": "Actitud alegre e informal, con inclinación a los juegos y la diversión."
+            "definition_es": "Actitud alegre e informal, con inclinación a los juegos y la diversión.",
+            "definition_tw": "喜歡遊戲和娛樂；輕鬆愉快。"
         },
         {
             "english_term": "Pleased",
             "spanish_equivalent": "Complacencia",
+            "tw_chinese_equivalent": "高興",
             "definition_en": "Feeling or showing satisfaction.",
-            "definition_es": "Sensación o muestra clara de que algo ha sido muy grato y satisfactorio."
+            "definition_es": "Sensación o muestra clara de que algo ha sido muy grato y satisfactorio.",
+            "definition_tw": "感到或表現出滿意。"
         },
         {
             "english_term": "Proud",
             "spanish_equivalent": "Orgullo",
+            "tw_chinese_equivalent": "驕傲 / 自豪",
             "definition_en": "Feeling deep pleasure from one's own achievements.",
-            "definition_es": "Sentimiento de profundo placer y satisfacción por los logros o características propias."
+            "definition_es": "Sentimiento de profundo placer y satisfacción por los logros o características propias.",
+            "definition_tw": "對自己的成就感到深深的喜悅。"
         },
         {
             "english_term": "Thrilled",
             "spanish_equivalent": "Entusiasmo extremo",
+            "tw_chinese_equivalent": "極度興奮",
             "definition_en": "Experiencing a sudden feeling of extreme excitement.",
-            "definition_es": "Sensación repentina de extrema emoción, atracción o felicidad por algo puntual."
+            "definition_es": "Sensación repentina de extrema emoción, atracción o felicidad por algo puntual.",
+            "definition_tw": "經歷突然極度興奮的感覺。"
         },
         {
             "english_term": "Upbeat",
             "spanish_equivalent": "Buena energía",
+            "tw_chinese_equivalent": "開朗 / 積極向上",
             "definition_en": "Cheerful, optimistic, and positive.",
-            "definition_es": "Estado de ánimo alegre, animado, optimista y rotundamente positivo."
+            "definition_es": "Estado de ánimo alegre, animado, optimista y rotundamente positivo.",
+            "definition_tw": "快樂、樂觀且積極。"
         }
     ]
 }

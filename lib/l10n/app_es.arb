@@ -242,7 +242,7 @@
   "quadrantTeaserCalmPleasant": "tranquilidad, paz",
   "bowelBucketConstipation": "estreñimiento",
   "bowelBucketNormal": "normal",
-  "bowelBucketDiarrea": "diarrea",
+  "bowelBucketDiarrhea": "diarrea",
   "sleepQualityBad": "mal",
   "sleepQualityRegular": "regular",
   "sleepQualityGood": "bien",
@@ -836,5 +836,490 @@
   },
   "settingsViewPreferencesTitle": "VISUALIZACIÓN",
   "settingsCarefulModeLabel": "Modo cuidadoso",
-  "settingsCarefulModeDescription": "Reduce el ruido visual: las secciones empiezan colapsadas. Tap el header para expandir lo que quieras ver."
+  "settingsCarefulModeDescription": "Reduce el ruido visual: las secciones empiezan colapsadas. Tap el header para expandir lo que quieras ver.",
+  "drugKindMedication": "Medicamento",
+  "drugKindSupplement": "Suplemento",
+  "drugKindHerbal": "Producto herbal",
+  "drugInteractionsInBotiquinHeader": "Interacciones en tu botiquín",
+  "drugInteractionSeverityHigh": "Alta",
+  "drugInteractionSeverityMedium": "Media",
+  "drugInteractionSeverityLow": "Baja",
+  "drugNoContentSupplement": "Suplemento — no regulado como medicamento. Consulta con tu equipo médico antes de combinarlo con otros tratamientos.",
+  "drugNoContentHerbal": "Producto herbal — evidencia clínica limitada. Consulta con tu equipo médico antes de combinarlo con otros tratamientos.",
+  "drugNoContentMedlineEmpty": "MedlinePlus no devolvió información para este medicamento (RxCUI {rxcui}). Puede ser un problema temporal o que la base no tenga contenido para este código.",
+  "@drugNoContentMedlineEmpty": {
+    "placeholders": {
+      "rxcui": {
+        "type": "String"
+      }
+    }
+  },
+  "drugNoContentUnmapped": "Aún no tenemos información detallada para este producto. Puedes buscarlo manualmente en medlineplus.gov/spanish.",
+  "drugNoContentGeneric": "No se pudo cargar la información.",
+  "drugReadMoreMedlinePlus": "Leer más en MedlinePlus",
+  "drugBrowserOpenError": "No se pudo abrir el navegador. Revisa tu conexión.",
+  "drugConfidenceMediumWarning": "Mapeo de confianza media — verifica con tu equipo médico si la información no coincide con tu medicamento.",
+  "drugSourceLocalCurated": "Fuente: información clínica curada localmente para esta app. No reemplaza consejo médico.",
+  "drugSourceMedlinePlus": "Fuente: MedlinePlus, Biblioteca Nacional de Medicina de EE.UU. No reemplaza consejo médico.",
+  "drugSourceNoInfo": "Sin información clínica disponible en nuestras fuentes.",
+  "drugLoadError": "No se pudo cargar la información.",
+  "moodQuadrantActivatedUnpleasant": "activación · malestar",
+  "moodQuadrantActivatedPleasant": "activación · bienestar",
+  "moodQuadrantCalmUnpleasant": "calma · malestar",
+  "moodQuadrantCalmPleasant": "calma · bienestar",
+  "moodTeaserActivatedUnpleasant": "tensión, ansiedad",
+  "moodTeaserActivatedPleasant": "energía, alegría",
+  "moodTeaserCalmUnpleasant": "agotamiento, tristeza",
+  "moodTeaserCalmPleasant": "tranquilidad, paz",
+  "moodSheetStep1Title": "¿CÓMO TE SIENTES?",
+  "moodSheetCancel": "cancelar",
+  "moodSheetStep2Prompt": "¿cómo me siento?",
+  "moodSheetChangeQuadrant": "cambiar cuadrante",
+  "moodSheetAlsoFeelingHeader": "TAMBIÉN SIENTO…",
+  "moodSheetNotesHeader": "CONTEXTO (OPCIONAL)",
+  "moodSheetNotesPlaceholder": "Ej. Día con mucha niebla mental…",
+  "moodSheetSaveButton": "GUARDAR REGISTRO",
+  "moodDefinitionDialogAction": "Entendido",
+  "moodSectionTitle": "CÓMO ESTOY",
+  "moodSectionPrompt": "¿Cómo te sientes?",
+  "moodSectionRegisterAnother": "Registrar otro estado",
+  "severityFunctionalAnchorNone": "no lo noto",
+  "severityFunctionalAnchorMild": "lo noto, pero no me detiene",
+  "severityFunctionalAnchorModerate": "me obliga a bajar el ritmo o pausar",
+  "severityFunctionalAnchorIntense": "no puedo hacer lo que tenía planeado",
+  "severityFunctionalAnchorUnbearable": "no puedo funcionar; necesito detenerme",
+  "outcomeReasonNatural": "Cambio natural del síntoma",
+  "outcomeReasonMedicationHelped": "Creo que ayudó este medicamento",
+  "outcomeReasonOtherTrigger": "Otro gatillo (comida, estrés, clima…)",
+  "outcomeReasonAdditionalMed": "Tomé otro medicamento también",
+  "outcomeReasonUnsure": "No estoy seguro/a",
+  "medicationOutcomeCoarsePending": "Pendiente",
+  "medicationOutcomeCoarseMuchBetter": "Mucho mejor",
+  "medicationOutcomeCoarseBetter": "Mejor",
+  "medicationOutcomeCoarseSame": "Igual",
+  "medicationOutcomeCoarseWorse": "Peor",
+  "medicationOutcomeCoarseMuchWorse": "Mucho peor",
+  "bowelFormTitleNew": "REGISTRAR TRÁNSITO",
+  "bowelFormTitleEdit": "EDITAR TRÁNSITO",
+  "bowelFormBristolLabel": "tipo Bristol",
+  "bowelFormBristolLegendTemplate": "1-2: {constipation}  ·  3-5: {normal}  ·  6-7: {diarrhea}",
+  "bowelFormHideBristolDetail": "ocultar detalle",
+  "bowelFormShowBristolDetail": "más detalle (escala de Bristol)",
+  "bowelFormSectionObservations": "OBSERVACIONES",
+  "bowelFormToggleUrgency": "urgencia",
+  "bowelFormToggleIncompleteEvacuation": "evacuación incompleta",
+  "bowelFormNoteHint": "Nota opcional (contexto, gatillo, etc.)",
+  "hemorrhoidalFormTitleNew": "REGISTRAR HEMORROIDE",
+  "hemorrhoidalFormTitleEdit": "EDITAR HEMORROIDE",
+  "hemorrhoidalFormNoteHint": "Nota opcional",
+  "formSectionHeaderDiscomfort": "MOLESTIA",
+  "formToggleBleeding": "sangrado",
+  "formButtonSave": "GUARDAR",
+  "@bowelFormBristolLegendTemplate": {
+    "description": "Legend below the Bristol Stool Scale picker, showing which BSS numbers map to which bucket. Placeholders receive the localized BowelBucket labels so the legend stays in sync with the bucket cards above.",
+    "placeholders": {
+      "constipation": {
+        "type": "String",
+        "example": "estreñimiento"
+      },
+      "normal": {
+        "type": "String",
+        "example": "normal"
+      },
+      "diarrhea": {
+        "type": "String",
+        "example": "diarrea"
+      }
+    }
+  },
+  "structuralFormFollowupHeader": "SEGUIMIENTO",
+  "structuralFormFollowupResolvedQuestion": "¿Está resuelto?",
+  "structuralFormFollowupResolvedDateTemplate": "Resuelto el {date}",
+  "structuralFormFollowupStillPainfulQuestion": "¿Todavía duele?",
+  "structuralFormFollowupStillPainfulSubtitle": "Cerró visiblemente pero el dolor sigue",
+  "bowelLogBristolTypeTemplate": "tipo {type}",
+  "bowelLogTagUrgency": "urgencia",
+  "bowelLogTagBleeding": "sangrado",
+  "bowelLogTagIncomplete": "incompleta",
+  "hemorrhoidalLogLabel": "hemorroide",
+  "hemorrhoidalLogTagBleeding": "sangrado",
+  "symptomLogTagUnrated": "sin rating",
+  "@structuralFormFollowupResolvedDateTemplate": {
+    "description": "Label shown below the 'is it resolved?' switch once the user has set a resolved-at date. The {date} placeholder receives a pre-formatted date string from the Dart side (using DateFormat for the active locale).",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "5 jun 2026"
+      }
+    }
+  },
+  "@bowelLogBristolTypeTemplate": {
+    "description": "Suffix shown after the bucket name in the bowel render line when the user has expanded the Bristol detail and picked a 1-7 type. Rendered inline as 'tipo 4', 'type 4', '類型 4'.",
+    "placeholders": {
+      "type": {
+        "type": "int",
+        "example": "4"
+      }
+    }
+  },
+  "hoySectionPendingHeader": "Pendientes",
+  "hoyOutcomeForYour": " para tu ",
+  "hoyOutcomeHideReasons": "Ocultar",
+  "hoyBowelCounterToday": "última evacuación: hoy",
+  "hoyBowelCounterYesterday": "última evacuación: ayer",
+  "hoyBowelCounterDaysAgoTemplate": "última evacuación: hace {days} días",
+  "hoyNarrativeEmptyPacing": "🛡️ Día de descanso. Aún no has registrado nada — está bien.",
+  "hoyNarrativeEmpty": "Aún no has registrado nada hoy. ¿Cómo va todo?",
+  "hoyNarrativeSymptomsSingleTemplate": "Registraste 1 síntoma: {name} ({severity}).",
+  "hoyNarrativeSymptomsManyTemplate": "Registraste {count} síntomas — el más fuerte fue {name} ({severity}).",
+  "hoyNarrativeStructuralSingleTemplate": "Tuviste 1 evento estructural en {zone}.",
+  "hoyNarrativeStructuralManyTemplate": "Tuviste {count} eventos estructurales hoy.",
+  "hoyNarrativeDosesSingleTemplate": "Tomaste 1 dosis: {meds}.",
+  "hoyNarrativeDosesManyTemplate": "Tomaste {count} dosis: {meds}.",
+  "hoyNarrativeDosesAndMore": " y {count} más",
+  "hoyNarrativeEmaStatesTemplate": "Tus estados y sensaciones registradas: {states}.",
+  "hoyNarrativeEmaStatesEllipsis": "...",
+  "hoyNarrativePacingTrailer": "🛡️ Te diste permiso para descansar. Eso cuenta.",
+  "@hoyBowelCounterDaysAgoTemplate": {
+    "description": "Days-ago label in the bowel counter chip.",
+    "placeholders": {
+      "days": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@hoyNarrativeSymptomsSingleTemplate": {
+    "description": "Narrative summary when exactly 1 symptom was logged. {name} is the symptom name lowercased, {severity} is the localized severity label lowercased.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "fatiga"
+      },
+      "severity": {
+        "type": "String",
+        "example": "intensa"
+      }
+    }
+  },
+  "@hoyNarrativeSymptomsManyTemplate": {
+    "description": "Narrative summary when 2+ symptoms were logged.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      },
+      "name": {
+        "type": "String",
+        "example": "fatiga"
+      },
+      "severity": {
+        "type": "String",
+        "example": "intensa"
+      }
+    }
+  },
+  "@hoyNarrativeStructuralSingleTemplate": {
+    "description": "Narrative summary for 1 structural event.",
+    "placeholders": {
+      "zone": {
+        "type": "String",
+        "example": "cervical"
+      }
+    }
+  },
+  "@hoyNarrativeStructuralManyTemplate": {
+    "description": "Narrative summary for 2+ structural events.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@hoyNarrativeDosesSingleTemplate": {
+    "description": "Narrative summary for 1 dose. {meds} is a pre-formatted comma-separated string of med names with quantities, e.g. 'Duloxetina (1), Sertralina (2)'.",
+    "placeholders": {
+      "meds": {
+        "type": "String",
+        "example": "Duloxetina (1)"
+      }
+    }
+  },
+  "@hoyNarrativeDosesManyTemplate": {
+    "description": "Narrative summary for 2+ doses.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      },
+      "meds": {
+        "type": "String",
+        "example": "Duloxetina (1), Sertralina (2)"
+      }
+    }
+  },
+  "@hoyNarrativeDosesAndMore": {
+    "description": "Suffix appended to the meds list when more than 3 distinct meds were taken (the rest are summarised as 'and N more').",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@hoyNarrativeEmaStatesTemplate": {
+    "description": "Narrative summary of mood/EMA states logged. {states} is a pre-formatted comma-separated string.",
+    "placeholders": {
+      "states": {
+        "type": "String",
+        "example": "ansiedad, frustración"
+      }
+    }
+  },
+  "@hoyOutcomeForYour": {
+    "description": "Connective phrase inside the outcome card RichText. Bridges the medication name with the symptom name. In Spanish it's ' para tu ' (with leading and trailing spaces). zh-TW likely needs no spaces."
+  },
+  "hoyHeaderDatePattern": "EEEE d 'de' MMMM",
+  "movementModalTitleRegisterTemplate": "REGISTRAR: {name}",
+  "movementModalTitleEditTemplate": "EDITAR: {name}",
+  "movementModalHintDuration": "Duración (min)",
+  "movementModalHintSets": "Sets",
+  "movementModalHintReps": "Reps",
+  "movementModalHintHeartRate": "Frecuencia cardíaca opcional (ej. 70→110)",
+  "movementModalEffortLabelTemplate": "Esfuerzo: {value}/10",
+  "movementModalFeelingLabelTemplate": "Cómo me sentí: {value}/5",
+  "movementFeelingPainOrInjury": "🤕 Con dolor / lesión",
+  "movementFeelingUncomfortable": "😟 Con incomodidad / preocupación",
+  "movementFeelingNeutral": "😐 Neutral",
+  "movementFeelingRelaxed": "😊 Bien",
+  "movementFeelingStrongConfident": "💪 Con fuerza y seguridad",
+  "movementPainLevelNone": "nada",
+  "movementPainLevelMild": "leve",
+  "movementPainLevelModerate": "moderado",
+  "movementPainLevelIntense": "intenso",
+  "movementPainLevelSevere": "severo",
+  "movementPainDeltaImprovedTemplate": "Mejoraste {delta, plural, =1{1 nivel} other{{delta} niveles}}",
+  "movementPainDeltaWorseTemplate": "Empeoraste {delta, plural, =1{1 nivel} other{{delta} niveles}}",
+  "movementPainDeltaUnchanged": "Sin cambios",
+  "movementLogEntryEffortTemplate": "esfuerzo {value}/10",
+  "movementLogEntryFeelingTemplate": "sentir {value}/5",
+  "movementLogEntryDeltaImprovedTemplate": "↓{delta} niv.",
+  "movementLogEntryDeltaWorseTemplate": "↑{delta} niv.",
+  "movementLogEntryDeltaUnchanged": "sin cambio",
+  "movementLogEntryTherapyDeltaSteady": "=",
+  "@movementModalTitleRegisterTemplate": {
+    "description": "Modal title when logging a new activity. {name} is the exercise name uppercased by the call site.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "PUSH-UPS"
+      }
+    }
+  },
+  "@movementModalTitleEditTemplate": {
+    "description": "Modal title when editing an existing activity.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "PUSH-UPS"
+      }
+    }
+  },
+  "@movementModalHintHeartRate": {
+    "description": "Hint text for the optional heart rate field. The example '70→110' (resting → peak) stays in the Spanish string and translates as needed."
+  },
+  "@movementModalEffortLabelTemplate": {
+    "description": "Slider label showing current effort value out of 10.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@movementModalFeelingLabelTemplate": {
+    "description": "Slider label showing current feeling value out of 5.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@movementPainDeltaImprovedTemplate": {
+    "description": "Shown when post-activity pain is lower than pre. ICU plural agreement on nivel/niveles.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@movementPainDeltaWorseTemplate": {
+    "description": "Shown when post-activity pain is higher than pre.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "@movementLogEntryEffortTemplate": {
+    "description": "Compact log-row chip showing effort. Lowercased intentionally — it sits in a parts-joined sentence.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "@movementLogEntryFeelingTemplate": {
+    "description": "Compact log-row chip showing feeling.",
+    "placeholders": {
+      "value": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@movementLogEntryDeltaImprovedTemplate": {
+    "description": "Compact arrow notation for level improvement. Used by both activity (pain) and therapy (severity) rows. 'niv.' is the Spanish abbreviation for 'niveles'.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@movementLogEntryDeltaWorseTemplate": {
+    "description": "Compact arrow notation for level worsening.",
+    "placeholders": {
+      "delta": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "@movementLogEntryTherapyDeltaSteady": {
+    "description": "Compact marker for therapy with no severity change. Single character — '=' is the universal default."
+  },
+  "appBarTooltipFontSize": "Tamaño de texto",
+  "appBarTooltipDarkMode": "Modo oscuro",
+  "appBarTooltipLightMode": "Modo claro",
+  "appBarTooltipSettings": "Configuración",
+  "actionDelete": "Eliminar",
+  "settingsProfileConfigTitle": "CONFIGURACIÓN DE PERFIL",
+  "settingsMyDataTitle": "MIS DATOS",
+  "settingsPatientNameLabel": "NOMBRE DEL PACIENTE",
+  "settingsConditionsLabel": "COMORBILIDADES / DIAGNÓSTICOS",
+  "settingsRelationshipLabel": "RELACIÓN CON ESTE PERFIL",
+  "settingsLifeEventsLabel": "EVENTOS DE VIDA",
+  "settingsLocationLabel": "MI UBICACIÓN (PARA EL CLIMA)",
+  "settingsConditionsHelper": "Toca la × para eliminar una condición. Para leer sobre ellas, ve a Clínica → Compendio.",
+  "settingsRelationshipHelper": "¿Para quién es este perfil? Útil si registras a alguien que cuidas.",
+  "settingsLifeEventsHelper": "Cosas que pueden haber impactado tu cuerpo o ánimo: viajes, accidentes, mudanzas, eventos buenos o estresantes. Aparecen como puntos morados en el calendario.",
+  "settingsDataHelper": "Tienes derecho a acceder, exportar, importar o eliminar tus datos en cualquier momento.",
+  "settingsWipeAllHelper": "Esta acción borra todos los perfiles, registros y configuraciones. Irreversible.",
+  "settingsRelationshipSelf": "Yo",
+  "settingsRelationshipChild": "Mi hijo/a",
+  "settingsRelationshipPartner": "Mi pareja",
+  "settingsRelationshipParent": "Mi madre/padre",
+  "settingsRelationshipOther": "Otro",
+  "settingsRelationshipNone": "— sin especificar —",
+  "settingsLifeEventsEmpty": "Aún no hay eventos registrados.",
+  "settingsAddEventButton": "AÑADIR EVENTO",
+  "settingsLocationNone": "Sin ubicación. Toca para añadir.",
+  "settingsLocationButtonAdd": "AÑADIR COORDENADAS",
+  "settingsLocationButtonEdit": "EDITAR COORDENADAS",
+  "settingsAddProfileButton": "AÑADIR NUEVO PERFIL",
+  "settingsDeleteProfileButton": "ELIMINAR ESTE PERFIL",
+  "settingsExportDataButton": "EXPORTAR MIS DATOS",
+  "settingsWipeAllButton": "BORRAR TODO",
+  "settingsNewProfileNameTemplate": "NUEVO PERFIL {number}",
+  "dialogWipeTitle": "Eliminar todos los datos",
+  "dialogWipeContent": "Esta acción borra TODOS los perfiles, registros, configuraciones y caché. No se puede deshacer.\n\n¿Quieres exportar primero?",
+  "dialogWipeFinalTitle": "Última confirmación",
+  "dialogWipeFinalContentTemplate": "Para confirmar, escribe {magicWord} abajo.",
+  "dialogWipeFinalMagicWord": "ELIMINAR",
+  "dialogWipeFinalButton": "Borrar todo",
+  "dialogDeleteProfileTitle": "Eliminar perfil",
+  "dialogDeleteProfileContentTemplate": "¿Eliminar el perfil \"{name}\" y todos sus datos? Esta acción no se puede deshacer.",
+  "dialogLocationTitle": "Tu ubicación",
+  "dialogLocationContent": "Necesito latitud y longitud para traer el clima. Busca tu ciudad en Google Maps, click derecho → copiar coordenadas.",
+  "dialogLocationHintLat": "Latitud (ej. -34.61)",
+  "dialogLocationHintLng": "Longitud (ej. -58.38)",
+  "dialogLocationInvalidSnack": "Coordenadas inválidas.",
+  "@settingsNewProfileNameTemplate": {
+    "description": "Default name for a newly added profile. {number} is 1-indexed count after creation.",
+    "placeholders": {
+      "number": {
+        "type": "int",
+        "example": "2"
+      }
+    }
+  },
+  "@dialogWipeFinalContentTemplate": {
+    "description": "Prompt inside the typed-confirmation wipe dialog. {magicWord} is the localized confirm word the user must type — the same value provided by dialogWipeFinalMagicWord, so the prompt and the expected input stay in sync per locale.",
+    "placeholders": {
+      "magicWord": {
+        "type": "String",
+        "example": "ELIMINAR"
+      }
+    }
+  },
+  "@dialogWipeFinalMagicWord": {
+    "description": "The exact word the user types to confirm wiping all data. Localized: Spanish=ELIMINAR, English=DELETE, zh-TW=刪除. Comparison is case-sensitive against the trimmed input, so use uppercase Latin or a single ideograph as appropriate per locale."
+  },
+  "@dialogDeleteProfileContentTemplate": {
+    "description": "Confirmation message for deleting a profile. {name} is the profile display name.",
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Pau"
+      }
+    }
+  },
+  "therapyHintArea": "Zona (ej. cervicales)",
+  "therapySectionPainBefore": "DOLOR ANTES",
+  "therapySectionPainAfter": "DOLOR DESPUÉS",
+  "therapyActionMoreDetails": "más detalles (terapeuta, costo, nota)",
+  "therapyHintTherapist": "Terapeuta / lugar (opcional)",
+  "therapyHintCost": "Costo (opcional)",
+  "therapyHintNote": "Nota (opcional)",
+  "therapyActionSaveChanges": "GUARDAR CAMBIOS",
+  "therapyActionLog": "REGISTRAR",
+  "compendiumSectionConditionsHeader": "MIS CONDICIONES",
+  "compendiumSectionConditionsSubtitle": "Toca una para leer información clínica (fuente: MedlinePlus).",
+  "compendiumSavedArticlesTemplate": "{count, plural, =1{1 artículo guardado} other{{count} artículos guardados}} — ve a Investigación.",
+  "compendiumSectionDataTitle": "DATOS CLÍNICOS",
+  "compendiumFactSourceLabel": "Fuente:",
+  "@compendiumSavedArticlesTemplate": {
+    "description": "Banner shown when user has saved articles from the research tab. ICU plural agreement on artículo/artículos.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "3"
+      }
+    }
+  },
+  "@compendiumFactSourceLabel": {
+    "description": "Label prefix shown before the citation of a clinical fact in the compendium. The actual citation text is appended after a space."
+  },
+  "investigationConditionArticleCountTemplate": "{count, plural, =1{1 artículo} other{{count} artículos}}",
+  "@investigationConditionArticleCountTemplate": {
+    "description": "Subtitle shown under each condition's collapsible header in the Investigación tab. ICU plural on artículo/artículos.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "headacheSheetTitle": "Detalle de tu cefalea",
+  "headacheSheetSubtitle": "Marca lo que aplique. Puedes saltar este paso si prefieres.",
+  "actionSkip": "Saltar",
+  "headacheActionSaveDetail": "Guardar detalle",
+  "headacheThunderclapWarningTitle": "Posible emergencia",
+  "headacheThunderclapWarningConfirm": "Lo entiendo, continuar"
 }

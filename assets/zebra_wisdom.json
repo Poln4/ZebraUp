@@ -85,8 +85,8 @@
       "condition": "Surgical Preparedness",
       "fact_en": "Surgical procedures for vEDS have higher success rates when surgeons use gentle retraction, padded clamps, and pledgeted repairs to account for tissue fragility.",
       "fact_es": "Los procedimientos quirúrgicos para el SEDv tienen mayores tasas de éxito cuando los cirujanos utilizan retracción suave, pinzas acolchadas y reparaciones reforzadas para compensar la fragilidad del tejido.",
-      "fact_zh": "當外科醫生使用溫和的牽引、帶墊的血管鉗和加固補片修補來應對組織脆弱性時，vEDS的外術手術成功率會更高。",
-      "fact_ko": "vEDS 환자의 수술은 외과의가 조직 취약성을 고려하여 부드러운 견인, 패드가 달린 클램프, 패치 보강(pledgeted) 수術을 사용할 때 성공률이 더 높습니다.",
+      "fact_zh": "當外科醫生使用溫和的牽引、帶墊的血管鉗和加固補片修補來應對組織脆弱性時，vEDS的外科手術成功率會更高。",
+      "fact_ko": "vEDS 환자의 수술은 외과의가 조직 취약성을 고려하여 부드러운 견인, 패드가 달린 클램프, 패치 보강(pledgeted) 봉합을 사용할 때 성공률이 더 높습니다.",
       "tone": "Optimistic",
       "source": "The VEDS Movement, Emergency Preparedness Kit"
     },
@@ -112,7 +112,7 @@
       "condition": "POTS & Quality of Life",
       "fact_en": "POTS and hEDS share a high symptom burden, often resulting in similar impacts on quality of life, primarily driven by cardiovascular autonomic dysfunction.",
       "fact_es": "El POTS y el SEDh comparten una alta carga de síntomas, lo que a menudo resulta en impactos similares en la calidad de vida, impulsados principalmente por la disfunción autonómica cardiovascular.",
-      "fact_zh": "POTS和hEDS（過度活動型EDS）共同具有很高的症狀負擔，通常對生活質量產生類似的影響，這主要是由心血管自律神經功能障礙所驅動的。",
+      "fact_zh": "POTS和hEDS（過度活動型EDS）共同具有很高的症狀負擔，通常對生活品質產生類似的影響，這主要是由心血管自律神經功能障礙所驅動的。",
       "fact_ko": "POTS와 hEDS는 높은 증상 부담을 공유하며, 주로 심혈관 자율신경 장애로 인해 삶의 질에 유사한 영향을 미치는 경우가 많습니다.",
       "tone": "Validating",
       "source": "Cardiovascular Autonomic Dysfunction in hEDS Research"
@@ -149,7 +149,7 @@
       "fact_en": "When doing eccentric exercises—like slowly lowering a weight—hypermobile muscles endure more microtears, meaning it's biologically normal to need extra recovery days.",
       "fact_es": "Al hacer ejercicios excéntricos —como bajar un peso lentamente— los músculos hiperlaxos sufren más microdesgarros, lo que significa que es biológicamente normal necesitar días de recuperación adicionales.",
       "fact_zh": "在進行離心運動（例如緩慢放下重物）時，過度活動的肌肉會承受更多的微小撕裂，這意味著需要額外的恢復天數在生物學上是完全正常的。",
-      "fact_ko": "원심성 운동(무게를 천천히 내리는 운동 등)을 할 때 과운동성 근육은 더 많은 미세 파열을 겪으므로, 추가적인 회복 일이 필요한 것은 생물학적으로 당연한 현상입니다.",
+      "fact_ko": "원심성 운동(무게를 천천히 내리는 운동 등)을 할 때 과운동성 근육은 더 많은 미세 파열을 겪으므로, 추가적인 회복일이 필요한 것은 생물학적으로 당연한 현상입니다.",
       "tone": "Supportive",
       "source": "Intrinsic PT, Understanding DOMS in Hypermobility"
     },
@@ -203,7 +203,7 @@
       "fact_en": "Fascial densification in EDS creates a self-reinforcing cycle of stiffness and pain, but targeted fascial therapies can help restore proper tissue gliding.",
       "fact_es": "La densificación fascial en el SED crea un ciclo de rigidez y dolor que se refuerza a sí mismo, pero las terapias fasciales dirigidas pueden ayudar a restaurar el deslizamiento adecuado del tejido.",
       "fact_zh": "EDS中的筋膜緻密化會造成僵硬與疼痛的惡性循環，但針對性的筋膜治療可以幫助恢復良好的組織滑動性。",
-      "fact_ko": "EDS의 근막 경직(densification)은 뻣뻣함과 통증의 악순환을 형성하지만, 표적 근막 치료는 적절한 조직 미끄러짐을 회복하는のに 도움이 될 수 있습니다.",
+      "fact_ko": "EDS의 근막 경직(densification)은 뻣뻣함과 통증의 악순환을 형성하지만, 표적 근막 치료는 적절한 조직 미끄러짐을 회복하는 데 도움이 될 수 있습니다.",
       "tone": "Optimistic",
       "source": "Steven Murdoch, Why Am I Stiff If I'm Hypermobile?"
     },
@@ -248,7 +248,7 @@
       "fact_en": "Because EDS affects connective tissues globally, stabilizing your foundation with custom insoles can decrease the compensatory work your upper body muscles have to do.",
       "fact_es": "Dado que el SED afecta los tejidos conectivos a nivel global, estabilizar tu base con plantillas a medida puede disminuir el trabajo compensatorio que deben realizar los músculos de la parte superior del cuerpo.",
       "fact_zh": "由於EDS全面性地影響結締組織，使用訂製鞋墊來穩定你的基底可以減少上半身肌肉必須進行的代償性工作。",
-      "fact_ko": "EDS는 전신 결締조직에 영향을 미치므로, 맞춤형 인솔로 기초를 안정시키면 상체 근육이 해야 하는 보상적 작용(과로)을 줄일 수 있습니다.",
+      "fact_ko": "EDS는 전신 결합조직에 영향을 미치므로, 맞춤형 인솔로 기초를 안정시키면 상체 근육이 해야 하는 보상적 작용(과로)을 줄일 수 있습니다.",
       "tone": "Educational",
       "source": "Reina-Bueno et al., Orthopedic Management of EDS"
     },
@@ -302,7 +302,7 @@
       "fact_en": "For shoulder instability in hEDS, emerging evidence supports low-load stability exercises to safely train the muscles to hold the joint in place without overstretching.",
       "fact_es": "Para la inestabilidad del hombro en el SEDh, la evidencia emergente respalda los ejercicios de estabilidad de baja carga para entrenar de forma segura a los músculos para mantener la articulación en su lugar sin estirarla en exceso.",
       "fact_zh": "針對hEDS患者的肩關節不穩定，新出現的證據支持進行低負荷穩定性訓練，以安全地鍛煉肌肉將關節固定在正確位置，同時避免過度拉伸。",
-      "fact_ko": "hEDS 환자의 어깨 불안정성에대해 최신 연구들은 근육이 과도하게 늘어나지 않으면서 관절을 제자리에 유지하도록 안전하게 훈련하는 저부하 안정성 운동을 지지합니다.",
+      "fact_ko": "hEDS 환자의 어깨 불안정성에 대해 최신 연구들은 근육이 과도하게 늘어나지 않으면서 관절을 제자리에 유지하도록 안전하게 훈련하는 저부하 안정성 운동을 지지합니다.",
       "tone": "Optimistic",
       "source": "Engelbert et al., Am J Med Genet C (2017)"
     },
@@ -311,7 +311,7 @@
       "fact_en": "Iatrogenic (treatment-caused) injuries are common when hypermobile patients are given inappropriate PT exercises; always advocate for hypermobility-aware care.",
       "fact_es": "Las lesiones iatrogénicas (causadas por el tratamiento) son comunes cuando a los pacientes hiperlaxos se les dan ejercicios de fisioterapia inapropiados; aboga siempre por una atención consciente de la hiperlaxitud.",
       "fact_zh": "當過度活動型患者接受不恰當的物理治療運動時，醫源性（治療引起的）損傷非常常見；請務必爭取了解過度活動症的專業護理。",
-      "fact_ko": "과운동성 환자에게 부적절한 PT 운동이 주어질 때 의원성(치료로 인한) 부상이 흔히 발생합니다. 항상 과운동성을 잘 아는 치료사의 케어를 요구하세요.",
+      "fact_ko": "과운동성 환자에게 부적절한 물리치료 운동이 주어질 때 의원성(치료로 인한) 부상이 흔히 발생합니다. 항상 과운동성을 잘 아는 치료사의 케어를 요구하십시오.",
       "tone": "Empowering",
       "source": "Russek et al., Phys Ther (2019)"
     },
@@ -329,7 +329,7 @@
       "fact_en": "Recent research reveals that platelets in EDS patients exhibit reduced GPVI receptor levels, which impairs their ability to signal and clot properly during injuries.",
       "fact_es": "Investigaciones recientes revelan que las plaquetas en pacientes con SED presentan niveles reducidos del receptor GPVI, lo que perjudica su capacidad para enviar señales y coagular adecuadamente durante las lesiones.",
       "fact_zh": "近期研究揭示，EDS患者的血小板表現出GPVI受體水平降低，這會損害其在受傷期間正確發出信號和凝血的能力。",
-      "fact_ko": "최근 연구에 따르면 EDS 환자의 혈소판은 GPVI 수용체 수치가 감소하여 부상 시 적절하게 신호를 전달하고 혈栓을 형성하는 능력이 저하되는 것으로 나타났습니다.",
+      "fact_ko": "최근 연구에 따르면 EDS 환자의 혈소판은 GPVI 수용체 수치가 감소하여 부상 시 적절하게 신호를 전달하고 혈전을 형성하는 능력이 저하되는 것으로 나타났습니다.",
       "tone": "Educational",
       "source": "Kumskova et al., Blood (2023)"
     },
@@ -338,7 +338,7 @@
       "fact_en": "Easy bruising in EDS is a structural and platelet-driven issue. Understanding this can help your hematologist avoid unnecessary and repetitive standard coagulation testing.",
       "fact_es": "La aparición fácil de moretones en el SED es un problema estructural y provocado por las plaquetas. Comprender esto puede ayudar a tu hematólogo a evitar pruebas de coagulación estándar innecesarias y repetitivas.",
       "fact_zh": "EDS中容易瘀青是一個結構性且由血小板驱动的問題。了解這一點可以幫助你的血液科醫生避免進行不必要且重複的常規凝血測試。",
-      "fact_ko": "EDS의 쉽게 멍이 드는 현상은 구조적 및 혈소판에 기인한 문제입니다. 이를 이해하면 혈액내과 의사가 불필요하고 반복적인 표준 응고 검사를 피하는 데 도움이 될 수 있습니다.",
+      "fact_ko": "EDS의 쉽게 멍이 드는 현상은 구조적 및 혈소판에 기인한 문제입니다. 이를 이해하면 혈액내과 전문의가 불필요하고 반복적인 표준 응고 검사를 피하는 데 도움이 될 수 있습니다.",
       "tone": "Empowering",
       "source": "Kumskova et al., Blood (2023)"
     },
@@ -356,7 +356,7 @@
       "fact_en": "Patients with suspected thrombocytopathy (platelet dysfunction) may actually have underlying Ehlers-Danlos syndrome causing their specific bleeding profile.",
       "fact_es": "Los pacientes con sospecha de trombocitopatía (disfunción plaquetaria) pueden tener en realidad un síndrome de Ehlers-Danlos subyacente que causa su perfil de sangrado específico.",
       "fact_zh": "被懷疑患有血小板無力症或血小板功能障礙（Thrombocytopathy）的患者，實際上可能潛藏有Ehlers-Danlos症候群，這才是導致其特殊出血表現的原因。",
-      "fact_ko": "혈소판 기능 장애(thrombocytopathy)가 의심되는 환자는 실제로는 특정 출혈 프로파일을 유발하는 에를러스-단로스 증후군을 기저질환으로 가지고 있을 수 있습니다.",
+      "fact_ko": "혈소판 기능 장애(thrombocytopathy)가 의심되는 환자는 실제로는 특정 출혈 프로파일을 유발하는 기저질환으로 에를러스-단로스 증후군을 가지고 있을 수 있습니다.",
       "tone": "Educational",
       "source": "Pujol-Moix, Blood (2023)"
     },
@@ -410,7 +410,7 @@
       "fact_en": "Tendons in hypermobile EDS can stretch 10% to 21.8% more than normal under load! This means your muscles have to work much harder to transmit force. Slow, controlled resistance training helps safely build strength without overstretching these fragile tissues.",
       "fact_es": "¡Los tendones en el SED hiperlaxo pueden estirarse entre un 10% y un 21.8% más de lo normal bajo carga! Esto significa que tus músculos tienen que trabajar mucho más para transmitir la fuerza. El entrenamiento de resistencia lento y controlado ayuda a desarrollar la fuerza de manera segura sin estirar en exceso estos tejidos frágiles.",
       "fact_zh": "過度活動型EDS患者的肌腱在負重時可能比常人多拉伸10%至21.8%！這意味著肌肉必須更費力地傳遞力量。緩慢、受控的阻力訓練有助於安全地增強力量，而不會過度拉伸這些脆弱的組織。",
-      "fact_ko": "과운동성 EDS 환자의 힘줄은 부하가 걸렸을 때 일반인보다 10%에서 21.8%까지 더 늘어날 수 있습니다! 이는 근육이 힘을 전달하기 위해 훨씬 더 열심히 일해야 함을 의미합니다. 느리고 조절된 저抗 운동은 이 취약한 조직을 과도하게 늘리지 않고 안전하게 근력을 키우는 데 도움이 됩니다.",
+      "fact_ko": "과운동성 EDS 환자의 힘줄은 부하가 걸렸을 때 일반인보다 10%에서 21.8%까지 더 늘어날 수 있습니다! 이는 근육이 힘을 전달하기 위해 훨씬 더 열심히 일해야 함을 의미합니다. 느리고 조절된 저항 운동은 이 취약한 조직을 과도하게 늘리지 않고 안전하게 근력을 키우는 데 도움이 됩니다.",
       "tone": "Empowering",
       "source": "Wang et al., 2025"
     },
@@ -436,7 +436,7 @@
       "condition": "EDS & Exercise (Calisthenics Tempo)",
       "fact_en": "Using a slow 2-1-2-1 tempo during calisthenics (2 seconds down, 1-second pause, 2 seconds up, 1-second pause) eliminates momentum and forces your muscles to do the active work of safely stabilizing the joint.",
       "fact_es": "Usar un tempo lento de 2-1-2-1 durante la calistenia (2 segundos para bajar, 1 segundo de pausa, 2 segundos para subir, 1 segundo de pausa) elimina el impulso y obliga a tus músculos a hacer el trabajo activo de estabilizar la articulación de manera segura.",
-      "fact_zh": "在進行自重健身（呼體健身）時使用緩慢的 2-1-2-1 節奏（下落2秒，停頓1秒，起身2秒，停頓1秒）可以消除慣性，迫使肌肉進行主動收縮，從而安全地穩定關節。",
+      "fact_zh": "在進行自重健身（徒手健身）時使用緩慢的 2-1-2-1 節奏（下落2秒，停頓1秒，起身2秒，停頓1秒）可以消除慣性，迫使肌肉進行主動收縮，從而安全地穩定關節。",
       "fact_ko": "맨몸 운동 중 느린 2-1-2-1 템포(2초 동안 내려가고, 1초 정지, 2초 동안 올라가고, 1초 정지)를 사용하면 관성이 제거되고 근육이 관절을 안전하게 안정시키는 능동적인 작업을 수행하도록 강제합니다.",
       "tone": "Optimistic",
       "source": "Clinical Practice / Calisthenics Stability Guides"
@@ -445,7 +445,7 @@
       "condition": "Iron Reference Ranges",
       "fact_en": "Many labs still use outdated reference ranges for iron. For highly metabolic tissues managing conditions like POTS and MPS, modern clinical standards suggest ferritin should ideally be above 30 to 50 ng/mL.",
       "fact_es": "Muchos laboratorios todavía utilizan rangos de referencia desactualizados para el hierro. Para tejidos altamente metabólicos que manejan condiciones como POTS y SFM, los estándares clínicos modernos sugieren que la ferritina idealmente debería estar por encima de 30 a 50 ng/mL.",
-      "fact_zh": "許多實驗室仍在使用過時的鐵蛋白參考範圍。對於管理POTS和MPS（肌膜疼痛症候群）等高度代謝活躍的組織，現代臨床標準建議鐵蛋白水平理想上應保持在 30 至 50 ng/mL 以上。",
+      "fact_zh": "許多實驗室仍在使用過時的鐵蛋白參考範圍。對於管理POTS和MPS（肌筋膜疼痛症候群）等高度代謝活躍的組織，現代臨床標準建議鐵蛋白水平理想上應保持在 30 至 50 ng/mL 以上。",
       "fact_ko": "많은 검사기관에서 여전히 오래된 철분 참고 범위를 사용하고 있습니다. POTS 및 MPS와 같은 질환을 관리하는 고대사 조직의 경우, 현대 임상 기준은 페리틴 수치가 이상적으로 30에서 50 ng/mL 이상이어야 함을 시사합니다.",
       "tone": "Neutral",
       "source": "Modern Hematology Standards"
@@ -463,6 +463,8 @@
       "condition": "EDS & Neurodivergence (ASD/ADHD)",
       "fact_en": "Recent large-scale studies demonstrate a significantly higher prevalence of ASD and ADHD in patients with hEDS, suggesting a shared neurobiological developmental pathway.",
       "fact_es": "Estudios a gran escala demuestran una prevalencia significativamente mayor de TEA y TDAH en pacientes con SEDh, lo que sugiere una vía de desarrollo neurobiológico compartida.",
+      "fact_zh": "近期的大規模研究顯示，hEDS患者中自閉症類群障礙（ASD）和注意力不足過動症（ADHD）的盛行率顯著較高，這表明它們可能具有共同的神經生物學發育途徑。",
+      "fact_ko": "최근의 대규모 연구에 따르면 hEDS 환자에서 자폐 스펙트럼 장애(ASD) 및 주의력 결핍 과다행동 장애(ADHD)의 유병률이 현저히 높은 것으로 나타났으며, 이는 공유되는 신경 생물학적 발달 경로가 있음을 시사합니다.",
       "tone": "Educational",
       "source": "Cederlöf et al., JAMA Network Open (2020)"
     },
@@ -470,6 +472,8 @@
       "condition": "Neurodivergence & Proprioception",
       "fact_en": "Both autism and hEDS involve unique proprioceptive processing. The brain has to work harder to map joint position in space, which can contribute to sensory overwhelm.",
       "fact_es": "Tanto el autismo como el SEDh implican un procesamiento propioceptivo único. El cerebro tiene que trabajar más para mapear la posición de las articulaciones en el espacio, lo que puede contribuir a la sobrecarga sensorial.",
+      "fact_zh": "自閉症和hEDS都涉及獨特的本體感覺處理方式。大腦必須更努力地在空間中定位關節位置，這可能會導致感官超載。",
+      "fact_ko": "자폐증과 hEDS 모두 독특한 고유수용성 감각 처리 과정을 포함합니다. 뇌는 공간에서 관절 위치를 매핑하기 위해 더 많이 노력해야 하며, 이는 감각 과부하를 유발할 수 있습니다.",
       "tone": "Validating",
       "source": "Eccles et al., Frontiers in Psychiatry (2022)"
     },
@@ -477,6 +481,8 @@
       "condition": "POTS & ADHD",
       "fact_en": "ADHD symptoms can be worsened by the autonomic dysregulation of POTS; when your heart rate is unstable, your brain's executive functioning often takes the hit.",
       "fact_es": "Los síntomas del TDAH pueden empeorar por la disregulación autonómica del POTS; cuando tu frecuencia cardíaca es inestable, la función ejecutiva de tu cerebro a menudo se ve afectada.",
+      "fact_zh": "POTS的自律神經失調可能會使ADHD症狀惡化；當你的心率不穩定時，大腦的執行功能通常會首當其衝受到影響。",
+      "fact_ko": "ADHD 증상은 POTS의 자율 신경계 조절 장애로 인해 악화될 수 있습니다. 심박수가 불안정할 때 뇌의 실행 기능이 타격을 받는 경우가 많습니다.",
       "tone": "Informative",
       "source": "Clinical Autonomic Research, Dysautonomia and Cognition"
     },
@@ -484,6 +490,8 @@
       "condition": "Pelvic Floor & EDS",
       "fact_en": "Chronic pelvic pain in EDS is often related to hypertonic pelvic floor muscles trying to compensate for joint laxity in the pelvis and hips.",
       "fact_es": "El dolor pélvico crónico en el SED a menudo está relacionado con músculos del suelo pélvico hipertónicos que intentan compensar la laxitud articular en la pelvis y las caderas.",
+      "fact_zh": "EDS中的慢性骨盆疼痛通常與骨盆底肌肉張力過高有關，這些肌肉試圖代償骨盆和髖部關節的鬆弛。",
+      "fact_ko": "EDS의 만성 골반통은 골반과 고관절의 인대 이완을 보상하려는 골반저근의 과긴장과 관련된 경우가 많습니다.",
       "tone": "Educational",
       "source": "Journal of Women's Health Physical Therapy"
     },
@@ -491,6 +499,8 @@
       "condition": "EDS & Mast Cell Activation (MCAS)",
       "fact_en": "MCAS can present as 'brain fog' that mimics ADHD inattentiveness. When mast cells stabilize, many patients report a sudden improvement in focus and mental clarity.",
       "fact_es": "El MCAS puede presentarse como 'niebla mental' que imita la falta de atención del TDAH. Cuando los mastocitos se estabilizan, muchos pacientes reportan una mejora repentina en el enfoque y la claridad mental.",
+      "fact_zh": "肥大細胞活化症候群（MCAS）的表現可能類似於「腦霧」，並模仿ADHD的注意力不集中。當肥大細胞穩定下來時，許多患者報告他們的專注力和頭腦清晰度有突然的改善。",
+      "fact_ko": "비만세포 활성화 증후군(MCAS)은 ADHD의 주의력 결핍과 유사한 '브레인 포그'로 나타날 수 있습니다. 비만세포가 안정되면 많은 환자들이 집중력과 정신적 명료성이 갑자기 향상되었다고 보고합니다.",
       "tone": "Empowering",
       "source": "Afrin et al., Diagnosis and Management of MCAS"
     },
@@ -498,6 +508,8 @@
       "condition": "Neurodivergence & Pain Sensitivity",
       "fact_en": "Research indicates that autistic individuals with EDS often have heightened pain sensitivity, making specialized, gentle pain management even more critical.",
       "fact_es": "La investigación indica que las personas autistas con SED a menudo tienen una mayor sensibilidad al dolor, lo que hace que el manejo del dolor especializado y suave sea aún más crítico.",
+      "fact_zh": "研究指出，患有EDS的自閉症人士通常具有更高的疼痛敏感度，這使得專業且溫和的疼痛管理變得更加重要。",
+      "fact_ko": "연구에 따르면 EDS를 동반한 자폐인은 통증 민감도가 높아지는 경우가 많으므로 전문적이고 부드러운 통증 관리가 더욱 중요합니다.",
       "tone": "Validating",
       "source": "Eccles et al., Journal of Autism and Developmental Disorders"
     },
@@ -505,6 +517,8 @@
       "condition": "The 'Zebra' Nervous System",
       "fact_en": "Your hypervigilant nervous system is not a flaw; it is a biological response to systemic instability. Recognizing this can help reduce the shame associated with chronic 'fight-or-flight'.",
       "fact_es": "Tu sistema nervioso hipervigilante no es un defecto; es una respuesta biológica a la inestabilidad sistémica. Reconocer esto puede ayudar a reducir la vergüenza asociada con la respuesta crónica de 'lucha o huida'.",
+      "fact_zh": "你的神經系統過度警覺並不是一個缺陷；它是對全身不穩定性的一種生物學反應。認知到這一點有助於減少與慢性「戰或逃反應」相關的羞恥感。",
+      "fact_ko": "당신의 과각성된 신경계는 결함이 아닙니다. 이는 전신적 불안정성에 대한 생물학적 반응입니다. 이를 인지하면 만성적인 '투쟁-도피' 상태와 관련된 수치심을 줄이는 데 도움이 될 수 있습니다.",
       "tone": "Supportive",
       "source": "Porges, The Polyvagal Theory"
     },
@@ -512,6 +526,8 @@
       "condition": "EDS & Proprioceptive Learning",
       "fact_en": "Learning physical skills (like calisthenics) through visual imitation is often more effective for EDS patients than internal cues, due to our unique proprioceptive wiring.",
       "fact_es": "Aprender habilidades físicas (como la calistenia) mediante la imitación visual suele ser más eficaz para los pacientes con SED que mediante señales internas, debido a nuestro cableado propioceptivo único.",
+      "fact_zh": "由於我們獨特的本體感覺迴路，透過視覺模仿來學習物理技能（如徒手健身）對於EDS患者來說，通常比內在提示更有效。",
+      "fact_ko": "EDS 환자는 고유수용성 감각 신경망이 독특하기 때문에 체내 감각에 의존하기보다 시각적 모방을 통해 신체 기술(맨몸 운동 등)을 배우는 것이 종종 더 효과적입니다.",
       "tone": "Optimistic",
       "source": "International Journal of Sports Physical Therapy"
     },
@@ -519,6 +535,8 @@
       "condition": "ADHD & Connective Tissue",
       "fact_en": "Emerging theories suggest that the connective tissue matrix may influence neurotransmitter signaling, linking the 'laxity' of EDS with the 'dopamine variability' of ADHD.",
       "fact_es": "Las teorías emergentes sugieren que la matriz del tejido conectivo puede influir en la señalización de neurotransmisores, vinculando la 'laxitud' del SED con la 'variabilidad de dopamina' del TDAH.",
+      "fact_zh": "新興理論表明，結締組織基質可能會影響神經傳導物質的信號傳遞，這將EDS的「鬆弛性」與ADHD的「多巴胺變異性」聯繫起來。",
+      "fact_ko": "최근의 이론들은 결합조직 기질이 신경전달물질 신호에 영향을 미쳐 EDS의 '이완성(laxity)'과 ADHD의 '도파민 변동성'을 연결할 수 있다고 시사합니다.",
       "tone": "Educational",
       "source": "Hypothesis: The Connective Tissue-Neurotransmitter Axis (2026)"
     },
@@ -526,13 +544,17 @@
       "condition": "Chronic Stress & EDS",
       "fact_en": "Because EDS impacts so many body systems, your brain is in a state of high-alert 24/7. This is the physiological cause of your 'wired but tired' feeling.",
       "fact_es": "Debido a que el SED impacta tantos sistemas corporales, tu cerebro está en estado de alerta máxima las 24 horas del día, los 7 días de la semana. Esta es la causa fisiológica de tu sensación de 'agotado pero hiperactivo'.",
+      "fact_zh": "由於EDS影響著許多身體系統，你的大腦會全天候處於高度警戒狀態。這就是你感到「亢奮卻疲憊（wired but tired）」的生理原因。",
+      "fact_ko": "EDS는 수많은 신체 시스템에 영향을 미치기 때문에 뇌는 연중무휴 24시간 최고 경계 상태에 놓여 있습니다. 이것이 '피곤하지만 각성된(wired but tired)' 느낌의 생리적 원인입니다.",
       "tone": "Validating",
       "source": "Autonomic Neuroscience, EDS and Systemic Fatigue"
-    }, 
+    },
     {
       "condition": "Pelvic Floor & Dysautonomia",
       "fact_en": "Dysautonomia causes involuntary pelvic floor spasms; your muscles aren't 'weak'—they are bracing against autonomic nervous system instability.",
       "fact_es": "La disautonomía provoca espasmos involuntarios del suelo pélvico; tus músculos no están 'débiles', están resistiendo la inestabilidad del sistema nervioso autónomo.",
+      "fact_zh": "自律神經失調會導致不自主的骨盆底痙攣；你的肌肉並不是「無力」——它們正在用力對抗自律神經系統的不穩定。",
+      "fact_ko": "자율신경실조증은 비자발적인 골반저근 경련을 유발합니다. 당신의 근육은 '약한' 것이 아니라 자율신경계의 불안정성에 대항해 버티고 있는 것입니다.",
       "tone": "Validating",
       "source": "Journal of Pelvic Medicine & Surgery"
     },
@@ -540,6 +562,8 @@
       "condition": "MCAS & Neuro-inflammation",
       "fact_en": "Mast cell degranulation in the brain can trigger 'neuro-fog,' a core symptom often misidentified as simple ADHD inattentiveness in EDS patients.",
       "fact_es": "La degranulación de mastocitos en el cerebro puede desencadenar 'niebla neuro-mental', un síntoma central a menudo mal identificado como simple falta de atención por TDAH en pacientes con SED.",
+      "fact_zh": "腦部的肥大細胞去顆粒化（degranulation）可能會引發「神經迷霧」，這是EDS患者中常見的核心症狀，卻常被誤認為單純是ADHD的注意力不集中。",
+      "fact_ko": "뇌의 비만세포 탈과립(degranulation)은 '신경 포그'를 유발할 수 있으며, 이는 EDS 환자에서 종종 단순한 ADHD의 주의력 결핍으로 오인되는 핵심 증상입니다.",
       "tone": "Educational",
       "source": "Afrin et al., International Journal of Molecular Sciences"
     },
@@ -547,6 +571,8 @@
       "condition": "EDS & Sensory Processing",
       "fact_en": "Proprioceptive deficits in EDS mean your brain receives 'noisy' data from your joints. This forces your brain to work overtime to filter sensory input, leading to rapid exhaustion.",
       "fact_es": "Los déficits propioceptivos en el SED significan que tu cerebro recibe datos 'ruidosos' de tus articulaciones. Esto obliga a tu cerebro a trabajar horas extras para filtrar la entrada sensorial, lo que lleva a un agotamiento rápido.",
+      "fact_zh": "EDS中的本體感覺障礙意味著你的大腦會從關節接收到「雜訊」數據。這迫使你的大腦必須加班工作來過濾感官輸入，進而導致快速疲勞。",
+      "fact_ko": "EDS의 고유수용성 감각 결핍은 뇌가 관절로부터 '노이즈가 낀' 데이터를 수신함을 의미합니다. 이로 인해 뇌는 감각 입력을 필터링하기 위해 초과 근무를 해야 하며, 이는 빠른 피로로 이어집니다.",
       "tone": "Informative",
       "source": "Eccles et al., Frontiers in Psychiatry (2022)"
     },
@@ -554,6 +580,8 @@
       "condition": "The Gut-Brain-Joint Axis",
       "fact_en": "Inflammation from GI issues in EDS directly modulates the pain threshold; treating bloating and motility is often the first step in lowering systemic pain.",
       "fact_es": "La inflamación por problemas gastrointestinales en el SED modula directamente el umbral del dolor; tratar la hinchazón y la motilidad suele ser el primer paso para reducir el dolor sistémico.",
+      "fact_zh": "EDS中由腸胃問題引起的發炎會直接調節疼痛閾值；治療脹氣和腸胃蠕動通常是降低全身性疼痛的第一步。",
+      "fact_ko": "EDS에서 위장관 문제로 인한 염증은 통증 역치를 직접적으로 조절합니다. 복부 팽만감과 장 운동성을 치료하는 것이 종종 전신 통증을 낮추는 첫 번째 단계입니다.",
       "tone": "Empowering",
       "source": "Fikree et al., Neurogastroenterology & Motility"
     },
@@ -561,6 +589,8 @@
       "condition": "Autonomic Overload",
       "fact_en": "In EDS, the sympathetic nervous system is 'hyper-reactive.' Simple tasks like standing up or digesting a meal trigger a full fight-or-flight response.",
       "fact_es": "En el SED, el sistema nervioso simpático es 'hiperreactivo'. Tareas simples como levantarse o digerir una comida activan una respuesta completa de lucha o huida.",
+      "fact_zh": "在EDS中，交感神經系統處於「過度反應」狀態。像站起來或消化一頓飯這樣簡單的任務，都會觸發全面的戰或逃反應。",
+      "fact_ko": "EDS에서 교감신경계는 '과잉 반응' 상태입니다. 일어서거나 식사를 소화하는 것과 같은 간단한 작업도 완전한 투쟁-도피 반응을 유발합니다.",
       "tone": "Educational",
       "source": "Porges, The Polyvagal Theory"
     },
@@ -568,6 +598,8 @@
       "condition": "Fascia & Proprioception",
       "fact_en": "Your fascia is loaded with proprioceptive receptors. When it 'densifies' to stabilize loose joints, it creates a feedback loop of stiff, inaccurate body-mapping data.",
       "fact_es": "Tu fascia está cargada de receptores propioceptivos. Cuando se 'densifica' para estabilizar articulaciones laxas, crea un ciclo de retroalimentación de datos de mapeo corporal rígidos e inexactos.",
+      "fact_zh": "你的筋膜充滿了本體感覺受器。當它變得「緻密化」以穩定鬆弛的關節時，就會產生一個僵硬且不準確的身體定位數據反饋迴圈。",
+      "fact_ko": "당신의 근막에는 고유수용성 감각 수용체가 가득합니다. 느슨한 관절을 안정시키기 위해 근막이 '경직'되면, 뻣뻣하고 부정확한 신체 매핑 데이터의 피드백 루프가 생성됩니다.",
       "tone": "Informative",
       "source": "Wang et al., Journal of Rare Diseases (2025)"
     },
@@ -575,6 +607,8 @@
       "condition": "Neurodivergence & Pain",
       "fact_en": "Autism and EDS share a genetic overlap in extracellular matrix proteins. This may explain why EDS patients report higher pain intensity than non-autistic peers.",
       "fact_es": "El autismo y el SED comparten una superposición genética en las proteínas de la matriz extracelular. Esto puede explicar por qué los pacientes con SED reportan una mayor intensidad del dolor que sus pares no autistas.",
+      "fact_zh": "自閉症和EDS在細胞外基質蛋白上具有基因重疊。這也許可以解釋為什麼EDS患者報告的疼痛強度會高於非自閉症的同齡人。",
+      "fact_ko": "자폐증과 EDS는 세포외 기질 단백질에서 유전적 중복을 공유합니다. 이는 EDS 환자가 비자폐성 또래보다 더 높은 통증 강도를 보고하는 이유를 설명할 수 있습니다.",
       "tone": "Validating",
       "source": "Cederlöf et al., JAMA Network Open (2020)"
     },
@@ -582,6 +616,8 @@
       "condition": "Hormones & Laxity",
       "fact_en": "Fluctuations in progesterone and estrogen during your menstrual cycle directly alter collagen cross-linking, often causing 'flares' of joint instability mid-cycle.",
       "fact_es": "Las fluctuaciones de progesterona y estrógeno durante el ciclo menstrual alteran directamente los enlaces cruzados del colágeno, causando a menudo 'brotes' de inestabilidad articular a mitad del ciclo.",
+      "fact_zh": "月經週期中黃體素和雌激素的波動會直接改變膠原蛋白的交聯作用，通常會導致在週期中段出現關節不穩定的「突然惡化（flares）。",
+      "fact_ko": "월경 주기 동안 프로게스테론과 에스트로겐의 변동은 콜라겐 가교 결합을 직접적으로 변화시켜 주기 중반에 관절 불안정성의 '발적(flares)'을 유발하는 경우가 많습니다.",
       "tone": "Educational",
       "source": "Journal of Clinical Endocrinology & Metabolism"
     },
@@ -589,6 +625,8 @@
       "condition": "Relaxin & EDS",
       "fact_en": "The hormone relaxin, even in non-pregnant states, can increase ligamentous laxity in EDS patients, acting as a systemic 'loosening' agent for connective tissue.",
       "fact_es": "La hormona relaxina, incluso en estados fuera del embarazo, puede aumentar la laxitud ligamentosa en pacientes con SED, actuando como un agente de 'aflojamiento' sistémico para el tejido conectivo.",
+      "fact_zh": "即使在非懷孕狀態下，鬆弛素（Relaxin）激素也會增加EDS患者的韌帶鬆弛度，作為結締組織的全身性「鬆弛」劑。",
+      "fact_ko": "임신하지 않은 상태에서도 릴랙신 호르몬은 EDS 환자의 인대 이완을 증가시킬 수 있으며, 결합조직을 전신적으로 '느슨하게' 만드는 인자로 작용합니다.",
       "tone": "Informative",
       "source": "Endocrinology Review, Connective Tissue Disorders"
     },
@@ -596,6 +634,8 @@
       "condition": "Cervical Instability",
       "fact_en": "Craniocervical instability is a documented complication in EDS; it can manifest as sudden, sharp 'brain zaps' or dizziness upon movement of the head.",
       "fact_es": "La inestabilidad craneocervical es una complicación documentada en el SED; puede manifestarse como 'descargas eléctricas' repentinas y agudas en el cerebro o mareos al mover la cabeza.",
+      "fact_zh": "顱頸關節不穩定（CCI）是EDS中已記錄的一種併發症；它可能表現為頭部移動時突然出現的尖銳「腦部電擊感（brain zaps）」或頭暈。",
+      "fact_ko": "두개경추 불안정성은 EDS의 기록된 합병증 중 하나입니다. 이는 머리를 움직일 때 갑작스럽고 날카로운 '뇌의 전기 충격감(brain zaps)'이나 어지러움으로 나타날 수 있습니다.",
       "tone": "Validating",
       "source": "Henderson et al., Neurological Review"
     },
@@ -603,6 +643,8 @@
       "condition": "Ocular Manifestations",
       "fact_en": "The cornea is composed of collagen; in EDS, it can be thinner, leading to increased risk of astigmatism and sensitivity to bright lighting.",
       "fact_es": "La córnea está compuesta de colágeno; en el SED, puede ser más delgada, lo que conlleva un mayor riesgo de astigmatismo y sensibilidad a la luz brillante.",
+      "fact_zh": "角膜是由膠原蛋白組成的；在EDS患者中，角膜可能較薄，導致散光的風險增加以及對強光敏感。",
+      "fact_ko": "각막은 콜라겐으로 구성되어 있습니다. EDS 환자의 경우 각막이 더 얇을 수 있어 난시 위험이 증가하고 밝은 조명에 민감해질 수 있습니다.",
       "tone": "Educational",
       "source": "Ophthalmology & Visual Science, EDS Collagen Profiles"
     },
@@ -610,6 +652,8 @@
       "condition": "Visual Processing & ASD",
       "fact_en": "Neurodivergent zebras often struggle with 'visual clutter.' EDS-related corneal changes can worsen this, creating a cycle of visual overload that exacerbates fatigue.",
       "fact_es": "Las cebras neurodivergentes a menudo luchan con el 'desorden visual'. Los cambios corneales relacionados con el SED pueden empeorar esto, creando un ciclo de sobrecarga visual que exacerba la fatiga.",
+      "fact_zh": "神經多樣性的「斑馬（EDS患者的代稱）」經常難以應對「視覺雜亂」。與EDS相關的角膜變化可能會使情況惡化，形成一個加劇疲勞的視覺超載循環。",
+      "fact_ko": "신경 다양성을 가진 얼룩말(EDS 환자)은 종종 '시각적 혼란'으로 어려움을 겪습니다. EDS와 관련된 각막 변화는 이를 악화시켜 피로를 가중시키는 시각적 과부하의 악순환을 만들 수 있습니다.",
       "tone": "Supportive",
       "source": "Eccles et al., Frontiers in Psychiatry (2022)"
     },
@@ -617,6 +661,8 @@
       "condition": "Endothelial Fragility",
       "fact_en": "Micro-vessel fragility in EDS isn't limited to the skin; it affects the entire vascular tree, which can cause 'easy bruising' internally in tissues like the bladder or gut.",
       "fact_es": "La fragilidad de los microvasos en el SED no se limita a la piel; afecta a todo el árbol vascular, lo que puede causar 'moretones fáciles' internamente en tejidos como la vejiga o el intestino.",
+      "fact_zh": "EDS中的微血管脆弱性不僅限於皮膚；它會影響整個血管樹，這可能會導致膀胱或腸道等內部組織「容易瘀傷」。",
+      "fact_ko": "EDS의 미세혈관 취약성은 피부에 국한되지 않습니다. 이는 전체 혈관계에 영향을 미쳐 방광이나 장과 같은 내부 조직에 '쉽게 멍이 드는 현상'을 유발할 수 있습니다.",
       "tone": "Informative",
       "source": "Vascular Medicine Journal"
     },
@@ -624,6 +670,8 @@
       "condition": "POTS & Cerebral Perfusion",
       "fact_en": "POTS can reduce blood flow to the brain (cerebral hypoperfusion) during orthostatic stress, directly contributing to the 'brain fog' experienced by many EDS patients.",
       "fact_es": "El POTS puede reducir el flujo sanguíneo al cerebro (hipoperfusión cerebral) durante el estrés ortostático, lo que contribuye directamente a la 'niebla mental' experimentada por muchos pacientes con SED.",
+      "fact_zh": "在直立壓力下，POTS可能會減少大腦的血流量（腦部血流灌注不足），這直接導致了許多EDS患者所經歷的「腦霧」。",
+      "fact_ko": "POTS는 기립성 스트레스 동안 뇌로 가는 혈류를 감소시켜(뇌 관류 저하) 많은 EDS 환자가 겪는 '브레인 포그'에 직접적인 원인이 될 수 있습니다.",
       "tone": "Educational",
       "source": "Garland et al., Clinical Autonomic Research"
     },
@@ -631,6 +679,8 @@
       "condition": "TMJ & Cervical Synergy",
       "fact_en": "The TMJ and cervical spine share neurological pathways; tension in your jaw often creates referred tension in your neck, and vice versa.",
       "fact_es": "La ATM y la columna cervical comparten vías neurológicas; la tensión en la mandíbula a menudo crea tensión referida en el cuello, y viceversa.",
+      "fact_zh": "顳顎關節（TMJ）與頸椎共享神經路徑；下巴的緊張往往會在頸部產生轉移性緊繃感，反之亦然。",
+      "fact_ko": "턱관절(TMJ)과 경추는 신경 경로를 공유합니다. 턱의 긴장은 종종 목의 연관 긴장을 유발하며 그 반대의 경우도 마찬가지입니다.",
       "tone": "Validating",
       "source": "Journal of Oral & Facial Pain"
     },
@@ -638,6 +688,8 @@
       "condition": "Myofascial Trigger Points",
       "fact_en": "Trigger points in the upper trapezius can mimic tension headaches. Addressing these points can often relieve chronic head pain that doesn't respond to painkillers.",
       "fact_es": "Los puntos gatillo en el trapecio superior pueden imitar las cefaleas tensionales. Abordar estos puntos a menudo puede aliviar el dolor de cabeza crónico que no responde a los analgésicos.",
+      "fact_zh": "上斜方肌的激痛點可以模仿緊張型頭痛。處理這些痛點通常能緩解對止痛藥無效的慢性頭痛。",
+      "fact_ko": "상부 승모근의 유발점은 긴장성 두통과 유사한 증상을 일으킬 수 있습니다. 이러한 유발점을 치료하면 진통제에 반응하지 않는 만성 두통이 완화되는 경우가 많습니다.",
       "tone": "Empowering",
       "source": "Steen et al., Myofascial Pain Research"
     },
@@ -645,9 +697,10 @@
       "condition": "Vagal Tone Improvement",
       "fact_en": "Humming or gargling exercises can stimulate the Vagus nerve, providing a free, physiological way to shift out of a state of autonomic nervous system hyper-reactivity.",
       "fact_es": "Los ejercicios de tarareo o gárgaras pueden estimular el nervio vago, proporcionando una forma fisiológica y gratuita de salir de un estado de hiperreactividad del sistema nervioso autónomo.",
+      "fact_zh": "哼唱或漱口練習可以刺激迷走神經，提供了一種免費且生理性的方式，幫助你脫離自律神經系統過度反應的狀態。",
+      "fact_ko": "허밍이나 가글링 운동은 미조신경을 자극하여 자율신경계 과민 반응 상태에서 벗어날 수 있는 비용이 들지 않고 생리학적인 방법을 제공합니다.",
       "tone": "Optimistic",
       "source": "Porges, The Polyvagal Theory"
     }
   ]
 }
-
