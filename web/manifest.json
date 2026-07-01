@@ -1,6 +1,6 @@
 {
-    "name": "zebraup",
-    "short_name": "zebraup",
+    "name": "ZebraUp",
+    "short_name": "ZebraUp",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
