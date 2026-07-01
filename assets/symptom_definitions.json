@@ -242,5 +242,325 @@
         }
       }
     }
+  },
+  "fatigue": {
+    "label": {
+      "es": "Fatiga",
+      "en": "Fatigue",
+      "zh_TW": "疲勞"
+    },
+    "definition": {
+      "es": "Sensación persistente de cansancio o falta de energía que no mejora con el descanso habitual. En condiciones crónicas como ME/SFC, fibromialgia o EDS con disautonomía, la fatiga puede tener distintos mecanismos fisiológicos (post-esfuerzo, ortostática, cognitiva, hormonal) que requieren identificación diferenciada para orientar tratamiento.",
+      "en": "Persistent feeling of tiredness or lack of energy that does not improve with usual rest. In chronic conditions like ME/CFS, fibromyalgia, or EDS with dysautonomia, fatigue can have distinct physiological mechanisms (post-exertional, orthostatic, cognitive, hormonal) that require differentiated identification to guide treatment.",
+      "zh_TW": "持續性的疲倦或缺乏能量的感覺,經過一般休息後仍未改善。在ME/CFS、纖維肌痛或伴隨自主神經功能障礙的EDS等慢性疾病中,疲勞可能有不同的生理機制(運動後、姿勢性、認知性、荷爾蒙性),需要區分識別以指導治療。"
+    },
+    "aliases": {
+      "es": [
+        "fatiga",
+        "cansancio",
+        "agotamiento",
+        "agotada",
+        "agotado",
+        "drenada",
+        "drenado",
+        "sin energía"
+      ],
+      "en": [
+        "fatigue",
+        "exhaustion",
+        "exhausted",
+        "tired",
+        "worn out",
+        "weary"
+      ],
+      "zh_TW": [
+        "疲勞",
+        "疲倦",
+        "疲憊",
+        "累"
+      ]
+    },
+    "groups": {
+      "type": {
+        "kind": "single_select",
+        "header": {
+          "es": "Tipo predominante",
+          "en": "Predominant type",
+          "zh_TW": "主要類型"
+        },
+        "chips": {
+          "cognitive_drain": {
+            "label": {
+              "es": "Como si me hubieran drenado el cerebro",
+              "en": "As if my brain had been drained",
+              "zh_TW": "彷彿大腦被抽乾了"
+            },
+            "definition": {
+              "es": "Sensación de vaciamiento mental profundo, dificultad para pensar, usar el lenguaje o concentrarse. Corresponde a la fatiga cognitiva o 'niebla mental', característica principal en ME/SFC, fibromialgia y EDS con disautonomía.",
+              "en": "Deep mental emptying, difficulty thinking, using language, or concentrating. Corresponds to cognitive fatigue or 'brain fog', a main feature in ME/CFS, fibromyalgia, and EDS with dysautonomia.",
+              "zh_TW": "深度的心智空虛感,難以思考、使用語言或專注。對應於ME/CFS、纖維肌痛和伴隨自主神經功能障礙的EDS中的認知疲勞或「腦霧」。"
+            }
+          },
+          "muscle_unresponsive": {
+            "label": {
+              "es": "Como si los músculos no respondieran",
+              "en": "As if muscles wouldn't respond",
+              "zh_TW": "彷彿肌肉沒有反應"
+            },
+            "definition": {
+              "es": "Sensación de que los músculos pesan o no obedecen, con fatigabilidad temprana durante tareas físicas simples. Puede reflejar alteración mitocondrial o metabolismo energético celular descrito en ME/SFC.",
+              "en": "Sensation of muscles feeling heavy or unresponsive, with early fatigability during simple physical tasks. May reflect mitochondrial alteration or cellular energy metabolism issues described in ME/CFS.",
+              "zh_TW": "肌肉感覺沉重或不聽使喚,在簡單的身體任務中很快就疲勞。可能反映ME/CFS中描述的粒線體改變或細胞能量代謝問題。"
+            }
+          },
+          "orthostatic": {
+            "label": {
+              "es": "Empeora al estar de pie o sentada erecta",
+              "en": "Worsens when standing or sitting upright",
+              "zh_TW": "站立或直坐時加劇"
+            },
+            "definition": {
+              "es": "La fatiga aumenta al mantener posturas erguidas y mejora al recostarse. Puede reflejar intolerancia ortostática (POTS, hipotensión mediada neuralmente), presente en 74% de personas con EDS-HT.",
+              "en": "Fatigue increases in upright postures and improves when lying down. May reflect orthostatic intolerance (POTS, neurally mediated hypotension), present in 74% of people with EDS-HT.",
+              "zh_TW": "在直立姿勢下疲勞加劇,躺下時改善。可能反映姿勢性不耐受(POTS、神經介導性低血壓),在74%的EDS-HT患者中出現。"
+            }
+          },
+          "post_exertional": {
+            "label": {
+              "es": "Después de un esfuerzo (físico o mental)",
+              "en": "After exertion (physical or mental)",
+              "zh_TW": "運動後(身體或心智)"
+            },
+            "definition": {
+              "es": "La fatiga aparece o empeora 24-72 horas después de un esfuerzo físico, cognitivo o emocional. Es el malestar post-esfuerzo (PEM), criterio central de ME/SFC según IOM 2015.",
+              "en": "Fatigue appears or worsens 24-72 hours after physical, cognitive, or emotional exertion. This is post-exertional malaise (PEM), a central criterion of ME/CFS per IOM 2015.",
+              "zh_TW": "疲勞在身體、認知或情緒消耗後24-72小時出現或加劇。這就是運動後不適(PEM),根據IOM 2015是ME/CFS的核心診斷標準。"
+            }
+          },
+          "hpa_wired": {
+            "label": {
+              "es": "No logro descansar aunque el cuerpo está exhausto",
+              "en": "I can't rest even though my body is exhausted",
+              "zh_TW": "身體筋疲力盡卻無法休息"
+            },
+            "definition": {
+              "es": "Sensación de agotamiento profundo junto con incapacidad para descansar, dormir o desconectar. Puede reflejar desregulación del eje hipotálamo-hipófisis-suprarrenal (HPA) por activación crónica del sistema de estrés.",
+              "en": "Deep exhaustion together with inability to rest, sleep, or disconnect. May reflect dysregulation of the hypothalamic-pituitary-adrenal (HPA) axis from chronic stress-system activation.",
+              "zh_TW": "深度疲憊同時無法休息、入睡或放鬆。可能反映因慢性壓力系統啟動導致的下視丘-腦垂體-腎上腺(HPA)軸失調。"
+            }
+          }
+        }
+      },
+      "temporal_pattern": {
+        "kind": "single_select",
+        "header": {
+          "es": "Patrón temporal",
+          "en": "Temporal pattern",
+          "zh_TW": "時間模式"
+        },
+        "chips": {
+          "since_waking": {
+            "label": {
+              "es": "Desde que me desperté",
+              "en": "Since I woke up",
+              "zh_TW": "從醒來時就有"
+            },
+            "definition": {
+              "es": "La fatiga estaba presente al despertar y no mejora con el paso de las horas iniciales del día. Puede indicar sueño no reparador o cortisol matutino desajustado.",
+              "en": "Fatigue was present upon waking and does not improve during the initial hours of the day. May indicate unrefreshing sleep or misadjusted morning cortisol.",
+              "zh_TW": "醒來時就有疲勞感,並未在早晨初期改善。可能表示睡眠無法恢復精力或晨間皮質醇失調。"
+            }
+          },
+          "during_day": {
+            "label": {
+              "es": "Apareció durante el día",
+              "en": "Appeared during the day",
+              "zh_TW": "白天出現"
+            },
+            "definition": {
+              "es": "La fatiga empezó luego de despertar, sin causa clara identificable en el momento del inicio. Anotar en la nota qué estabas haciendo cuando empezó puede ayudar a detectar patrones.",
+              "en": "Fatigue started after waking, without a clear identifiable cause at onset. Noting what you were doing when it started can help detect patterns.",
+              "zh_TW": "疲勞在醒來後才開始,起初沒有明確可辨識的原因。記錄開始時你在做什麼可以幫助發現模式。"
+            }
+          },
+          "post_meal": {
+            "label": {
+              "es": "Después de comer",
+              "en": "After eating",
+              "zh_TW": "飯後"
+            },
+            "definition": {
+              "es": "La fatiga aparece tras comer, especialmente con comidas grandes o con carbohidratos simples. Puede reflejar hipoglucemia reactiva, mala tolerancia a histamina, o desviación de flujo sanguíneo al sistema digestivo.",
+              "en": "Fatigue appears after eating, especially with large meals or simple carbohydrates. May reflect reactive hypoglycemia, poor histamine tolerance, or blood flow diversion to the digestive system.",
+              "zh_TW": "疲勞在進食後出現,尤其是大餐或簡單碳水化合物之後。可能反映反應性低血糖、組織胺不耐或血流轉向消化系統。"
+            }
+          },
+          "post_trigger": {
+            "label": {
+              "es": "Después de algo específico",
+              "en": "After something specific",
+              "zh_TW": "特定事件之後"
+            },
+            "definition": {
+              "es": "La fatiga aparece tras un evento identificable (esfuerzo, estrés, exposición ambiental). Considera anotar el trigger en la nota del registro para orientar el análisis.",
+              "en": "Fatigue appears after an identifiable event (exertion, stress, environmental exposure). Consider noting the trigger in the log's note field to guide analysis.",
+              "zh_TW": "疲勞在可識別的事件(運動、壓力、環境暴露)後出現。建議在記錄的備註欄位記下觸發因素以協助分析。"
+            }
+          }
+        }
+      },
+      "accompaniments": {
+        "kind": "multi_select",
+        "header": {
+          "es": "Acompañantes",
+          "en": "Accompaniments",
+          "zh_TW": "伴隨症狀"
+        },
+        "chips": {
+          "brain_fog": {
+            "label": {
+              "es": "Niebla mental",
+              "en": "Brain fog",
+              "zh_TW": "腦霧"
+            },
+            "definition": {
+              "es": "Dificultad para pensar con claridad, concentrarse, encontrar palabras o procesar información a velocidad habitual. Reportado como el síntoma más frecuente después de la fatiga misma en ME/SFC.",
+              "en": "Difficulty thinking clearly, concentrating, finding words, or processing information at usual speed. Reported as the most frequent symptom after fatigue itself in ME/CFS.",
+              "zh_TW": "難以清晰思考、專注、找詞或以正常速度處理資訊。在ME/CFS中被報告為僅次於疲勞本身的最常見症狀。"
+            }
+          },
+          "dizziness_standing": {
+            "label": {
+              "es": "Mareo al pararme",
+              "en": "Dizziness when standing",
+              "zh_TW": "起立時頭暈"
+            },
+            "definition": {
+              "es": "Sensación de vahído o inestabilidad al pasar de acostado o sentado a de pie. Puede reflejar hipoperfusión cerebral por intolerancia ortostática (POTS o hipotensión mediada neuralmente).",
+              "en": "Feeling of lightheadedness or instability when moving from lying/sitting to standing. May reflect cerebral hypoperfusion from orthostatic intolerance (POTS or neurally mediated hypotension).",
+              "zh_TW": "從躺姿或坐姿變為站姿時出現頭暈或不穩感。可能反映姿勢性不耐受(POTS或神經介導性低血壓)所致的腦部灌流不足。"
+            }
+          },
+          "unrefreshing_sleep": {
+            "label": {
+              "es": "Sueño no reparador",
+              "en": "Unrefreshing sleep",
+              "zh_TW": "睡眠無法恢復精力"
+            },
+            "definition": {
+              "es": "Despertar sintiéndose igual o más cansada que al acostarse, aunque hayas dormido las horas esperadas. Es criterio central de ME/SFC según IOM 2015.",
+              "en": "Waking up feeling the same or more tired than when going to bed, even after expected sleep hours. Central criterion of ME/CFS per IOM 2015.",
+              "zh_TW": "即使睡足預期時數,醒來時仍感覺與入睡時一樣累或更累。根據IOM 2015是ME/CFS的核心診斷標準。"
+            }
+          },
+          "resting_tachycardia": {
+            "label": {
+              "es": "Taquicardia en reposo",
+              "en": "Resting tachycardia",
+              "zh_TW": "靜止時心跳過速"
+            },
+            "definition": {
+              "es": "Frecuencia cardíaca elevada estando en reposo (típicamente >100 lpm sin esfuerzo previo). Puede reflejar disautonomía, hipovolemia funcional, deficiencia de hierro, o activación simpática crónica.",
+              "en": "Elevated heart rate at rest (typically >100 bpm without prior exertion). May reflect dysautonomia, functional hypovolemia, iron deficiency, or chronic sympathetic activation.",
+              "zh_TW": "靜止時心率升高(通常在沒有先前運動的情況下 >100 bpm)。可能反映自主神經功能障礙、功能性血容量不足、缺鐵或慢性交感神經活化。"
+            }
+          },
+          "headache": {
+            "label": {
+              "es": "Dolor de cabeza",
+              "en": "Headache",
+              "zh_TW": "頭痛"
+            },
+            "definition": {
+              "es": "Dolor de cabeza presente junto con la fatiga. Común en fatiga inflamatoria, post-esfuerzo, o asociada a deprivación de sueño.",
+              "en": "Headache present together with fatigue. Common in inflammatory, post-exertional, or sleep-deprivation-related fatigue.",
+              "zh_TW": "與疲勞同時出現的頭痛。在發炎性、運動後或睡眠剝奪相關疲勞中常見。"
+            }
+          },
+          "diffuse_muscle_pain": {
+            "label": {
+              "es": "Dolor muscular difuso",
+              "en": "Diffuse muscle pain",
+              "zh_TW": "全身肌肉疼痛"
+            },
+            "definition": {
+              "es": "Dolor muscular generalizado sin localización específica. Reportado en 99% de pacientes con EDS y como acompañante frecuente en fibromialgia y ME/SFC.",
+              "en": "Generalized muscle pain without specific location. Reported in 99% of EDS patients and as a frequent accompaniment in fibromyalgia and ME/CFS.",
+              "zh_TW": "無特定部位的全身性肌肉疼痛。在99%的EDS患者中有報告,也是纖維肌痛和ME/CFS的常見伴隨症狀。"
+            }
+          },
+          "light_sound_intolerance": {
+            "label": {
+              "es": "Intolerancia a luz o sonido",
+              "en": "Light or sound intolerance",
+              "zh_TW": "對光或聲音的不耐受"
+            },
+            "definition": {
+              "es": "Sensibilidad aumentada a estímulos visuales o auditivos que normalmente son tolerables. Puede reflejar neuroinflamación tálamo-mesencefálica descrita en ME/SFC.",
+              "en": "Increased sensitivity to visual or auditory stimuli normally tolerable. May reflect thalamo-mesencephalic neuroinflammation described in ME/CFS.",
+              "zh_TW": "對通常可耐受的視覺或聽覺刺激的敏感度增加。可能反映ME/CFS中描述的視丘-中腦神經發炎。"
+            }
+          },
+          "temp_dysregulation": {
+            "label": {
+              "es": "Desregulación de temperatura",
+              "en": "Temperature dysregulation",
+              "zh_TW": "體溫失調"
+            },
+            "definition": {
+              "es": "Cambios abruptos de sensación térmica no correspondientes con la temperatura ambiente. Común en disautonomía, especialmente en EDS.",
+              "en": "Abrupt changes in thermal sensation not matching ambient temperature. Common in dysautonomia, especially in EDS.",
+              "zh_TW": "與環境溫度不符的體感溫度突然變化。在自主神經功能障礙中常見,尤其是EDS。"
+            }
+          }
+        }
+      },
+      "trigger": {
+        "kind": "multi_select",
+        "header": {
+          "es": "Trigger sospechoso",
+          "en": "Suspected trigger",
+          "zh_TW": "疑似觸發因素"
+        },
+        "chips": {
+          "past_exertion": {
+            "label": {
+              "es": "Esfuerzo físico o cognitivo hace 1-3 días",
+              "en": "Physical or cognitive exertion 1-3 days ago",
+              "zh_TW": "1-3天前的體力或腦力消耗"
+            },
+            "definition": {
+              "es": "Actividad física, ejercicio, jornada laboral intensa, evento social o esfuerzo cognitivo prolongado ocurrido en los últimos 1-3 días. La ventana de 24-72 horas es característica del malestar post-esfuerzo (PEM).",
+              "en": "Physical activity, exercise, intense workday, social event, or prolonged cognitive effort in the past 1-3 days. The 24-72 hour window is characteristic of post-exertional malaise (PEM).",
+              "zh_TW": "過去1-3天內的身體活動、運動、緊張工作日、社交活動或長時間認知消耗。24-72小時的時間窗是運動後不適(PEM)的特徵。"
+            }
+          },
+          "bad_night": {
+            "label": {
+              "es": "Mala noche",
+              "en": "Bad night",
+              "zh_TW": "夜間睡眠不佳"
+            },
+            "definition": {
+              "es": "Sueño de mala calidad la noche anterior: insomnio, despertares frecuentes, dolor nocturno o pesadillas.",
+              "en": "Poor quality sleep the night before: insomnia, frequent awakenings, nocturnal pain, or nightmares.",
+              "zh_TW": "前一晚睡眠品質不佳:失眠、頻繁醒來、夜間疼痛或惡夢。"
+            }
+          },
+          "emotional_stress": {
+            "label": {
+              "es": "Estrés emocional reciente",
+              "en": "Recent emotional stress",
+              "zh_TW": "近期情緒壓力"
+            },
+            "definition": {
+              "es": "Evento estresante, conflicto, ansiedad o carga emocional en los últimos 1-3 días. En condiciones con disautonomía, el estrés emocional puede desencadenar respuesta simpática desproporcionada.",
+              "en": "Stressful event, conflict, anxiety, or emotional load in the past 1-3 days. In conditions with dysautonomia, emotional stress can trigger a disproportionate sympathetic response.",
+              "zh_TW": "過去1-3天內的壓力事件、衝突、焦慮或情緒負擔。在伴隨自主神經功能障礙的情況下,情緒壓力可能觸發不成比例的交感神經反應。"
+            }
+          }
+        }
+      }
+    }
   }
 }

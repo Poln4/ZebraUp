@@ -2148,4 +2148,54 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get headacheThunderclapWarningConfirm => 'Lo entiendo, continuar';
+
+  @override
+  String get headacheAdvisoryDialogTitle => 'Patrones a considerar';
+
+  @override
+  String get headacheRedFlagCsfLeakAdvisory =>
+      'Tu cefalea empeora marcadamente al estar de pie. Este patrón puede sugerir una fuga de líquido cefalorraquídeo, especialmente en personas con EDS. Si se repite, considera mencionárselo a tu médico.';
+
+  @override
+  String get headacheRedFlagIntracranialAdvisory =>
+      'Tu cefalea empeora al recostarte. Este patrón puede sugerir aumento de presión intracraneal. Si se repite o se acompaña de cambios visuales, considera evaluación médica.';
+
+  @override
+  String get settingsModuleHeadacheDetailLabel => 'Detalle de cefalea';
+
+  @override
+  String get settingsModuleHeadacheDetailDescription =>
+      'Captura localización, calidad y otros patrones al registrar una cefalea.';
+
+  @override
+  String get fatigueSheetTitle => 'Detalle de tu fatiga';
+
+  @override
+  String get fatigueSheetSubtitle =>
+      'Los detalles opcionales ayudan a identificar patrones.';
+
+  @override
+  String get fatigueActionSaveDetail => 'Guardar detalle';
+
+  @override
+  String get fatigueAdvisoryDialogTitle => 'Patrones detectados';
+
+  @override
+  String get fatigueRedFlagPemAdvisory =>
+      'Este patrón muestra que tu fatiga aparece 1-3 días después de un esfuerzo. Puede indicar que tu cuerpo tiene menos reservas de energía de lo habitual y necesita más días para recuperarse. Si se repite, considera mencionárselo a tu médico.';
+
+  @override
+  String get fatigueRedFlagOrthostaticAdvisory =>
+      'Tu fatiga empeora al estar de pie o sentada erecta. Puede indicar que tu cuerpo tiene dificultad para mantener presión sanguínea o pulso estables al estar arriba. Es común en personas con EDS. Vale mencionárselo a tu médico.';
+
+  @override
+  String get fatigueRedFlagHpaAdvisory =>
+      'Tu cuerpo se siente exhausto pero no logra descansar. Esto puede indicar que tu sistema de estrés lleva mucho tiempo activado y las hormonas que regulan el descanso están desajustadas. Vale mencionárselo a tu médico.';
+
+  @override
+  String get settingsModuleFatigueDetailLabel => 'Detalle de fatiga';
+
+  @override
+  String get settingsModuleFatigueDetailDescription =>
+      'Al registrar fatiga, agrega tipo, patrón temporal y acompañantes.';
 }

@@ -28,6 +28,8 @@ import '../l10n/app_localizations.dart';
 import '../services/clinical_localizations.dart';
 import '../services/fever_analysis.dart';
 import '../services/structural_taxonomy.dart';
+import '../services/headache_detail_format.dart';
+import '../services/fatigue_detail_format.dart';
 
 // B.2: Date is now formatted via DateFormat using a locale-driven
 // pattern from the ARB (`hoyHeaderDatePattern`). main.dart must call
@@ -1051,6 +1053,21 @@ class _NarrativeSummary extends StatelessWidget {
         out.add(l10n.hoyNarrativeSymptomsSingleTemplate(worstName, worstSev));
       } else {
         out.add(l10n.hoyNarrativeSymptomsManyTemplate(n, worstName, worstSev));
+      }
+      // C.4: if the worst symptom of the day has headache detail, append
+      // its chip summary as a separate sentence.
+      if (worst.headacheDetail != null) {
+        final summary =
+            formatHeadacheDetailCompact(worst.headacheDetail!, l10n);
+        if (summary.isNotEmpty) out.add(summary);
+      }
+      // D.1: same treatment for fatigue detail. Mutually exclusive
+      // with headache detail per non-overlapping symptom aliases,
+      // but the two blocks stay independent for defensive rendering.
+      if (worst.fatigueDetail != null) {
+        final summary =
+            formatFatigueDetailCompact(worst.fatigueDetail!, l10n.localeName);
+        if (summary.isNotEmpty) out.add(summary);
       }
     }
 

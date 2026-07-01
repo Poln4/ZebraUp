@@ -19,6 +19,7 @@ import '../widgets/fever_form_sheet.dart';
 import '../services/structural_taxonomy.dart';
 import '../services/clinical_localizations.dart';
 import '../services/condition_labels.dart';
+import '../services/symptom_definitions_service.dart';
 import '../l10n/app_localizations.dart';
 import 'onboarding_screen.dart';
 import 'hoy_tab.dart';
@@ -652,6 +653,41 @@ class _MainAppScreenState extends State<MainAppScreen> {
     final isToday = sel.year == now.year && sel.month == now.month && sel.day == now.day;
     if (isToday) return now;
     return DateTime(sel.year, sel.month, sel.day, now.hour, now.minute, now.second);
+  }
+  /// C.4: True iff the active profile mentions cefalea anywhere —
+  /// in the symptom vault or in the listed conditions. Used to gate
+  /// the headache_detail toggle's visibility in the settings drawer
+  /// so detail-layer switches that aren't relevant to the user stay
+  /// hidden.
+  bool _hasHeadacheRelevance() {
+    final svc = SymptomDefinitionsService.instance;
+    final p = _activeProfile;
+    if (p == null) return false;
+    for (final s in p.symptomVault) {
+      if (svc.matchesSymptomKey(s, 'headache')) return true;
+    }
+    for (final c in p.conditions) {
+      if (svc.matchesSymptomKey(c, 'headache')) return true;
+    }
+    return false;
+  }
+
+  /// D.1: True iff the active profile mentions fatiga anywhere —
+  /// in the symptom vault or in the listed conditions. Used to gate
+  /// the fatigue_detail toggle's visibility in the settings drawer
+  /// so detail-layer switches that aren't relevant to the user stay
+  /// hidden. Mirrors _hasHeadacheRelevance.
+  bool _hasFatigueRelevance() {
+    final svc = SymptomDefinitionsService.instance;
+    final p = _activeProfile;
+    if (p == null) return false;
+    for (final s in p.symptomVault) {
+      if (svc.matchesSymptomKey(s, 'fatigue')) return true;
+    }
+    for (final c in p.conditions) {
+      if (svc.matchesSymptomKey(c, 'fatigue')) return true;
+    }
+    return false;
   }
 
   // -------------------------------------------------------------------------
@@ -1947,7 +1983,62 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               _saveData();
             }),
           ),
-
+          // C.4: headache detail layer — only visible when the profile
+          // mentions cefalea (in vault or conditions). Same shape as the
+          // other optional-module switches above.
+          if (_hasHeadacheRelevance())
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              activeColor: cc,
+              title: Text(
+                AppLocalizations.of(context)!.settingsModuleHeadacheDetailLabel,
+                style: TextStyle(
+                    color: cc,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                AppLocalizations.of(context)!
+                    .settingsModuleHeadacheDetailDescription,
+                style: TextStyle(
+                    color: cc.withValues(alpha: 0.6), fontSize: 11),
+              ),
+              value:
+                  _activeProfile!.optionalTrackers['headache_detail'] ?? false,
+              onChanged: (v) => setState(() {
+                _activeProfile!.optionalTrackers['headache_detail'] = v;
+                _saveData();
+              }),
+            ),
+          // D.1: fatigue detail layer — only visible when the profile
+          // mentions fatiga (in vault or conditions). Same shape as the
+          // headache_detail switch above.
+          if (_hasFatigueRelevance())
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              activeColor: cc,
+              title: Text(
+                AppLocalizations.of(context)!.settingsModuleFatigueDetailLabel,
+                style: TextStyle(
+                    color: cc,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                AppLocalizations.of(context)!
+                    .settingsModuleFatigueDetailDescription,
+                style: TextStyle(
+                    color: cc.withValues(alpha: 0.6), fontSize: 11),
+              ),
+              value:
+                  _activeProfile!.optionalTrackers['fatigue_detail'] ?? false,
+              onChanged: (v) => setState(() {
+                _activeProfile!.optionalTrackers['fatigue_detail'] = v;
+                _saveData();
+              }),
+            ),
           // F3: Visualización preferences
           const SizedBox(height: 24),
           Text(AppLocalizations.of(context)!.settingsViewPreferencesTitle,

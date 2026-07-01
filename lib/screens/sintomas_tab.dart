@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../models/models.dart';
+import '../models/headache_detail.dart';
+import '../models/fatigue_detail.dart';
 import 'timestamp_picker.dart';
 import '../widgets/bowel_form_sheet.dart';
 import '../widgets/hemorrhoidal_form_sheet.dart';
@@ -8,8 +10,15 @@ import '../widgets/fever_form_sheet.dart';
 import '../widgets/sleep_form_sheet.dart';
 import '../widgets/hydration_form_sheet.dart';
 import '../widgets/hrv_form_sheet.dart';
+import '../widgets/headache_detail_sheet.dart';
+import '../widgets/fatigue_detail_sheet.dart';
 import '../services/clinical_localizations.dart';
 import '../services/structural_taxonomy.dart';
+import '../services/symptom_definitions_service.dart';
+import '../services/headache_red_flags.dart';
+import '../services/headache_detail_format.dart';
+import '../services/fatigue_red_flags.dart';
+import '../services/fatigue_detail_format.dart';
 import '../widgets/collapsible_section.dart';
 import '../widgets/severity_picker.dart';
 import '../extensions/context_ext.dart';
@@ -691,6 +700,32 @@ class _SintomasTabState extends State<SintomasTab> {
                                     fontStyle: unrated ? FontStyle.italic : FontStyle.normal,
                                   ),
                                 ),
+                                // C.4: headache detail compact summary
+                                if (event.headacheDetail != null &&
+                                    formatHeadacheDetailCompact(event.headacheDetail!, l10n).isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      formatHeadacheDetailCompact(event.headacheDetail!, l10n),
+                                      style: TextStyle(
+                                        color: _cc.withValues(alpha: 0.6),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ),
+                                // D.1: fatigue detail compact summary
+                                if (event.fatigueDetail != null &&
+                                    formatFatigueDetailCompact(event.fatigueDetail!, l10n.localeName).isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      formatFatigueDetailCompact(event.fatigueDetail!, l10n.localeName),
+                                      style: TextStyle(
+                                        color: _cc.withValues(alpha: 0.6),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ),
                                 if (event.note != null && event.note!.trim().isNotEmpty)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 2.0),
@@ -1044,16 +1079,74 @@ class _SintomasTabState extends State<SintomasTab> {
     final noteCtrl = TextEditingController();
     DateTime ts = _timestampForLog();
 
-    void saveWith(SymptomSeverity sev, BuildContext ctx) {
+    Future<void> saveWith(SymptomSeverity sev, BuildContext ctx) async {
       final note = noteCtrl.text.trim();
+
+      // C.4 / D.1: offer the appropriate detail layer when the
+      // symptom matches cefalea or fatiga AND the corresponding
+      // tracker is enabled. Aliases for the two symptoms do not
+      // overlap, so at most one branch fires per save.
+      final svc = SymptomDefinitionsService.instance;
+      final isHeadache = svc.matchesSymptomKey(symptom, 'headache');
+      final headacheLayerEnabled =
+          _p.optionalTrackers['headache_detail'] ?? false;
+      final isFatigue = svc.matchesSymptomKey(symptom, 'fatigue');
+      final fatigueLayerEnabled =
+          _p.optionalTrackers['fatigue_detail'] ?? false;
+
+      HeadacheDetail? headacheDetail;
+      FatigueDetail? fatigueDetail;
+      if (isHeadache && headacheLayerEnabled) {
+        // Close the severity sheet first so the detail sheet stacks
+        // over the SintomasTab, not over the severity modal.
+        Navigator.pop(ctx);
+        if (!mounted) return;
+        headacheDetail = await showHeadacheDetailSheet(
+          context: context,
+          contrastColor: _cc,
+          inverseContrastColor: _ic,
+        );
+        if (!mounted) return;
+      } else if (isFatigue && fatigueLayerEnabled) {
+        Navigator.pop(ctx);
+        if (!mounted) return;
+        fatigueDetail = await showFatigueDetailSheet(
+          context,
+          contrastColor: _cc,
+          inverseContrastColor: _ic,
+        );
+        if (!mounted) return;
+      } else {
+        Navigator.pop(ctx);
+      }
+
       setState(() => _p.symptomHistory.add(SymptomEvent(
             timestamp: ts,
             name: symptom,
             severity: sev,
             note: note.isEmpty ? null : note,
+            headacheDetail: headacheDetail,
+            fatigueDetail: fatigueDetail,
           )));
       widget.onProfileChanged();
-      Navigator.pop(ctx);
+
+      // Surface advisory red flags after save. URGENT flags
+      // (cefalea thunderclap) are handled inside the sheet with
+      // their own confirmation dialog. Fatigue has no URGENT flags.
+      if (headacheDetail != null) {
+        final flags = detectHeadacheRedFlags(
+          detail: headacheDetail,
+          severityIndex: sev.value,
+        );
+        await _showAdvisoryFlags(flags);
+      }
+      if (fatigueDetail != null) {
+        final flags = detectFatigueRedFlags(
+          detail: fatigueDetail,
+          severityIndex: sev.value,
+        );
+        await _showFatigueAdvisoryFlags(flags);
+      }
     }
 
     final unratedSentinel =
@@ -1210,18 +1303,81 @@ class _SintomasTabState extends State<SintomasTab> {
                       backgroundColor: _cc,
                       minimumSize: const Size.fromHeight(48),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       final note = noteCtrl.text.trim();
                       final idx = _p.symptomHistory.indexOf(event);
-                      if (idx >= 0) {
-                        setState(() => _p.symptomHistory[idx] = event.copyWith(
-                              timestamp: ts,
-                              severity: sev,
-                              note: note.isEmpty ? null : note,
-                            ));
-                        widget.onProfileChanged();
+                      if (idx < 0) {
+                        Navigator.pop(ctx);
+                        return;
                       }
-                      Navigator.pop(ctx);
+
+                      // C.4 / D.1: offer the appropriate detail layer
+                      // on edit too. Null result from the sheet means
+                      // "preserve existing detail" — explicit clearing
+                      // is deferred (would need a clear flag on
+                      // copyWith). Aliases for cefalea and fatiga do
+                      // not overlap, so at most one branch fires.
+                      final svc = SymptomDefinitionsService.instance;
+                      final isHeadache =
+                          svc.matchesSymptomKey(event.name, 'headache');
+                      final headacheLayerEnabled =
+                          _p.optionalTrackers['headache_detail'] ?? false;
+                      final isFatigue =
+                          svc.matchesSymptomKey(event.name, 'fatigue');
+                      final fatigueLayerEnabled =
+                          _p.optionalTrackers['fatigue_detail'] ?? false;
+
+                      HeadacheDetail? headacheDetail = event.headacheDetail;
+                      FatigueDetail? fatigueDetail = event.fatigueDetail;
+                      if (isHeadache && headacheLayerEnabled) {
+                        Navigator.pop(ctx);
+                        if (!mounted) return;
+                        final result = await showHeadacheDetailSheet(
+                          context: context,
+                          contrastColor: _cc,
+                          inverseContrastColor: _ic,
+                          existing: event.headacheDetail,
+                        );
+                        if (!mounted) return;
+                        if (result != null) headacheDetail = result;
+                      } else if (isFatigue && fatigueLayerEnabled) {
+                        Navigator.pop(ctx);
+                        if (!mounted) return;
+                        final result = await showFatigueDetailSheet(
+                          context,
+                          contrastColor: _cc,
+                          inverseContrastColor: _ic,
+                          existing: event.fatigueDetail,
+                        );
+                        if (!mounted) return;
+                        if (result != null) fatigueDetail = result;
+                      } else {
+                        Navigator.pop(ctx);
+                      }
+
+                      setState(() => _p.symptomHistory[idx] = event.copyWith(
+                            timestamp: ts,
+                            severity: sev,
+                            note: note.isEmpty ? null : note,
+                            headacheDetail: headacheDetail,
+                            fatigueDetail: fatigueDetail,
+                          ));
+                      widget.onProfileChanged();
+
+                      if (headacheDetail != null) {
+                        final flags = detectHeadacheRedFlags(
+                          detail: headacheDetail,
+                          severityIndex: sev.value,
+                        );
+                        await _showAdvisoryFlags(flags);
+                      }
+                      if (fatigueDetail != null) {
+                        final flags = detectFatigueRedFlags(
+                          detail: fatigueDetail,
+                          severityIndex: sev.value,
+                        );
+                        await _showFatigueAdvisoryFlags(flags);
+                      }
                     },
                     child: Text(context.l10n.symptomsActionSaveChanges, style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
                   ),
@@ -1230,6 +1386,179 @@ class _SintomasTabState extends State<SintomasTab> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // C.4 — Headache detail layer: advisory red-flag presentation
+  // ---------------------------------------------------------------------------
+
+  /// Shows a dialog summarising advisory red flags after saving a
+  /// headache log. URGENT flags (thunderclap) are handled inside the
+  /// sheet with their own emergency-confirmation dialog, so this
+  /// method silently skips them.
+  Future<void> _showAdvisoryFlags(List<HeadacheRedFlag> flags) async {
+    final advisories = flags
+        .where((f) => f.severity == HeadacheRedFlagSeverity.advisory)
+        .toList();
+    if (advisories.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in advisories) {
+      switch (f) {
+        case HeadacheRedFlag.csfLeakPattern:
+          messages.add(l10n.headacheRedFlagCsfLeakAdvisory);
+          break;
+        case HeadacheRedFlag.intracranialHypertension:
+          messages.add(l10n.headacheRedFlagIntracranialAdvisory);
+          break;
+        case HeadacheRedFlag.thunderclap:
+          break; // urgent — handled inside the sheet
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _cc.withValues(alpha: 0.5), width: 1.5),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info_outline, color: _cc, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.headacheAdvisoryDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map((m) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        m,
+                        style: TextStyle(
+                          color: _cc,
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // D.1 — Fatigue detail layer: advisory red-flag presentation
+  // ---------------------------------------------------------------------------
+
+  /// Shows a dialog summarising advisory red flags after saving a
+  /// fatigue log. Fatigue has no URGENT flags at this stage, so all
+  /// detected patterns surface as advisories only. Mirrors the shape
+  /// of _showAdvisoryFlags (headache).
+  Future<void> _showFatigueAdvisoryFlags(List<FatigueRedFlag> flags) async {
+    final advisories = flags
+        .where((f) => f.severity == FatigueRedFlagSeverity.advisory)
+        .toList();
+    if (advisories.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in advisories) {
+      switch (f) {
+        case FatigueRedFlag.pemPattern:
+          messages.add(l10n.fatigueRedFlagPemAdvisory);
+          break;
+        case FatigueRedFlag.orthostaticPattern:
+          messages.add(l10n.fatigueRedFlagOrthostaticAdvisory);
+          break;
+        case FatigueRedFlag.hpaPattern:
+          messages.add(l10n.fatigueRedFlagHpaAdvisory);
+          break;
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _cc.withValues(alpha: 0.5), width: 1.5),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info_outline, color: _cc, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.fatigueAdvisoryDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map((m) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Text(
+                        m,
+                        style: TextStyle(
+                          color: _cc,
+                          fontSize: 13,
+                          height: 1.5,
+                        ),
+                      ),
+                    ))
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
       ),
     );
   }

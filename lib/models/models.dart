@@ -23,6 +23,7 @@
 import 'dart:math';
 
 import 'headache_detail.dart';
+import 'fatigue_detail.dart';
 
 
 // -----------------------------------------------------------------------------
@@ -169,6 +170,12 @@ class SymptomEvent {
   /// C.4. See lib/models/headache_detail.dart for the schema.
   final HeadacheDetail? headacheDetail;
 
+  /// D.1: Optional structured detail when the symptom is fatigue and the
+  /// user has the fatigue_detail tracker enabled in optionalTrackers.
+  /// Null for all non-fatigue symptoms and for fatigue logs created before
+  /// D.1. See lib/models/fatigue_detail.dart for the schema.
+  final FatigueDetail? fatigueDetail;
+
   SymptomEvent({
     String? id,
     required this.timestamp,
@@ -177,6 +184,7 @@ class SymptomEvent {
     this.note,
     this.photoPath,
     this.headacheDetail,
+    this.fatigueDetail,
   }) : id = id ?? _newId();
 
   SymptomEvent copyWith({
@@ -185,6 +193,7 @@ class SymptomEvent {
     String? note,
     String? photoPath,
     HeadacheDetail? headacheDetail,
+    FatigueDetail? fatigueDetail,
   }) {
     return SymptomEvent(
       id: id,
@@ -194,6 +203,7 @@ class SymptomEvent {
       note: note ?? this.note,
       photoPath: photoPath ?? this.photoPath,
       headacheDetail: headacheDetail ?? this.headacheDetail,
+      fatigueDetail: fatigueDetail ?? this.fatigueDetail,
     );
   }
 
@@ -206,10 +216,13 @@ class SymptomEvent {
         'photoPath': photoPath,
         if (headacheDetail != null)
           'headacheDetail': headacheDetail!.toMap(),
+        if (fatigueDetail != null)
+          'fatigueDetail': fatigueDetail!.toMap(),
       };
 
   factory SymptomEvent.fromMap(Map<String, dynamic> map) {
     final hdRaw = map['headacheDetail'];
+    final fdRaw = map['fatigueDetail'];
     return SymptomEvent(
       id: map['id'],
       timestamp: DateTime.parse(map['timestamp']),
@@ -219,6 +232,9 @@ class SymptomEvent {
       photoPath: map['photoPath'] as String?,
       headacheDetail: hdRaw is Map
           ? HeadacheDetail.fromMap(Map<String, dynamic>.from(hdRaw))
+          : null,
+      fatigueDetail: fdRaw is Map
+          ? FatigueDetail.fromMap(Map<String, dynamic>.from(fdRaw))
           : null,
     );
   }

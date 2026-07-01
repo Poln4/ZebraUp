@@ -2040,6 +2040,53 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get headacheThunderclapWarningConfirm => '我了解,繼續';
+
+  @override
+  String get headacheAdvisoryDialogTitle => '需要注意的模式';
+
+  @override
+  String get headacheRedFlagCsfLeakAdvisory =>
+      '你的頭痛在站立時明顯加劇。這種模式可能表明腦脊液漏,在 EDS 患者中尤其常見。如果反覆出現,建議告知你的醫生。';
+
+  @override
+  String get headacheRedFlagIntracranialAdvisory =>
+      '你的頭痛在躺下時加劇。這種模式可能表明顱內壓升高。如果反覆出現或伴隨視覺變化,建議就醫評估。';
+
+  @override
+  String get settingsModuleHeadacheDetailLabel => '頭痛詳細資料';
+
+  @override
+  String get settingsModuleHeadacheDetailDescription => '登錄頭痛時記錄位置、性質和其他模式。';
+
+  @override
+  String get fatigueSheetTitle => '疲勞細節';
+
+  @override
+  String get fatigueSheetSubtitle => '選填的細節有助於識別模式。';
+
+  @override
+  String get fatigueActionSaveDetail => '儲存細節';
+
+  @override
+  String get fatigueAdvisoryDialogTitle => '檢測到的模式';
+
+  @override
+  String get fatigueRedFlagPemAdvisory =>
+      '這個模式顯示你的疲勞在勞累後1-3天出現。這可能表示你的身體能量儲備比平常少,需要更多天才能恢復。如果反覆出現,建議告知你的醫師。';
+
+  @override
+  String get fatigueRedFlagOrthostaticAdvisory =>
+      '你的疲勞在站立或直坐時加劇。這可能表示你的身體在直立時難以維持穩定的血壓或脈搏。這在EDS患者中很常見。建議告知你的醫師。';
+
+  @override
+  String get fatigueRedFlagHpaAdvisory =>
+      '你的身體感覺筋疲力盡但無法休息。這可能表示你的壓力系統已被啟動很長時間,調節休息的荷爾蒙失衡。建議告知你的醫師。';
+
+  @override
+  String get settingsModuleFatigueDetailLabel => '疲勞細節';
+
+  @override
+  String get settingsModuleFatigueDetailDescription => '記錄疲勞時,追蹤類型、時間模式和伴隨症狀。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4078,4 +4125,51 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get headacheThunderclapWarningConfirm => '我了解,繼續';
+
+  @override
+  String get headacheAdvisoryDialogTitle => '需要注意的模式';
+
+  @override
+  String get headacheRedFlagCsfLeakAdvisory =>
+      '你的頭痛在站立時明顯加劇。這種模式可能表明腦脊液漏,在 EDS 患者中尤其常見。如果反覆出現,建議告知你的醫生。';
+
+  @override
+  String get headacheRedFlagIntracranialAdvisory =>
+      '你的頭痛在躺下時加劇。這種模式可能表明顱內壓升高。如果反覆出現或伴隨視覺變化,建議就醫評估。';
+
+  @override
+  String get settingsModuleHeadacheDetailLabel => '頭痛詳細資料';
+
+  @override
+  String get settingsModuleHeadacheDetailDescription => '登錄頭痛時記錄位置、性質和其他模式。';
+
+  @override
+  String get fatigueSheetTitle => '疲勞細節';
+
+  @override
+  String get fatigueSheetSubtitle => '選填的細節有助於識別模式。';
+
+  @override
+  String get fatigueActionSaveDetail => '儲存細節';
+
+  @override
+  String get fatigueAdvisoryDialogTitle => '檢測到的模式';
+
+  @override
+  String get fatigueRedFlagPemAdvisory =>
+      '這個模式顯示你的疲勞在勞累後1-3天出現。這可能表示你的身體能量儲備比平常少,需要更多天才能恢復。如果反覆出現,建議告知你的醫師。';
+
+  @override
+  String get fatigueRedFlagOrthostaticAdvisory =>
+      '你的疲勞在站立或直坐時加劇。這可能表示你的身體在直立時難以維持穩定的血壓或脈搏。這在EDS患者中很常見。建議告知你的醫師。';
+
+  @override
+  String get fatigueRedFlagHpaAdvisory =>
+      '你的身體感覺筋疲力盡但無法休息。這可能表示你的壓力系統已被啟動很長時間,調節休息的荷爾蒙失衡。建議告知你的醫師。';
+
+  @override
+  String get settingsModuleFatigueDetailLabel => '疲勞細節';
+
+  @override
+  String get settingsModuleFatigueDetailDescription => '記錄疲勞時,追蹤類型、時間模式和伴隨症狀。';
 }

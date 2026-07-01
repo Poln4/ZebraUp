@@ -3738,6 +3738,90 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Lo entiendo, continuar'**
   String get headacheThunderclapWarningConfirm;
+
+  /// No description provided for @headacheAdvisoryDialogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Patrones a considerar'**
+  String get headacheAdvisoryDialogTitle;
+
+  /// No description provided for @headacheRedFlagCsfLeakAdvisory.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cefalea empeora marcadamente al estar de pie. Este patrón puede sugerir una fuga de líquido cefalorraquídeo, especialmente en personas con EDS. Si se repite, considera mencionárselo a tu médico.'**
+  String get headacheRedFlagCsfLeakAdvisory;
+
+  /// No description provided for @headacheRedFlagIntracranialAdvisory.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cefalea empeora al recostarte. Este patrón puede sugerir aumento de presión intracraneal. Si se repite o se acompaña de cambios visuales, considera evaluación médica.'**
+  String get headacheRedFlagIntracranialAdvisory;
+
+  /// No description provided for @settingsModuleHeadacheDetailLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de cefalea'**
+  String get settingsModuleHeadacheDetailLabel;
+
+  /// No description provided for @settingsModuleHeadacheDetailDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Captura localización, calidad y otros patrones al registrar una cefalea.'**
+  String get settingsModuleHeadacheDetailDescription;
+
+  /// Title of the modal sheet that captures structured fatigue detail.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de tu fatiga'**
+  String get fatigueSheetTitle;
+
+  /// Subtitle explaining why filling the optional detail helps.
+  ///
+  /// In es, this message translates to:
+  /// **'Los detalles opcionales ayudan a identificar patrones.'**
+  String get fatigueSheetSubtitle;
+
+  /// Save button label at the bottom of the fatigue detail sheet.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar detalle'**
+  String get fatigueActionSaveDetail;
+
+  /// Title of the advisory dialog shown after saving a fatigue log when a red flag pattern is detected.
+  ///
+  /// In es, this message translates to:
+  /// **'Patrones detectados'**
+  String get fatigueAdvisoryDialogTitle;
+
+  /// PEM (post-exertional malaise) advisory. Surfaced when fatigue type is post-exertional AND severity is intense or higher.
+  ///
+  /// In es, this message translates to:
+  /// **'Este patrón muestra que tu fatiga aparece 1-3 días después de un esfuerzo. Puede indicar que tu cuerpo tiene menos reservas de energía de lo habitual y necesita más días para recuperarse. Si se repite, considera mencionárselo a tu médico.'**
+  String get fatigueRedFlagPemAdvisory;
+
+  /// Orthostatic fatigue advisory. Surfaced when fatigue type is orthostatic AND severity is intense or higher.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu fatiga empeora al estar de pie o sentada erecta. Puede indicar que tu cuerpo tiene dificultad para mantener presión sanguínea o pulso estables al estar arriba. Es común en personas con EDS. Vale mencionárselo a tu médico.'**
+  String get fatigueRedFlagOrthostaticAdvisory;
+
+  /// HPA-axis / wired-but-tired advisory. Surfaced when fatigue type is hpa_wired AND severity is intense or higher.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu cuerpo se siente exhausto pero no logra descansar. Esto puede indicar que tu sistema de estrés lleva mucho tiempo activado y las hormonas que regulan el descanso están desajustadas. Vale mencionárselo a tu médico.'**
+  String get fatigueRedFlagHpaAdvisory;
+
+  /// Label of the optional fatigue detail tracker switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de fatiga'**
+  String get settingsModuleFatigueDetailLabel;
+
+  /// Description under the fatigue detail switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Al registrar fatiga, agrega tipo, patrón temporal y acompañantes.'**
+  String get settingsModuleFatigueDetailDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -2137,4 +2137,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get headacheThunderclapWarningConfirm => 'I understand, continue';
+
+  @override
+  String get headacheAdvisoryDialogTitle => 'Patterns to consider';
+
+  @override
+  String get headacheRedFlagCsfLeakAdvisory =>
+      'Your headache worsens noticeably when standing upright. This pattern can suggest a cerebrospinal fluid leak, particularly common in people with EDS. If it recurs, consider mentioning it to your doctor.';
+
+  @override
+  String get headacheRedFlagIntracranialAdvisory =>
+      'Your headache worsens when lying down. This pattern can suggest increased intracranial pressure. If it recurs or is accompanied by vision changes, consider medical evaluation.';
+
+  @override
+  String get settingsModuleHeadacheDetailLabel => 'Headache detail';
+
+  @override
+  String get settingsModuleHeadacheDetailDescription =>
+      'Capture location, quality, and other patterns when logging a headache.';
+
+  @override
+  String get fatigueSheetTitle => 'Fatigue detail';
+
+  @override
+  String get fatigueSheetSubtitle => 'Optional details help identify patterns.';
+
+  @override
+  String get fatigueActionSaveDetail => 'Save detail';
+
+  @override
+  String get fatigueAdvisoryDialogTitle => 'Detected patterns';
+
+  @override
+  String get fatigueRedFlagPemAdvisory =>
+      'This pattern shows your fatigue appears 1-3 days after exertion. It may indicate your body has fewer energy reserves than usual and needs more days to recover. If it recurs, consider mentioning it to your doctor.';
+
+  @override
+  String get fatigueRedFlagOrthostaticAdvisory =>
+      'Your fatigue worsens when standing or sitting upright. It may indicate your body has difficulty maintaining stable blood pressure or pulse when upright. It is common in people with EDS. It is worth mentioning to your doctor.';
+
+  @override
+  String get fatigueRedFlagHpaAdvisory =>
+      'Your body feels exhausted but cannot rest. This may indicate your stress system has been activated for a long time and the hormones that regulate rest are out of balance. It is worth mentioning to your doctor.';
+
+  @override
+  String get settingsModuleFatigueDetailLabel => 'Fatigue detail';
+
+  @override
+  String get settingsModuleFatigueDetailDescription =>
+      'When logging fatigue, add type, temporal pattern, and accompaniments.';
 }

@@ -1321,5 +1321,46 @@
   "actionSkip": "Saltar",
   "headacheActionSaveDetail": "Guardar detalle",
   "headacheThunderclapWarningTitle": "Posible emergencia",
-  "headacheThunderclapWarningConfirm": "Lo entiendo, continuar"
+  "headacheThunderclapWarningConfirm": "Lo entiendo, continuar",
+  "headacheAdvisoryDialogTitle": "Patrones a considerar",
+  "headacheRedFlagCsfLeakAdvisory": "Tu cefalea empeora marcadamente al estar de pie. Este patrón puede sugerir una fuga de líquido cefalorraquídeo, especialmente en personas con EDS. Si se repite, considera mencionárselo a tu médico.",
+  "headacheRedFlagIntracranialAdvisory": "Tu cefalea empeora al recostarte. Este patrón puede sugerir aumento de presión intracraneal. Si se repite o se acompaña de cambios visuales, considera evaluación médica.",
+  "settingsModuleHeadacheDetailLabel": "Detalle de cefalea",
+  "settingsModuleHeadacheDetailDescription": "Captura localización, calidad y otros patrones al registrar una cefalea.",
+  "fatigueSheetTitle": "Detalle de tu fatiga",
+  "@fatigueSheetTitle": {
+    "description": "Title of the modal sheet that captures structured fatigue detail."
+  },
+  "fatigueSheetSubtitle": "Los detalles opcionales ayudan a identificar patrones.",
+  "@fatigueSheetSubtitle": {
+    "description": "Subtitle explaining why filling the optional detail helps."
+  },
+  "fatigueActionSaveDetail": "Guardar detalle",
+  "@fatigueActionSaveDetail": {
+    "description": "Save button label at the bottom of the fatigue detail sheet."
+  },
+  "fatigueAdvisoryDialogTitle": "Patrones detectados",
+  "@fatigueAdvisoryDialogTitle": {
+    "description": "Title of the advisory dialog shown after saving a fatigue log when a red flag pattern is detected."
+  },
+  "fatigueRedFlagPemAdvisory": "Este patrón muestra que tu fatiga aparece 1-3 días después de un esfuerzo. Puede indicar que tu cuerpo tiene menos reservas de energía de lo habitual y necesita más días para recuperarse. Si se repite, considera mencionárselo a tu médico.",
+  "@fatigueRedFlagPemAdvisory": {
+    "description": "PEM (post-exertional malaise) advisory. Surfaced when fatigue type is post-exertional AND severity is intense or higher."
+  },
+  "fatigueRedFlagOrthostaticAdvisory": "Tu fatiga empeora al estar de pie o sentada erecta. Puede indicar que tu cuerpo tiene dificultad para mantener presión sanguínea o pulso estables al estar arriba. Es común en personas con EDS. Vale mencionárselo a tu médico.",
+  "@fatigueRedFlagOrthostaticAdvisory": {
+    "description": "Orthostatic fatigue advisory. Surfaced when fatigue type is orthostatic AND severity is intense or higher."
+  },
+  "fatigueRedFlagHpaAdvisory": "Tu cuerpo se siente exhausto pero no logra descansar. Esto puede indicar que tu sistema de estrés lleva mucho tiempo activado y las hormonas que regulan el descanso están desajustadas. Vale mencionárselo a tu médico.",
+  "@fatigueRedFlagHpaAdvisory": {
+    "description": "HPA-axis / wired-but-tired advisory. Surfaced when fatigue type is hpa_wired AND severity is intense or higher."
+  },
+  "settingsModuleFatigueDetailLabel": "Detalle de fatiga",
+  "@settingsModuleFatigueDetailLabel": {
+    "description": "Label of the optional fatigue detail tracker switch in settings."
+  },
+  "settingsModuleFatigueDetailDescription": "Al registrar fatiga, agrega tipo, patrón temporal y acompañantes.",
+  "@settingsModuleFatigueDetailDescription": {
+    "description": "Description under the fatigue detail switch in settings."
+  }
 }
