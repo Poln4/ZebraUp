@@ -16,7 +16,7 @@ import '../models/models.dart';
 enum ImportErrorCode {
   unreadableFile,
   invalidJson,
-  notZebraUpp,
+  notZebraUp,
   unknownSchema,
   schemaMismatch,
   missingProfile,
@@ -58,7 +58,7 @@ class ProfileIoService {
     return {
       'schemaVersion': schemaVersion,
       'exportedAt': DateTime.now().toIso8601String(),
-      'app': 'ZebraUpp',
+      'app': 'ZebraUp',
       'profile': profile.toMap(),
       'companionKeys': {
         'hoyHintFirstSeen': box.get('hoyHintFirstSeen'),
@@ -81,7 +81,7 @@ class ProfileIoService {
         .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
         .replaceAll(RegExp(r'^-+|-+$'), '');
     final date = DateTime.now().toIso8601String().split('T').first;
-    final filename = 'zebraupp-${safeName.isEmpty ? "perfil" : safeName}-$date';
+    final filename = 'zebraup-${safeName.isEmpty ? "perfil" : safeName}-$date';
 
     await FileSaver.instance.saveFile(
       name: filename,
@@ -113,8 +113,8 @@ class ProfileIoService {
       throw ImportException(ImportErrorCode.invalidJson);
     }
 
-    if (data['app'] != 'ZebraUpp') {
-      throw ImportException(ImportErrorCode.notZebraUpp);
+    if (data['app'] != 'ZebraUp') {
+      throw ImportException(ImportErrorCode.notZebraUp);
     }
     if (data['schemaVersion'] is! int) {
       throw ImportException(ImportErrorCode.unknownSchema);

@@ -24,14 +24,19 @@ import 'dart:math';
 
 import 'headache_detail.dart';
 import 'fatigue_detail.dart';
-
+import 'abdominal_detail.dart';
+import 'action_taken.dart';
+import 'mcas.dart';
 
 // -----------------------------------------------------------------------------
 // ID generation
 // -----------------------------------------------------------------------------
 String _newId() {
   final rand = Random.secure();
-  final hex = List.generate(6, (_) => rand.nextInt(16).toRadixString(16)).join();
+  final hex = List.generate(
+    6,
+    (_) => rand.nextInt(16).toRadixString(16),
+  ).join();
   return '${DateTime.now().microsecondsSinceEpoch}-$hex';
 }
 
@@ -64,12 +69,12 @@ enum SymptomSeverity {
   /// Hex color string for the severity dot — keeps the model UI-framework-free.
   /// Flutter callers parse with `Color(int.parse(hex.substring(1), radix: 16) | 0xFF000000)`.
   String get colorHex => switch (this) {
-        SymptomSeverity.none => '#9E9E9E',
-        SymptomSeverity.mild => '#FFD54F',
-        SymptomSeverity.moderate => '#FF9800',
-        SymptomSeverity.intense => '#F44336',
-        SymptomSeverity.unbearable => '#7B1FA2',
-      };
+    SymptomSeverity.none => '#9E9E9E',
+    SymptomSeverity.mild => '#FFD54F',
+    SymptomSeverity.moderate => '#FF9800',
+    SymptomSeverity.intense => '#F44336',
+    SymptomSeverity.unbearable => '#7B1FA2',
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -161,9 +166,11 @@ class SymptomEvent {
   final String name;
   final SymptomSeverity severity;
   final String? note;
+
   /// Optional local file path to a photo (rashes, swelling, subluxations).
   /// Phase-1 stores the path only; the actual file lives on the device fs.
   final String? photoPath;
+
   /// C.4: Optional structured detail when the symptom is a headache and the
   /// user has the headache_detail tracker enabled in optionalTrackers.
   /// Null for all non-cefalea symptoms and for cefalea logs created before
@@ -176,6 +183,17 @@ class SymptomEvent {
   /// D.1. See lib/models/fatigue_detail.dart for the schema.
   final FatigueDetail? fatigueDetail;
 
+  /// D.2: Optional structured detail when the symptom is abdominal
+  /// (pain, bloating, or gas semantics) and the user has the
+  /// abdominal_detail tracker enabled in optionalTrackers. Null for all
+  /// non-abdominal symptoms and for abdominal logs created before D.2.
+  /// See lib/models/abdominal_detail.dart for the schema.
+  final AbdominalDetail? abdominalDetail;
+
+  // Sprint E.A — MCAS detail layer (additive, gated by
+  // optionalTrackers['mcas_detail'] once E.E wires the toggle).
+  final MCASDetail? mcasDetail;
+
   SymptomEvent({
     String? id,
     required this.timestamp,
@@ -185,6 +203,8 @@ class SymptomEvent {
     this.photoPath,
     this.headacheDetail,
     this.fatigueDetail,
+    this.abdominalDetail,
+    this.mcasDetail,
   }) : id = id ?? _newId();
 
   SymptomEvent copyWith({
@@ -194,6 +214,7 @@ class SymptomEvent {
     String? photoPath,
     HeadacheDetail? headacheDetail,
     FatigueDetail? fatigueDetail,
+    AbdominalDetail? abdominalDetail,
   }) {
     return SymptomEvent(
       id: id,
@@ -204,25 +225,27 @@ class SymptomEvent {
       photoPath: photoPath ?? this.photoPath,
       headacheDetail: headacheDetail ?? this.headacheDetail,
       fatigueDetail: fatigueDetail ?? this.fatigueDetail,
+      abdominalDetail: abdominalDetail ?? this.abdominalDetail,
     );
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'name': name,
-        'severity': severity.value,
-        'note': note,
-        'photoPath': photoPath,
-        if (headacheDetail != null)
-          'headacheDetail': headacheDetail!.toMap(),
-        if (fatigueDetail != null)
-          'fatigueDetail': fatigueDetail!.toMap(),
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'name': name,
+    'severity': severity.value,
+    'note': note,
+    'photoPath': photoPath,
+    if (headacheDetail != null) 'headacheDetail': headacheDetail!.toMap(),
+    if (fatigueDetail != null) 'fatigueDetail': fatigueDetail!.toMap(),
+    if (abdominalDetail != null) 'abdominalDetail': abdominalDetail!.toMap(),
+    if (mcasDetail != null) 'mcasDetail': mcasDetail!.toMap(),
+  };
 
   factory SymptomEvent.fromMap(Map<String, dynamic> map) {
     final hdRaw = map['headacheDetail'];
     final fdRaw = map['fatigueDetail'];
+    final adRaw = map['abdominalDetail'];
     return SymptomEvent(
       id: map['id'],
       timestamp: DateTime.parse(map['timestamp']),
@@ -236,6 +259,13 @@ class SymptomEvent {
       fatigueDetail: fdRaw is Map
           ? FatigueDetail.fromMap(Map<String, dynamic>.from(fdRaw))
           : null,
+      abdominalDetail: adRaw is Map
+          ? AbdominalDetail.fromMap(Map<String, dynamic>.from(adRaw))
+          : null,
+      mcasDetail: map['mcasDetail'] != null
+          ? MCASDetail.fromMap(
+              Map<String, dynamic>.from(map['mcasDetail'] as Map))
+          : null,
     );
   }
 }
@@ -244,22 +274,28 @@ class DoseEvent {
   final String id;
   final DateTime timestamp;
   final String medicationName;
+
   /// Stable ref to MedicationDef.id. Falls back to name match if null
   /// (legacy entries or imports without the FK).
   final String? medicationId;
+
   /// How many of the form unit were taken — 1, 0.5, 2, etc.
   final double quantity;
+
   /// Snapshot of strength at the moment of the dose (mg, mcg, IU…). Snapshotted
   /// because the user may later edit the MedicationDef strength; we don't want
   /// historical dose totals to silently shift under us.
   final double strengthAtDose;
   final String unitAtDose; // 'mg', 'mcg', 'IU', 'g', 'ml', ''
-  final String formAtDose; // 'pill', 'capsule', 'drop', 'tablet', 'patch', 'spray', 'ml'
+  final String
+  formAtDose; // 'pill', 'capsule', 'drop', 'tablet', 'patch', 'spray', 'ml'
   /// IDs of symptoms this dose was logged in response to.
   final List<String> linkedSymptomIds;
+
   /// Severity (0–4) of each linked symptom AT DOSE TIME. Used as the baseline
   /// for outcome deltas — answering "did it help?" requires knowing the before.
   final Map<String, int> severityBefore;
+
   /// If this dose was logged as part of a MedicationGroup batch, the group's id.
   final String? groupId;
 
@@ -303,33 +339,37 @@ class DoseEvent {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'medicationName': medicationName,
-        'medicationId': medicationId,
-        'quantity': quantity,
-        'strengthAtDose': strengthAtDose,
-        'unitAtDose': unitAtDose,
-        'formAtDose': formAtDose,
-        'linkedSymptomIds': linkedSymptomIds,
-        'severityBefore': severityBefore,
-        'groupId': groupId,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'medicationName': medicationName,
+    'medicationId': medicationId,
+    'quantity': quantity,
+    'strengthAtDose': strengthAtDose,
+    'unitAtDose': unitAtDose,
+    'formAtDose': formAtDose,
+    'linkedSymptomIds': linkedSymptomIds,
+    'severityBefore': severityBefore,
+    'groupId': groupId,
+  };
 
   factory DoseEvent.fromMap(Map<String, dynamic> map) => DoseEvent(
-        id: map['id'],
-        timestamp: DateTime.parse(map['timestamp']),
-        medicationName: map['medicationName'],
-        medicationId: map['medicationId'] as String?,
-        quantity: (map['quantity'] as num?)?.toDouble() ?? 1.0,
-        strengthAtDose: (map['strengthAtDose'] as num?)?.toDouble() ?? 0.0,
-        unitAtDose: map['unitAtDose'] as String? ?? '',
-        formAtDose: map['formAtDose'] as String? ?? 'pill',
-        linkedSymptomIds: List<String>.from(map['linkedSymptomIds'] ?? const []),
-        severityBefore: Map<String, int>.from(
-            (map['severityBefore'] as Map?)?.map((k, v) => MapEntry(k as String, (v as num).toInt())) ?? const {}),
-        groupId: map['groupId'] as String?,
-      );
+    id: map['id'],
+    timestamp: DateTime.parse(map['timestamp']),
+    medicationName: map['medicationName'],
+    medicationId: map['medicationId'] as String?,
+    quantity: (map['quantity'] as num?)?.toDouble() ?? 1.0,
+    strengthAtDose: (map['strengthAtDose'] as num?)?.toDouble() ?? 0.0,
+    unitAtDose: map['unitAtDose'] as String? ?? '',
+    formAtDose: map['formAtDose'] as String? ?? 'pill',
+    linkedSymptomIds: List<String>.from(map['linkedSymptomIds'] ?? const []),
+    severityBefore: Map<String, int>.from(
+      (map['severityBefore'] as Map?)?.map(
+            (k, v) => MapEntry(k as String, (v as num).toInt()),
+          ) ??
+          const {},
+    ),
+    groupId: map['groupId'] as String?,
+  );
 }
 
 // =============================================================================
@@ -410,10 +450,7 @@ const Map<StructuralEventKind, List<String>> kStructuralTaxonomy = {
     'burn',
     'abrasion',
   ],
-  StructuralEventKind.nerve: [
-    'neuropathic_pain',
-    'paresthesia',
-  ],
+  StructuralEventKind.nerve: ['neuropathic_pain', 'paresthesia'],
 };
 
 /// F6.a + F6.b: Stable IDs for body zones.
@@ -493,7 +530,14 @@ const Map<BodyRegion, List<String>> kBodyRegionZones = {
   BodyRegion.arms: ['upper_arm', 'elbow', 'forearm', 'wrists', 'hands'],
   BodyRegion.chestAbdomen: ['chest', 'side', 'ribs', 'abdomen'],
   BodyRegion.lowerBackPelvis: ['lumbar_pelvis', 'hips', 'glutes'],
-  BodyRegion.legs: ['front_thigh', 'back_thigh', 'knees', 'calf', 'ankles', 'feet'],
+  BodyRegion.legs: [
+    'front_thigh',
+    'back_thigh',
+    'knees',
+    'calf',
+    'ankles',
+    'feet',
+  ],
 };
 
 /// Legacy Spanish structural type strings → stable IDs.
@@ -638,8 +682,8 @@ class StructuralEvent {
     this.note,
     this.resolvedAt,
     this.stillPainful = false,
-  })  : id = id ?? _newId(),
-        kind = kind ?? inferKindFromType(type);
+  }) : id = id ?? _newId(),
+       kind = kind ?? inferKindFromType(type);
 
   bool get isResolved => resolvedAt != null;
 
@@ -665,37 +709,38 @@ class StructuralEvent {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'zone': zone,
-        'kind': kind.name,
-        'type': type,
-        'note': note,
-        'resolvedAt': resolvedAt?.toIso8601String(),
-        'stillPainful': stillPainful,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'zone': zone,
+    'kind': kind.name,
+    'type': type,
+    'note': note,
+    'resolvedAt': resolvedAt?.toIso8601String(),
+    'stillPainful': stillPainful,
+  };
 
   /// F6.a: applies silent migrations for both `zone` and `type` strings.
   /// Legacy Spanish events ("Cervicales", "Subluxación", etc.) are converted
   /// to stable IDs on read; unknown values pass through unchanged.
   factory StructuralEvent.fromMap(Map<String, dynamic> map) => StructuralEvent(
-        id: map['id'],
-        timestamp: DateTime.parse(map['timestamp']),
-        zone: _migrateZoneId(map['zone'] as String),
-        kind: StructuralEventKind.parse(map['kind'] as String?),
-        type: _migrateStructuralTypeId(map['type'] as String),
-        note: map['note'] as String?,
-        resolvedAt: map['resolvedAt'] != null
-            ? DateTime.parse(map['resolvedAt'] as String)
-            : null,
-        stillPainful: map['stillPainful'] as bool? ?? false,
-      );
+    id: map['id'],
+    timestamp: DateTime.parse(map['timestamp']),
+    zone: _migrateZoneId(map['zone'] as String),
+    kind: StructuralEventKind.parse(map['kind'] as String?),
+    type: _migrateStructuralTypeId(map['type'] as String),
+    note: map['note'] as String?,
+    resolvedAt: map['resolvedAt'] != null
+        ? DateTime.parse(map['resolvedAt'] as String)
+        : null,
+    stillPainful: map['stillPainful'] as bool? ?? false,
+  );
 }
 
 class MentalEvent {
   final String id;
   final DateTime timestamp;
   final MentalState state;
+
   /// 1–5 scale (1 = very low/none, 5 = severe/overwhelming).
   /// Kept on its own scale on purpose — mental states and physical symptoms
   /// have different shapes; unifying with SymptomSeverity is a separate
@@ -722,20 +767,20 @@ class MentalEvent {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'state': state.name,
-        'severity': severity,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'state': state.name,
+    'severity': severity,
+    'note': note,
+  };
 
   factory MentalEvent.fromMap(Map<String, dynamic> map) => MentalEvent(
-        id: map['id'],
-        timestamp: DateTime.parse(map['timestamp']),
-        state: MentalState.parse(map['state']) ?? MentalState.mood,
-        severity: (map['severity'] as num).toInt(),
-        note: map['note'] as String?,
-      );
+    id: map['id'],
+    timestamp: DateTime.parse(map['timestamp']),
+    state: MentalState.parse(map['state']) ?? MentalState.mood,
+    severity: (map['severity'] as num).toInt(),
+    note: map['note'] as String?,
+  );
 }
 
 class ActivityEvent {
@@ -745,8 +790,8 @@ class ActivityEvent {
   final int? sets;
   final int? reps;
   final int? durationMinutes;
-  final int effort;   // 0–10 RPE
-  final int feeling;  // 1–5 subjective
+  final int effort; // 0–10 RPE
+  final int feeling; // 1–5 subjective
   final String? hhr;
   final String? note;
   final int? painBefore;
@@ -802,34 +847,34 @@ class ActivityEvent {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'name': name,
-        'sets': sets,
-        'reps': reps,
-        'durationMinutes': durationMinutes,
-        'effort': effort,
-        'feeling': feeling,
-        'hhr': hhr,
-        'note': note,
-        'painBefore': painBefore,
-        'painAfter': painAfter,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'name': name,
+    'sets': sets,
+    'reps': reps,
+    'durationMinutes': durationMinutes,
+    'effort': effort,
+    'feeling': feeling,
+    'hhr': hhr,
+    'note': note,
+    'painBefore': painBefore,
+    'painAfter': painAfter,
+  };
 
   factory ActivityEvent.fromMap(Map<String, dynamic> map) => ActivityEvent(
-        id: map['id'],
-        timestamp: DateTime.parse(map['timestamp']),
-        name: map['name'],
-        sets: map['sets'] as int?,
-        reps: map['reps'] as int?,
-        durationMinutes: map['durationMinutes'] as int?,
-        effort: (map['effort'] as num).toInt(),
-        feeling: (map['feeling'] as num).toInt(),
-        hhr: map['hhr'] as String?,
-        note: map['note'] as String?,
-        painBefore: (map['painBefore'] as num?)?.toInt(),
-        painAfter: (map['painAfter'] as num?)?.toInt(),
-      );
+    id: map['id'],
+    timestamp: DateTime.parse(map['timestamp']),
+    name: map['name'],
+    sets: map['sets'] as int?,
+    reps: map['reps'] as int?,
+    durationMinutes: map['durationMinutes'] as int?,
+    effort: (map['effort'] as num).toInt(),
+    feeling: (map['feeling'] as num).toInt(),
+    hhr: map['hhr'] as String?,
+    note: map['note'] as String?,
+    painBefore: (map['painBefore'] as num?)?.toInt(),
+    painAfter: (map['painAfter'] as num?)?.toInt(),
+  );
 }
 
 // =============================================================================
@@ -923,21 +968,22 @@ class MedicationOutcome {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'doseId': doseId,
-        'symptomId': symptomId,
-        'medicationName': medicationName,
-        'symptomName': symptomName,
-        'doseTimestamp': doseTimestamp.toIso8601String(),
-        'checkAt': checkAt.toIso8601String(),
-        'severityBefore': severityBefore,
-        'severityAfter': severityAfter,
-        'reason': reason?.name,
-        'respondedAt': respondedAt?.toIso8601String(),
-        'note': note,
-      };
+    'id': id,
+    'doseId': doseId,
+    'symptomId': symptomId,
+    'medicationName': medicationName,
+    'symptomName': symptomName,
+    'doseTimestamp': doseTimestamp.toIso8601String(),
+    'checkAt': checkAt.toIso8601String(),
+    'severityBefore': severityBefore,
+    'severityAfter': severityAfter,
+    'reason': reason?.name,
+    'respondedAt': respondedAt?.toIso8601String(),
+    'note': note,
+  };
 
-  factory MedicationOutcome.fromMap(Map<String, dynamic> map) => MedicationOutcome(
+  factory MedicationOutcome.fromMap(Map<String, dynamic> map) =>
+      MedicationOutcome(
         id: map['id'],
         doseId: map['doseId'],
         symptomId: map['symptomId'],
@@ -948,7 +994,9 @@ class MedicationOutcome {
         severityBefore: (map['severityBefore'] as num).toInt(),
         severityAfter: (map['severityAfter'] as num?)?.toInt(),
         reason: OutcomeReason.parse(map['reason'] as String?),
-        respondedAt: map['respondedAt'] != null ? DateTime.parse(map['respondedAt']) : null,
+        respondedAt: map['respondedAt'] != null
+            ? DateTime.parse(map['respondedAt'])
+            : null,
         note: map['note'] as String?,
       );
 }
@@ -962,10 +1010,10 @@ class MedicationDef {
   final String id;
 
   String name;
-  double strength;          // numeric strength, e.g. 500
-  String unit;              // 'mg', 'mcg', 'IU', 'g', 'ml', '' for unspecified
-  String form;              // 'pill', 'capsule', 'drop', 'tablet', 'patch', 'spray', 'ml'
-  double defaultQuantity;   // 1.0, 0.5, 2.0…
+  double strength; // numeric strength, e.g. 500
+  String unit; // 'mg', 'mcg', 'IU', 'g', 'ml', '' for unspecified
+  String form; // 'pill', 'capsule', 'drop', 'tablet', 'patch', 'spray', 'ml'
+  double defaultQuantity; // 1.0, 0.5, 2.0…
 
   /// Hours after a dose at which to ask "¿mejor / igual / peor?".
   /// Null = don't track outcomes (daily vitamins etc.).
@@ -1005,30 +1053,30 @@ class MedicationDef {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'strength': strength,
-        'unit': unit,
-        'form': form,
-        'defaultQuantity': defaultQuantity,
-        'outcomeCheckHours': outcomeCheckHours,
-        'notes': notes,
-        'activeIngredient': activeIngredient,
-        'cimaCode': cimaCode,
-      };
+    'id': id,
+    'name': name,
+    'strength': strength,
+    'unit': unit,
+    'form': form,
+    'defaultQuantity': defaultQuantity,
+    'outcomeCheckHours': outcomeCheckHours,
+    'notes': notes,
+    'activeIngredient': activeIngredient,
+    'cimaCode': cimaCode,
+  };
 
   factory MedicationDef.fromMap(Map<String, dynamic> map) => MedicationDef(
-        id: map['id'] as String?,
-        name: map['name'],
-        strength: (map['strength'] as num?)?.toDouble() ?? 0,
-        unit: map['unit'] as String? ?? '',
-        form: map['form'] as String? ?? 'pill',
-        defaultQuantity: (map['defaultQuantity'] as num?)?.toDouble() ?? 1.0,
-        outcomeCheckHours: map['outcomeCheckHours'] as int? ?? 3,
-        notes: map['notes'] as String?,
-        activeIngredient: map['activeIngredient'] as String?,
-        cimaCode: map['cimaCode'] as String?,
-      );
+    id: map['id'] as String?,
+    name: map['name'],
+    strength: (map['strength'] as num?)?.toDouble() ?? 0,
+    unit: map['unit'] as String? ?? '',
+    form: map['form'] as String? ?? 'pill',
+    defaultQuantity: (map['defaultQuantity'] as num?)?.toDouble() ?? 1.0,
+    outcomeCheckHours: map['outcomeCheckHours'] as int? ?? 3,
+    notes: map['notes'] as String?,
+    activeIngredient: map['activeIngredient'] as String?,
+    cimaCode: map['cimaCode'] as String?,
+  );
 }
 
 String _formatQuantity(double q) {
@@ -1047,6 +1095,7 @@ String _pluralizeForm(String form, double qty) {
 class MedicationGroupEntry {
   /// Foreign key to MedicationDef.id.
   final String medicationId;
+
   /// How many of the form unit when this group is logged.
   /// Overrides MedicationDef.defaultQuantity for batch logging.
   double quantity;
@@ -1054,9 +1103,9 @@ class MedicationGroupEntry {
   MedicationGroupEntry({required this.medicationId, this.quantity = 1.0});
 
   Map<String, dynamic> toMap() => {
-        'medicationId': medicationId,
-        'quantity': quantity,
-      };
+    'medicationId': medicationId,
+    'quantity': quantity,
+  };
 
   factory MedicationGroupEntry.fromMap(Map<String, dynamic> map) =>
       MedicationGroupEntry(
@@ -1070,6 +1119,7 @@ class MedicationGroupEntry {
 class MedicationGroup {
   final String id;
   String name;
+
   /// Default time-of-day in minutes since midnight, or null if no default.
   /// Stored as int (not TimeOfDay) so the model has no Flutter dependency.
   int? defaultTimeMinutes;
@@ -1080,8 +1130,8 @@ class MedicationGroup {
     required this.name,
     this.defaultTimeMinutes,
     List<MedicationGroupEntry>? entries,
-  })  : id = id ?? _newId(),
-        entries = entries ?? <MedicationGroupEntry>[];
+  }) : id = id ?? _newId(),
+       entries = entries ?? <MedicationGroupEntry>[];
 
   /// Apply defaultTimeMinutes to a date — convenience for the "log this group
   /// for today at its default time" gesture.
@@ -1092,21 +1142,23 @@ class MedicationGroup {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'defaultTimeMinutes': defaultTimeMinutes,
-        'entries': entries.map((e) => e.toMap()).toList(),
-      };
+    'id': id,
+    'name': name,
+    'defaultTimeMinutes': defaultTimeMinutes,
+    'entries': entries.map((e) => e.toMap()).toList(),
+  };
 
   factory MedicationGroup.fromMap(Map<String, dynamic> map) => MedicationGroup(
-        id: map['id'] as String?,
-        name: map['name'] as String,
-        defaultTimeMinutes: map['defaultTimeMinutes'] as int?,
-        entries: List<MedicationGroupEntry>.from(
-          (map['entries'] as List? ?? const []).map((e) =>
-              MedicationGroupEntry.fromMap(Map<String, dynamic>.from(e as Map))),
-        ),
-      );
+    id: map['id'] as String?,
+    name: map['name'] as String,
+    defaultTimeMinutes: map['defaultTimeMinutes'] as int?,
+    entries: List<MedicationGroupEntry>.from(
+      (map['entries'] as List? ?? const []).map(
+        (e) =>
+            MedicationGroupEntry.fromMap(Map<String, dynamic>.from(e as Map)),
+      ),
+    ),
+  );
 }
 
 // =============================================================================
@@ -1184,13 +1236,17 @@ class WisdomQuote {
   /// Reads a wisdom entry from a row of zebra_wisdom.json. Tolerates
   /// missing language keys — they fall back via `text(locale)`.
   factory WisdomQuote.fromJson(Map<String, dynamic> map) => WisdomQuote(
-        textEs: (map['fact_es'] as String?)?.trim() ?? '',
-        textEn: (map['fact_en'] as String?)?.trim() ?? '',
-        textZh: (map['fact_zh'] as String?)?.trim() ?? '',
-        textKo: (map['fact_ko'] as String?)?.trim() ?? '',
-        category: (map['condition'] as String?) ?? 'Dato Clínico',
-        source: ((map['citation'] ?? map['source'] ?? map['reference'] ?? map['url']) as String?)?.trim() ?? '',
-      );
+    textEs: (map['fact_es'] as String?)?.trim() ?? '',
+    textEn: (map['fact_en'] as String?)?.trim() ?? '',
+    textZh: (map['fact_zh'] as String?)?.trim() ?? '',
+    textKo: (map['fact_ko'] as String?)?.trim() ?? '',
+    category: (map['condition'] as String?) ?? 'Dato Clínico',
+    source:
+        ((map['citation'] ?? map['source'] ?? map['reference'] ?? map['url'])
+                as String?)
+            ?.trim() ??
+        '',
+  );
 }
 
 class ClinicalArticle {
@@ -1239,27 +1295,28 @@ class PubMedArticle {
   String get pubmedUrl => 'https://pubmed.ncbi.nlm.nih.gov/$pmid/';
 
   Map<String, dynamic> toMap() => {
-        'pmid': pmid,
-        'title': title,
-        'abstractText': abstractText,
-        'journal': journal,
-        'authors': authors,
-        'publicationDate': publicationDate.toIso8601String(),
-        'cachedAt': cachedAt.toIso8601String(),
-        'fetchedForConditions': fetchedForConditions,
-      };
+    'pmid': pmid,
+    'title': title,
+    'abstractText': abstractText,
+    'journal': journal,
+    'authors': authors,
+    'publicationDate': publicationDate.toIso8601String(),
+    'cachedAt': cachedAt.toIso8601String(),
+    'fetchedForConditions': fetchedForConditions,
+  };
 
   factory PubMedArticle.fromMap(Map<String, dynamic> map) => PubMedArticle(
-        pmid: map['pmid'],
-        title: map['title'],
-        abstractText: map['abstractText'] as String?,
-        journal: map['journal'] ?? '',
-        authors: List<String>.from(map['authors'] ?? const []),
-        publicationDate: DateTime.parse(map['publicationDate']),
-        cachedAt: DateTime.parse(map['cachedAt']),
-        fetchedForConditions:
-            List<String>.from(map['fetchedForConditions'] ?? const []),
-      );
+    pmid: map['pmid'],
+    title: map['title'],
+    abstractText: map['abstractText'] as String?,
+    journal: map['journal'] ?? '',
+    authors: List<String>.from(map['authors'] ?? const []),
+    publicationDate: DateTime.parse(map['publicationDate']),
+    cachedAt: DateTime.parse(map['cachedAt']),
+    fetchedForConditions: List<String>.from(
+      map['fetchedForConditions'] ?? const [],
+    ),
+  );
 }
 
 /// Pre-bundled aggregate of cached search results for a condition.
@@ -1310,6 +1367,11 @@ class Profile {
   // PHASE 5.2d — fever readings (schema v3, additive)
   List<FeverReading> feverHistory;
 
+  // Sprint F.B+C — transversal action capture (schema v4, additive).
+  // ActionTaken links polymorphically to symptom/bowel/hemorrhoidal/fever
+  // events. Follow-up effectiveness capture is a separate concern (F.D).
+  List<ActionTaken> actionsHistory;
+
   /// Sleep/Hydration/HRV-style optional trackers. Keys are stable IDs
   /// ('sleep', 'hydration', 'hrv', etc.). All OFF by default; user
   /// activates per-module in settings. Additive field — empty map for
@@ -1357,25 +1419,27 @@ class Profile {
     List<HrvReading>? hrv,
     List<MovementMetric>? movement,
     List<FeverReading>? fever,
+    List<ActionTaken>? actions,
     Map<String, bool>? optionalTrackers,
-  })  : optionalTrackers = optionalTrackers ?? <String, bool>{},
-        medicationGroups = medicationGroups ?? <MedicationGroup>[],
-        symptomHistory = symptoms ?? <SymptomEvent>[],
-        doseHistory = doses ?? <DoseEvent>[],
-        structuralHistory = structural ?? <StructuralEvent>[],
-        mentalHistory = mental ?? <MentalEvent>[],
-        activityHistory = activity ?? <ActivityEvent>[],
-        lifeEvents = lifeEvents ?? <LifeEvent>[],
-        medicationOutcomes = outcomes ?? <MedicationOutcome>[],
-        pacingDays = pacing ?? <String>{},
-        savedArticlePmids = saved ?? <String>{},
-        bowelHistory = bowel ?? <BowelEvent>[],
-        hemorrhoidalHistory = hemorrhoidal ?? <HemorrhoidalEvent>[],
-        sleepHistory = sleep ?? <SleepEntry>[],
-        hydrationHistory = hydration ?? <HydrationEntry>[],
-        hrvHistory = hrv ?? <HrvReading>[],
-        movementHistory = movement ?? <MovementMetric>[],
-        feverHistory = fever ?? <FeverReading>[];
+  }) : optionalTrackers = optionalTrackers ?? <String, bool>{},
+       medicationGroups = medicationGroups ?? <MedicationGroup>[],
+       symptomHistory = symptoms ?? <SymptomEvent>[],
+       doseHistory = doses ?? <DoseEvent>[],
+       structuralHistory = structural ?? <StructuralEvent>[],
+       mentalHistory = mental ?? <MentalEvent>[],
+       activityHistory = activity ?? <ActivityEvent>[],
+       lifeEvents = lifeEvents ?? <LifeEvent>[],
+       medicationOutcomes = outcomes ?? <MedicationOutcome>[],
+       pacingDays = pacing ?? <String>{},
+       savedArticlePmids = saved ?? <String>{},
+       bowelHistory = bowel ?? <BowelEvent>[],
+       hemorrhoidalHistory = hemorrhoidal ?? <HemorrhoidalEvent>[],
+       sleepHistory = sleep ?? <SleepEntry>[],
+       hydrationHistory = hydration ?? <HydrationEntry>[],
+       hrvHistory = hrv ?? <HrvReading>[],
+       movementHistory = movement ?? <MovementMetric>[],
+       feverHistory = fever ?? <FeverReading>[],
+       actionsHistory = actions ?? <ActionTaken>[];
 
   // ---------------------------------------------------------------------------
   // Catalog helpers
@@ -1426,19 +1490,24 @@ class Profile {
       doseHistory.where((e) => _sameDay(e.timestamp, date)).toList();
 
   List<MoodEntry> getMoodForDay(DateTime day) {
-  return moodHistory
-      .where((m) =>
-          m.timestamp.year == day.year &&
-          m.timestamp.month == day.month &&
-          m.timestamp.day == day.day)
-      .toList();
+    return moodHistory
+        .where(
+          (m) =>
+              m.timestamp.year == day.year &&
+              m.timestamp.month == day.month &&
+              m.timestamp.day == day.day,
+        )
+        .toList();
   }
+
   List<TherapyEvent> getTherapyForDay(DateTime day) {
     return therapyHistory
-        .where((t) =>
-            t.timestamp.year == day.year &&
-            t.timestamp.month == day.month &&
-            t.timestamp.day == day.day)
+        .where(
+          (t) =>
+              t.timestamp.year == day.year &&
+              t.timestamp.month == day.month &&
+              t.timestamp.day == day.day,
+        )
         .toList();
   }
 
@@ -1455,7 +1524,7 @@ class Profile {
   }
 
   List<LifeEvent> getLifeEventsForDay(DateTime date) =>
-    lifeEvents.where((e) => e.covers(date)).toList();
+      lifeEvents.where((e) => e.covers(date)).toList();
 
   List<SymptomEvent> getSymptomsForDay(DateTime date) =>
       symptomHistory.where((e) => _sameDay(e.timestamp, date)).toList();
@@ -1479,7 +1548,8 @@ class Profile {
   // that field — an entry logged Monday morning carries Monday's
   // dateKey and refers to Sunday-night → Monday-morning sleep.
   List<SleepEntry> getSleepForDay(DateTime date) {
-    final dk = "${date.year}-"
+    final dk =
+        "${date.year}-"
         "${date.month.toString().padLeft(2, '0')}-"
         "${date.day.toString().padLeft(2, '0')}";
     return sleepHistory.where((e) => e.dateKey == dk).toList();
@@ -1508,8 +1578,7 @@ class Profile {
         .reduce((a, b) => a.isAfter(b) ? a : b);
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final lastDay =
-        DateTime(mostRecent.year, mostRecent.month, mostRecent.day);
+    final lastDay = DateTime(mostRecent.year, mostRecent.month, mostRecent.day);
     final diff = today.difference(lastDay).inDays;
     return diff < 0 ? 0 : diff;
   }
@@ -1549,8 +1618,11 @@ class Profile {
   List<SymptomEvent> recentSignificantSymptoms({int hours = 2}) {
     final cutoff = DateTime.now().subtract(Duration(hours: hours));
     return symptomHistory
-        .where((s) =>
-            s.timestamp.isAfter(cutoff) && s.severity.value >= SymptomSeverity.moderate.value)
+        .where(
+          (s) =>
+              s.timestamp.isAfter(cutoff) &&
+              s.severity.value >= SymptomSeverity.moderate.value,
+        )
         .toList()
       ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
   }
@@ -1581,7 +1653,8 @@ class Profile {
       if (o.symptomName.toLowerCase() != sxLower) return false;
       if (o.isPending) return false;
       if (o.reason == OutcomeReason.otherTrigger ||
-          o.reason == OutcomeReason.additionalMed) return false;
+          o.reason == OutcomeReason.additionalMed)
+        return false;
       return true;
     }).toList();
     if (answered.isEmpty) return null;
@@ -1644,127 +1717,151 @@ class Profile {
   // ---------------------------------------------------------------------------
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'name': name,
-        'conditions': conditions,
-        'country': country,
-        'symptomVault': symptomVault,
-        'customExercises': customExercises,
-        'pacingDays': pacingDays.toList(),
-        'savedArticlePmids': savedArticlePmids.toList(),
-        'botiquin': botiquin.map((x) => x.toMap()).toList(),
-        'medicationGroups': medicationGroups.map((x) => x.toMap()).toList(),
-        'symptomHistory': symptomHistory.map((x) => x.toMap()).toList(),
-        'doseHistory': doseHistory.map((x) => x.toMap()).toList(),
-        'moodHistory': moodHistory.map((m) => m.toMap()).toList(),
-        'structuralHistory': structuralHistory.map((x) => x.toMap()).toList(),
-        'mentalHistory': mentalHistory.map((x) => x.toMap()).toList(),
-        'activityHistory': activityHistory.map((x) => x.toMap()).toList(),
-        'medicationOutcomes': medicationOutcomes.map((x) => x.toMap()).toList(),
-        'therapyHistory': therapyHistory.map((t) => t.toMap()).toList(),
-        'relationship': relationship,
-        'lifeEvents': lifeEvents.map((e) => e.toMap()).toList(),
-        'customTherapyModalities': customTherapyModalities,
-        'homeLatitude': homeLatitude,
-        'homeLongitude': homeLongitude,
-        'bowelHistory': bowelHistory.map((x) => x.toMap()).toList(),
-        'hemorrhoidalHistory':
-            hemorrhoidalHistory.map((x) => x.toMap()).toList(),
-        'sleepHistory': sleepHistory.map((x) => x.toMap()).toList(),
-        'hydrationHistory': hydrationHistory.map((x) => x.toMap()).toList(),
-        'hrvHistory': hrvHistory.map((x) => x.toMap()).toList(),
-        'movementHistory': movementHistory.map((x) => x.toMap()).toList(),
-        'feverHistory': feverHistory.map((x) => x.toMap()).toList(),
-        'optionalTrackers': optionalTrackers,
-      };
+    'id': id,
+    'name': name,
+    'conditions': conditions,
+    'country': country,
+    'symptomVault': symptomVault,
+    'customExercises': customExercises,
+    'pacingDays': pacingDays.toList(),
+    'savedArticlePmids': savedArticlePmids.toList(),
+    'botiquin': botiquin.map((x) => x.toMap()).toList(),
+    'medicationGroups': medicationGroups.map((x) => x.toMap()).toList(),
+    'symptomHistory': symptomHistory.map((x) => x.toMap()).toList(),
+    'doseHistory': doseHistory.map((x) => x.toMap()).toList(),
+    'moodHistory': moodHistory.map((m) => m.toMap()).toList(),
+    'structuralHistory': structuralHistory.map((x) => x.toMap()).toList(),
+    'mentalHistory': mentalHistory.map((x) => x.toMap()).toList(),
+    'activityHistory': activityHistory.map((x) => x.toMap()).toList(),
+    'medicationOutcomes': medicationOutcomes.map((x) => x.toMap()).toList(),
+    'therapyHistory': therapyHistory.map((t) => t.toMap()).toList(),
+    'relationship': relationship,
+    'lifeEvents': lifeEvents.map((e) => e.toMap()).toList(),
+    'customTherapyModalities': customTherapyModalities,
+    'homeLatitude': homeLatitude,
+    'homeLongitude': homeLongitude,
+    'bowelHistory': bowelHistory.map((x) => x.toMap()).toList(),
+    'hemorrhoidalHistory': hemorrhoidalHistory.map((x) => x.toMap()).toList(),
+    'sleepHistory': sleepHistory.map((x) => x.toMap()).toList(),
+    'hydrationHistory': hydrationHistory.map((x) => x.toMap()).toList(),
+    'hrvHistory': hrvHistory.map((x) => x.toMap()).toList(),
+    'movementHistory': movementHistory.map((x) => x.toMap()).toList(),
+    'feverHistory': feverHistory.map((x) => x.toMap()).toList(),
+    'actionsHistory': actionsHistory.map((x) => x.toMap()).toList(),
+    'optionalTrackers': optionalTrackers,
+  };
 
   factory Profile.fromMap(Map<String, dynamic> map) => Profile(
-        id: map['id'],
-        name: map['name'],
-        conditions: List<String>.from(map['conditions'] ?? const []),
-        country: map['country'] as String?,
-        customExercises: List<String>.from(map['customExercises'] ?? []),
-        symptomVault: List<String>.from(map['symptomVault'] ?? const []),
-        pacing: Set<String>.from(map['pacingDays'] ?? const []),
-        saved: Set<String>.from(map['savedArticlePmids'] ?? const []),
-        botiquin: List<MedicationDef>.from(
-          (map['botiquin'] ?? const []).map(
-              (x) => MedicationDef.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        medicationGroups: List<MedicationGroup>.from(
-          (map['medicationGroups'] ?? const []).map((x) =>
-              MedicationGroup.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        symptoms: List<SymptomEvent>.from(
-          (map['symptomHistory'] ?? const []).map(
-              (x) => SymptomEvent.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        doses: List<DoseEvent>.from(
-          (map['doseHistory'] ?? const []).map(
-              (x) => DoseEvent.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        moodHistory: List<MoodEntry>.from(
-          (map['moodHistory'] ?? const []).map(
-            (x) => MoodEntry.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        structural: List<StructuralEvent>.from(
-          (map['structuralHistory'] ?? const []).map((x) =>
-              StructuralEvent.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        mental: List<MentalEvent>.from(
-          (map['mentalHistory'] ?? const []).map(
-              (x) => MentalEvent.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        activity: List<ActivityEvent>.from(
-          (map['activityHistory'] ?? const []).map((x) =>
-              ActivityEvent.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        outcomes: List<MedicationOutcome>.from(
-          (map['medicationOutcomes'] ?? const []).map((x) =>
-              MedicationOutcome.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        therapyHistory: ((map['therapyHistory'] as List?) ?? const [])
-            .map((x) => TherapyEvent.fromMap(x as Map<String, dynamic>))
-            .toList(),
-        relationship: map['relationship'] as String?,
-        lifeEvents: ((map['lifeEvents'] as List?) ?? const [])
-            .map((x) => LifeEvent.fromMap(Map<String, dynamic>.from(x as Map)))
-            .toList(),
-        customTherapyModalities: List<String>.from(map['customTherapyModalities'] ?? []),
-        homeLatitude: (map['homeLatitude'] as num?)?.toDouble(),
-        homeLongitude: (map['homeLongitude'] as num?)?.toDouble(),
-        bowel: List<BowelEvent>.from(
-          (map['bowelHistory'] ?? const []).map(
-              (x) => BowelEvent.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        hemorrhoidal: List<HemorrhoidalEvent>.from(
-          (map['hemorrhoidalHistory'] ?? const []).map((x) =>
-              HemorrhoidalEvent.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        sleep: List<SleepEntry>.from(
-          (map['sleepHistory'] ?? const []).map(
-              (x) => SleepEntry.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        hydration: List<HydrationEntry>.from(
-          (map['hydrationHistory'] ?? const []).map((x) =>
-              HydrationEntry.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        hrv: List<HrvReading>.from(
-          (map['hrvHistory'] ?? const []).map(
-              (x) => HrvReading.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        movement: List<MovementMetric>.from(
-          (map['movementHistory'] ?? const []).map((x) =>
-              MovementMetric.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        fever: List<FeverReading>.from(
-          (map['feverHistory'] ?? const []).map(
-              (x) => FeverReading.fromMap(Map<String, dynamic>.from(x as Map))),
-        ),
-        optionalTrackers: Map<String, bool>.from(
-          (map['optionalTrackers'] as Map?) ?? const {},
-        ),
-      );
+    id: map['id'],
+    name: map['name'],
+    conditions: List<String>.from(map['conditions'] ?? const []),
+    country: map['country'] as String?,
+    customExercises: List<String>.from(map['customExercises'] ?? []),
+    symptomVault: List<String>.from(map['symptomVault'] ?? const []),
+    pacing: Set<String>.from(map['pacingDays'] ?? const []),
+    saved: Set<String>.from(map['savedArticlePmids'] ?? const []),
+    botiquin: List<MedicationDef>.from(
+      (map['botiquin'] ?? const []).map(
+        (x) => MedicationDef.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    medicationGroups: List<MedicationGroup>.from(
+      (map['medicationGroups'] ?? const []).map(
+        (x) => MedicationGroup.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    symptoms: List<SymptomEvent>.from(
+      (map['symptomHistory'] ?? const []).map(
+        (x) => SymptomEvent.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    doses: List<DoseEvent>.from(
+      (map['doseHistory'] ?? const []).map(
+        (x) => DoseEvent.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    moodHistory: List<MoodEntry>.from(
+      (map['moodHistory'] ?? const []).map(
+        (x) => MoodEntry.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    structural: List<StructuralEvent>.from(
+      (map['structuralHistory'] ?? const []).map(
+        (x) => StructuralEvent.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    mental: List<MentalEvent>.from(
+      (map['mentalHistory'] ?? const []).map(
+        (x) => MentalEvent.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    activity: List<ActivityEvent>.from(
+      (map['activityHistory'] ?? const []).map(
+        (x) => ActivityEvent.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    outcomes: List<MedicationOutcome>.from(
+      (map['medicationOutcomes'] ?? const []).map(
+        (x) => MedicationOutcome.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    therapyHistory: ((map['therapyHistory'] as List?) ?? const [])
+        .map((x) => TherapyEvent.fromMap(x as Map<String, dynamic>))
+        .toList(),
+    relationship: map['relationship'] as String?,
+    lifeEvents: ((map['lifeEvents'] as List?) ?? const [])
+        .map((x) => LifeEvent.fromMap(Map<String, dynamic>.from(x as Map)))
+        .toList(),
+    customTherapyModalities: List<String>.from(
+      map['customTherapyModalities'] ?? [],
+    ),
+    homeLatitude: (map['homeLatitude'] as num?)?.toDouble(),
+    homeLongitude: (map['homeLongitude'] as num?)?.toDouble(),
+    bowel: List<BowelEvent>.from(
+      (map['bowelHistory'] ?? const []).map(
+        (x) => BowelEvent.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    hemorrhoidal: List<HemorrhoidalEvent>.from(
+      (map['hemorrhoidalHistory'] ?? const []).map(
+        (x) => HemorrhoidalEvent.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    sleep: List<SleepEntry>.from(
+      (map['sleepHistory'] ?? const []).map(
+        (x) => SleepEntry.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    hydration: List<HydrationEntry>.from(
+      (map['hydrationHistory'] ?? const []).map(
+        (x) => HydrationEntry.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    hrv: List<HrvReading>.from(
+      (map['hrvHistory'] ?? const []).map(
+        (x) => HrvReading.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    movement: List<MovementMetric>.from(
+      (map['movementHistory'] ?? const []).map(
+        (x) => MovementMetric.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    fever: List<FeverReading>.from(
+      (map['feverHistory'] ?? const []).map(
+        (x) => FeverReading.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    optionalTrackers: Map<String, bool>.from(
+      (map['optionalTrackers'] as Map?) ?? const {},
+    ),
+
+    actions: List<ActionTaken>.from(
+      (map['actionsHistory'] ?? const []).map(
+        (x) => ActionTaken.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+  );
 }
 
 // =============================================================================
@@ -1787,19 +1884,19 @@ extension MoodQuadrantLabels on MoodQuadrant {
   /// Etiquetas de los cuadrantes utilizando sustantivos abstractos neutros
   /// en lugar de adjetivos con género (ej. 'activada/calmada').
   String get label => switch (this) {
-        MoodQuadrant.activatedUnpleasant => 'activación · malestar',
-        MoodQuadrant.activatedPleasant => 'activación · bienestar',
-        MoodQuadrant.calmUnpleasant => 'calma · malestar',
-        MoodQuadrant.calmPleasant => 'calma · bienestar',
-      };
+    MoodQuadrant.activatedUnpleasant => 'activación · malestar',
+    MoodQuadrant.activatedPleasant => 'activación · bienestar',
+    MoodQuadrant.calmUnpleasant => 'calma · malestar',
+    MoodQuadrant.calmPleasant => 'calma · bienestar',
+  };
 
   /// Descriptores breves basados en estados sustantivos neutros para el paso 1.
   String get teaserStates => switch (this) {
-        MoodQuadrant.activatedUnpleasant => 'tensión, ansiedad',
-        MoodQuadrant.activatedPleasant => 'energía, alegría',
-        MoodQuadrant.calmUnpleasant => 'agotamiento, tristeza',
-        MoodQuadrant.calmPleasant => 'tranquilidad, paz',
-      };
+    MoodQuadrant.activatedUnpleasant => 'tensión, ansiedad',
+    MoodQuadrant.activatedPleasant => 'energía, alegría',
+    MoodQuadrant.calmUnpleasant => 'agotamiento, tristeza',
+    MoodQuadrant.calmPleasant => 'tranquilidad, paz',
+  };
 
   /// Mapea las claves de categorías del archivo JSON con los enums nativos de Dart
   static MoodQuadrant fromJsonCategory(String category) {
@@ -1863,33 +1960,33 @@ class EmaMood {
     // Tolerant key resolution — JSON has gone through several iterations
     // (`spanish_equivalent`, `estado_es`, etc.). 'Falta Key' marker stays
     // as a visible error sentinel.
-    final es = map['spanish_equivalent'] ??
+    final es =
+        map['spanish_equivalent'] ??
         map['estado_es'] ??
         map['name_es'] ??
         map['word_es'] ??
         map['mood_es'] ??
         'Falta Key';
-    final en = map['english_term'] ??
+    final en =
+        map['english_term'] ??
         map['estado_en'] ??
         map['name_en'] ??
         map['word_en'] ??
         map['mood_en'] ??
         'Missing Key';
-    final zh = map['tw_chinese_equivalent'] ??
+    final zh =
+        map['tw_chinese_equivalent'] ??
         map['chinese_equivalent'] ??
         map['name_zh'] ??
         map['mood_zh'] ??
         '';
 
-    final defEs = map['definition_es'] ??
-        map['definicion_es'] ??
-        map['desc_es'] ??
-        '';
-    final defEn = map['definition_en'] ??
-        map['definicion_en'] ??
-        map['desc_en'] ??
-        '';
-    final defZh = map['definition_tw'] ??
+    final defEs =
+        map['definition_es'] ?? map['definicion_es'] ?? map['desc_es'] ?? '';
+    final defEn =
+        map['definition_en'] ?? map['definicion_en'] ?? map['desc_en'] ?? '';
+    final defZh =
+        map['definition_tw'] ??
         map['definition_zh'] ??
         map['definicion_zh'] ??
         '';
@@ -1905,13 +2002,13 @@ class EmaMood {
   }
 
   Map<String, dynamic> toMap() => {
-        'english': english,
-        'spanish': spanish,
-        'chinese': chinese,
-        'definition_en': definitionEn,
-        'definition_es': definitionEs,
-        'definition_zh': definitionZh,
-      };
+    'english': english,
+    'spanish': spanish,
+    'chinese': chinese,
+    'definition_en': definitionEn,
+    'definition_es': definitionEs,
+    'definition_zh': definitionZh,
+  };
 }
 
 /// Representa un registro histórico guardado por el usuario.
@@ -1922,7 +2019,8 @@ class MoodEntry {
   final DateTime timestamp;
   final MoodQuadrant primaryQuadrant;
   final List<String> states; // Almacena los sustantivos neutros seleccionados
-  final String? notes;       // Contexto personalizado opcional (Ej: "Mucha niebla mental")
+  final String?
+  notes; // Contexto personalizado opcional (Ej: "Mucha niebla mental")
 
   MoodEntry({
     String? id,
@@ -1930,22 +2028,26 @@ class MoodEntry {
     required this.primaryQuadrant,
     required this.states,
     this.notes,
-  }) : id = id ?? '${timestamp.millisecondsSinceEpoch}-${states.join('|').hashCode}';
+  }) : id =
+           id ??
+           '${timestamp.millisecondsSinceEpoch}-${states.join('|').hashCode}';
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'primaryQuadrant': primaryQuadrant.name,
-        'states': states,
-        'notes': notes,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'primaryQuadrant': primaryQuadrant.name,
+    'states': states,
+    'notes': notes,
+  };
 
-  factory MoodEntry.fromMap(Map<String, dynamic> map){
+  factory MoodEntry.fromMap(Map<String, dynamic> map) {
     // MAGIA DE RETROCOMPATIBILIDAD (v1.0 -> v1.1)
-    // Si la nota viene nula, pero existe una 'intensity' de la versión vieja, 
+    // Si la nota viene nula, pero existe una 'intensity' de la versión vieja,
     // la rescatamos y la convertimos en texto para no perder la historia del paciente.
     String? extractedNotes = map['notes'] as String?;
-    if (extractedNotes == null && map.containsKey('intensity') && map['intensity'] != null) {
+    if (extractedNotes == null &&
+        map.containsKey('intensity') &&
+        map['intensity'] != null) {
       extractedNotes = "Intensidad anterior: ${map['intensity']}/5";
     }
 
@@ -1956,7 +2058,7 @@ class MoodEntry {
         (q) => q.name == map['primaryQuadrant'],
         orElse: () => MoodQuadrant.calmPleasant,
       ),
-      // Los adjetivos viejos (ej. "ansiosa") seguirán mostrándose correctamente 
+      // Los adjetivos viejos (ej. "ansiosa") seguirán mostrándose correctamente
       // junto a los nuevos sustantivos ("ansiedad") sin romper la app.
       states: List<String>.from((map['states'] as List?) ?? const []),
       notes: extractedNotes,
@@ -1968,14 +2070,13 @@ class MoodEntry {
     MoodQuadrant? primaryQuadrant,
     List<String>? states,
     String? notes,
-  }) =>
-      MoodEntry(
-        id: id,
-        timestamp: timestamp ?? this.timestamp,
-        primaryQuadrant: primaryQuadrant ?? this.primaryQuadrant,
-        states: states ?? this.states,
-        notes: notes ?? this.notes,
-      );
+  }) => MoodEntry(
+    id: id,
+    timestamp: timestamp ?? this.timestamp,
+    primaryQuadrant: primaryQuadrant ?? this.primaryQuadrant,
+    states: states ?? this.states,
+    notes: notes ?? this.notes,
+  );
 }
 
 // =============================================================================
@@ -2001,22 +2102,22 @@ class WeatherDay {
   });
 
   Map<String, dynamic> toMap() => {
-        'dateKey': dateKey,
-        'pressureHpa': pressureHpa,
-        'temperatureC': temperatureC,
-        'humidityPct': humidityPct,
-        'pressureDeltaHpa': pressureDeltaHpa,
-        'fetchedAt': fetchedAt.toIso8601String(),
-      };
+    'dateKey': dateKey,
+    'pressureHpa': pressureHpa,
+    'temperatureC': temperatureC,
+    'humidityPct': humidityPct,
+    'pressureDeltaHpa': pressureDeltaHpa,
+    'fetchedAt': fetchedAt.toIso8601String(),
+  };
 
   factory WeatherDay.fromMap(Map<String, dynamic> map) => WeatherDay(
-        dateKey: map['dateKey'] as String,
-        pressureHpa: (map['pressureHpa'] as num?)?.toDouble(),
-        temperatureC: (map['temperatureC'] as num?)?.toDouble(),
-        humidityPct: (map['humidityPct'] as num?)?.toDouble(),
-        pressureDeltaHpa: (map['pressureDeltaHpa'] as num?)?.toDouble(),
-        fetchedAt: DateTime.parse(map['fetchedAt'] as String),
-      );
+    dateKey: map['dateKey'] as String,
+    pressureHpa: (map['pressureHpa'] as num?)?.toDouble(),
+    temperatureC: (map['temperatureC'] as num?)?.toDouble(),
+    humidityPct: (map['humidityPct'] as num?)?.toDouble(),
+    pressureDeltaHpa: (map['pressureDeltaHpa'] as num?)?.toDouble(),
+    fetchedAt: DateTime.parse(map['fetchedAt'] as String),
+  );
 
   /// Sentence-form summary for the Hoy chip.
   String shortSummary() {
@@ -2026,17 +2127,17 @@ class WeatherDay {
       final arrow = pressureDeltaHpa == null
           ? ''
           : pressureDeltaHpa! <= -3
-              ? ' ↓${pressureDeltaHpa!.abs().round()}'
-              : pressureDeltaHpa! >= 3
-                  ? ' ↑${pressureDeltaHpa!.round()}'
-                  : '';
+          ? ' ↓${pressureDeltaHpa!.abs().round()}'
+          : pressureDeltaHpa! >= 3
+          ? ' ↑${pressureDeltaHpa!.round()}'
+          : '';
       parts.add('$p hPa$arrow');
     }
     if (temperatureC != null) parts.add('${temperatureC!.round()}°C');
     if (humidityPct != null) parts.add('${humidityPct!.round()}% hum.');
     return parts.join(' · ');
   }
-} 
+}
 
 // =============================================================================
 // THERAPY EVENTS (passive therapies: kinesio, acupuntura, masaje, etc.)
@@ -2048,13 +2149,13 @@ class WeatherDay {
 class TherapyEvent {
   final String id;
   final DateTime timestamp;
-  final String modality;          // e.g. "Kinesiología", "Acupuntura"
-  final String? bodyArea;         // e.g. "Cervicales", "Lumbar"
+  final String modality; // e.g. "Kinesiología", "Acupuntura"
+  final String? bodyArea; // e.g. "Cervicales", "Lumbar"
   final int? durationMinutes;
   final String? therapistOrPlace; // free text
-  final int? cost;                // CLP, optional
-  final int? severityBefore;      // 0-4, e-VAS pre-session
-  final int? severityAfter;       // 0-4, e-VAS post-session
+  final int? cost; // CLP, optional
+  final int? severityBefore; // 0-4, e-VAS pre-session
+  final int? severityAfter; // 0-4, e-VAS post-session
   final String? note;
 
   TherapyEvent({
@@ -2078,30 +2179,30 @@ class TherapyEvent {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'modality': modality,
-        'bodyArea': bodyArea,
-        'durationMinutes': durationMinutes,
-        'therapistOrPlace': therapistOrPlace,
-        'cost': cost,
-        'severityBefore': severityBefore,
-        'severityAfter': severityAfter,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'modality': modality,
+    'bodyArea': bodyArea,
+    'durationMinutes': durationMinutes,
+    'therapistOrPlace': therapistOrPlace,
+    'cost': cost,
+    'severityBefore': severityBefore,
+    'severityAfter': severityAfter,
+    'note': note,
+  };
 
   factory TherapyEvent.fromMap(Map<String, dynamic> map) => TherapyEvent(
-        id: map['id'] as String?,
-        timestamp: DateTime.parse(map['timestamp'] as String),
-        modality: map['modality'] as String,
-        bodyArea: map['bodyArea'] as String?,
-        durationMinutes: map['durationMinutes'] as int?,
-        therapistOrPlace: map['therapistOrPlace'] as String?,
-        cost: map['cost'] as int?,
-        severityBefore: map['severityBefore'] as int?,
-        severityAfter: map['severityAfter'] as int?,
-        note: map['note'] as String?,
-      );
+    id: map['id'] as String?,
+    timestamp: DateTime.parse(map['timestamp'] as String),
+    modality: map['modality'] as String,
+    bodyArea: map['bodyArea'] as String?,
+    durationMinutes: map['durationMinutes'] as int?,
+    therapistOrPlace: map['therapistOrPlace'] as String?,
+    cost: map['cost'] as int?,
+    severityBefore: map['severityBefore'] as int?,
+    severityAfter: map['severityAfter'] as int?,
+    note: map['note'] as String?,
+  );
 
   TherapyEvent copyWith({
     DateTime? timestamp,
@@ -2113,19 +2214,18 @@ class TherapyEvent {
     int? severityBefore,
     int? severityAfter,
     String? note,
-  }) =>
-      TherapyEvent(
-        id: id,
-        timestamp: timestamp ?? this.timestamp,
-        modality: modality ?? this.modality,
-        bodyArea: bodyArea ?? this.bodyArea,
-        durationMinutes: durationMinutes ?? this.durationMinutes,
-        therapistOrPlace: therapistOrPlace ?? this.therapistOrPlace,
-        cost: cost ?? this.cost,
-        severityBefore: severityBefore ?? this.severityBefore,
-        severityAfter: severityAfter ?? this.severityAfter,
-        note: note ?? this.note,
-      );
+  }) => TherapyEvent(
+    id: id,
+    timestamp: timestamp ?? this.timestamp,
+    modality: modality ?? this.modality,
+    bodyArea: bodyArea ?? this.bodyArea,
+    durationMinutes: durationMinutes ?? this.durationMinutes,
+    therapistOrPlace: therapistOrPlace ?? this.therapistOrPlace,
+    cost: cost ?? this.cost,
+    severityBefore: severityBefore ?? this.severityBefore,
+    severityAfter: severityAfter ?? this.severityAfter,
+    note: note ?? this.note,
+  );
 }
 
 /// Standard therapy modalities for Chilean / LatAm users.
@@ -2152,8 +2252,10 @@ class LifeEvent {
   final String id;
   String title;
   DateTime startDate;
+
   /// Null means single-day event.
   DateTime? endDate;
+
   /// Free-form category. Suggested values live in kLifeEventCategorySuggestions.
   String? category;
   String? note;
@@ -2178,23 +2280,24 @@ class LifeEvent {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'title': title,
-        'startDate': startDate.toIso8601String(),
-        'endDate': endDate?.toIso8601String(),
-        'category': category,
-        'note': note,
-      };
+    'id': id,
+    'title': title,
+    'startDate': startDate.toIso8601String(),
+    'endDate': endDate?.toIso8601String(),
+    'category': category,
+    'note': note,
+  };
 
   factory LifeEvent.fromMap(Map<String, dynamic> map) => LifeEvent(
-        id: map['id'] as String?,
-        title: map['title'] as String,
-        startDate: DateTime.parse(map['startDate'] as String),
-        endDate:
-            map['endDate'] != null ? DateTime.parse(map['endDate'] as String) : null,
-        category: map['category'] as String?,
-        note: map['note'] as String?,
-      );
+    id: map['id'] as String?,
+    title: map['title'] as String,
+    startDate: DateTime.parse(map['startDate'] as String),
+    endDate: map['endDate'] != null
+        ? DateTime.parse(map['endDate'] as String)
+        : null,
+    category: map['category'] as String?,
+    note: map['note'] as String?,
+  );
 
   LifeEvent copyWith({
     String? title,
@@ -2203,15 +2306,14 @@ class LifeEvent {
     String? category,
     String? note,
     bool clearEndDate = false,
-  }) =>
-      LifeEvent(
-        id: id,
-        title: title ?? this.title,
-        startDate: startDate ?? this.startDate,
-        endDate: clearEndDate ? null : (endDate ?? this.endDate),
-        category: category ?? this.category,
-        note: note ?? this.note,
-      );
+  }) => LifeEvent(
+    id: id,
+    title: title ?? this.title,
+    startDate: startDate ?? this.startDate,
+    endDate: clearEndDate ? null : (endDate ?? this.endDate),
+    category: category ?? this.category,
+    note: note ?? this.note,
+  );
 }
 
 /// Suggested categories shown as autocomplete chips. Free-form input is allowed.
@@ -2253,16 +2355,18 @@ const kLifeEventCategorySuggestions = <String>[
 /// who tap "más detalle" — this enum is the primary UI bucket.
 enum BowelBucket {
   constipation(1, 'estreñimiento'), // BSS 1–2
-  normal(2, 'normal'),               // BSS 3–5
-  diarrhea(3, 'diarrea');            // BSS 6–7
+  normal(2, 'normal'), // BSS 3–5
+  diarrhea(3, 'diarrea'); // BSS 6–7
 
   final int value;
   final String label;
   const BowelBucket(this.value, this.label);
 
   static BowelBucket fromValue(int v) {
-    return values.firstWhere((b) => b.value == v,
-        orElse: () => BowelBucket.normal);
+    return values.firstWhere(
+      (b) => b.value == v,
+      orElse: () => BowelBucket.normal,
+    );
   }
 
   static BowelBucket? parse(String? raw) {
@@ -2278,13 +2382,16 @@ class BowelEvent {
   final String id;
   final DateTime timestamp;
   final BowelBucket bucket;
+
   /// Optional full 7-point Bristol type for users who tap "más detalle".
   final int? bristolType;
+
   /// 0–4 severity — reuses SymptomSeverity for consistent dot UI.
   final SymptomSeverity severity;
   final bool urgency;
   final bool bloodPresent;
   final bool incompleteEvacuation;
+
   /// Future-proofing for photo logging — privacy conversation deferred.
   /// No UI surfaces this field in Phase 5.
   final String? photoPath;
@@ -2329,33 +2436,32 @@ class BowelEvent {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'bucket': bucket.name,
-        'bristolType': bristolType,
-        'severity': severity.value,
-        'urgency': urgency,
-        'bloodPresent': bloodPresent,
-        'incompleteEvacuation': incompleteEvacuation,
-        'photoPath': photoPath,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'bucket': bucket.name,
+    'bristolType': bristolType,
+    'severity': severity.value,
+    'urgency': urgency,
+    'bloodPresent': bloodPresent,
+    'incompleteEvacuation': incompleteEvacuation,
+    'photoPath': photoPath,
+    'note': note,
+  };
 
   factory BowelEvent.fromMap(Map<String, dynamic> map) => BowelEvent(
-        id: map['id'] as String?,
-        timestamp: DateTime.parse(map['timestamp'] as String),
-        bucket: BowelBucket.parse(map['bucket'] as String?) ??
-            BowelBucket.normal,
-        bristolType: (map['bristolType'] as num?)?.toInt(),
-        severity: SymptomSeverity.fromValue(
-          (map['severity'] as num?)?.toInt() ?? 0,
-        ),
-        urgency: map['urgency'] as bool? ?? false,
-        bloodPresent: map['bloodPresent'] as bool? ?? false,
-        incompleteEvacuation: map['incompleteEvacuation'] as bool? ?? false,
-        photoPath: map['photoPath'] as String?,
-        note: map['note'] as String?,
-      );
+    id: map['id'] as String?,
+    timestamp: DateTime.parse(map['timestamp'] as String),
+    bucket: BowelBucket.parse(map['bucket'] as String?) ?? BowelBucket.normal,
+    bristolType: (map['bristolType'] as num?)?.toInt(),
+    severity: SymptomSeverity.fromValue(
+      (map['severity'] as num?)?.toInt() ?? 0,
+    ),
+    urgency: map['urgency'] as bool? ?? false,
+    bloodPresent: map['bloodPresent'] as bool? ?? false,
+    incompleteEvacuation: map['incompleteEvacuation'] as bool? ?? false,
+    photoPath: map['photoPath'] as String?,
+    note: map['note'] as String?,
+  );
 }
 
 /// Hemorrhoidal event — logged independently from bowel events.
@@ -2364,6 +2470,7 @@ class HemorrhoidalEvent {
   final String id;
   final DateTime timestamp;
   final bool bleeding;
+
   /// 0–4 discomfort/pain severity.
   final SymptomSeverity severity;
   final String? note;
@@ -2392,12 +2499,12 @@ class HemorrhoidalEvent {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'bleeding': bleeding,
-        'severity': severity.value,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'bleeding': bleeding,
+    'severity': severity.value,
+    'note': note,
+  };
 
   factory HemorrhoidalEvent.fromMap(Map<String, dynamic> map) =>
       HemorrhoidalEvent(
@@ -2422,6 +2529,7 @@ enum SleepQuality {
   veryGood(4, 'muy bien');
 
   final int value;
+
   /// Spanish fallback (LatAm neutral). For user-facing localized labels,
   /// use SleepQualityLocalization.label(l10n) from
   /// lib/widgets/sleep_form_sheet.dart.
@@ -2437,8 +2545,10 @@ enum SleepQuality {
   }
 
   static SleepQuality fromValue(int v) {
-    return values.firstWhere((q) => q.value == v,
-        orElse: () => SleepQuality.regular);
+    return values.firstWhere(
+      (q) => q.value == v,
+      orElse: () => SleepQuality.regular,
+    );
   }
 }
 
@@ -2451,10 +2561,13 @@ class SleepEntry {
   final String dateKey;
   final SleepQuality quality;
   final int? durationMinutes;
+
   /// "¿te costó dormirte?" — minutes from bedtime to falling asleep.
   final int? onsetLatencyMinutes;
+
   /// Number of mid-night wake-ups.
   final int? wakeCount;
+
   /// Single yes/no, no narrative, no severity (deliberate — see 5.1b).
   final bool? nightmare;
   final String? note;
@@ -2495,29 +2608,29 @@ class SleepEntry {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'dateKey': dateKey,
-        'quality': quality.name,
-        'durationMinutes': durationMinutes,
-        'onsetLatencyMinutes': onsetLatencyMinutes,
-        'wakeCount': wakeCount,
-        'nightmare': nightmare,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'dateKey': dateKey,
+    'quality': quality.name,
+    'durationMinutes': durationMinutes,
+    'onsetLatencyMinutes': onsetLatencyMinutes,
+    'wakeCount': wakeCount,
+    'nightmare': nightmare,
+    'note': note,
+  };
 
   factory SleepEntry.fromMap(Map<String, dynamic> map) => SleepEntry(
-        id: map['id'] as String?,
-        timestamp: DateTime.parse(map['timestamp'] as String),
-        dateKey: map['dateKey'] as String,
-        quality: SleepQuality.parse(map['quality'] as String?) ??
-            SleepQuality.regular,
-        durationMinutes: (map['durationMinutes'] as num?)?.toInt(),
-        onsetLatencyMinutes: (map['onsetLatencyMinutes'] as num?)?.toInt(),
-        wakeCount: (map['wakeCount'] as num?)?.toInt(),
-        nightmare: map['nightmare'] as bool?,
-        note: map['note'] as String?,
-      );
+    id: map['id'] as String?,
+    timestamp: DateTime.parse(map['timestamp'] as String),
+    dateKey: map['dateKey'] as String,
+    quality:
+        SleepQuality.parse(map['quality'] as String?) ?? SleepQuality.regular,
+    durationMinutes: (map['durationMinutes'] as num?)?.toInt(),
+    onsetLatencyMinutes: (map['onsetLatencyMinutes'] as num?)?.toInt(),
+    wakeCount: (map['wakeCount'] as num?)?.toInt(),
+    nightmare: map['nightmare'] as bool?,
+    note: map['note'] as String?,
+  );
 }
 
 // -----------------------------------------------------------------------------
@@ -2568,10 +2681,13 @@ enum SodiumSource {
 class HydrationEntry {
   final String id;
   final DateTime timestamp;
+
   /// Volume in ml. Null = pure sodium log with no fluid intake.
   final double? volumeMl;
+
   /// Beverage type. Null on a pure sodium log.
   final HydrationBeverage? beverage;
+
   /// Optional sodium tag. Null = plain water (or no added sodium).
   final SodiumSource? sodium;
   final String? note;
@@ -2603,22 +2719,22 @@ class HydrationEntry {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'volumeMl': volumeMl,
-        'beverage': beverage?.name,
-        'sodium': sodium?.name,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'volumeMl': volumeMl,
+    'beverage': beverage?.name,
+    'sodium': sodium?.name,
+    'note': note,
+  };
 
   factory HydrationEntry.fromMap(Map<String, dynamic> map) => HydrationEntry(
-        id: map['id'] as String?,
-        timestamp: DateTime.parse(map['timestamp'] as String),
-        volumeMl: (map['volumeMl'] as num?)?.toDouble(),
-        beverage: HydrationBeverage.parse(map['beverage'] as String?),
-        sodium: SodiumSource.parse(map['sodium'] as String?),
-        note: map['note'] as String?,
-      );
+    id: map['id'] as String?,
+    timestamp: DateTime.parse(map['timestamp'] as String),
+    volumeMl: (map['volumeMl'] as num?)?.toDouble(),
+    beverage: HydrationBeverage.parse(map['beverage'] as String?),
+    sodium: SodiumSource.parse(map['sodium'] as String?),
+    note: map['note'] as String?,
+  );
 }
 
 // -----------------------------------------------------------------------------
@@ -2651,9 +2767,11 @@ enum HrvContext {
 class HrvReading {
   final String id;
   final DateTime timestamp;
+
   /// RMSSD in milliseconds.
   final double rmssdMs;
   final HrvContext context;
+
   /// Free-form source identifier. 'manual' for keyed-in values; later
   /// 'oura', 'whoop', 'welltory', 'polar', 'healthkit', etc.
   final String source;
@@ -2686,23 +2804,22 @@ class HrvReading {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'rmssdMs': rmssdMs,
-        'context': context.name,
-        'source': source,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'rmssdMs': rmssdMs,
+    'context': context.name,
+    'source': source,
+    'note': note,
+  };
 
   factory HrvReading.fromMap(Map<String, dynamic> map) => HrvReading(
-        id: map['id'] as String?,
-        timestamp: DateTime.parse(map['timestamp'] as String),
-        rmssdMs: (map['rmssdMs'] as num).toDouble(),
-        context: HrvContext.parse(map['context'] as String?) ??
-            HrvContext.morning,
-        source: map['source'] as String? ?? 'manual',
-        note: map['note'] as String?,
-      );
+    id: map['id'] as String?,
+    timestamp: DateTime.parse(map['timestamp'] as String),
+    rmssdMs: (map['rmssdMs'] as num).toDouble(),
+    context: HrvContext.parse(map['context'] as String?) ?? HrvContext.morning,
+    source: map['source'] as String? ?? 'manual',
+    note: map['note'] as String?,
+  );
 }
 
 // -----------------------------------------------------------------------------
@@ -2720,6 +2837,7 @@ class MovementMetric {
   final int? steps;
   final int? activeMinutes;
   final int? exercisesCompleted;
+
   /// Free-form quantity if the user chose 'personalizado' in 5.5 settings.
   final double? customValue;
   final String? customUnit; // e.g. 'km', 'series'
@@ -2761,28 +2879,28 @@ class MovementMetric {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'dateKey': dateKey,
-        'steps': steps,
-        'activeMinutes': activeMinutes,
-        'exercisesCompleted': exercisesCompleted,
-        'customValue': customValue,
-        'customUnit': customUnit,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'dateKey': dateKey,
+    'steps': steps,
+    'activeMinutes': activeMinutes,
+    'exercisesCompleted': exercisesCompleted,
+    'customValue': customValue,
+    'customUnit': customUnit,
+    'note': note,
+  };
 
   factory MovementMetric.fromMap(Map<String, dynamic> map) => MovementMetric(
-        id: map['id'] as String?,
-        timestamp: DateTime.parse(map['timestamp'] as String),
-        dateKey: map['dateKey'] as String,
-        steps: (map['steps'] as num?)?.toInt(),
-        activeMinutes: (map['activeMinutes'] as num?)?.toInt(),
-        exercisesCompleted: (map['exercisesCompleted'] as num?)?.toInt(),
-        customValue: (map['customValue'] as num?)?.toDouble(),
-        customUnit: map['customUnit'] as String?,
-        note: map['note'] as String?,
-      );
+    id: map['id'] as String?,
+    timestamp: DateTime.parse(map['timestamp'] as String),
+    dateKey: map['dateKey'] as String,
+    steps: (map['steps'] as num?)?.toInt(),
+    activeMinutes: (map['activeMinutes'] as num?)?.toInt(),
+    exercisesCompleted: (map['exercisesCompleted'] as num?)?.toInt(),
+    customValue: (map['customValue'] as num?)?.toDouble(),
+    customUnit: map['customUnit'] as String?,
+    note: map['note'] as String?,
+  );
 }
 
 // =============================================================================
@@ -2875,22 +2993,22 @@ class FeverReading {
   }
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'timestamp': timestamp.toIso8601String(),
-        'temperatureC': temperatureC,
-        'site': site.name,
-        'antipyreticTaken': antipyreticTaken,
-        'antipyreticName': antipyreticName,
-        'note': note,
-      };
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'temperatureC': temperatureC,
+    'site': site.name,
+    'antipyreticTaken': antipyreticTaken,
+    'antipyreticName': antipyreticName,
+    'note': note,
+  };
 
   factory FeverReading.fromMap(Map<String, dynamic> map) => FeverReading(
-        id: map['id'] as String?,
-        timestamp: DateTime.parse(map['timestamp'] as String),
-        temperatureC: (map['temperatureC'] as num).toDouble(),
-        site: FeverSite.parse(map['site'] as String?) ?? FeverSite.axillary,
-        antipyreticTaken: map['antipyreticTaken'] as bool? ?? false,
-        antipyreticName: map['antipyreticName'] as String?,
-        note: map['note'] as String?,
-      );
+    id: map['id'] as String?,
+    timestamp: DateTime.parse(map['timestamp'] as String),
+    temperatureC: (map['temperatureC'] as num).toDouble(),
+    site: FeverSite.parse(map['site'] as String?) ?? FeverSite.axillary,
+    antipyreticTaken: map['antipyreticTaken'] as bool? ?? false,
+    antipyreticName: map['antipyreticName'] as String?,
+    note: map['note'] as String?,
+  );
 }

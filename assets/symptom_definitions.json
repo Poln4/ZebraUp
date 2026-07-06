@@ -244,320 +244,495 @@
     }
   },
   "fatigue": {
-    "label": {
-      "es": "Fatiga",
-      "en": "Fatigue",
-      "zh_TW": "疲勞"
-    },
-    "definition": {
-      "es": "Sensación persistente de cansancio o falta de energía que no mejora con el descanso habitual. En condiciones crónicas como ME/SFC, fibromialgia o EDS con disautonomía, la fatiga puede tener distintos mecanismos fisiológicos (post-esfuerzo, ortostática, cognitiva, hormonal) que requieren identificación diferenciada para orientar tratamiento.",
-      "en": "Persistent feeling of tiredness or lack of energy that does not improve with usual rest. In chronic conditions like ME/CFS, fibromyalgia, or EDS with dysautonomia, fatigue can have distinct physiological mechanisms (post-exertional, orthostatic, cognitive, hormonal) that require differentiated identification to guide treatment.",
-      "zh_TW": "持續性的疲倦或缺乏能量的感覺,經過一般休息後仍未改善。在ME/CFS、纖維肌痛或伴隨自主神經功能障礙的EDS等慢性疾病中,疲勞可能有不同的生理機制(運動後、姿勢性、認知性、荷爾蒙性),需要區分識別以指導治療。"
-    },
-    "aliases": {
-      "es": [
-        "fatiga",
-        "cansancio",
-        "agotamiento",
-        "agotada",
-        "agotado",
-        "drenada",
-        "drenado",
-        "sin energía"
-      ],
-      "en": [
-        "fatigue",
-        "exhaustion",
-        "exhausted",
-        "tired",
-        "worn out",
-        "weary"
-      ],
-      "zh_TW": [
-        "疲勞",
-        "疲倦",
-        "疲憊",
-        "累"
-      ]
+    "aliases": [
+      "fatiga",
+      "cansancio",
+      "agotamiento",
+      "agotada",
+      "agotado",
+      "drenada",
+      "drenado",
+      "sin energía",
+      "fatigue",
+      "exhaustion",
+      "exhausted",
+      "tired",
+      "worn out",
+      "weary",
+      "疲勞",
+      "疲倦",
+      "疲憊",
+      "累"
+    ],
+    "master": {
+      "label_es": "Fatiga",
+      "label_en": "Fatigue",
+      "label_zh": "疲勞",
+      "definition_es": "Sensación persistente de cansancio o falta de energía que no mejora con el descanso habitual. En condiciones crónicas como ME/SFC, fibromialgia o EDS con disautonomía, la fatiga puede tener distintos mecanismos fisiológicos (post-esfuerzo, ortostática, cognitiva, hormonal) que requieren identificación diferenciada para orientar tratamiento.",
+      "definition_en": "Persistent feeling of tiredness or lack of energy that does not improve with usual rest. In chronic conditions like ME/CFS, fibromyalgia, or EDS with dysautonomia, fatigue can have distinct physiological mechanisms (post-exertional, orthostatic, cognitive, hormonal) that require differentiated identification to guide treatment.",
+      "definition_zh": "持續性的疲倦或缺乏能量的感覺,經過一般休息後仍未改善。在ME/CFS、纖維肌痛或伴隨自主神經功能障礙的EDS等慢性疾病中,疲勞可能有不同的生理機制(運動後、姿勢性、認知性、荷爾蒙性),需要區分識別以指導治療。"
     },
     "groups": {
       "type": {
         "kind": "single_select",
-        "header": {
-          "es": "Tipo predominante",
-          "en": "Predominant type",
-          "zh_TW": "主要類型"
-        },
+        "header_es": "Tipo predominante",
+        "header_en": "Predominant type",
+        "header_zh": "主要類型",
         "chips": {
           "cognitive_drain": {
-            "label": {
-              "es": "Como si me hubieran drenado el cerebro",
-              "en": "As if my brain had been drained",
-              "zh_TW": "彷彿大腦被抽乾了"
-            },
-            "definition": {
-              "es": "Sensación de vaciamiento mental profundo, dificultad para pensar, usar el lenguaje o concentrarse. Corresponde a la fatiga cognitiva o 'niebla mental', característica principal en ME/SFC, fibromialgia y EDS con disautonomía.",
-              "en": "Deep mental emptying, difficulty thinking, using language, or concentrating. Corresponds to cognitive fatigue or 'brain fog', a main feature in ME/CFS, fibromyalgia, and EDS with dysautonomia.",
-              "zh_TW": "深度的心智空虛感,難以思考、使用語言或專注。對應於ME/CFS、纖維肌痛和伴隨自主神經功能障礙的EDS中的認知疲勞或「腦霧」。"
-            }
+            "label_es": "Como si me hubieran drenado el cerebro",
+            "label_en": "As if my brain had been drained",
+            "label_zh": "彷彿大腦被抽乾了",
+            "def_es": "Sensación de vaciamiento mental profundo, dificultad para pensar, usar el lenguaje o concentrarse. Corresponde a la fatiga cognitiva o 'niebla mental', característica principal en ME/SFC, fibromialgia y EDS con disautonomía.",
+            "def_en": "Deep mental emptying, difficulty thinking, using language, or concentrating. Corresponds to cognitive fatigue or 'brain fog', a main feature in ME/CFS, fibromyalgia, and EDS with dysautonomia.",
+            "def_zh": "深度的心智空虛感,難以思考、使用語言或專注。對應於ME/CFS、纖維肌痛和伴隨自主神經功能障礙的EDS中的認知疲勞或「腦霧」。"
           },
           "muscle_unresponsive": {
-            "label": {
-              "es": "Como si los músculos no respondieran",
-              "en": "As if muscles wouldn't respond",
-              "zh_TW": "彷彿肌肉沒有反應"
-            },
-            "definition": {
-              "es": "Sensación de que los músculos pesan o no obedecen, con fatigabilidad temprana durante tareas físicas simples. Puede reflejar alteración mitocondrial o metabolismo energético celular descrito en ME/SFC.",
-              "en": "Sensation of muscles feeling heavy or unresponsive, with early fatigability during simple physical tasks. May reflect mitochondrial alteration or cellular energy metabolism issues described in ME/CFS.",
-              "zh_TW": "肌肉感覺沉重或不聽使喚,在簡單的身體任務中很快就疲勞。可能反映ME/CFS中描述的粒線體改變或細胞能量代謝問題。"
-            }
+            "label_es": "Como si los músculos no respondieran",
+            "label_en": "As if muscles wouldn't respond",
+            "label_zh": "彷彿肌肉沒有反應",
+            "def_es": "Sensación de que los músculos pesan o no obedecen, con fatigabilidad temprana durante tareas físicas simples. Puede reflejar alteración mitocondrial o metabolismo energético celular descrito en ME/SFC.",
+            "def_en": "Sensation of muscles feeling heavy or unresponsive, with early fatigability during simple physical tasks. May reflect mitochondrial alteration or cellular energy metabolism issues described in ME/CFS.",
+            "def_zh": "肌肉感覺沉重或不聽使喚,在簡單的身體任務中很快就疲勞。可能反映ME/CFS中描述的粒線體改變或細胞能量代謝問題。"
           },
           "orthostatic": {
-            "label": {
-              "es": "Empeora al estar de pie o sentada erecta",
-              "en": "Worsens when standing or sitting upright",
-              "zh_TW": "站立或直坐時加劇"
-            },
-            "definition": {
-              "es": "La fatiga aumenta al mantener posturas erguidas y mejora al recostarse. Puede reflejar intolerancia ortostática (POTS, hipotensión mediada neuralmente), presente en 74% de personas con EDS-HT.",
-              "en": "Fatigue increases in upright postures and improves when lying down. May reflect orthostatic intolerance (POTS, neurally mediated hypotension), present in 74% of people with EDS-HT.",
-              "zh_TW": "在直立姿勢下疲勞加劇,躺下時改善。可能反映姿勢性不耐受(POTS、神經介導性低血壓),在74%的EDS-HT患者中出現。"
-            }
+            "label_es": "Empeora al estar de pie o sentada erecta",
+            "label_en": "Worsens when standing or sitting upright",
+            "label_zh": "站立或直坐時加劇",
+            "def_es": "La fatiga aumenta al mantener posturas erguidas y mejora al recostarse. Puede reflejar intolerancia ortostática (POTS, hipotensión mediada neuralmente), presente en 74% de personas con EDS-HT.",
+            "def_en": "Fatigue increases in upright postures and improves when lying down. May reflect orthostatic intolerance (POTS, neurally mediated hypotension), present in 74% of people with EDS-HT.",
+            "def_zh": "在直立姿勢下疲勞加劇,躺下時改善。可能反映姿勢性不耐受(POTS、神經介導性低血壓),在74%的EDS-HT患者中出現。"
           },
           "post_exertional": {
-            "label": {
-              "es": "Después de un esfuerzo (físico o mental)",
-              "en": "After exertion (physical or mental)",
-              "zh_TW": "運動後(身體或心智)"
-            },
-            "definition": {
-              "es": "La fatiga aparece o empeora 24-72 horas después de un esfuerzo físico, cognitivo o emocional. Es el malestar post-esfuerzo (PEM), criterio central de ME/SFC según IOM 2015.",
-              "en": "Fatigue appears or worsens 24-72 hours after physical, cognitive, or emotional exertion. This is post-exertional malaise (PEM), a central criterion of ME/CFS per IOM 2015.",
-              "zh_TW": "疲勞在身體、認知或情緒消耗後24-72小時出現或加劇。這就是運動後不適(PEM),根據IOM 2015是ME/CFS的核心診斷標準。"
-            }
+            "label_es": "Después de un esfuerzo (físico o mental)",
+            "label_en": "After exertion (physical or mental)",
+            "label_zh": "運動後(身體或心智)",
+            "def_es": "La fatiga aparece o empeora 24-72 horas después de un esfuerzo físico, cognitivo o emocional. Es el malestar post-esfuerzo (PEM), criterio central de ME/SFC según IOM 2015.",
+            "def_en": "Fatigue appears or worsens 24-72 hours after physical, cognitive, or emotional exertion. This is post-exertional malaise (PEM), a central criterion of ME/CFS per IOM 2015.",
+            "def_zh": "疲勞在身體、認知或情緒消耗後24-72小時出現或加劇。這就是運動後不適(PEM),根據IOM 2015是ME/CFS的核心診斷標準。"
           },
           "hpa_wired": {
-            "label": {
-              "es": "No logro descansar aunque el cuerpo está exhausto",
-              "en": "I can't rest even though my body is exhausted",
-              "zh_TW": "身體筋疲力盡卻無法休息"
-            },
-            "definition": {
-              "es": "Sensación de agotamiento profundo junto con incapacidad para descansar, dormir o desconectar. Puede reflejar desregulación del eje hipotálamo-hipófisis-suprarrenal (HPA) por activación crónica del sistema de estrés.",
-              "en": "Deep exhaustion together with inability to rest, sleep, or disconnect. May reflect dysregulation of the hypothalamic-pituitary-adrenal (HPA) axis from chronic stress-system activation.",
-              "zh_TW": "深度疲憊同時無法休息、入睡或放鬆。可能反映因慢性壓力系統啟動導致的下視丘-腦垂體-腎上腺(HPA)軸失調。"
-            }
+            "label_es": "No logro descansar aunque el cuerpo está exhausto",
+            "label_en": "I can't rest even though my body is exhausted",
+            "label_zh": "身體筋疲力盡卻無法休息",
+            "def_es": "Sensación de agotamiento profundo junto con incapacidad para descansar, dormir o desconectar. Puede reflejar desregulación del eje hipotálamo-hipófisis-suprarrenal (HPA) por activación crónica del sistema de estrés.",
+            "def_en": "Deep exhaustion together with inability to rest, sleep, or disconnect. May reflect dysregulation of the hypothalamic-pituitary-adrenal (HPA) axis from chronic stress-system activation.",
+            "def_zh": "深度疲憊同時無法休息、入睡或放鬆。可能反映因慢性壓力系統啟動導致的下視丘-腦垂體-腎上腺(HPA)軸失調。"
           }
         }
       },
       "temporal_pattern": {
         "kind": "single_select",
-        "header": {
-          "es": "Patrón temporal",
-          "en": "Temporal pattern",
-          "zh_TW": "時間模式"
-        },
+        "header_es": "Patrón temporal",
+        "header_en": "Temporal pattern",
+        "header_zh": "時間模式",
         "chips": {
           "since_waking": {
-            "label": {
-              "es": "Desde que me desperté",
-              "en": "Since I woke up",
-              "zh_TW": "從醒來時就有"
-            },
-            "definition": {
-              "es": "La fatiga estaba presente al despertar y no mejora con el paso de las horas iniciales del día. Puede indicar sueño no reparador o cortisol matutino desajustado.",
-              "en": "Fatigue was present upon waking and does not improve during the initial hours of the day. May indicate unrefreshing sleep or misadjusted morning cortisol.",
-              "zh_TW": "醒來時就有疲勞感,並未在早晨初期改善。可能表示睡眠無法恢復精力或晨間皮質醇失調。"
-            }
+            "label_es": "Desde que me desperté",
+            "label_en": "Since I woke up",
+            "label_zh": "從醒來時就有",
+            "def_es": "La fatiga estaba presente al despertar y no mejora con el paso de las horas iniciales del día. Puede indicar sueño no reparador o cortisol matutino desajustado.",
+            "def_en": "Fatigue was present upon waking and does not improve during the initial hours of the day. May indicate unrefreshing sleep or misadjusted morning cortisol.",
+            "def_zh": "醒來時就有疲勞感,並未在早晨初期改善。可能表示睡眠無法恢復精力或晨間皮質醇失調。"
           },
           "during_day": {
-            "label": {
-              "es": "Apareció durante el día",
-              "en": "Appeared during the day",
-              "zh_TW": "白天出現"
-            },
-            "definition": {
-              "es": "La fatiga empezó luego de despertar, sin causa clara identificable en el momento del inicio. Anotar en la nota qué estabas haciendo cuando empezó puede ayudar a detectar patrones.",
-              "en": "Fatigue started after waking, without a clear identifiable cause at onset. Noting what you were doing when it started can help detect patterns.",
-              "zh_TW": "疲勞在醒來後才開始,起初沒有明確可辨識的原因。記錄開始時你在做什麼可以幫助發現模式。"
-            }
+            "label_es": "Apareció durante el día",
+            "label_en": "Appeared during the day",
+            "label_zh": "白天出現",
+            "def_es": "La fatiga empezó luego de despertar, sin causa clara identificable en el momento del inicio. Anotar en la nota qué estabas haciendo cuando empezó puede ayudar a detectar patrones.",
+            "def_en": "Fatigue started after waking, without a clear identifiable cause at onset. Noting what you were doing when it started can help detect patterns.",
+            "def_zh": "疲勞在醒來後才開始,起初沒有明確可辨識的原因。記錄開始時你在做什麼可以幫助發現模式。"
           },
           "post_meal": {
-            "label": {
-              "es": "Después de comer",
-              "en": "After eating",
-              "zh_TW": "飯後"
-            },
-            "definition": {
-              "es": "La fatiga aparece tras comer, especialmente con comidas grandes o con carbohidratos simples. Puede reflejar hipoglucemia reactiva, mala tolerancia a histamina, o desviación de flujo sanguíneo al sistema digestivo.",
-              "en": "Fatigue appears after eating, especially with large meals or simple carbohydrates. May reflect reactive hypoglycemia, poor histamine tolerance, or blood flow diversion to the digestive system.",
-              "zh_TW": "疲勞在進食後出現,尤其是大餐或簡單碳水化合物之後。可能反映反應性低血糖、組織胺不耐或血流轉向消化系統。"
-            }
+            "label_es": "Después de comer",
+            "label_en": "After eating",
+            "label_zh": "飯後",
+            "def_es": "La fatiga aparece tras comer, especialmente con comidas grandes o con carbohidratos simples. Puede reflejar hipoglucemia reactiva, mala tolerancia a histamina, o desviación de flujo sanguíneo al sistema digestivo.",
+            "def_en": "Fatigue appears after eating, especially with large meals or simple carbohydrates. May reflect reactive hypoglycemia, poor histamine tolerance, or blood flow diversion to the digestive system.",
+            "def_zh": "疲勞在進食後出現,尤其是大餐或簡單碳水化合物之後。可能反映反應性低血糖、組織胺不耐或血流轉向消化系統。"
           },
           "post_trigger": {
-            "label": {
-              "es": "Después de algo específico",
-              "en": "After something specific",
-              "zh_TW": "特定事件之後"
-            },
-            "definition": {
-              "es": "La fatiga aparece tras un evento identificable (esfuerzo, estrés, exposición ambiental). Considera anotar el trigger en la nota del registro para orientar el análisis.",
-              "en": "Fatigue appears after an identifiable event (exertion, stress, environmental exposure). Consider noting the trigger in the log's note field to guide analysis.",
-              "zh_TW": "疲勞在可識別的事件(運動、壓力、環境暴露)後出現。建議在記錄的備註欄位記下觸發因素以協助分析。"
-            }
+            "label_es": "Después de algo específico",
+            "label_en": "After something specific",
+            "label_zh": "特定事件之後",
+            "def_es": "La fatiga aparece tras un evento identificable (esfuerzo, estrés, exposición ambiental). Considera anotar el trigger en la nota del registro para orientar el análisis.",
+            "def_en": "Fatigue appears after an identifiable event (exertion, stress, environmental exposure). Consider noting the trigger in the log's note field to guide analysis.",
+            "def_zh": "疲勞在可識別的事件(運動、壓力、環境暴露)後出現。建議在記錄的備註欄位記下觸發因素以協助分析。"
           }
         }
       },
       "accompaniments": {
         "kind": "multi_select",
-        "header": {
-          "es": "Acompañantes",
-          "en": "Accompaniments",
-          "zh_TW": "伴隨症狀"
-        },
+        "header_es": "Acompañantes",
+        "header_en": "Accompaniments",
+        "header_zh": "伴隨症狀",
         "chips": {
           "brain_fog": {
-            "label": {
-              "es": "Niebla mental",
-              "en": "Brain fog",
-              "zh_TW": "腦霧"
-            },
-            "definition": {
-              "es": "Dificultad para pensar con claridad, concentrarse, encontrar palabras o procesar información a velocidad habitual. Reportado como el síntoma más frecuente después de la fatiga misma en ME/SFC.",
-              "en": "Difficulty thinking clearly, concentrating, finding words, or processing information at usual speed. Reported as the most frequent symptom after fatigue itself in ME/CFS.",
-              "zh_TW": "難以清晰思考、專注、找詞或以正常速度處理資訊。在ME/CFS中被報告為僅次於疲勞本身的最常見症狀。"
-            }
+            "label_es": "Niebla mental",
+            "label_en": "Brain fog",
+            "label_zh": "腦霧",
+            "def_es": "Dificultad para pensar con claridad, concentrarse, encontrar palabras o procesar información a velocidad habitual. Reportado como el síntoma más frecuente después de la fatiga misma en ME/SFC.",
+            "def_en": "Difficulty thinking clearly, concentrating, finding words, or processing information at usual speed. Reported as the most frequent symptom after fatigue itself in ME/CFS.",
+            "def_zh": "難以清晰思考、專注、找詞或以正常速度處理資訊。在ME/CFS中被報告為僅次於疲勞本身的最常見症狀。"
           },
           "dizziness_standing": {
-            "label": {
-              "es": "Mareo al pararme",
-              "en": "Dizziness when standing",
-              "zh_TW": "起立時頭暈"
-            },
-            "definition": {
-              "es": "Sensación de vahído o inestabilidad al pasar de acostado o sentado a de pie. Puede reflejar hipoperfusión cerebral por intolerancia ortostática (POTS o hipotensión mediada neuralmente).",
-              "en": "Feeling of lightheadedness or instability when moving from lying/sitting to standing. May reflect cerebral hypoperfusion from orthostatic intolerance (POTS or neurally mediated hypotension).",
-              "zh_TW": "從躺姿或坐姿變為站姿時出現頭暈或不穩感。可能反映姿勢性不耐受(POTS或神經介導性低血壓)所致的腦部灌流不足。"
-            }
+            "label_es": "Mareo al pararme",
+            "label_en": "Dizziness when standing",
+            "label_zh": "起立時頭暈",
+            "def_es": "Sensación de vahído o inestabilidad al pasar de acostado o sentado a de pie. Puede reflejar hipoperfusión cerebral por intolerancia ortostática (POTS o hipotensión mediada neuralmente).",
+            "def_en": "Feeling of lightheadedness or instability when moving from lying/sitting to standing. May reflect cerebral hypoperfusion from orthostatic intolerance (POTS or neurally mediated hypotension).",
+            "def_zh": "從躺姿或坐姿變為站姿時出現頭暈或不穩感。可能反映姿勢性不耐受(POTS或神經介導性低血壓)所致的腦部灌流不足。"
           },
           "unrefreshing_sleep": {
-            "label": {
-              "es": "Sueño no reparador",
-              "en": "Unrefreshing sleep",
-              "zh_TW": "睡眠無法恢復精力"
-            },
-            "definition": {
-              "es": "Despertar sintiéndose igual o más cansada que al acostarse, aunque hayas dormido las horas esperadas. Es criterio central de ME/SFC según IOM 2015.",
-              "en": "Waking up feeling the same or more tired than when going to bed, even after expected sleep hours. Central criterion of ME/CFS per IOM 2015.",
-              "zh_TW": "即使睡足預期時數,醒來時仍感覺與入睡時一樣累或更累。根據IOM 2015是ME/CFS的核心診斷標準。"
-            }
+            "label_es": "Sueño no reparador",
+            "label_en": "Unrefreshing sleep",
+            "label_zh": "睡眠無法恢復精力",
+            "def_es": "Despertar sintiéndose igual o más cansada que al acostarse, aunque hayas dormido las horas esperadas. Es criterio central de ME/SFC según IOM 2015.",
+            "def_en": "Waking up feeling the same or more tired than when going to bed, even after expected sleep hours. Central criterion of ME/CFS per IOM 2015.",
+            "def_zh": "即使睡足預期時數,醒來時仍感覺與入睡時一樣累或更累。根據IOM 2015是ME/CFS的核心診斷標準。"
           },
           "resting_tachycardia": {
-            "label": {
-              "es": "Taquicardia en reposo",
-              "en": "Resting tachycardia",
-              "zh_TW": "靜止時心跳過速"
-            },
-            "definition": {
-              "es": "Frecuencia cardíaca elevada estando en reposo (típicamente >100 lpm sin esfuerzo previo). Puede reflejar disautonomía, hipovolemia funcional, deficiencia de hierro, o activación simpática crónica.",
-              "en": "Elevated heart rate at rest (typically >100 bpm without prior exertion). May reflect dysautonomia, functional hypovolemia, iron deficiency, or chronic sympathetic activation.",
-              "zh_TW": "靜止時心率升高(通常在沒有先前運動的情況下 >100 bpm)。可能反映自主神經功能障礙、功能性血容量不足、缺鐵或慢性交感神經活化。"
-            }
+            "label_es": "Taquicardia en reposo",
+            "label_en": "Resting tachycardia",
+            "label_zh": "靜止時心跳過速",
+            "def_es": "Frecuencia cardíaca elevada estando en reposo (típicamente >100 lpm sin esfuerzo previo). Puede reflejar disautonomía, hipovolemia funcional, deficiencia de hierro, o activación simpática crónica.",
+            "def_en": "Elevated heart rate at rest (typically >100 bpm without prior exertion). May reflect dysautonomia, functional hypovolemia, iron deficiency, or chronic sympathetic activation.",
+            "def_zh": "靜止時心率升高(通常在沒有先前運動的情況下 >100 bpm)。可能反映自主神經功能障礙、功能性血容量不足、缺鐵或慢性交感神經活化。"
           },
           "headache": {
-            "label": {
-              "es": "Dolor de cabeza",
-              "en": "Headache",
-              "zh_TW": "頭痛"
-            },
-            "definition": {
-              "es": "Dolor de cabeza presente junto con la fatiga. Común en fatiga inflamatoria, post-esfuerzo, o asociada a deprivación de sueño.",
-              "en": "Headache present together with fatigue. Common in inflammatory, post-exertional, or sleep-deprivation-related fatigue.",
-              "zh_TW": "與疲勞同時出現的頭痛。在發炎性、運動後或睡眠剝奪相關疲勞中常見。"
-            }
+            "label_es": "Dolor de cabeza",
+            "label_en": "Headache",
+            "label_zh": "頭痛",
+            "def_es": "Dolor de cabeza presente junto con la fatiga. Común en fatiga inflamatoria, post-esfuerzo, o asociada a deprivación de sueño.",
+            "def_en": "Headache present together with fatigue. Common in inflammatory, post-exertional, or sleep-deprivation-related fatigue.",
+            "def_zh": "與疲勞同時出現的頭痛。在發炎性、運動後或睡眠剝奪相關疲勞中常見。"
           },
           "diffuse_muscle_pain": {
-            "label": {
-              "es": "Dolor muscular difuso",
-              "en": "Diffuse muscle pain",
-              "zh_TW": "全身肌肉疼痛"
-            },
-            "definition": {
-              "es": "Dolor muscular generalizado sin localización específica. Reportado en 99% de pacientes con EDS y como acompañante frecuente en fibromialgia y ME/SFC.",
-              "en": "Generalized muscle pain without specific location. Reported in 99% of EDS patients and as a frequent accompaniment in fibromyalgia and ME/CFS.",
-              "zh_TW": "無特定部位的全身性肌肉疼痛。在99%的EDS患者中有報告,也是纖維肌痛和ME/CFS的常見伴隨症狀。"
-            }
+            "label_es": "Dolor muscular difuso",
+            "label_en": "Diffuse muscle pain",
+            "label_zh": "全身肌肉疼痛",
+            "def_es": "Dolor muscular generalizado sin localización específica. Reportado en 99% de pacientes con EDS y como acompañante frecuente en fibromialgia y ME/SFC.",
+            "def_en": "Generalized muscle pain without specific location. Reported in 99% of EDS patients and as a frequent accompaniment in fibromyalgia and ME/CFS.",
+            "def_zh": "無特定部位的全身性肌肉疼痛。在99%的EDS患者中有報告,也是纖維肌痛和ME/CFS的常見伴隨症狀。"
           },
           "light_sound_intolerance": {
-            "label": {
-              "es": "Intolerancia a luz o sonido",
-              "en": "Light or sound intolerance",
-              "zh_TW": "對光或聲音的不耐受"
-            },
-            "definition": {
-              "es": "Sensibilidad aumentada a estímulos visuales o auditivos que normalmente son tolerables. Puede reflejar neuroinflamación tálamo-mesencefálica descrita en ME/SFC.",
-              "en": "Increased sensitivity to visual or auditory stimuli normally tolerable. May reflect thalamo-mesencephalic neuroinflammation described in ME/CFS.",
-              "zh_TW": "對通常可耐受的視覺或聽覺刺激的敏感度增加。可能反映ME/CFS中描述的視丘-中腦神經發炎。"
-            }
+            "label_es": "Intolerancia a luz o sonido",
+            "label_en": "Light or sound intolerance",
+            "label_zh": "對光或聲音的不耐受",
+            "def_es": "Sensibilidad aumentada a estímulos visuales o auditivos que normalmente son tolerables. Puede reflejar neuroinflamación tálamo-mesencefálica descrita en ME/SFC.",
+            "def_en": "Increased sensitivity to visual or auditory stimuli normally tolerable. May reflect thalamo-mesencephalic neuroinflammation described in ME/CFS.",
+            "def_zh": "對通常可耐受的視覺或聽覺刺激的敏感度增加。可能反映ME/CFS中描述的視丘-中腦神經發炎。"
           },
           "temp_dysregulation": {
-            "label": {
-              "es": "Desregulación de temperatura",
-              "en": "Temperature dysregulation",
-              "zh_TW": "體溫失調"
-            },
-            "definition": {
-              "es": "Cambios abruptos de sensación térmica no correspondientes con la temperatura ambiente. Común en disautonomía, especialmente en EDS.",
-              "en": "Abrupt changes in thermal sensation not matching ambient temperature. Common in dysautonomia, especially in EDS.",
-              "zh_TW": "與環境溫度不符的體感溫度突然變化。在自主神經功能障礙中常見,尤其是EDS。"
-            }
+            "label_es": "Desregulación de temperatura",
+            "label_en": "Temperature dysregulation",
+            "label_zh": "體溫失調",
+            "def_es": "Cambios abruptos de sensación térmica no correspondientes con la temperatura ambiente. Común en disautonomía, especialmente en EDS.",
+            "def_en": "Abrupt changes in thermal sensation not matching ambient temperature. Common in dysautonomia, especially in EDS.",
+            "def_zh": "與環境溫度不符的體感溫度突然變化。在自主神經功能障礙中常見,尤其是EDS。"
           }
         }
       },
       "trigger": {
         "kind": "multi_select",
-        "header": {
-          "es": "Trigger sospechoso",
-          "en": "Suspected trigger",
-          "zh_TW": "疑似觸發因素"
-        },
+        "header_es": "Trigger sospechoso",
+        "header_en": "Suspected trigger",
+        "header_zh": "疑似觸發因素",
         "chips": {
           "past_exertion": {
-            "label": {
-              "es": "Esfuerzo físico o cognitivo hace 1-3 días",
-              "en": "Physical or cognitive exertion 1-3 days ago",
-              "zh_TW": "1-3天前的體力或腦力消耗"
-            },
-            "definition": {
-              "es": "Actividad física, ejercicio, jornada laboral intensa, evento social o esfuerzo cognitivo prolongado ocurrido en los últimos 1-3 días. La ventana de 24-72 horas es característica del malestar post-esfuerzo (PEM).",
-              "en": "Physical activity, exercise, intense workday, social event, or prolonged cognitive effort in the past 1-3 days. The 24-72 hour window is characteristic of post-exertional malaise (PEM).",
-              "zh_TW": "過去1-3天內的身體活動、運動、緊張工作日、社交活動或長時間認知消耗。24-72小時的時間窗是運動後不適(PEM)的特徵。"
-            }
+            "label_es": "Esfuerzo físico o cognitivo hace 1-3 días",
+            "label_en": "Physical or cognitive exertion 1-3 days ago",
+            "label_zh": "1-3天前的體力或腦力消耗",
+            "def_es": "Actividad física, ejercicio, jornada laboral intensa, evento social o esfuerzo cognitivo prolongado ocurrido en los últimos 1-3 días. La ventana de 24-72 horas es característica del malestar post-esfuerzo (PEM).",
+            "def_en": "Physical activity, exercise, intense workday, social event, or prolonged cognitive effort in the past 1-3 days. The 24-72 hour window is characteristic of post-exertional malaise (PEM).",
+            "def_zh": "過去1-3天內的身體活動、運動、緊張工作日、社交活動或長時間認知消耗。24-72小時的時間窗是運動後不適(PEM)的特徵。"
           },
           "bad_night": {
-            "label": {
-              "es": "Mala noche",
-              "en": "Bad night",
-              "zh_TW": "夜間睡眠不佳"
-            },
-            "definition": {
-              "es": "Sueño de mala calidad la noche anterior: insomnio, despertares frecuentes, dolor nocturno o pesadillas.",
-              "en": "Poor quality sleep the night before: insomnia, frequent awakenings, nocturnal pain, or nightmares.",
-              "zh_TW": "前一晚睡眠品質不佳:失眠、頻繁醒來、夜間疼痛或惡夢。"
-            }
+            "label_es": "Mala noche",
+            "label_en": "Bad night",
+            "label_zh": "夜間睡眠不佳",
+            "def_es": "Sueño de mala calidad la noche anterior: insomnio, despertares frecuentes, dolor nocturno o pesadillas.",
+            "def_en": "Poor quality sleep the night before: insomnia, frequent awakenings, nocturnal pain, or nightmares.",
+            "def_zh": "前一晚睡眠品質不佳:失眠、頻繁醒來、夜間疼痛或惡夢。"
           },
           "emotional_stress": {
-            "label": {
-              "es": "Estrés emocional reciente",
-              "en": "Recent emotional stress",
-              "zh_TW": "近期情緒壓力"
-            },
-            "definition": {
-              "es": "Evento estresante, conflicto, ansiedad o carga emocional en los últimos 1-3 días. En condiciones con disautonomía, el estrés emocional puede desencadenar respuesta simpática desproporcionada.",
-              "en": "Stressful event, conflict, anxiety, or emotional load in the past 1-3 days. In conditions with dysautonomia, emotional stress can trigger a disproportionate sympathetic response.",
-              "zh_TW": "過去1-3天內的壓力事件、衝突、焦慮或情緒負擔。在伴隨自主神經功能障礙的情況下,情緒壓力可能觸發不成比例的交感神經反應。"
-            }
+            "label_es": "Estrés emocional reciente",
+            "label_en": "Recent emotional stress",
+            "label_zh": "近期情緒壓力",
+            "def_es": "Evento estresante, conflicto, ansiedad o carga emocional en los últimos 1-3 días. En condiciones con disautonomía, el estrés emocional puede desencadenar respuesta simpática desproporcionada.",
+            "def_en": "Stressful event, conflict, anxiety, or emotional load in the past 1-3 days. In conditions with dysautonomia, emotional stress can trigger a disproportionate sympathetic response.",
+            "def_zh": "過去1-3天內的壓力事件、衝突、焦慮或情緒負擔。在伴隨自主神經功能障礙的情況下,情緒壓力可能觸發不成比例的交感神經反應。"
+          }
+        }
+      }
+    }
+  },
+  "abdominal_pain": {
+    "aliases": [
+      "dolor abdominal",
+      "dolor de estómago",
+      "dolor de guata",
+      "dolor de panza",
+      "dolor de barriga",
+      "dolor de vientre",
+      "cólico",
+      "cólicos",
+      "retortijón",
+      "retortijones",
+      "hinchazón",
+      "hinchazón abdominal",
+      "distensión",
+      "distensión abdominal",
+      "panza hinchada",
+      "guata hinchada",
+      "gases",
+      "pedos",
+      "peos",
+      "flatulencia",
+      "flatulencias",
+      "abdominal pain",
+      "stomach pain",
+      "belly pain",
+      "tummy pain",
+      "cramps",
+      "cramping",
+      "gut pain",
+      "bloating",
+      "abdominal distension",
+      "gas",
+      "farting",
+      "flatulence",
+      "腹痛",
+      "肚子痛",
+      "胃痛",
+      "腹脹",
+      "腹部脹氣",
+      "放屁",
+      "排氣",
+      "脹氣"
+    ],
+    "master": {
+      "label_es": "Dolor abdominal",
+      "label_en": "Abdominal pain",
+      "label_zh": "腹痛",
+      "definition_es": "Dolor, molestia o distensión en cualquier parte del abdomen — desde la boca del estómago hasta el bajo vientre. Puede tener muchas causas: alteraciones de motilidad, gastritis, distensión por gases, dolor menstrual, entre otras. En personas con EDS es especialmente frecuente por la coexistencia de dismotilidad, hipersensibilidad visceral y posibles activaciones de mastocitos.\n\nLa app no clasifica el tipo: ese es trabajo de tu médico. Registrar patrones (ubicación, timing con comidas, acompañantes) ayuda a identificar el mecanismo probable.",
+      "definition_en": "Pain, discomfort, or distension anywhere in the abdomen — from the pit of the stomach to the lower belly. It can have many causes: motility disorders, gastritis, gas distension, menstrual pain, among others. In people with EDS it is especially frequent due to the coexistence of dysmotility, visceral hypersensitivity, and possible mast cell activation.\n\nThe app does not classify the type: that is your doctor's job. Recording patterns (location, timing with meals, accompaniments) helps identify the likely mechanism.",
+      "definition_zh": "腹部任何部位的疼痛、不適或脹感 — 從胃口到下腹。可能有多種原因:蠕動障礙、胃炎、脹氣、月經痛等。EDS患者由於蠕動障礙、內臟高敏感性以及可能的肥大細胞活化並存,尤為常見。\n\n應用程式不會分類類型:這是你的醫生的工作。記錄模式(位置、與進食的時間關係、伴隨症狀)有助於識別可能的機制。"
+    },
+    "groups": {
+      "location": {
+        "kind": "single_select",
+        "header_es": "UBICACIÓN",
+        "header_en": "LOCATION",
+        "header_zh": "位置",
+        "chips": {
+          "epigastric": {
+            "label_es": "Epigástrico (boca del estómago)",
+            "label_en": "Epigastric (pit of stomach)",
+            "label_zh": "上腹部(胃口)",
+            "def_es": "Dolor localizado en la parte superior central del abdomen, justo debajo del esternón. Corresponde a la zona del estómago y duodeno. Es la ubicación típica de dispepsia funcional, gastritis, reflujo gastroesofágico y gastroparesis.",
+            "def_en": "Pain localized in the upper central abdomen, just below the sternum. Corresponds to the stomach and duodenum area. Typical location of functional dyspepsia, gastritis, GERD, and gastroparesis.",
+            "def_zh": "疼痛位於腹部上方中央,胸骨下方。對應於胃和十二指腸區域。是功能性消化不良、胃炎、胃食道逆流和胃輕癱的典型位置。"
+          },
+          "periumbilical": {
+            "label_es": "Alrededor del ombligo",
+            "label_en": "Around the navel",
+            "label_zh": "肚臍周圍",
+            "def_es": "Dolor centrado alrededor del ombligo. Corresponde a la zona del intestino delgado. Común en dismotilidad, SIBO (sobrecrecimiento bacteriano) e hipersensibilidad visceral, todos frecuentes en EDS con disautonomía.",
+            "def_en": "Pain centered around the navel. Corresponds to the small intestine area. Common in dysmotility, SIBO (small intestinal bacterial overgrowth), and visceral hypersensitivity, all frequent in EDS with dysautonomia.",
+            "def_zh": "疼痛集中在肚臍周圍。對應於小腸區域。在蠕動障礙、SIBO(小腸細菌過度生長)和內臟高敏感性中常見,這些在伴隨自主神經功能障礙的EDS中都很頻繁。"
+          },
+          "hypogastric": {
+            "label_es": "Bajo vientre",
+            "label_en": "Lower abdomen",
+            "label_zh": "下腹部",
+            "def_es": "Dolor en la parte inferior del abdomen, debajo del ombligo. Corresponde a colon, vejiga y órganos pélvicos. En personas con adenomiosis, endometriosis o dismenorrea, esta zona duele especialmente durante el ciclo. También frecuente en síndrome de intestino irritable.",
+            "def_en": "Pain in the lower abdomen, below the navel. Corresponds to colon, bladder, and pelvic organs. In people with adenomyosis, endometriosis, or dysmenorrhea, this area hurts especially during the cycle. Also frequent in irritable bowel syndrome.",
+            "def_zh": "疼痛位於下腹部,肚臍下方。對應於結腸、膀胱和骨盆腔器官。在腺肌症、子宮內膜異位症或痛經患者中,此區域在週期期間特別疼痛。也在腸躁症中常見。"
+          },
+          "ruq": {
+            "label_es": "Cuadrante superior derecho",
+            "label_en": "Upper right quadrant",
+            "label_zh": "右上腹",
+            "def_es": "Dolor en la parte superior derecha del abdomen. Corresponde a hígado y vesícula biliar. Un dolor constante de 30 minutos o más en esta zona, no relacionado con la evacuación, puede sugerir cólico biliar funcional.",
+            "def_en": "Pain in the upper right of the abdomen. Corresponds to liver and gallbladder. Constant pain of 30 minutes or more in this area, unrelated to bowel movement, may suggest functional biliary colic.",
+            "def_zh": "疼痛位於腹部右上方。對應於肝臟和膽囊。此區域持續30分鐘或更久的疼痛,與排便無關,可能提示功能性膽絞痛。"
+          },
+          "diffuse": {
+            "label_es": "Difuso / no localizado",
+            "label_en": "Diffuse / not localized",
+            "label_zh": "瀰漫性 / 無特定位置",
+            "def_es": "Dolor que no tiene un punto claro de origen o que abarca toda o gran parte del abdomen. Característico del dolor visceral verdadero, que anatómicamente no se localiza bien. Común en inflamación sistémica, activación mastocitaria (MCAS), o cuando el paciente aún está aprendiendo a caracterizar su dolor. La ausencia de localización específica también es información clínica válida.",
+            "def_en": "Pain without a clear point of origin or covering all or most of the abdomen. Characteristic of true visceral pain, which anatomically does not localize well. Common in systemic inflammation, mast cell activation (MCAS), or when the patient is still learning to characterize the pain. The absence of specific localization is also valid clinical information.",
+            "def_zh": "沒有明確起點或涵蓋整個或大部分腹部的疼痛。是真正內臟疼痛的特徵,其在解剖學上不易定位。在全身性發炎、肥大細胞活化(MCAS)中常見,或當患者仍在學習描述其疼痛時。缺乏特定定位本身也是有效的臨床資訊。"
+          }
+        }
+      },
+      "quality": {
+        "kind": "single_select",
+        "header_es": "CALIDAD",
+        "header_en": "QUALITY",
+        "header_zh": "性質",
+        "chips": {
+          "colicky": {
+            "label_es": "Cólico (viene y va, como retortijón)",
+            "label_en": "Colicky (comes and goes, like cramps)",
+            "label_zh": "絞痛(來去反覆,像抽筋)",
+            "def_es": "Dolor que aparece en oleadas, aumenta hasta un pico, luego cede, y vuelve a aparecer. Corresponde a espasmos del músculo liso intestinal. Característico del síndrome de intestino irritable, obstrucciones parciales o cólico biliar.",
+            "def_en": "Pain appearing in waves, rising to a peak, then subsiding, then recurring. Corresponds to spasms of intestinal smooth muscle. Characteristic of irritable bowel syndrome, partial obstructions, or biliary colic.",
+            "def_zh": "疼痛呈波狀出現,達到高峰後緩解,然後再次出現。對應於腸道平滑肌痙攣。是腸躁症、部分阻塞或膽絞痛的特徵。"
+          },
+          "burning": {
+            "label_es": "Quemazón / ardor",
+            "label_en": "Burning",
+            "label_zh": "灼燒感",
+            "def_es": "Sensación de fuego, ácido o quemadura, especialmente en la parte superior del abdomen. Corresponde a origen inflamatorio o de la mucosa. Característico de reflujo gastroesofágico, gastritis o dispepsia.",
+            "def_en": "Sensation of fire, acid, or burning, especially in the upper abdomen. Corresponds to inflammatory or mucosal origin. Characteristic of gastroesophageal reflux, gastritis, or dyspepsia.",
+            "def_zh": "尤其在上腹部有如火、酸或燒灼的感覺。對應於發炎或黏膜起源。是胃食道逆流、胃炎或消化不良的特徵。"
+          },
+          "pressure": {
+            "label_es": "Presión / peso",
+            "label_en": "Pressure / heaviness",
+            "label_zh": "壓力 / 沉重感",
+            "def_es": "Sensación de peso, plenitud o algo que empuja desde dentro, sin dolor agudo. Común en distensión por gases, saciedad temprana, gastroparesis y estreñimiento acumulado.",
+            "def_en": "Sensation of weight, fullness, or something pushing from within, without sharp pain. Common in gas distension, early satiety, gastroparesis, and accumulated constipation.",
+            "def_zh": "有重量感、飽脹感或從內部推擠的感覺,無尖銳疼痛。在脹氣、早飽、胃輕癱和累積性便秘中常見。"
+          },
+          "tearing": {
+            "label_es": "Desgarro (súbito, muy severo)",
+            "label_en": "Tearing (sudden, very severe)",
+            "label_zh": "撕裂感(突發、非常嚴重)",
+            "def_es": "Dolor súbito, extremadamente intenso, con sensación de que algo se rompe o desgarra por dentro. Este patrón requiere evaluación médica urgente. En personas con EDS o síndrome vascular, puede indicar rotura arterial o intestinal.",
+            "def_en": "Sudden, extremely intense pain, with the sensation that something is tearing or ripping inside. This pattern requires urgent medical evaluation. In people with EDS or vascular syndrome, may indicate arterial or intestinal rupture.",
+            "def_zh": "突發、極度劇烈的疼痛,感覺內部有東西撕裂。此模式需要緊急醫療評估。在EDS或血管型症候群患者中,可能表示動脈或腸道破裂。"
+          }
+        }
+      },
+      "timing": {
+        "kind": "single_select",
+        "header_es": "TIMING",
+        "header_en": "TIMING",
+        "header_zh": "時間關係",
+        "chips": {
+          "postprandial_immediate": {
+            "label_es": "Inmediatamente después de comer (<1h)",
+            "label_en": "Immediately after eating (<1h)",
+            "label_zh": "進食後立即(<1小時)",
+            "def_es": "Dolor o molestia que aparece durante o dentro de la primera hora después de comer. Característico de dispepsia funcional y gastroparesis (retraso en el vaciamiento gástrico). Común en EDS con disautonomía por la reducción de actividad vagal.",
+            "def_en": "Pain or discomfort appearing during or within the first hour after eating. Characteristic of functional dyspepsia and gastroparesis (delayed gastric emptying). Common in EDS with dysautonomia due to reduced vagal activity.",
+            "def_zh": "在進食期間或進食後第一小時內出現的疼痛或不適。是功能性消化不良和胃輕癱(胃排空延遲)的特徵。在伴隨自主神經功能障礙的EDS中因迷走神經活動減少而常見。"
+          },
+          "postprandial_delayed": {
+            "label_es": "Con demora después de comer (1-4h)",
+            "label_en": "Delayed after eating (1-4h)",
+            "label_zh": "進食後延遲(1-4小時)",
+            "def_es": "Dolor que aparece 1 a 4 horas después de comer, cuando el alimento ya está en el intestino delgado. Puede sugerir intolerancia alimentaria, mala absorción o sobrecrecimiento bacteriano (SIBO). El registro consistente de qué comiste ayuda a identificar el patrón.",
+            "def_en": "Pain appearing 1 to 4 hours after eating, when food is already in the small intestine. May suggest food intolerance, malabsorption, or bacterial overgrowth (SIBO). Consistent recording of what you ate helps identify the pattern.",
+            "def_zh": "在進食後1至4小時出現的疼痛,此時食物已在小腸中。可能提示食物不耐、吸收不良或細菌過度生長(SIBO)。持續記錄所吃食物有助於識別模式。"
+          },
+          "nocturnal": {
+            "label_es": "Nocturno (me despertó)",
+            "label_en": "Nocturnal (woke me up)",
+            "label_zh": "夜間(將我喚醒)",
+            "def_es": "Dolor lo suficientemente severo como para interrumpir el sueño. Este patrón es criterio de alarma en Roma IV. Vale mencionárselo a tu médico, especialmente si se acompaña de pérdida de peso involuntaria o fiebre.",
+            "def_en": "Pain severe enough to interrupt sleep. This pattern is an alarm criterion in Rome IV. Worth mentioning to your doctor, especially if accompanied by involuntary weight loss or fever.",
+            "def_zh": "疼痛嚴重到中斷睡眠。此模式是羅馬IV標準中的警示指標。值得告訴你的醫生,尤其若伴隨非自願性體重減輕或發燒。"
+          },
+          "bowel_related": {
+            "label_es": "Relacionado con evacuación",
+            "label_en": "Related to bowel movement",
+            "label_zh": "與排便有關",
+            "def_es": "Dolor que aparece antes, durante o justo después de evacuar; o que mejora significativamente después de evacuar. Es el patrón central del síndrome de intestino irritable según los criterios de Roma IV.",
+            "def_en": "Pain appearing before, during, or right after a bowel movement; or that improves significantly after a bowel movement. This is the central pattern of irritable bowel syndrome per Rome IV criteria.",
+            "def_zh": "在排便前、期間或剛結束後出現的疼痛;或在排便後顯著改善的疼痛。這是羅馬IV標準下腸躁症的核心模式。"
+          }
+        }
+      },
+      "accompaniments": {
+        "kind": "multi_select",
+        "header_es": "ACOMPAÑANTES",
+        "header_en": "ACCOMPANIMENTS",
+        "header_zh": "伴隨症狀",
+        "chips": {
+          "nausea": {
+            "label_es": "Náusea",
+            "label_en": "Nausea",
+            "label_zh": "噁心",
+            "def_es": "Sensación de malestar estomacal o ganas de vomitar sin llegar a hacerlo. Frecuente en gastroparesis, dispepsia funcional, migraña, y activación mastocitaria.",
+            "def_en": "Stomach discomfort or urge to vomit without actually vomiting. Frequent in gastroparesis, functional dyspepsia, migraine, and mast cell activation.",
+            "def_zh": "胃部不適或想吐但未實際嘔吐。在胃輕癱、功能性消化不良、偏頭痛和肥大細胞活化中常見。"
+          },
+          "vomiting": {
+            "label_es": "Vómito",
+            "label_en": "Vomiting",
+            "label_zh": "嘔吐",
+            "def_es": "Expulsión de contenido gástrico. Frecuente en gastroparesis severa, obstrucción, migraña abdominal, y activación mastocitaria severa. Si aparece con sangre, es una emergencia — indícalo en la nota.",
+            "def_en": "Expulsion of gastric contents. Frequent in severe gastroparesis, obstruction, abdominal migraine, and severe mast cell activation. If it appears with blood, it is an emergency — note it in the notes field.",
+            "def_zh": "胃內容物排出。在嚴重胃輕癱、阻塞、腹型偏頭痛和嚴重肥大細胞活化中常見。若伴隨血液,則為緊急情況 — 請在備註中註明。"
+          },
+          "early_satiety": {
+            "label_es": "Saciedad temprana",
+            "label_en": "Early satiety",
+            "label_zh": "早飽",
+            "def_es": "Sensación de llenura o saciedad después de comer solo una pequeña cantidad, sin poder terminar una comida normal. Marcador característico de gastroparesis. Común en EDS con disautonomía.",
+            "def_en": "Sensation of fullness or satiety after eating only a small amount, unable to finish a normal meal. Characteristic marker of gastroparesis. Common in EDS with dysautonomia.",
+            "def_zh": "只吃少量後就有飽足感,無法完成正常餐量。是胃輕癱的特徵標記。在伴隨自主神經功能障礙的EDS中常見。"
+          },
+          "bloating": {
+            "label_es": "Hinchazón / distensión",
+            "label_en": "Bloating / distension",
+            "label_zh": "腹脹 / 腹部膨脹",
+            "def_es": "Sensación de que el abdomen está inflado, tenso, o visiblemente distendido. Común en SIBO, disbiosis, tránsito lento, o retención de gases por dismotilidad. Puede empeorar durante el día.",
+            "def_en": "Sensation that the abdomen is inflated, tense, or visibly distended. Common in SIBO, dysbiosis, slow transit, or gas retention from dysmotility. May worsen throughout the day.",
+            "def_zh": "腹部感覺膨脹、緊繃或明顯膨大。在SIBO、菌叢失調、蠕動緩慢或蠕動障礙造成的氣體滯留中常見。可能在白天惡化。"
+          },
+          "excessive_gas": {
+            "label_es": "Flatulencia excesiva",
+            "label_en": "Excessive gas",
+            "label_zh": "過度排氣",
+            "def_es": "Emisión frecuente y abundante de gases por el recto. Común en SIBO, intolerancias alimentarias (FODMAPs, lactosa, fructosa), y dismotilidad del colon.",
+            "def_en": "Frequent and abundant passing of gas through the rectum. Common in SIBO, food intolerances (FODMAPs, lactose, fructose), and colonic dysmotility.",
+            "def_zh": "經由直腸頻繁且大量地排放氣體。在SIBO、食物不耐(FODMAPs、乳糖、果糖)和結腸蠕動障礙中常見。"
+          },
+          "bloody_stool": {
+            "label_es": "Sangre en heces",
+            "label_en": "Blood in stool",
+            "label_zh": "糞便帶血",
+            "def_es": "Presencia de sangre visible en las heces o al limpiar. Puede ser rojo brillante (sangrado bajo, típicamente hemorroides o fisura) o negro/oscuro (sangrado alto, requiere evaluación). Si la cantidad es abundante y te sientes mareada, ve a urgencias.",
+            "def_en": "Presence of visible blood in stool or when wiping. May be bright red (lower bleeding, typically hemorrhoids or fissure) or black/dark (upper bleeding, requires evaluation). If the amount is abundant and you feel dizzy, go to the emergency room.",
+            "def_zh": "糞便中或擦拭時可見的血液。可能是鮮紅色(下段出血,通常是痔瘡或裂傷)或黑色/深色(上段出血,需要評估)。若量多且感覺頭暈,請立即就醫。"
+          }
+        }
+      },
+      "trigger": {
+        "kind": "multi_select",
+        "header_es": "TRIGGER SOSPECHOSO",
+        "header_en": "SUSPECTED TRIGGER",
+        "header_zh": "疑似觸發因素",
+        "chips": {
+          "specific_food": {
+            "label_es": "Comida específica sospechosa",
+            "label_en": "Suspected specific food",
+            "label_zh": "疑似特定食物",
+            "def_es": "Consumiste algo que sospechas te cae mal: lácteos, gluten, FODMAPs altos (cebolla, ajo, legumbres), picante, alcohol, cafeína. Anotar en la nota del registro qué fue ayuda a identificar patrones.",
+            "def_en": "You consumed something you suspect disagrees with you: dairy, gluten, high FODMAPs (onion, garlic, legumes), spicy, alcohol, caffeine. Noting what it was in the record's note helps identify patterns.",
+            "def_zh": "你食用了懷疑不合適的食物:乳製品、麩質、高FODMAPs(洋蔥、大蒜、豆類)、辛辣、酒精、咖啡因。在記錄備註中註明有助於識別模式。"
+          },
+          "emotional_stress": {
+            "label_es": "Estrés emocional",
+            "label_en": "Emotional stress",
+            "label_zh": "情緒壓力",
+            "def_es": "Situación estresante, ansiedad, conflicto o carga emocional reciente. El eje intestino-cerebro es especialmente sensible en condiciones funcionales GI y en personas con disautonomía.",
+            "def_en": "Stressful situation, anxiety, conflict, or recent emotional load. The gut-brain axis is especially sensitive in functional GI conditions and in people with dysautonomia.",
+            "def_zh": "近期的壓力情境、焦慮、衝突或情緒負擔。腸腦軸在功能性GI疾病和自主神經功能障礙患者中特別敏感。"
+          },
+          "menstrual_cycle": {
+            "label_es": "Ciclo menstrual",
+            "label_en": "Menstrual cycle",
+            "label_zh": "月經週期",
+            "def_es": "El dolor coincide con alguna fase del ciclo menstrual: premenstrual, durante el sangrado, ovulación. En personas con adenomiosis o endometriosis, el dolor abdominal bajo cíclico puede ser el síntoma principal.",
+            "def_en": "The pain coincides with some phase of the menstrual cycle: premenstrual, during bleeding, ovulation. In people with adenomyosis or endometriosis, cyclic lower abdominal pain may be the main symptom.",
+            "def_zh": "疼痛與月經週期的某個階段吻合:經前、月經期間、排卵。在腺肌症或子宮內膜異位症患者中,週期性下腹痛可能是主要症狀。"
           }
         }
       }

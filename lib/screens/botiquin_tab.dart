@@ -35,6 +35,7 @@ import '../widgets/severity_picker.dart';
 import 'timestamp_picker.dart';
 import '../extensions/context_ext.dart';
 import '../l10n/app_localizations.dart';
+import 'med_detail_screen.dart';
 
 class BotiquinTab extends StatelessWidget {
   final Profile profile;
@@ -60,8 +61,7 @@ class BotiquinTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dosesToday = profile.getDosesForDay(selectedDate);
-    final medsToday =
-        dosesToday.map((d) => d.medicationName).toSet().toList();
+    final medsToday = dosesToday.map((d) => d.medicationName).toSet().toList();
     final interactions = InteractionEngine.evaluate(
       medicationsToday: medsToday,
       conditions: profile.conditions,
@@ -81,13 +81,10 @@ class BotiquinTab extends StatelessWidget {
           ),
           const SizedBox(height: 20),
         ],
-        
+
         // 1. Interactions
         if (interactions.isNotEmpty) ...[
-          _InteractionList(
-            rules: interactions,
-            contrastColor: contrastColor,
-          ),
+          _InteractionList(rules: interactions, contrastColor: contrastColor),
           const SizedBox(height: 20),
         ],
 
@@ -101,13 +98,10 @@ class BotiquinTab extends StatelessWidget {
         ),
         const SizedBox(height: 24),
 
-
         // 3. Med list
         _SectionHeader(
           title: l10n.botiquinTabTitle,
-          badge: profile.botiquin.isEmpty
-              ? null
-              : '${profile.botiquin.length}',
+          badge: profile.botiquin.isEmpty ? null : '${profile.botiquin.length}',
           contrastColor: contrastColor,
         ),
         const SizedBox(height: 12),
@@ -138,13 +132,13 @@ class BotiquinTab extends StatelessWidget {
           icon: Icon(Icons.add, color: contrastColor, size: 18),
           label: Text(
             l10n.botiquinActionCreate,
-            style:
-                TextStyle(color: contrastColor, fontWeight: FontWeight.w600),
+            style: TextStyle(color: contrastColor, fontWeight: FontWeight.w600),
           ),
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: contrastColor.withValues(alpha: 0.4)),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
+              borderRadius: BorderRadius.circular(12),
+            ),
             padding: const EdgeInsets.symmetric(vertical: 14),
           ),
         ),
@@ -164,8 +158,6 @@ class BotiquinTab extends StatelessWidget {
     }
   }
 }
-
-
 
 // =============================================================================
 // Section header — matches Hoy tab's visual language
@@ -200,11 +192,9 @@ class _SectionHeader extends StatelessWidget {
         if (badge != null) ...[
           const SizedBox(width: 8),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color:
-                  badgeColor ?? contrastColor.withValues(alpha: 0.15),
+              color: badgeColor ?? contrastColor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
@@ -230,16 +220,13 @@ class _InteractionList extends StatelessWidget {
   final List<InteractionRule> rules;
   final Color contrastColor;
 
-  const _InteractionList({
-    required this.rules,
-    required this.contrastColor,
-  });
+  const _InteractionList({required this.rules, required this.contrastColor});
 
   Color _colorFor(InteractionLevel level) => switch (level) {
-        InteractionLevel.severe => const Color(0xFFE57373),
-        InteractionLevel.warning => const Color(0xFFFFB74D),
-        InteractionLevel.info => contrastColor.withValues(alpha: 0.5),
-      };
+    InteractionLevel.severe => const Color(0xFFE57373),
+    InteractionLevel.warning => const Color(0xFFFFB74D),
+    InteractionLevel.info => contrastColor.withValues(alpha: 0.5),
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -263,12 +250,17 @@ class _InteractionList extends StatelessWidget {
                 color: color.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                    color: color.withValues(alpha: 0.45), width: 1),
+                  color: color.withValues(alpha: 0.45),
+                  width: 1,
+                ),
               ),
               child: Text(
                 r.message,
                 style: TextStyle(
-                    color: contrastColor, fontSize: 12.5, height: 1.45),
+                  color: contrastColor,
+                  fontSize: 12.5,
+                  height: 1.45,
+                ),
               ),
             ),
           );
@@ -343,34 +335,33 @@ class _GroupsSection extends StatelessWidget {
             ),
           )
         else
-          ...groups.map((g) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: _GroupRow(
-                  group: g,
-                  profile: profile,
-                  selectedDate: selectedDate,
-                  contrastColor: cc,
-                  inverseContrastColor: inverseContrastColor,
-                  onProfileChanged: onProfileChanged,
-                ),
-              )),
+          ...groups.map(
+            (g) => Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: _GroupRow(
+                group: g,
+                profile: profile,
+                selectedDate: selectedDate,
+                contrastColor: cc,
+                inverseContrastColor: inverseContrastColor,
+                onProfileChanged: onProfileChanged,
+              ),
+            ),
+          ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
           onPressed: () => _openCreateGroup(context),
           icon: Icon(Icons.add, size: 16, color: cc.withValues(alpha: 0.7)),
           label: Text(
             l10n.botiquinActionCreateGroup,
-            style: TextStyle(
-              color: cc.withValues(alpha: 0.7),
-              fontSize: 13,
-            ),
+            style: TextStyle(color: cc.withValues(alpha: 0.7), fontSize: 13),
           ),
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: cc.withValues(alpha: 0.25)),
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20)),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           ),
         ),
       ],
@@ -385,22 +376,29 @@ class _GroupsSection extends StatelessWidget {
         builder: (ctx) => AlertDialog(
           backgroundColor: inverseContrastColor,
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16)),
-          title: Text(context.l10n.botiquinNoMedsDialogTitle,
-              style: TextStyle(color: contrastColor)),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            context.l10n.botiquinNoMedsDialogTitle,
+            style: TextStyle(color: contrastColor),
+          ),
           content: Text(
             context.l10n.botiquinNoMedsDialogBody,
             style: TextStyle(
-                color: contrastColor.withValues(alpha: 0.8),
-                height: 1.45),
+              color: contrastColor.withValues(alpha: 0.8),
+              height: 1.45,
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: Text('OK',
-                  style: TextStyle(
-                      color: contrastColor,
-                      fontWeight: FontWeight.bold)),
+              child: Text(
+                'OK',
+                style: TextStyle(
+                  color: contrastColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ],
         ),
@@ -453,8 +451,7 @@ class _GroupRow extends StatelessWidget {
         onLongPress: () => _openEditGroup(context),
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: cc.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(12),
@@ -466,12 +463,14 @@ class _GroupRow extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(group.name,
-                        style: TextStyle(
-                          color: cc,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        )),
+                    Text(
+                      group.name,
+                      style: TextStyle(
+                        color: cc,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
                     const SizedBox(height: 2),
                     Text(
                       '$entryCount ${entryCount == 1 ? 'medicamento' : 'medicamentos'}${timeStr != null ? ' · $timeStr' : ''}',
@@ -484,14 +483,20 @@ class _GroupRow extends StatelessWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.edit_outlined,
-                    size: 18, color: cc.withValues(alpha: 0.6)),
+                icon: Icon(
+                  Icons.edit_outlined,
+                  size: 18,
+                  color: cc.withValues(alpha: 0.6),
+                ),
                 onPressed: () => _openEditGroup(context),
                 tooltip: 'Editar',
                 visualDensity: VisualDensity.compact,
               ),
-              Icon(Icons.play_arrow_rounded,
-                  color: cc.withValues(alpha: 0.7), size: 24),
+              Icon(
+                Icons.play_arrow_rounded,
+                color: cc.withValues(alpha: 0.7),
+                size: 24,
+              ),
             ],
           ),
         ),
@@ -596,10 +601,7 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
   void _save() {
     if (_saved) return;
     _saved = true;
-    widget.profile.logGroup(
-      widget.group,
-      timestamp: _timestamp,
-    );
+    widget.profile.logGroup(widget.group, timestamp: _timestamp);
     Navigator.of(context).pop();
   }
 
@@ -622,11 +624,11 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
     final l10n = context.l10n;
     final viewInsets = MediaQuery.of(context).viewInsets;
     final entries = widget.group.entries;
-    final orphanCount = entries.where((e) =>
-        widget.profile.findMedById(e.medicationId) == null).length;
+    final orphanCount = entries
+        .where((e) => widget.profile.findMedById(e.medicationId) == null)
+        .length;
     final validEntries = entries
-        .where((e) =>
-            widget.profile.findMedById(e.medicationId) != null)
+        .where((e) => widget.profile.findMedById(e.medicationId) != null)
         .toList();
 
     return Padding(
@@ -686,7 +688,9 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 8),
+                  horizontal: 12,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: cc.withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(12),
@@ -699,9 +703,11 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Row(
                         children: [
-                          Icon(Icons.medication_outlined,
-                              size: 14,
-                              color: cc.withValues(alpha: 0.6)),
+                          Icon(
+                            Icons.medication_outlined,
+                            size: 14,
+                            color: cc.withValues(alpha: 0.6),
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -752,19 +758,27 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
                     setState(() => _timestamp = picked);
                   }
                 },
-                icon: Icon(Icons.access_time,
-                    size: 16, color: cc.withValues(alpha: 0.7)),
+                icon: Icon(
+                  Icons.access_time,
+                  size: 16,
+                  color: cc.withValues(alpha: 0.7),
+                ),
                 label: Text(
                   _formatTimestamp(_timestamp),
                   style: TextStyle(
-                      color: cc.withValues(alpha: 0.8), fontSize: 13),
+                    color: cc.withValues(alpha: 0.8),
+                    fontSize: 13,
+                  ),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: cc.withValues(alpha: 0.3)),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -779,12 +793,15 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
                     disabledBackgroundColor: cc.withValues(alpha: 0.2),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(
                     'Registrar ${validEntries.length} ${validEntries.length == 1 ? 'dosis' : 'dosis'}',
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),
@@ -817,14 +834,18 @@ class _EmptyMedsCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Icon(Icons.medication_outlined,
-              size: 40, color: contrastColor.withValues(alpha: 0.35)),
+          Icon(
+            Icons.medication_outlined,
+            size: 40,
+            color: contrastColor.withValues(alpha: 0.35),
+          ),
           const SizedBox(height: 10),
           Text(
             l10n.botiquinEmptyStateHeadline,
             style: TextStyle(
-                color: contrastColor.withValues(alpha: 0.7),
-                fontSize: 13),
+              color: contrastColor.withValues(alpha: 0.7),
+              fontSize: 13,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
@@ -868,7 +889,9 @@ class _MedRow extends StatelessWidget {
     final cc = contrastColor;
     final l10n = context.l10n;
     final qtyToday = profile.getDoseQuantityForDayAndMed(
-        selectedDate, med.name);
+      selectedDate,
+      med.name,
+    );
     final subtitle = med.notes?.isNotEmpty == true
         ? '${med.displayDose} · ${med.notes}'
         : med.displayDose;
@@ -894,10 +917,19 @@ class _MedRow extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           onTap: () => _openLogDose(context),
+          onLongPress: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => MedDetailScreen(
+                med: med,
+                profile: profile,
+                contrastColor: contrastColor,
+                inverseContrastColor: inverseContrastColor,
+              ),
+            ),
+          ),
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
             decoration: BoxDecoration(
               color: cc.withValues(alpha: 0.04),
               borderRadius: BorderRadius.circular(12),
@@ -931,10 +963,11 @@ class _MedRow extends StatelessWidget {
                 if (qtyToday > 0) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF81C784)
-                          .withValues(alpha: 0.18),
+                      color: const Color(0xFF81C784).withValues(alpha: 0.18),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
@@ -949,17 +982,21 @@ class _MedRow extends StatelessWidget {
                   const SizedBox(width: 4),
                 ],
                 IconButton(
-                  icon: Icon(Icons.info_outline,
-                      size: 18,
-                      color: cc.withValues(alpha: 0.6)),
+                  icon: Icon(
+                    Icons.info_outline,
+                    size: 18,
+                    color: cc.withValues(alpha: 0.6),
+                  ),
                   onPressed: () => _openDrugInfo(context),
                   tooltip: 'Información',
                   visualDensity: VisualDensity.compact,
                 ),
                 IconButton(
-                  icon: Icon(Icons.edit_outlined,
-                      size: 18,
-                      color: cc.withValues(alpha: 0.6)),
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    size: 18,
+                    color: cc.withValues(alpha: 0.6),
+                  ),
                   onPressed: () => _openEditMed(context),
                   tooltip: 'Editar',
                   visualDensity: VisualDensity.compact,
@@ -980,28 +1017,35 @@ class _MedRow extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: inverseContrastColor,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
-        title: Text(context.l10n.botiquinDeleteConfirmTitle(med.name),
-            style: TextStyle(color: contrastColor)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          context.l10n.botiquinDeleteConfirmTitle(med.name),
+          style: TextStyle(color: contrastColor),
+        ),
         content: Text(
           context.l10n.botiquinDeleteConfirmBody(med.name),
           style: TextStyle(
-              color: contrastColor.withValues(alpha: 0.8), height: 1.45),
+            color: contrastColor.withValues(alpha: 0.8),
+            height: 1.45,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(context.l10n.actionCancel,
-                style: TextStyle(
-                    color: contrastColor.withValues(alpha: 0.7))),
+            child: Text(
+              context.l10n.actionCancel,
+              style: TextStyle(color: contrastColor.withValues(alpha: 0.7)),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(context.l10n.botiquinActionDelete,
-                style: TextStyle(
-                    color: const Color(0xFFE57373),
-                    fontWeight: FontWeight.bold)),
+            child: Text(
+              context.l10n.botiquinActionDelete,
+              style: TextStyle(
+                color: const Color(0xFFE57373),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -1123,8 +1167,9 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
       strengthAtDose: med.strength,
       unitAtDose: med.unit,
       formAtDose: med.form,
-      linkedSymptomIds:
-          _linkedSymptom != null ? [_linkedSymptom!.id] : const [],
+      linkedSymptomIds: _linkedSymptom != null
+          ? [_linkedSymptom!.id]
+          : const [],
       severityBefore: severityBefore,
     );
     widget.profile.doseHistory.add(dose);
@@ -1132,16 +1177,17 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
     if (_trackOutcome &&
         _linkedSymptom != null &&
         med.outcomeCheckHours != null) {
-      widget.profile.medicationOutcomes.add(MedicationOutcome(
-        doseId: dose.id,
-        symptomId: _linkedSymptom!.id,
-        medicationName: med.name,
-        symptomName: _linkedSymptom!.name,
-        doseTimestamp: _timestamp,
-        checkAt:
-            _timestamp.add(Duration(hours: med.outcomeCheckHours!)),
-        severityBefore: _linkedSymptom!.severity.value,
-      ));
+      widget.profile.medicationOutcomes.add(
+        MedicationOutcome(
+          doseId: dose.id,
+          symptomId: _linkedSymptom!.id,
+          medicationName: med.name,
+          symptomName: _linkedSymptom!.name,
+          doseTimestamp: _timestamp,
+          checkAt: _timestamp.add(Duration(hours: med.outcomeCheckHours!)),
+          severityBefore: _linkedSymptom!.severity.value,
+        ),
+      );
     }
 
     Navigator.of(context).pop();
@@ -1255,9 +1301,7 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
                   runSpacing: 6,
                   children: [
                     _symptomChip(null, 'Ninguno'),
-                    ...recent.take(5).map(
-                          (s) => _symptomChip(s, s.name),
-                        ),
+                    ...recent.take(5).map((s) => _symptomChip(s, s.name)),
                   ],
                 ),
                 if (_linkedSymptom != null &&
@@ -1265,25 +1309,27 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
                   const SizedBox(height: 12),
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 4),
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: cc.withValues(alpha: 0.04),
                       borderRadius: BorderRadius.circular(12),
-                      border:
-                          Border.all(color: cc.withValues(alpha: 0.15)),
+                      border: Border.all(color: cc.withValues(alpha: 0.15)),
                     ),
                     child: Row(
                       children: [
                         Switch(
                           value: _trackOutcome,
-                          onChanged: (v) =>
-                              setState(() => _trackOutcome = v),
+                          onChanged: (v) => setState(() => _trackOutcome = v),
                           activeColor: cc,
                         ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            l10n.botiquinLogDoseTrackOutcomeToggle(med.outcomeCheckHours!),
+                            l10n.botiquinLogDoseTrackOutcomeToggle(
+                              med.outcomeCheckHours!,
+                            ),
                             style: TextStyle(
                               color: cc.withValues(alpha: 0.8),
                               fontSize: 13,
@@ -1310,19 +1356,27 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
                     setState(() => _timestamp = picked);
                   }
                 },
-                icon: Icon(Icons.access_time,
-                    size: 16, color: cc.withValues(alpha: 0.7)),
+                icon: Icon(
+                  Icons.access_time,
+                  size: 16,
+                  color: cc.withValues(alpha: 0.7),
+                ),
                 label: Text(
                   _formatTimestamp(_timestamp),
                   style: TextStyle(
-                      color: cc.withValues(alpha: 0.8), fontSize: 13),
+                    color: cc.withValues(alpha: 0.8),
+                    fontSize: 13,
+                  ),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: cc.withValues(alpha: 0.3)),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -1337,12 +1391,12 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
                     foregroundColor: widget.inverseContrastColor,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(
                     l10n.botiquinLogDoseSheetTitle,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
                 ),
               ),
@@ -1356,23 +1410,20 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
 
   Widget _symptomChip(SymptomEvent? s, String label) {
     final cc = widget.contrastColor;
-    final selected = _linkedSymptom?.id == s?.id ||
-        (_linkedSymptom == null && s == null);
+    final selected =
+        _linkedSymptom?.id == s?.id || (_linkedSymptom == null && s == null);
     return InkWell(
       onTap: () => setState(() => _linkedSymptom = s),
       borderRadius: BorderRadius.circular(16),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 150),
-        padding:
-            const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: selected
-              ? cc.withValues(alpha: 0.15)
-              : Colors.transparent,
+          color: selected ? cc.withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-              color:
-                  cc.withValues(alpha: selected ? 0.5 : 0.25)),
+            color: cc.withValues(alpha: selected ? 0.5 : 0.25),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -1386,8 +1437,7 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
               style: TextStyle(
                 fontSize: 12,
                 color: cc.withValues(alpha: selected ? 1.0 : 0.75),
-                fontWeight:
-                    selected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
           ],
@@ -1421,7 +1471,8 @@ class _TodaysDoses extends StatelessWidget {
   Widget build(BuildContext context) {
     final cc = contrastColor;
     final l10n = context.l10n;
-    final sorted = [...doses]..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    final sorted = [...doses]
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1472,8 +1523,11 @@ class _TodaysDoses extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 4),
                 child: Row(
                   children: [
-                    Icon(Icons.medication_outlined,
-                        size: 14, color: cc.withValues(alpha: 0.6)),
+                    Icon(
+                      Icons.medication_outlined,
+                      size: 14,
+                      color: cc.withValues(alpha: 0.6),
+                    ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Column(
@@ -1482,18 +1536,27 @@ class _TodaysDoses extends StatelessWidget {
                           Text(
                             '[$timeStr] ${d.medicationName}',
                             style: TextStyle(
-                                color: cc, fontSize: 13, fontWeight: FontWeight.w500),
+                              color: cc,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                           Text(
                             qtyLabel,
                             style: TextStyle(
-                                color: cc.withValues(alpha: 0.6), fontSize: 11),
+                              color: cc.withValues(alpha: 0.6),
+                              fontSize: 11,
+                            ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                      icon: const Icon(
+                        Icons.close,
+                        color: Colors.red,
+                        size: 18,
+                      ),
                       padding: EdgeInsets.zero,
                       constraints: const BoxConstraints(),
                       tooltip: 'Eliminar esta dosis',
@@ -1509,7 +1572,10 @@ class _TodaysDoses extends StatelessWidget {
         Text(
           l10n.botiquinDoseListFootnote,
           style: TextStyle(
-              color: cc.withValues(alpha: 0.5), fontSize: 11, fontStyle: FontStyle.italic),
+            color: cc.withValues(alpha: 0.5),
+            fontSize: 11,
+            fontStyle: FontStyle.italic,
+          ),
         ),
       ],
     );
@@ -1517,19 +1583,26 @@ class _TodaysDoses extends StatelessWidget {
 
   Future<void> _confirmDelete(BuildContext context, DoseEvent d) async {
     final l10n = context.l10n;
-    final timeStr = '${d.timestamp.hour.toString().padLeft(2, '0')}:${d.timestamp.minute.toString().padLeft(2, '0')}';
+    final timeStr =
+        '${d.timestamp.hour.toString().padLeft(2, '0')}:${d.timestamp.minute.toString().padLeft(2, '0')}';
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.botiquinDoseItemDeleteConfirmTitle),
         content: Text(
-            l10n.botiquinDoseItemDeleteConfirmBody(d.medicationName, timeStr)),
+          l10n.botiquinDoseItemDeleteConfirmBody(d.medicationName, timeStr),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false), child: Text(context.l10n.actionCancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(context.l10n.actionCancel),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(context.l10n.botiquinActionDelete, style: TextStyle(color: Colors.redAccent)),
+            child: Text(
+              context.l10n.botiquinActionDelete,
+              style: TextStyle(color: Colors.redAccent),
+            ),
           ),
         ],
       ),

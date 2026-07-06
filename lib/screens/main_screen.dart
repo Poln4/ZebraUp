@@ -28,6 +28,7 @@ import 'sintomas_tab.dart';
 import 'movimiento_tab.dart';
 import 'investigacion_tab.dart';
 import 'timestamp_picker.dart';
+import '../models/action_taken.dart';
 
 class MainAppScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -52,6 +53,29 @@ class MainAppScreen extends StatefulWidget {
 }
 
 class _MainAppScreenState extends State<MainAppScreen> {
+  // Sprint F.D — persist an updated ActionTaken
+  // after the follow-up effectiveness dialog is saved.
+  void _onCompleteFollowUp(ActionTaken updated) {
+    final idx = _activeProfile!.actionsHistory.indexWhere(
+      (a) => a.id == updated.id,
+    );
+    if (idx < 0) return;
+    setState(() {
+      _activeProfile!.actionsHistory[idx] = updated;
+    });
+    _saveData();
+  }
+
+  // Sprint F.E — persist a fresh ActionTaken from
+  // RetroSymptomDialog. Unlike _onCompleteFollowUp (F.D),
+  // this ADDS rather than updates.
+  void _onSaveRetroSymptom(ActionTaken action) {
+    setState(() {
+      _activeProfile!.actionsHistory.add(action);
+    });
+    _saveData();
+  }
+
   List<Profile> _profiles = [];
   Profile? _activeProfile;
 
@@ -60,8 +84,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
   // _clinicalLibraryDatabase removed in C.2 — compendium now reads from
   // _wisdomDatabase, filtering entries by `source.isNotEmpty` to skip
   // the 3 hardcoded base quotes.
-  Map<MoodQuadrant, List<EmaMood>> _moodDictionary = {}; // <--- NUEVO: Diccionario EMA
-  
+  Map<MoodQuadrant, List<EmaMood>> _moodDictionary =
+      {}; // <--- NUEVO: Diccionario EMA
+
   WisdomQuote? _currentWisdom;
   final Random _random = Random();
 
@@ -105,17 +130,17 @@ class _MainAppScreenState extends State<MainAppScreen> {
   // -------------------------------------------------------------------------
 
   @override
-   void initState() {
-     super.initState();
-     _bootstrap();
-   }
+  void initState() {
+    super.initState();
+    _bootstrap();
+  }
 
   Future<void> _bootstrap() async {
-     _loadUserProfiles();
-     await _loadLibraries();
-     await _fetchTodayWeather();
-     setState(() {});
-   }
+    _loadUserProfiles();
+    await _loadLibraries();
+    await _fetchTodayWeather();
+    setState(() {});
+  }
 
   @override
   void dispose() {
@@ -134,14 +159,18 @@ class _MainAppScreenState extends State<MainAppScreen> {
   Future<void> _loadLibraries() async {
     List<WisdomQuote> baseQuotes = [
       WisdomQuote(
-        textEs: "Descansar no es rendirse; es una intervención médica necesaria para tu sistema nervioso.",
-        textEn: "Resting is not giving up; it is a necessary medical intervention for your nervous system.",
+        textEs:
+            "Descansar no es rendirse; es una intervención médica necesaria para tu sistema nervioso.",
+        textEn:
+            "Resting is not giving up; it is a necessary medical intervention for your nervous system.",
         textZh: "休息不是放棄;這是你的神經系統必要的醫療介入。",
         category: "Pacing",
       ),
       WisdomQuote(
-        textEs: "Tus síntomas son reales, incluso cuando los exámenes de rutina no los muestran.",
-        textEn: "Your symptoms are real, even when routine tests don't show them.",
+        textEs:
+            "Tus síntomas son reales, incluso cuando los exámenes de rutina no los muestran.",
+        textEn:
+            "Your symptoms are real, even when routine tests don't show them.",
         textZh: "你的症狀是真實的,即使常規檢查沒有顯示出來。",
         category: "Validación",
       ),
@@ -155,29 +184,37 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
     // 1. Cargar Zebra Wisdom (Datos clínicos y validación)
     try {
-      final String wisdomString = await rootBundle.loadString('assets/zebra_wisdom.json');
+      final String wisdomString = await rootBundle.loadString(
+        'assets/zebra_wisdom.json',
+      );
       final Map<String, dynamic> wisdomData = jsonDecode(wisdomString);
       final List<dynamic> jsonFacts = wisdomData['facts'] ?? [];
 
       setState(() {
         // C.2: compendium reads WisdomQuote directly (with `source` field)
         // — no parallel ClinicalArticle list anymore.
-        _wisdomDatabase = baseQuotes +
+        _wisdomDatabase =
+            baseQuotes +
             jsonFacts
-                .map((item) => WisdomQuote.fromJson(
-                    Map<String, dynamic>.from(item as Map)))
+                .map(
+                  (item) => WisdomQuote.fromJson(
+                    Map<String, dynamic>.from(item as Map),
+                  ),
+                )
                 .toList();
       });
     } catch (e) {
       debugPrint("Error cargando zebra_wisdom.json: $e");
-      _wisdomDatabase = baseQuotes; 
+      _wisdomDatabase = baseQuotes;
     }
 
     // 2. Cargar EMA Moods (Diccionario de emociones para el Mood Tracker)
     try {
-      final String moodString = await rootBundle.loadString('assets/ema_moods.json');
+      final String moodString = await rootBundle.loadString(
+        'assets/ema_moods.json',
+      );
       final Map<String, dynamic> moodData = jsonDecode(moodString);
-      
+
       final Map<MoodQuadrant, List<EmaMood>> loadedMoods = {
         MoodQuadrant.activatedUnpleasant: [],
         MoodQuadrant.activatedPleasant: [],
@@ -188,9 +225,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
       for (final key in moodData.keys) {
         final quad = MoodQuadrantLabels.fromJsonCategory(key);
         final List<dynamic> list = moodData[key];
-        loadedMoods[quad]!.addAll(list.map((m) => EmaMood.fromMap(m as Map<String, dynamic>)));
+        loadedMoods[quad]!.addAll(
+          list.map((m) => EmaMood.fromMap(m as Map<String, dynamic>)),
+        );
       }
-      
+
       setState(() {
         _moodDictionary = loadedMoods;
       });
@@ -209,7 +248,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
     final storedIdx = box.get('wisdomIndex') as int?;
 
     int idx;
-    if (storedDate == todayKey && storedIdx != null && storedIdx >= 0 && storedIdx < _wisdomDatabase.length) {
+    if (storedDate == todayKey &&
+        storedIdx != null &&
+        storedIdx >= 0 &&
+        storedIdx < _wisdomDatabase.length) {
       idx = storedIdx;
     } else {
       idx = _random.nextInt(_wisdomDatabase.length);
@@ -227,7 +269,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
     do {
       newIdx = _random.nextInt(_wisdomDatabase.length);
       safety++;
-    } while (_currentWisdom != null && _wisdomDatabase[newIdx].textEs == _currentWisdom!.textEs && safety < 10);
+    } while (_currentWisdom != null &&
+        _wisdomDatabase[newIdx].textEs == _currentWisdom!.textEs &&
+        safety < 10);
     box.put('wisdomDateKey', _getDateKey(DateTime.now()));
     box.put('wisdomIndex', newIdx);
     setState(() => _currentWisdom = _wisdomDatabase[newIdx]);
@@ -236,7 +280,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
   // -------------------------------------------------------------------------
   // ARCO RIGHTS (Export / Import / Wipe)
   // -------------------------------------------------------------------------
-  
+
   // ( ... Todo el bloque de Exportar, Importar y Wipe permanece intacto ... )
   // Reinsertando por completitud del archivo:
 
@@ -247,12 +291,16 @@ class _MainAppScreenState extends State<MainAppScreen> {
       final filename = await _profileIo.exportProfile(_activeProfile!);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(t.exportSuccess(filename)), duration: const Duration(seconds: 4)),
+        SnackBar(
+          content: Text(t.exportSuccess(filename)),
+          duration: const Duration(seconds: 4),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(t.exportError(e.toString()))));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.exportError(e.toString()))));
     }
   }
 
@@ -262,10 +310,12 @@ class _MainAppScreenState extends State<MainAppScreen> {
       return switch (e.code) {
         ImportErrorCode.unreadableFile => t.errImportUnreadable,
         ImportErrorCode.invalidJson => t.errImportInvalidJson,
-        ImportErrorCode.notZebraUpp => t.errImportNotZebra,
+        ImportErrorCode.notZebraUp => t.errImportNotZebra,
         ImportErrorCode.unknownSchema => t.errImportUnknownSchema,
         ImportErrorCode.schemaMismatch => t.errImportSchemaMismatch(
-            e.detail ?? '?', ProfileIoService.schemaVersion.toString()),
+          e.detail ?? '?',
+          ProfileIoService.schemaVersion.toString(),
+        ),
         ImportErrorCode.missingProfile => t.errImportMissingProfile,
         ImportErrorCode.corruptProfile => t.errImportCorruptProfile,
       };
@@ -282,7 +332,8 @@ class _MainAppScreenState extends State<MainAppScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(t.importCancelled(_importErrorMessage(e, t)))));
+        SnackBar(content: Text(t.importCancelled(_importErrorMessage(e, t)))),
+      );
       return;
     }
     if (preview == null || !mounted) return;
@@ -302,7 +353,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(t.pasteImportInstructions, style: const TextStyle(fontSize: 12)),
+            Text(
+              t.pasteImportInstructions,
+              style: const TextStyle(fontSize: 12),
+            ),
             const SizedBox(height: 12),
             TextField(
               controller: ctrl,
@@ -318,11 +372,13 @@ class _MainAppScreenState extends State<MainAppScreen> {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(t.actionCancel)),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(t.actionCancel),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, ctrl.text),
-              child: Text(t.actionImport)),
+            onPressed: () => Navigator.pop(ctx, ctrl.text),
+            child: Text(t.actionImport),
+          ),
         ],
       ),
     );
@@ -334,7 +390,8 @@ class _MainAppScreenState extends State<MainAppScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(t.importCancelled(_importErrorMessage(e, t)))));
+        SnackBar(content: Text(t.importCancelled(_importErrorMessage(e, t)))),
+      );
       return;
     }
     await _confirmAndApplyImport(preview);
@@ -352,42 +409,48 @@ class _MainAppScreenState extends State<MainAppScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(t.importDialogName(preview.profile.name),
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              t.importDialogName(preview.profile.name),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             if (preview.exportedAt != null) ...[
               const SizedBox(height: 4),
               Text(
-                  t.importDialogExportedAt(preview.exportedAt!
-                      .toLocal()
-                      .toString()
-                      .split('.')
-                      .first),
-                  style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                t.importDialogExportedAt(
+                  preview.exportedAt!.toLocal().toString().split('.').first,
+                ),
+                style: const TextStyle(color: Colors.grey, fontSize: 12),
+              ),
             ],
             const SizedBox(height: 12),
             Text(t.importDialogContains(preview.totalEvents)),
             const SizedBox(height: 4),
             Text(
-                '• ${preview.symptomCount} ${t.nounSymptoms}\n'
-                '• ${preview.doseCount} ${t.nounDoses}\n'
-                '• ${preview.structuralCount} ${t.nounStructural}\n'
-                '• ${preview.activityCount} ${t.nounActivities}\n'
-                '• ${preview.therapyCount} ${t.nounTherapies}\n'
-                '• ${preview.moodCount} ${t.nounMoods}\n'
-                '• ${preview.mentalCount} ${t.nounMental}',
-                style: const TextStyle(fontSize: 12)),
+              '• ${preview.symptomCount} ${t.nounSymptoms}\n'
+              '• ${preview.doseCount} ${t.nounDoses}\n'
+              '• ${preview.structuralCount} ${t.nounStructural}\n'
+              '• ${preview.activityCount} ${t.nounActivities}\n'
+              '• ${preview.therapyCount} ${t.nounTherapies}\n'
+              '• ${preview.moodCount} ${t.nounMoods}\n'
+              '• ${preview.mentalCount} ${t.nounMental}',
+              style: const TextStyle(fontSize: 12),
+            ),
             const SizedBox(height: 12),
-            Text(t.importDialogFootnote,
-                style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(
+              t.importDialogFootnote,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ],
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(t.actionCancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.actionCancel),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(t.actionImport)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(t.actionImport),
+          ),
         ],
       ),
     );
@@ -406,8 +469,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
     });
     await _fetchTodayWeather();
     if (mounted) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(t.importSuccess)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.importSuccess)));
     }
   }
 
@@ -475,8 +539,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(t.pasteImportInstructions,
-                    style: const TextStyle(fontSize: 12)),
+                Text(
+                  t.pasteImportInstructions,
+                  style: const TextStyle(fontSize: 12),
+                ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: ctrl,
@@ -492,11 +558,13 @@ class _MainAppScreenState extends State<MainAppScreen> {
             ),
             actions: [
               TextButton(
-                  onPressed: () => Navigator.pop(ctx),
-                  child: Text(t.actionCancel)),
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(t.actionCancel),
+              ),
               TextButton(
-                  onPressed: () => Navigator.pop(ctx, ctrl.text),
-                  child: Text(t.actionImport)),
+                onPressed: () => Navigator.pop(ctx, ctrl.text),
+                child: Text(t.actionImport),
+              ),
             ],
           ),
         );
@@ -523,13 +591,16 @@ class _MainAppScreenState extends State<MainAppScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(t.importDialogName(p.profile.name),
-                style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              t.importDialogName(p.profile.name),
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             if (p.exportedAt != null) ...[
               const SizedBox(height: 4),
               Text(
                 t.importDialogExportedAt(
-                    p.exportedAt!.toLocal().toString().split('.').first),
+                  p.exportedAt!.toLocal().toString().split('.').first,
+                ),
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ],
@@ -547,17 +618,21 @@ class _MainAppScreenState extends State<MainAppScreen> {
               style: const TextStyle(fontSize: 12),
             ),
             const SizedBox(height: 12),
-            Text(t.importDialogFootnote,
-                style: const TextStyle(fontSize: 12, color: Colors.grey)),
+            Text(
+              t.importDialogFootnote,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
           ],
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(t.actionCancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.actionCancel),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(t.actionImport)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(t.actionImport),
+          ),
         ],
       ),
     );
@@ -583,12 +658,16 @@ class _MainAppScreenState extends State<MainAppScreen> {
         content: Text(t.dialogWipeContent),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(t.actionCancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.actionCancel),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(t.actionContinue,
-                  style: const TextStyle(color: Colors.redAccent))),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              t.actionContinue,
+              style: const TextStyle(color: Colors.redAccent),
+            ),
+          ),
         ],
       ),
     );
@@ -616,14 +695,17 @@ class _MainAppScreenState extends State<MainAppScreen> {
           ),
           actions: [
             TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: Text(t.actionCancel)),
+              onPressed: () => Navigator.pop(ctx, false),
+              child: Text(t.actionCancel),
+            ),
             TextButton(
               onPressed: typedCtrl.text.trim() == magicWord
                   ? () => Navigator.pop(ctx, true)
                   : null,
-              child: Text(t.dialogWipeFinalButton,
-                  style: const TextStyle(color: Colors.redAccent)),
+              child: Text(
+                t.dialogWipeFinalButton,
+                style: const TextStyle(color: Colors.redAccent),
+              ),
             ),
           ],
         ),
@@ -650,10 +732,19 @@ class _MainAppScreenState extends State<MainAppScreen> {
   DateTime _timestampForLog() {
     final now = DateTime.now();
     final sel = _selectedDate;
-    final isToday = sel.year == now.year && sel.month == now.month && sel.day == now.day;
+    final isToday =
+        sel.year == now.year && sel.month == now.month && sel.day == now.day;
     if (isToday) return now;
-    return DateTime(sel.year, sel.month, sel.day, now.hour, now.minute, now.second);
+    return DateTime(
+      sel.year,
+      sel.month,
+      sel.day,
+      now.hour,
+      now.minute,
+      now.second,
+    );
   }
+
   /// C.4: True iff the active profile mentions cefalea anywhere —
   /// in the symptom vault or in the listed conditions. Used to gate
   /// the headache_detail toggle's visibility in the settings drawer
@@ -690,6 +781,25 @@ class _MainAppScreenState extends State<MainAppScreen> {
     return false;
   }
 
+  /// D.2: True iff the active profile mentions dolor abdominal
+  /// (including bloating / gas variants) anywhere — in the symptom
+  /// vault or in the listed conditions. Aliases include dolor
+  /// abdominal, cólico, hinchazón, distensión, gases, pedos, and
+  /// their en / zh equivalents. Mirrors _hasHeadacheRelevance and
+  /// _hasFatigueRelevance.
+  bool _hasAbdominalRelevance() {
+    final svc = SymptomDefinitionsService.instance;
+    final p = _activeProfile;
+    if (p == null) return false;
+    for (final s in p.symptomVault) {
+      if (svc.matchesSymptomKey(s, 'abdominal_pain')) return true;
+    }
+    for (final c in p.conditions) {
+      if (svc.matchesSymptomKey(c, 'abdominal_pain')) return true;
+    }
+    return false;
+  }
+
   // -------------------------------------------------------------------------
   // PERSISTENCE
   // -------------------------------------------------------------------------
@@ -721,13 +831,19 @@ class _MainAppScreenState extends State<MainAppScreen> {
       if (loaded.isEmpty && decoded.isNotEmpty) {
         // Todo falló al parsear: respaldar el blob crudo ANTES de que
         // cualquier _saveData() lo sobrescriba. Recuperable manualmente.
-        box.put('profiles_backup_${DateTime.now().millisecondsSinceEpoch}', storedData);
+        box.put(
+          'profiles_backup_${DateTime.now().millisecondsSinceEpoch}',
+          storedData,
+        );
       }
       _profiles = loaded;
     } catch (e) {
       // JSON ilegible: respaldar y partir vacío SIN sobrescribir el original.
       debugPrint('Error decodificando profiles: $e');
-      box.put('profiles_backup_${DateTime.now().millisecondsSinceEpoch}', storedData);
+      box.put(
+        'profiles_backup_${DateTime.now().millisecondsSinceEpoch}',
+        storedData,
+      );
       _profiles = [];
     }
     if (_profiles.isNotEmpty) {
@@ -754,7 +870,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
     // l10n.localeName through every call site.
     Intl.defaultLocale = widget.locale.toString();
     final contrastColor = widget.isDarkMode ? Colors.white : Colors.black;
-    final inverseContrastColor = widget.isDarkMode ? Colors.black : Colors.white;
+    final inverseContrastColor = widget.isDarkMode
+        ? Colors.black
+        : Colors.white;
 
     if (_activeProfile == null) {
       return _buildEmptyProfileScaffold(contrastColor, inverseContrastColor);
@@ -774,7 +892,12 @@ class _MainAppScreenState extends State<MainAppScreen> {
           value: _activeProfile,
           dropdownColor: inverseContrastColor,
           icon: Icon(Icons.arrow_drop_down, color: contrastColor),
-          style: TextStyle(fontSize: 20, color: contrastColor, fontWeight: FontWeight.bold, letterSpacing: 1),
+          style: TextStyle(
+            fontSize: 20,
+            color: contrastColor,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
           underline: Container(),
           onChanged: (Profile? newProfile) {
             if (newProfile != null) {
@@ -785,25 +908,41 @@ class _MainAppScreenState extends State<MainAppScreen> {
               });
             }
           },
-          items: _profiles.map((p) => DropdownMenuItem(value: p, child: Text(p.name.toUpperCase()))).toList(),
+          items: _profiles
+              .map(
+                (p) => DropdownMenuItem(
+                  value: p,
+                  child: Text(p.name.toUpperCase()),
+                ),
+              )
+              .toList(),
         ),
         actions: [
           IconButton(
             tooltip: AppLocalizations.of(context)!.appBarTooltipFontSize,
             icon: Icon(Icons.text_fields, color: contrastColor),
-            onPressed: () => widget.onScaleFont(widget.fontScale >= 1.4 ? 1.0 : widget.fontScale + 0.2),
+            onPressed: () => widget.onScaleFont(
+              widget.fontScale >= 1.4 ? 1.0 : widget.fontScale + 0.2,
+            ),
           ),
           IconButton(
             tooltip: widget.isDarkMode
                 ? AppLocalizations.of(context)!.appBarTooltipLightMode
                 : AppLocalizations.of(context)!.appBarTooltipDarkMode,
-            icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode, color: contrastColor),
+            icon: Icon(
+              widget.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              color: contrastColor,
+            ),
             onPressed: widget.onToggleTheme,
           ),
           Builder(
             builder: (ctx) => IconButton(
               tooltip: AppLocalizations.of(context)!.appBarTooltipSettings,
-              icon: Icon(Icons.settings_outlined, color: contrastColor, size: 28),
+              icon: Icon(
+                Icons.settings_outlined,
+                color: contrastColor,
+                size: 28,
+              ),
               onPressed: () => Scaffold.of(ctx).openEndDrawer(),
             ),
           ),
@@ -827,33 +966,38 @@ class _MainAppScreenState extends State<MainAppScreen> {
         onTap: (i) => setState(() => _currentNavIndex = i),
         items: [
           BottomNavigationBarItem(
-              icon: const Icon(Icons.wb_sunny_outlined),
-              label: AppLocalizations.of(context)!.navHoy),
+            icon: const Icon(Icons.wb_sunny_outlined),
+            label: AppLocalizations.of(context)!.navHoy,
+          ),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.accessibility_new_rounded),
-              label: AppLocalizations.of(context)!.navSintomas),
+            icon: const Icon(Icons.accessibility_new_rounded),
+            label: AppLocalizations.of(context)!.navSintomas,
+          ),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.self_improvement_outlined),
-              label: AppLocalizations.of(context)!.navMovimiento),
+            icon: const Icon(Icons.self_improvement_outlined),
+            label: AppLocalizations.of(context)!.navMovimiento,
+          ),
           BottomNavigationBarItem(
             icon: _buildBotiquinIcon(dueOutcomesCount, contrastColor),
             label: AppLocalizations.of(context)!.navBotiquin,
           ),
           BottomNavigationBarItem(
-              icon: const Icon(Icons.analytics_outlined),
-              label: AppLocalizations.of(context)!.navClinica),
+            icon: const Icon(Icons.analytics_outlined),
+            label: AppLocalizations.of(context)!.navClinica,
+          ),
         ],
       ),
     );
   }
 
-Widget _buildCurrentTab(Color cc, Color ic) {
+  Widget _buildCurrentTab(Color cc, Color ic) {
     switch (_currentNavIndex) {
       case 0:
         return HoyTab(
           profile: _activeProfile!,
           selectedDate: _selectedDate,
-          wisdom: _currentWisdom ??
+          wisdom:
+              _currentWisdom ??
               WisdomQuote(
                 textEs: "Cargando sabiduría...",
                 textEn: "Loading wisdom...",
@@ -862,18 +1006,21 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               ),
           contrastColor: cc,
           inverseContrastColor: ic,
-          moodDictionary: _moodDictionary, // <--- NUEVO: Inyectamos el JSON dict aquí
+          moodDictionary:
+              _moodDictionary, // <--- NUEVO: Inyectamos el JSON dict aquí
           onTogglePacing: _togglePacing,
           onLogMental: _logMental,
           onLogMood: _logMood,
           onDeleteMood: _deleteMoodEntry,
           onAnswerOutcome: _answerOutcome,
-          onChangeWisdom: _changeWisdomQuote, 
+          onChangeWisdom: _changeWisdomQuote,
           todayWeather: _todayWeather,
           showHint: _shouldShowHoyHint,
           onDismissHint: _dismissHoyHint,
           // PHASE 5.2a — wire navigation for distention banner shortcut
           onNavigate: (idx) => setState(() => _currentNavIndex = idx),
+          onCompleteFollowUp: _onCompleteFollowUp,
+          onSaveRetroSymptom: _onSaveRetroSymptom,
         );
       case 1:
         return _buildSintomasTab(cc, ic);
@@ -888,7 +1035,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             _saveData();
           },
         );
-      case 3: return _buildBotiquinTab(cc, ic);
+      case 3:
+        return _buildBotiquinTab(cc, ic);
       case 4:
       default:
         return _buildClinicaTab(cc, ic);
@@ -913,7 +1061,11 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
             child: Text(
               '$dueCount',
-              style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -948,7 +1100,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   Widget _buildCalendarStrip(Color cc, Color ic) {
     return Container(
       height: 70,
-      decoration: BoxDecoration(border: Border(bottom: BorderSide(color: cc))),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: cc)),
+      ),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 14,
@@ -974,13 +1128,29 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(DateFormat('MMM').format(date).toUpperCase(),
-                          style: TextStyle(fontSize: 10, color: isSelected ? ic : cc, fontWeight: FontWeight.bold)),
+                      Text(
+                        DateFormat('MMM').format(date).toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: isSelected ? ic : cc,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 2),
                       isPacing
-                          ? Icon(Icons.shield_outlined, color: isSelected ? ic : cc, size: 18)
-                          : Text(DateFormat('d').format(date),
-                              style: TextStyle(fontSize: 14, color: isSelected ? ic : cc, fontWeight: FontWeight.bold)),
+                          ? Icon(
+                              Icons.shield_outlined,
+                              color: isSelected ? ic : cc,
+                              size: 18,
+                            )
+                          : Text(
+                              DateFormat('d').format(date),
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: isSelected ? ic : cc,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ],
                   ),
                   if (_activeProfile!.getLifeEventsForDay(date).isNotEmpty)
@@ -1052,9 +1222,13 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             children: [
               Expanded(child: _clinicaTabBtn("Reporte", "REPORTE", cc, ic)),
               const SizedBox(width: 6),
-              Expanded(child: _clinicaTabBtn("Biblioteca", "COMPENDIO", cc, ic)),
+              Expanded(
+                child: _clinicaTabBtn("Biblioteca", "COMPENDIO", cc, ic),
+              ),
               const SizedBox(width: 6),
-              Expanded(child: _clinicaTabBtn("Investigación", "INVESTIGACIÓN", cc, ic)),
+              Expanded(
+                child: _clinicaTabBtn("Investigación", "INVESTIGACIÓN", cc, ic),
+              ),
             ],
           ),
         ),
@@ -1063,12 +1237,12 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             "Reporte" => _buildReportContent(cc, ic),
             "Biblioteca" => _buildCompendiumLibraryContent(cc, ic),
             "Investigación" => InvestigacionTab(
-                profile: _activeProfile!,
-                service: _pubmed,
-                contrastColor: cc,
-                inverseContrastColor: ic,
-                onToggleSave: _toggleSavedArticle,
-              ),
+              profile: _activeProfile!,
+              service: _pubmed,
+              contrastColor: cc,
+              inverseContrastColor: ic,
+              onToggleSave: _toggleSavedArticle,
+            ),
             _ => const SizedBox.shrink(),
           },
         ),
@@ -1084,8 +1258,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         side: BorderSide(color: cc),
       ),
       onPressed: () => setState(() => _clinicaTabView = value),
-      child: Text(label,
-          style: TextStyle(color: selected ? ic : cc, fontWeight: FontWeight.bold, fontSize: 11)),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: selected ? ic : cc,
+          fontWeight: FontWeight.bold,
+          fontSize: 11,
+        ),
+      ),
     );
   }
 
@@ -1110,7 +1290,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           decoration: BoxDecoration(
             color: selected ? cc : Colors.transparent,
             border: Border.all(
-                color: cc.withValues(alpha: selected ? 1.0 : 0.4)),
+              color: cc.withValues(alpha: selected ? 1.0 : 0.4),
+            ),
             borderRadius: BorderRadius.circular(14),
           ),
           child: Text(
@@ -1143,12 +1324,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: 5),
+                  horizontal: 10,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: customSelected ? cc : Colors.transparent,
                   border: Border.all(
-                      color: cc.withValues(
-                          alpha: customSelected ? 1.0 : 0.4)),
+                    color: cc.withValues(alpha: customSelected ? 1.0 : 0.4),
+                  ),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Tooltip(
@@ -1183,10 +1366,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
   Future<void> _openCustomRangePicker() async {
     final today = DateTime.now();
-    final initial = _customRange ??
+    final initial =
+        _customRange ??
         DateTimeRange(
-          start: _selectedDate
-              .subtract(Duration(days: _reportRangeDays - 1)),
+          start: _selectedDate.subtract(Duration(days: _reportRangeDays - 1)),
           end: _selectedDate,
         );
     final picked = await showDateRangePicker(
@@ -1206,17 +1389,24 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final todaysDoses = _activeProfile!.getDosesForDay(_selectedDate);
     final todaysStructs = _activeProfile!.getStructuralForDay(_selectedDate);
     final todaysMental = _activeProfile!.getMentalForDay(_selectedDate);
-    final todaysMoods = _activeProfile!.getMoodForDay(_selectedDate); // <--- NUEVO
+    final todaysMoods = _activeProfile!.getMoodForDay(
+      _selectedDate,
+    ); // <--- NUEVO
     final todaysFever = _activeProfile!.getFeverForDay(_selectedDate);
-    final feverEpisodes = FeverAnalysis.detectEpisodes(_activeProfile!.feverHistory);
+    final feverEpisodes = FeverAnalysis.detectEpisodes(
+      _activeProfile!.feverHistory,
+    );
 
     // PHASE 4a — Range + trends computation
     final rangeEnd = _customRange?.end ?? _selectedDate;
-    final rangeStart = _customRange?.start ??
+    final rangeStart =
+        _customRange?.start ??
         _selectedDate.subtract(Duration(days: _reportRangeDays - 1));
-    final rangeDayCount = DateTime(rangeEnd.year, rangeEnd.month, rangeEnd.day)
-            .difference(DateTime(
-                rangeStart.year, rangeStart.month, rangeStart.day))
+    final rangeDayCount =
+        DateTime(rangeEnd.year, rangeEnd.month, rangeEnd.day)
+            .difference(
+              DateTime(rangeStart.year, rangeStart.month, rangeStart.day),
+            )
             .inDays +
         1;
     final ReportTrends? trends = rangeDayCount > 1
@@ -1233,7 +1423,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
     final groupedDoses = <String, int>{};
     for (final d in todaysDoses) {
-      groupedDoses[d.medicationName] = (groupedDoses[d.medicationName] ?? 0) + 1;
+      groupedDoses[d.medicationName] =
+          (groupedDoses[d.medicationName] ?? 0) + 1;
     }
 
     final mentalSummary = <MentalState, int>{};
@@ -1244,11 +1435,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
     final buf = StringBuffer();
     buf.writeln("PACIENTE: ${_activeProfile!.name}");
-    buf.writeln("FECHA EVALUADA: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}");
+    buf.writeln(
+      "FECHA EVALUADA: ${DateFormat('yyyy-MM-dd').format(_selectedDate)}",
+    );
     if (trends != null) {
       buf.writeln(
-          "TENDENCIAS DE: ${DateFormat('yyyy-MM-dd').format(rangeStart)} → "
-          "${DateFormat('yyyy-MM-dd').format(rangeEnd)} ($rangeDayCount días)");
+        "TENDENCIAS DE: ${DateFormat('yyyy-MM-dd').format(rangeStart)} → "
+        "${DateFormat('yyyy-MM-dd').format(rangeEnd)} ($rangeDayCount días)",
+      );
     }
     buf.writeln("─────────────────────────────");
     buf.writeln("DIAGNÓSTICOS:");
@@ -1270,7 +1464,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       buf.writeln(" • —");
     } else {
       for (final s in grouped.entries) {
-        buf.writeln(" • ${s.key} [${s.value.severityLabel(l10n).toUpperCase()}]");
+        buf.writeln(
+          " • ${s.key} [${s.value.severityLabel(l10n).toUpperCase()}]",
+        );
       }
     }
 
@@ -1298,11 +1494,16 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     // Last match wins, so if multiple episodes touch the day we surface
     // the most recent one — important when readings are sparse and a new
     // episode starts on the same calendar day an old one ended.
-    final feverStartOfDay = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+    final feverStartOfDay = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+    );
     final feverEndOfDayExcl = feverStartOfDay.add(const Duration(days: 1));
     FeverEpisode? relevantFeverEpisode;
     for (final ep in feverEpisodes) {
-      if (ep.start.isBefore(feverEndOfDayExcl) && !ep.end.isBefore(feverStartOfDay)) {
+      if (ep.start.isBefore(feverEndOfDayExcl) &&
+          !ep.end.isBefore(feverStartOfDay)) {
         relevantFeverEpisode = ep;
       }
     }
@@ -1327,13 +1528,18 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
       buf.writeln();
       buf.writeln("$title ($durStr):");
-      buf.writeln(" • Inicio: ${DateFormat('yyyy-MM-dd HH:mm').format(ep.start)}");
-      buf.writeln(" • Pico: ${ep.peakTemperatureC.toStringAsFixed(1)}°C (${ep.peakSite.label(l10n)}) el ${DateFormat('yyyy-MM-dd HH:mm').format(ep.peakTimestamp)}");
+      buf.writeln(
+        " • Inicio: ${DateFormat('yyyy-MM-dd HH:mm').format(ep.start)}",
+      );
+      buf.writeln(
+        " • Pico: ${ep.peakTemperatureC.toStringAsFixed(1)}°C (${ep.peakSite.label(l10n)}) el ${DateFormat('yyyy-MM-dd HH:mm').format(ep.peakTimestamp)}",
+      );
       buf.writeln(" • Total lecturas: ${ep.readingsCount}");
       if (ep.antipyreticDosesCount > 0) {
         final String apStr;
         if (ep.antipyreticsUsed.isNotEmpty) {
-          apStr = "${ep.antipyreticsUsed.join(', ')} (${ep.antipyreticDosesCount} dosis totales)";
+          apStr =
+              "${ep.antipyreticsUsed.join(', ')} (${ep.antipyreticDosesCount} dosis totales)";
         } else {
           apStr = "${ep.antipyreticDosesCount} dosis (sin nombre registrado)";
         }
@@ -1348,23 +1554,27 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         buf.writeln(" • ${m.key.mentalStateLabel(l10n)}: ${m.value}/5");
       }
     }
-    
+
     // <--- NUEVO: Inclusión de los estados de ánimo EMA y notas en el reporte clínico
     if (todaysMoods.isNotEmpty) {
       buf.writeln();
       buf.writeln("ESTADOS EMA & CONTEXTO:");
       for (final entry in todaysMoods) {
         final timeStr = DateFormat('HH:mm').format(entry.timestamp);
-        final notesStr = entry.notes != null && entry.notes!.isNotEmpty ? " | Nota: ${entry.notes}" : "";
+        final notesStr = entry.notes != null && entry.notes!.isNotEmpty
+            ? " | Nota: ${entry.notes}"
+            : "";
         buf.writeln(" • [$timeStr] ${entry.states.join(', ')}$notesStr");
       }
     }
-    
+
     if (todaysStructs.isNotEmpty) {
       buf.writeln();
       buf.writeln("EVENTOS ESTRUCTURALES:");
       for (final e in todaysStructs) {
-        buf.writeln(" • [${DateFormat('HH:mm').format(e.timestamp)}] ${e.zone.bodyZoneLabel(l10n)}: ${e.type.structuralTypeLabel(l10n)}");
+        buf.writeln(
+          " • [${DateFormat('HH:mm').format(e.timestamp)}] ${e.zone.bodyZoneLabel(l10n)}: ${e.type.structuralTypeLabel(l10n)}",
+        );
       }
     }
 
@@ -1381,7 +1591,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           if (t.allUnrated) {
             line += " (sin rating)";
           } else {
-            line += ", peor: ${t.worstSeverity.severityLabel(l10n).toUpperCase()}";
+            line +=
+                ", peor: ${t.worstSeverity.severityLabel(l10n).toUpperCase()}";
           }
           buf.writeln(line);
         }
@@ -1394,7 +1605,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         for (final entry in sorted) {
           final perDay = (entry.value / trends.dayCount).toStringAsFixed(1);
           buf.writeln(
-              "  • ${entry.key} — ${entry.value} dosis ($perDay/día prom.)");
+            "  • ${entry.key} — ${entry.value} dosis ($perDay/día prom.)",
+          );
         }
       }
 
@@ -1404,13 +1616,15 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         final epLabel = epCount == 1 ? 'episodio' : 'episodios';
         final dayLabel = trends.feverishDayCount == 1 ? 'día' : 'días';
         buf.writeln(
-            "  • $epCount $epLabel, ${trends.feverishDayCount} $dayLabel con fiebre");
+          "  • $epCount $epLabel, ${trends.feverishDayCount} $dayLabel con fiebre",
+        );
         for (final ep in trends.feverEpisodes) {
           final startStr = DateFormat('yyyy-MM-dd').format(ep.start);
           final endStr = DateFormat('yyyy-MM-dd').format(ep.end);
           final activeTag = ep.isActive ? " (activo)" : "";
           buf.writeln(
-              "  • $startStr → $endStr, pico ${ep.peakTemperatureC.toStringAsFixed(1)}°C$activeTag");
+            "  • $startStr → $endStr, pico ${ep.peakTemperatureC.toStringAsFixed(1)}°C$activeTag",
+          );
         }
       }
 
@@ -1420,7 +1634,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           ..sort((a, b) => b.value.compareTo(a.value));
         for (final entry in sorted) {
           final evLabel = entry.value == 1 ? 'evento' : 'eventos';
-          buf.writeln("  • ${entry.key.bodyZoneLabel(l10n)} — ${entry.value} $evLabel");
+          buf.writeln(
+            "  • ${entry.key.bodyZoneLabel(l10n)} — ${entry.value} $evLabel",
+          );
         }
       }
 
@@ -1430,7 +1646,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           ..sort((a, b) => b.value.compareTo(a.value));
         for (final entry in sorted) {
           buf.writeln(
-              "  • ${entry.key.mentalStateLabel(l10n)}: ${entry.value.toStringAsFixed(1)}/5");
+            "  • ${entry.key.mentalStateLabel(l10n)}: ${entry.value.toStringAsFixed(1)}/5",
+          );
         }
       }
     }
@@ -1447,8 +1664,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         final eff = _activeProfile!.effectivenessFor(parts[0], parts[1]);
         if (eff != null) {
           final pct = (eff.improved / eff.total * 100).toStringAsFixed(0);
-          final avg = (-eff.meanDelta).toStringAsFixed(1); 
-          buf.writeln(" • ${parts[0]} → ${parts[1]}: $pct% mejora (${eff.improved}/${eff.total}), promedio -$avg pts");
+          final avg = (-eff.meanDelta).toStringAsFixed(1);
+          buf.writeln(
+            " • ${parts[0]} → ${parts[1]}: $pct% mejora (${eff.improved}/${eff.total}), promedio -$avg pts",
+          );
         }
       }
     }
@@ -1466,8 +1685,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(border: Border.all(color: cc)),
-          child: SelectableText(reportText,
-              style: TextStyle(fontFamily: 'Courier', fontSize: 14, color: cc)),
+          child: SelectableText(
+            reportText,
+            style: TextStyle(fontFamily: 'Courier', fontSize: 14, color: cc),
+          ),
         ),
         const SizedBox(height: 16),
         OutlinedButton.icon(
@@ -1476,13 +1697,22 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             padding: const EdgeInsets.symmetric(vertical: 16),
           ),
           icon: Icon(Icons.copy, color: cc),
-          label: Text("COPIAR AL PORTAPAPELES",
-              style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 14)),
+          label: Text(
+            "COPIAR AL PORTAPAPELES",
+            style: TextStyle(
+              color: cc,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
           onPressed: () async {
             await Clipboard.setData(ClipboardData(text: reportText));
             if (!mounted) return;
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Reporte copiado."), duration: Duration(seconds: 2)),
+              const SnackBar(
+                content: Text("Reporte copiado."),
+                duration: Duration(seconds: 2),
+              ),
             );
           },
         ),
@@ -1523,8 +1753,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       final bMatched = matchedDomains.contains(b);
       if (aMatched && !bMatched) return -1;
       if (!aMatched && bMatched) return 1;
-      return localizedDomainLabel(a, l10n)
-          .compareTo(localizedDomainLabel(b, l10n));
+      return localizedDomainLabel(
+        a,
+        l10n,
+      ).compareTo(localizedDomainLabel(b, l10n));
     });
 
     return ListView(
@@ -1538,37 +1770,50 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.compendiumSectionConditionsHeader,
-                    style: TextStyle(
-                        color: cc,
-                        fontSize: 12,
-                        letterSpacing: 1,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  l10n.compendiumSectionConditionsHeader,
+                  style: TextStyle(
+                    color: cc,
+                    fontSize: 12,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   l10n.compendiumSectionConditionsSubtitle,
-                  style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
+                  style: TextStyle(
+                    color: cc.withValues(alpha: 0.6),
+                    fontSize: 11,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 8,
                   runSpacing: 6,
                   children: conditions
-                      .map((condition) => ActionChip(
-                            backgroundColor: Colors.transparent,
-                            side: BorderSide(color: cc),
-                            avatar: Icon(Icons.health_and_safety_outlined,
-                                color: cc, size: 14),
-                            label: Text(condition,
-                                style: TextStyle(color: cc, fontSize: 13)),
-                            onPressed: () => showConditionInfoSheet(
-                              context: context,
-                              userCondition: condition,
-                              contrastColor: cc,
-                              inverseContrastColor: ic,
-                              service: _medlinePlus,
-                            ),
-                          ))
+                      .map(
+                        (condition) => ActionChip(
+                          backgroundColor: Colors.transparent,
+                          side: BorderSide(color: cc),
+                          avatar: Icon(
+                            Icons.health_and_safety_outlined,
+                            color: cc,
+                            size: 14,
+                          ),
+                          label: Text(
+                            condition,
+                            style: TextStyle(color: cc, fontSize: 13),
+                          ),
+                          onPressed: () => showConditionInfoSheet(
+                            context: context,
+                            userCondition: condition,
+                            contrastColor: cc,
+                            inverseContrastColor: ic,
+                            service: _medlinePlus,
+                          ),
+                        ),
+                      )
                       .toList(),
                 ),
               ],
@@ -1587,8 +1832,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                      l10n.compendiumSavedArticlesTemplate(savedCount),
-                      style: TextStyle(color: cc, fontSize: 12)),
+                    l10n.compendiumSavedArticlesTemplate(savedCount),
+                    style: TextStyle(color: cc, fontSize: 12),
+                  ),
                 ),
               ],
             ),
@@ -1623,7 +1869,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               title: Text(
                 '$label (${facts.length})',
                 style: TextStyle(
-                    fontWeight: FontWeight.bold, color: cc, fontSize: 14),
+                  fontWeight: FontWeight.bold,
+                  color: cc,
+                  fontSize: 14,
+                ),
               ),
               tilePadding: const EdgeInsets.symmetric(horizontal: 14),
               children: facts.map((quote) {
@@ -1641,8 +1890,7 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                       const SizedBox(height: 10),
                       SelectableText(
                         body,
-                        style: TextStyle(
-                            height: 1.5, color: cc, fontSize: 14),
+                        style: TextStyle(height: 1.5, color: cc, fontSize: 14),
                       ),
                       if (quote.source.isNotEmpty) ...[
                         const SizedBox(height: 8),
@@ -1678,12 +1926,25 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         padding: const EdgeInsets.all(16),
         children: [
           const SizedBox(height: 40),
-          Text(AppLocalizations.of(context)!.settingsProfileConfigTitle,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1, color: cc)),
+          Text(
+            AppLocalizations.of(context)!.settingsProfileConfigTitle,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              letterSpacing: 1,
+              color: cc,
+            ),
+          ),
           Divider(color: cc),
           const SizedBox(height: 16),
-          Text(AppLocalizations.of(context)!.settingsPatientNameLabel,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(
+            AppLocalizations.of(context)!.settingsPatientNameLabel,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
           TextField(
             controller: _profileNameController,
             style: TextStyle(color: cc, fontSize: 16),
@@ -1693,8 +1954,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             }),
           ),
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.settingsConditionsLabel,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(
+            AppLocalizations.of(context)!.settingsConditionsLabel,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
           Row(
             children: [
               Expanded(
@@ -1708,7 +1975,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 onPressed: () {
                   if (_newDiagnosisController.text.trim().isNotEmpty) {
                     setState(() {
-                      _activeProfile!.conditions.add(_newDiagnosisController.text.trim());
+                      _activeProfile!.conditions.add(
+                        _newDiagnosisController.text.trim(),
+                      );
                       _newDiagnosisController.clear();
                       _saveData();
                     });
@@ -1720,147 +1989,211 @@ Widget _buildCurrentTab(Color cc, Color ic) {
           const SizedBox(height: 4),
           Text(
             AppLocalizations.of(context)!.settingsConditionsHelper,
-            style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
           ),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             runSpacing: 4,
             children: _activeProfile!.conditions
-                .map((condition) => InputChip(
-                      label: Text(condition, style: TextStyle(color: ic, fontSize: 14)),
-                      backgroundColor: cc,
-                      onDeleted: () => setState(() {
-                        _activeProfile!.conditions.remove(condition);
-                        _saveData();
-                      }),
-                      deleteIconColor: ic,
-                    ))
+                .map(
+                  (condition) => InputChip(
+                    label: Text(
+                      condition,
+                      style: TextStyle(color: ic, fontSize: 14),
+                    ),
+                    backgroundColor: cc,
+                    onDeleted: () => setState(() {
+                      _activeProfile!.conditions.remove(condition);
+                      _saveData();
+                    }),
+                    deleteIconColor: ic,
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.settingsRelationshipLabel,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(
+            AppLocalizations.of(context)!.settingsRelationshipLabel,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             AppLocalizations.of(context)!.settingsRelationshipHelper,
-            style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
           ),
           const SizedBox(height: 8),
-          Builder(builder: (ctx) {
-            final t = AppLocalizations.of(ctx)!;
-            // (storage value, display label) pairs. Storage values stay in
-            // Spanish so existing profiles keep their relationship intact
-            // across language switches.
-            final relOptions = <(String?, String)>[
-              (null, t.settingsRelationshipNone),
-              ('Yo', t.settingsRelationshipSelf),
-              ('Mi hijo/a', t.settingsRelationshipChild),
-              ('Mi pareja', t.settingsRelationshipPartner),
-              ('Mi madre/padre', t.settingsRelationshipParent),
-              ('Otro', t.settingsRelationshipOther),
-            ];
-            return Wrap(
-            spacing: 6,
-            runSpacing: 6,
-            children: relOptions
-                .map((opt) {
-              final rel = opt.$1;
-              final isSelected = _activeProfile!.relationship == rel ||
-                  (rel == null && _activeProfile!.relationship == null);
-              final label = opt.$2;
-              return InkWell(
-                onTap: () => setState(() {
-                  _activeProfile!.relationship = rel;
-                  _saveData();
-                }),
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: isSelected ? cc : Colors.transparent,
-                    border: Border.all(color: cc.withValues(alpha: 0.4)),
+          Builder(
+            builder: (ctx) {
+              final t = AppLocalizations.of(ctx)!;
+              // (storage value, display label) pairs. Storage values stay in
+              // Spanish so existing profiles keep their relationship intact
+              // across language switches.
+              final relOptions = <(String?, String)>[
+                (null, t.settingsRelationshipNone),
+                ('Yo', t.settingsRelationshipSelf),
+                ('Mi hijo/a', t.settingsRelationshipChild),
+                ('Mi pareja', t.settingsRelationshipPartner),
+                ('Mi madre/padre', t.settingsRelationshipParent),
+                ('Otro', t.settingsRelationshipOther),
+              ];
+              return Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: relOptions.map((opt) {
+                  final rel = opt.$1;
+                  final isSelected =
+                      _activeProfile!.relationship == rel ||
+                      (rel == null && _activeProfile!.relationship == null);
+                  final label = opt.$2;
+                  return InkWell(
+                    onTap: () => setState(() {
+                      _activeProfile!.relationship = rel;
+                      _saveData();
+                    }),
                     borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(label,
-                      style: TextStyle(
-                        color: isSelected ? ic : cc.withValues(alpha: 0.8),
-                        fontSize: 12,
-                      )),
-                ),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? cc : Colors.transparent,
+                        border: Border.all(color: cc.withValues(alpha: 0.4)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        label,
+                        style: TextStyle(
+                          color: isSelected ? ic : cc.withValues(alpha: 0.8),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
               );
-            }).toList(),
-          );
-          }),
+            },
+          ),
 
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.settingsLifeEventsLabel,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(
+            AppLocalizations.of(context)!.settingsLifeEventsLabel,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             AppLocalizations.of(context)!.settingsLifeEventsHelper,
-            style: const TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
           ),
           const SizedBox(height: 8),
           if (_activeProfile!.lifeEvents.isEmpty)
-            Text(AppLocalizations.of(context)!.settingsLifeEventsEmpty,
-                style: const TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic))
+            Text(
+              AppLocalizations.of(context)!.settingsLifeEventsEmpty,
+              style: const TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            )
           else
             Column(
-              children: (_activeProfile!.lifeEvents.toList()
-                    ..sort((a, b) => b.startDate.compareTo(a.startDate)))
-                  .map((e) {
-                final dateLabel = e.endDate == null
-                    ? DateFormat('d MMM yyyy').format(e.startDate)
-                    : "${DateFormat('d MMM').format(e.startDate)} → ${DateFormat('d MMM yyyy').format(e.endDate!)}";
-                return InkWell(
-                  onTap: () => _editLifeEvent(e, cc, ic),
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 6),
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: cc.withValues(alpha: 0.3)),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFF9C27B0),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(e.title,
-                                  style: TextStyle(
-                                      color: cc, fontSize: 13, fontWeight: FontWeight.w600)),
-                              Text(
-                                e.category != null ? "$dateLabel · ${e.category}" : dateLabel,
-                                style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
+              children:
+                  (_activeProfile!.lifeEvents.toList()
+                        ..sort((a, b) => b.startDate.compareTo(a.startDate)))
+                      .map((e) {
+                        final dateLabel = e.endDate == null
+                            ? DateFormat('d MMM yyyy').format(e.startDate)
+                            : "${DateFormat('d MMM').format(e.startDate)} → ${DateFormat('d MMM yyyy').format(e.endDate!)}";
+                        return InkWell(
+                          onTap: () => _editLifeEvent(e, cc, ic),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: cc.withValues(alpha: 0.3),
                               ),
-                            ],
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 8,
+                                  height: 8,
+                                  decoration: const BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: Color(0xFF9C27B0),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        e.title,
+                                        style: TextStyle(
+                                          color: cc,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      Text(
+                                        e.category != null
+                                            ? "$dateLabel · ${e.category}"
+                                            : dateLabel,
+                                        style: TextStyle(
+                                          color: cc.withValues(alpha: 0.6),
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.close,
+                                    color: Colors.red,
+                                    size: 18,
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  onPressed: () => setState(() {
+                                    _activeProfile!.lifeEvents.remove(e);
+                                    _saveData();
+                                  }),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          onPressed: () => setState(() {
-                            _activeProfile!.lifeEvents.remove(e);
-                            _saveData();
-                          }),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+                        );
+                      })
+                      .toList(),
             ),
           const SizedBox(height: 8),
           OutlinedButton.icon(
@@ -1869,19 +2202,31 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
             icon: Icon(Icons.add, color: cc),
-            label: Text(AppLocalizations.of(context)!.settingsAddEventButton,
-                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12)),
+            label: Text(
+              AppLocalizations.of(context)!.settingsAddEventButton,
+              style: TextStyle(
+                color: cc,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
             onPressed: () => _addLifeEvent(cc, ic),
           ),
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.settingsLocationLabel,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.grey)),
+          Text(
+            AppLocalizations.of(context)!.settingsLocationLabel,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             _activeProfile!.homeLatitude == null
                 ? AppLocalizations.of(context)!.settingsLocationNone
                 : "lat ${_activeProfile!.homeLatitude!.toStringAsFixed(2)}, "
-                    "lng ${_activeProfile!.homeLongitude!.toStringAsFixed(2)}",
+                      "lng ${_activeProfile!.homeLongitude!.toStringAsFixed(2)}",
             style: TextStyle(color: cc, fontSize: 13),
           ),
           const SizedBox(height: 8),
@@ -1892,25 +2237,33 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               _activeProfile!.homeLatitude == null
                   ? AppLocalizations.of(context)!.settingsLocationButtonAdd
                   : AppLocalizations.of(context)!.settingsLocationButtonEdit,
-              style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12),
+              style: TextStyle(
+                color: cc,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
             ),
             onPressed: () => _editLocation(),
           ),
 
           // F6.a + Sleep module: optional trackers section
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.settingsOptionalModulesTitle,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: Colors.grey)),
+          Text(
+            AppLocalizations.of(context)!.settingsOptionalModulesTitle,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             AppLocalizations.of(context)!.settingsOptionalModulesBlurb,
             style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 11,
-                fontStyle: FontStyle.italic),
+              color: Colors.grey,
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
           ),
           const SizedBox(height: 8),
           SwitchListTile(
@@ -1920,14 +2273,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             title: Text(
               AppLocalizations.of(context)!.settingsModuleSleepLabel,
               style: TextStyle(
-                  color: cc,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600),
+                color: cc,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Text(
               AppLocalizations.of(context)!.settingsModuleSleepDescription,
-              style: TextStyle(
-                  color: cc.withValues(alpha: 0.6), fontSize: 11),
+              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
             value: _activeProfile!.optionalTrackers['sleep'] ?? false,
             onChanged: (v) => setState(() {
@@ -1944,14 +2297,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             title: Text(
               AppLocalizations.of(context)!.settingsModuleHydrationLabel,
               style: TextStyle(
-                  color: cc,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600),
+                color: cc,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Text(
               AppLocalizations.of(context)!.settingsModuleHydrationDescription,
-              style: TextStyle(
-                  color: cc.withValues(alpha: 0.6), fontSize: 11),
+              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
             value: _activeProfile!.optionalTrackers['hydration'] ?? false,
             onChanged: (v) => setState(() {
@@ -1968,14 +2321,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             title: Text(
               AppLocalizations.of(context)!.settingsModuleHrvLabel,
               style: TextStyle(
-                  color: cc,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600),
+                color: cc,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Text(
               AppLocalizations.of(context)!.settingsModuleHrvDescription,
-              style: TextStyle(
-                  color: cc.withValues(alpha: 0.6), fontSize: 11),
+              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
             value: _activeProfile!.optionalTrackers['hrv'] ?? false,
             onChanged: (v) => setState(() {
@@ -1994,15 +2347,19 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               title: Text(
                 AppLocalizations.of(context)!.settingsModuleHeadacheDetailLabel,
                 style: TextStyle(
-                    color: cc,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600),
+                  color: cc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               subtitle: Text(
-                AppLocalizations.of(context)!
-                    .settingsModuleHeadacheDetailDescription,
+                AppLocalizations.of(
+                  context,
+                )!.settingsModuleHeadacheDetailDescription,
                 style: TextStyle(
-                    color: cc.withValues(alpha: 0.6), fontSize: 11),
+                  color: cc.withValues(alpha: 0.6),
+                  fontSize: 11,
+                ),
               ),
               value:
                   _activeProfile!.optionalTrackers['headache_detail'] ?? false,
@@ -2022,15 +2379,19 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               title: Text(
                 AppLocalizations.of(context)!.settingsModuleFatigueDetailLabel,
                 style: TextStyle(
-                    color: cc,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600),
+                  color: cc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               subtitle: Text(
-                AppLocalizations.of(context)!
-                    .settingsModuleFatigueDetailDescription,
+                AppLocalizations.of(
+                  context,
+                )!.settingsModuleFatigueDetailDescription,
                 style: TextStyle(
-                    color: cc.withValues(alpha: 0.6), fontSize: 11),
+                  color: cc.withValues(alpha: 0.6),
+                  fontSize: 11,
+                ),
               ),
               value:
                   _activeProfile!.optionalTrackers['fatigue_detail'] ?? false,
@@ -2039,13 +2400,79 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 _saveData();
               }),
             ),
+          // D.2: abdominal detail layer — only visible when the profile
+          // mentions dolor abdominal / hinchazón / gases (in vault or
+          // conditions). Same shape as the headache and fatigue switches.
+          if (_hasAbdominalRelevance())
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              dense: true,
+              activeColor: cc,
+              title: Text(
+                AppLocalizations.of(
+                  context,
+                )!.settingsModuleAbdominalDetailLabel,
+                style: TextStyle(
+                  color: cc,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              subtitle: Text(
+                AppLocalizations.of(
+                  context,
+                )!.settingsModuleAbdominalDetailDescription,
+                style: TextStyle(
+                  color: cc.withValues(alpha: 0.6),
+                  fontSize: 11,
+                ),
+              ),
+              value:
+                  _activeProfile!.optionalTrackers['abdominal_detail'] ?? false,
+              onChanged: (v) => setState(() {
+                _activeProfile!.optionalTrackers['abdominal_detail'] = v;
+                _saveData();
+              }),
+            ),
+
+          // Sprint F.F — action capture opt-out toggle.
+          // When off: RetroSymptomBanner hides in Hoy; the proactive
+          // ActionTakenSheet skips after saving bowel / hem / fever.
+          // Existing pending ActionTakens with follow-ups stay
+          // visible in FollowUpBanner (user consented at logging).
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            activeColor: cc,
+            title: Text(
+              'Seguimiento de acciones',
+              style: TextStyle(
+                color: cc,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: Text(
+              'Pregunta qué hiciste después de registrar un síntoma o '
+              'evento, y cómo funcionó. Activo por defecto.',
+              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
+            ),
+            value: _activeProfile!.optionalTrackers['action_taken'] ?? true,
+            onChanged: (v) => setState(() {
+              _activeProfile!.optionalTrackers['action_taken'] = v;
+              _saveData();
+            }),
+          ),
           // F3: Visualización preferences
           const SizedBox(height: 24),
-          Text(AppLocalizations.of(context)!.settingsViewPreferencesTitle,
-              style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: Colors.grey)),
+          Text(
+            AppLocalizations.of(context)!.settingsViewPreferencesTitle,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              color: Colors.grey,
+            ),
+          ),
           const SizedBox(height: 8),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
@@ -2054,12 +2481,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
             title: Text(
               AppLocalizations.of(context)!.settingsCarefulModeLabel,
               style: TextStyle(
-                  color: cc, fontSize: 14, fontWeight: FontWeight.w600),
+                color: cc,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             subtitle: Text(
               AppLocalizations.of(context)!.settingsCarefulModeDescription,
-              style: TextStyle(
-                  color: cc.withValues(alpha: 0.6), fontSize: 11),
+              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
             value: _activeProfile!.optionalTrackers['careful_mode'] ?? false,
             onChanged: (v) => setState(() {
@@ -2075,8 +2504,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             icon: Icon(Icons.person_add_alt_1_rounded, color: cc),
-            label: Text(AppLocalizations.of(context)!.settingsAddProfileButton,
-                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 14)),
+            label: Text(
+              AppLocalizations.of(context)!.settingsAddProfileButton,
+              style: TextStyle(
+                color: cc,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
             onPressed: () {
               _createNewProfile();
               Navigator.pop(context);
@@ -2090,64 +2525,94 @@ Widget _buildCurrentTab(Color cc, Color ic) {
                 padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-              label: Text(AppLocalizations.of(context)!.settingsDeleteProfileButton,
-                  style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 14)),
+              label: Text(
+                AppLocalizations.of(context)!.settingsDeleteProfileButton,
+                style: const TextStyle(
+                  color: Colors.redAccent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
               onPressed: () => _confirmDeleteProfile(),
             ),
           ],
           const SizedBox(height: 32),
-          Text(AppLocalizations.of(context)!.languageSectionTitle,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                  letterSpacing: 1,
-                  color: cc)),
+          Text(
+            AppLocalizations.of(context)!.languageSectionTitle,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              letterSpacing: 1,
+              color: cc,
+            ),
+          ),
           Divider(color: cc),
           const SizedBox(height: 8),
           Wrap(
             spacing: 6,
-            children: [
-              (const Locale('es'), 'Español'),
-              (const Locale('en'), 'English'),
-              (const Locale('zh', 'TW'), '繁體中文')
-            ].map((opt) {
-              final isSelected = widget.locale.languageCode == opt.$1.languageCode;
-              return InkWell(
-                onTap: () => widget.onChangeLocale(opt.$1),
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: isSelected ? cc : Colors.transparent,
-                    border: Border.all(color: cc.withValues(alpha: 0.4)),
+            children:
+                [
+                  (const Locale('es'), 'Español'),
+                  (const Locale('en'), 'English'),
+                  (const Locale('zh', 'TW'), '繁體中文'),
+                ].map((opt) {
+                  final isSelected =
+                      widget.locale.languageCode == opt.$1.languageCode;
+                  return InkWell(
+                    onTap: () => widget.onChangeLocale(opt.$1),
                     borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Text(opt.$2,
-                      style: TextStyle(
-                        color: isSelected ? ic : cc.withValues(alpha: 0.8),
-                        fontSize: 13,
-                        fontWeight:
-                            isSelected ? FontWeight.bold : FontWeight.normal,
-                      )),
-                ),
-              );
-            }).toList(),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? cc : Colors.transparent,
+                        border: Border.all(color: cc.withValues(alpha: 0.4)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        opt.$2,
+                        style: TextStyle(
+                          color: isSelected ? ic : cc.withValues(alpha: 0.8),
+                          fontSize: 13,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
           ),
           const SizedBox(height: 4),
-          Text(AppLocalizations.of(context)!.languageFootnote,
-              style: TextStyle(
-                  color: cc.withValues(alpha: 0.5),
-                  fontSize: 11,
-                  fontStyle: FontStyle.italic)),
+          Text(
+            AppLocalizations.of(context)!.languageFootnote,
+            style: TextStyle(
+              color: cc.withValues(alpha: 0.5),
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
           const SizedBox(height: 32),
-          Text(AppLocalizations.of(context)!.settingsMyDataTitle,
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, letterSpacing: 1, color: cc)),
+          Text(
+            AppLocalizations.of(context)!.settingsMyDataTitle,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              letterSpacing: 1,
+              color: cc,
+            ),
+          ),
           Divider(color: cc),
           const SizedBox(height: 8),
           Text(
             AppLocalizations.of(context)!.settingsDataHelper,
-            style: TextStyle(color: cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
+            style: TextStyle(
+              color: cc.withValues(alpha: 0.7),
+              fontSize: 12,
+              height: 1.4,
+            ),
           ),
           const SizedBox(height: 16),
           OutlinedButton.icon(
@@ -2156,8 +2621,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
             icon: Icon(Icons.download_outlined, color: cc),
-            label: Text(AppLocalizations.of(context)!.settingsExportDataButton,
-                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13)),
+            label: Text(
+              AppLocalizations.of(context)!.settingsExportDataButton,
+              style: TextStyle(
+                color: cc,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
             onPressed: _exportActiveProfile,
           ),
           const SizedBox(height: 8),
@@ -2167,8 +2638,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
             icon: Icon(Icons.upload_file_outlined, color: cc),
-            label: Text(AppLocalizations.of(context)!.importFileButton,
-                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13)),
+            label: Text(
+              AppLocalizations.of(context)!.importFileButton,
+              style: TextStyle(
+                color: cc,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
             onPressed: _importProfileFromFile,
           ),
           const SizedBox(height: 8),
@@ -2178,8 +2655,14 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
             icon: Icon(Icons.content_paste_go_outlined, color: cc),
-            label: Text(AppLocalizations.of(context)!.importPasteButton,
-                style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13)),
+            label: Text(
+              AppLocalizations.of(context)!.importPasteButton,
+              style: TextStyle(
+                color: cc,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+            ),
             onPressed: _importProfileFromPaste,
           ),
           const SizedBox(height: 16),
@@ -2188,17 +2671,28 @@ Widget _buildCurrentTab(Color cc, Color ic) {
               side: const BorderSide(color: Colors.redAccent, width: 1.5),
               padding: const EdgeInsets.symmetric(vertical: 14),
             ),
-            icon: const Icon(Icons.delete_forever_outlined, color: Colors.redAccent),
+            icon: const Icon(
+              Icons.delete_forever_outlined,
+              color: Colors.redAccent,
+            ),
             label: Text(
               AppLocalizations.of(context)!.settingsWipeAllButton,
-              style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold, fontSize: 13),
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
             ),
             onPressed: _wipeAllData,
           ),
           const SizedBox(height: 8),
           Text(
             AppLocalizations.of(context)!.settingsWipeAllHelper,
-            style: TextStyle(color: cc.withValues(alpha: 0.5), fontSize: 11, fontStyle: FontStyle.italic),
+            style: TextStyle(
+              color: cc.withValues(alpha: 0.5),
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         ],
       ),
@@ -2207,11 +2701,13 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
   void _createNewProfile() {
     setState(() {
-      final newId = "${DateTime.now().millisecondsSinceEpoch}-${_profiles.length + 1}";
+      final newId =
+          "${DateTime.now().millisecondsSinceEpoch}-${_profiles.length + 1}";
       final newProfile = Profile(
         id: newId,
-        name: AppLocalizations.of(context)!
-            .settingsNewProfileNameTemplate(_profiles.length + 1),
+        name: AppLocalizations.of(
+          context,
+        )!.settingsNewProfileNameTemplate(_profiles.length + 1),
         conditions: [],
         botiquin: [],
         symptomVault: [],
@@ -2230,15 +2726,19 @@ Widget _buildCurrentTab(Color cc, Color ic) {
       builder: (ctx) => AlertDialog(
         title: Text(t.dialogDeleteProfileTitle),
         content: Text(
-            t.dialogDeleteProfileContentTemplate(_activeProfile!.name)),
+          t.dialogDeleteProfileContentTemplate(_activeProfile!.name),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(t.actionCancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.actionCancel),
+          ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(t.actionDelete,
-                style: const TextStyle(color: Colors.redAccent)),
+            child: Text(
+              t.actionDelete,
+              style: const TextStyle(color: Colors.redAccent),
+            ),
           ),
         ],
       ),
@@ -2254,8 +2754,12 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Future<void> _editLocation() async {
-    final latCtrl = TextEditingController(text: _activeProfile!.homeLatitude?.toString() ?? '');
-    final lngCtrl = TextEditingController(text: _activeProfile!.homeLongitude?.toString() ?? '');
+    final latCtrl = TextEditingController(
+      text: _activeProfile!.homeLatitude?.toString() ?? '',
+    );
+    final lngCtrl = TextEditingController(
+      text: _activeProfile!.homeLongitude?.toString() ?? '',
+    );
 
     final t = AppLocalizations.of(context)!;
     final saved = await showDialog<bool>(
@@ -2265,30 +2769,35 @@ Widget _buildCurrentTab(Color cc, Color ic) {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              t.dialogLocationContent,
-              style: const TextStyle(fontSize: 12),
-            ),
+            Text(t.dialogLocationContent, style: const TextStyle(fontSize: 12)),
             const SizedBox(height: 12),
             TextField(
               controller: latCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
               decoration: InputDecoration(hintText: t.dialogLocationHintLat),
             ),
             TextField(
               controller: lngCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+                signed: true,
+              ),
               decoration: InputDecoration(hintText: t.dialogLocationHintLng),
             ),
           ],
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: Text(t.actionCancel)),
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(t.actionCancel),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(ctx, true),
-              child: Text(t.actionSave)),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(t.actionSave),
+          ),
         ],
       ),
     );
@@ -2298,8 +2807,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
     final lng = double.tryParse(lngCtrl.text.trim());
     if (lat == null || lng == null || lat.abs() > 90 || lng.abs() > 180) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(t.dialogLocationInvalidSnack)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(t.dialogLocationInvalidSnack)));
       }
       return;
     }
@@ -2312,7 +2822,11 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Future<void> _addLifeEvent(Color cc, Color ic) async {
-    final result = await showLifeEventFormSheet(context: context, contrastColor: cc, inverseContrastColor: ic);
+    final result = await showLifeEventFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+    );
     if (result == null) return;
     setState(() {
       _activeProfile!.lifeEvents.add(result);
@@ -2321,7 +2835,12 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   }
 
   Future<void> _editLifeEvent(LifeEvent existing, Color cc, Color ic) async {
-    final result = await showLifeEventFormSheet(context: context, contrastColor: cc, inverseContrastColor: ic, existing: existing);
+    final result = await showLifeEventFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+      existing: existing,
+    );
     if (result == null) return;
     final idx = _activeProfile!.lifeEvents.indexOf(existing);
     if (idx >= 0) {
@@ -2350,11 +2869,13 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
   void _logMental(MentalState state, int severity, {DateTime? timestamp}) {
     setState(() {
-      _activeProfile!.mentalHistory.add(MentalEvent(
-        timestamp: timestamp ?? _timestampForLog(),
-        state: state,
-        severity: severity,
-      ));
+      _activeProfile!.mentalHistory.add(
+        MentalEvent(
+          timestamp: timestamp ?? _timestampForLog(),
+          state: state,
+          severity: severity,
+        ),
+      );
       _saveData();
     });
   }
@@ -2363,9 +2884,9 @@ Widget _buildCurrentTab(Color cc, Color ic) {
   void _logMood({
     required MoodQuadrant primaryQuadrant,
     required List<String> states,
-    String? notes, 
+    String? notes,
   }) {
-  // Creamos la entrada
+    // Creamos la entrada
     final newEntry = MoodEntry(
       timestamp: _timestampForLog(),
       primaryQuadrant: primaryQuadrant,
@@ -2375,9 +2896,10 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
     setState(() {
       // Reasignamos la lista para forzar a Flutter a detectar el cambio de estado
-      _activeProfile!.moodHistory = List.from(_activeProfile!.moodHistory)..add(newEntry);
+      _activeProfile!.moodHistory = List.from(_activeProfile!.moodHistory)
+        ..add(newEntry);
     });
-    
+
     // Guardamos en Hive fuera del setState por rendimiento
     _saveData();
   }
@@ -2402,7 +2924,8 @@ Widget _buildCurrentTab(Color cc, Color ic) {
 
   void _deleteMoodEntry(MoodEntry entry) {
     setState(() {
-      _activeProfile!.moodHistory = List.from(_activeProfile!.moodHistory)..remove(entry);
+      _activeProfile!.moodHistory = List.from(_activeProfile!.moodHistory)
+        ..remove(entry);
     });
     _saveData();
   }

@@ -2198,4 +2198,79 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsModuleFatigueDetailDescription =>
       'Al registrar fatiga, agrega tipo, patrón temporal y acompañantes.';
+
+  @override
+  String get abdominalSheetTitle => 'Detalle del dolor abdominal';
+
+  @override
+  String get abdominalSheetSubtitle =>
+      'Los detalles opcionales ayudan a identificar patrones.';
+
+  @override
+  String get abdominalActionSaveDetail => 'Guardar detalle';
+
+  @override
+  String get abdominalTearingEmergencyTitle => 'Dolor tipo desgarro';
+
+  @override
+  String get abdominalTearingEmergencyBody =>
+      'El dolor de desgarro súbito y muy severo puede indicar una emergencia médica en personas con síndrome de Ehlers-Danlos. Vale la pena que vayas a urgencias ahora para descartar rotura arterial o intestinal.\n\nSi vas, informa al equipo médico tu diagnóstico de clEDS (síndrome de Ehlers-Danlos clásico-like, por mutación de TNXB).\n\nSi el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar la calidad del dolor y guardar el registro normalmente.';
+
+  @override
+  String get abdominalTearingEmergencyChangeQuality =>
+      'Cambiar calidad y guardar';
+
+  @override
+  String get abdominalTearingEmergencySaveAsIs =>
+      'Guardar como está (emergencia)';
+
+  @override
+  String get abdominalAdvisoryDialogTitle => 'Patrones detectados';
+
+  @override
+  String get abdominalRedFlagMassiveHematocheziaUrgent =>
+      'Este patrón (sangre en heces junto con náusea o vómito y dolor intenso) puede indicar un sangrado GI activo. Si el sangrado es abundante o notas mucha debilidad o mareo, ve a urgencias ahora.';
+
+  @override
+  String get abdominalRedFlagHematemesisUrgent =>
+      'En tu nota mencionaste vómito con sangre. Este síntoma indica sangrado del sistema digestivo alto y requiere evaluación en urgencias inmediatamente.';
+
+  @override
+  String get abdominalRedFlagNocturnalPainAdvisory =>
+      'Tu dolor te despertó por la noche. Este patrón es un signo de alarma que vale mencionar a tu médico, especialmente si notas pérdida de peso involuntaria o fiebre.';
+
+  @override
+  String get abdominalRedFlagGastroparesisAdvisory =>
+      'Tu dolor aparece justo al comer y sientes saciedad temprana. Este patrón puede indicar que tu estómago se vacía más lento de lo normal. Es común en personas con EDS y disautonomía. Vale mencionárselo a tu médico.';
+
+  @override
+  String get settingsModuleAbdominalDetailLabel => 'Detalle de dolor abdominal';
+
+  @override
+  String get settingsModuleAbdominalDetailDescription =>
+      'Al registrar dolor, hinchazón o gases, agrega ubicación, calidad, timing y acompañantes.';
+
+  @override
+  String get bowelToAbdominalPromptTitle => '¿Registrar detalle del dolor?';
+
+  @override
+  String get bowelToAbdominalPromptBody =>
+      'Marcaste este evento como acompañado de dolor abdominal. ¿Registrar el detalle ahora para identificar patrones?';
+
+  @override
+  String get abdominalToBowelPromptTitle => '¿Vinculado a una evacuación?';
+
+  @override
+  String abdominalToBowelPromptBody(String time) {
+    return 'Marcaste este dolor como relacionado con evacuación. Registraste una evacuación a las $time. ¿Es la misma?';
+  }
+
+  @override
+  String get abdominalIntegrationYes => 'Sí';
+
+  @override
+  String get abdominalIntegrationNo => 'No';
+
+  @override
+  String get abdominalIntegrationDontKnow => 'No lo sé';
 }

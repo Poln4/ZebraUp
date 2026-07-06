@@ -30,6 +30,13 @@ import '../services/fever_analysis.dart';
 import '../services/structural_taxonomy.dart';
 import '../services/headache_detail_format.dart';
 import '../services/fatigue_detail_format.dart';
+import '../services/abdominal_detail_format.dart';
+import '../models/action_taken.dart';
+import '../widgets/follow_up_banner.dart';
+import '../widgets/action_effectiveness_dialog.dart';
+import '../widgets/retro_symptom_banner.dart';
+import '../widgets/retro_symptom_dialog.dart';
+import '../widgets/weekly_narrative.dart';
 
 // B.2: Date is now formatted via DateFormat using a locale-driven
 // pattern from the ARB (`hoyHeaderDatePattern`). main.dart must call
@@ -43,30 +50,45 @@ class HoyTab extends StatelessWidget {
   final WeatherDay? todayWeather;
   final Color contrastColor;
   final Color inverseContrastColor;
-  
+
   // NUEVO: Recibimos el diccionario EMA JSON desde MainAppScreen
   final Map<MoodQuadrant, List<EmaMood>> moodDictionary;
 
   final VoidCallback onTogglePacing;
   final void Function(MentalState state, int severity, {DateTime? timestamp})
-      onLogMental;
-      
+  onLogMental;
+
   // ACTUALIZADO: Cambiamos intensity por notes
   final void Function({
     required MoodQuadrant primaryQuadrant,
     required List<String> states,
-    String? notes, 
-  }) onLogMood;
-  
+    String? notes,
+  })
+  onLogMood;
+
   final void Function(MoodEntry) onDeleteMood;
-  final void Function(MedicationOutcome outcome,
-      {required int severityAfter, OutcomeReason? reason}) onAnswerOutcome;
+  final void Function(
+    MedicationOutcome outcome, {
+    required int severityAfter,
+    OutcomeReason? reason,
+  })
+  onAnswerOutcome;
   final VoidCallback onChangeWisdom;
 
   final bool showHint;
   final VoidCallback onDismissHint;
   // PHASE 5.2a — navigate to another tab (banner shortcut uses this).
   final ValueChanged<int> onNavigate;
+
+  // Sprint F.D — invoked when a follow-up effectiveness capture
+  // is saved. Parent replaces the matching entry in
+  // Profile.actionsHistory and persists.
+  final void Function(ActionTaken updated) onCompleteFollowUp;
+
+  // Sprint F.E — invoked when the retro symptom dialog saves a
+  // fresh ActionTaken (kind picked, severityAfter captured,
+  // rating inferred). Parent appends to Profile.actionsHistory.
+  final void Function(ActionTaken action) onSaveRetroSymptom;
 
   const HoyTab({
     super.key,
@@ -84,7 +106,9 @@ class HoyTab extends StatelessWidget {
     required this.onChangeWisdom,
     required this.showHint,
     required this.onDismissHint,
-    required this.onNavigate, 
+    required this.onNavigate,
+    required this.onCompleteFollowUp,
+    required this.onSaveRetroSymptom,
     this.todayWeather,
   });
 
@@ -98,10 +122,36 @@ class HoyTab extends StatelessWidget {
         n.day == selectedDate.day;
   }
 
+  // Sprint F.E — pending retro symptoms: age in (30 min, 24 h)
+  // AND no matching ActionTaken with linkedEventType == symptom.
+  List<SymptomEvent> _pendingRetroSymptoms(Profile p) {
+    // Sprint F.F — respect the settings opt-out toggle.
+    // When off, the retro banner disappears entirely. Existing
+    // ActionTakens with pending follow-ups are unaffected — they
+    // live in FollowUpBanner which doesn't gate on this flag.
+    if (!(p.optionalTrackers['action_taken'] ?? true)) return const [];
+    final now = DateTime.now();
+    final windowStart = now.subtract(const Duration(hours: 24));
+    final windowEnd = now.subtract(const Duration(minutes: 90));
+    final linkedIds = <String>{};
+    for (final a in p.actionsHistory) {
+      if (a.linkedEventType == LinkedEventType.symptom) {
+        linkedIds.add(a.linkedEventId);
+      }
+    }
+    return p.symptomHistory.where((s) {
+      if (s.timestamp.isAfter(windowEnd)) return false;
+      if (s.timestamp.isBefore(windowStart)) return false;
+      return !linkedIds.contains(s.timestamp.toIso8601String());
+    }).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isPacing = profile.pacingDays.contains(_dateKey(selectedDate));
-    final dueOutcomes = _isToday() ? profile.getDueOutcomes() : <MedicationOutcome>[];
+    final dueOutcomes = _isToday()
+        ? profile.getDueOutcomes()
+        : <MedicationOutcome>[];
     final l10n = context.l10n;
     final feverInfo = FeverAnalysis.latestForChip(profile.feverHistory);
 
@@ -118,6 +168,9 @@ class HoyTab extends StatelessWidget {
         ),
 
         const SizedBox(height: 20),
+
+        // Sprint T0 — weekly narrative summary (rolling 7 days)
+        WeeklyNarrative(profile: profile, contrastColor: contrastColor),
 
         // 1.5. FIRST-SESSION HINT
         if (showHint) ...[
@@ -158,6 +211,52 @@ class HoyTab extends StatelessWidget {
           ),
         ],
 
+        // Sprint F.D — follow-up reminder banner
+        // (renders SizedBox.shrink when no follow-ups are due)
+        FollowUpBanner(
+          pendingActions: profile.actionsHistory
+              .where((a) => a.followUpIsDue)
+              .toList(),
+          botiquin: profile.botiquin,
+          contrastColor: contrastColor,
+          inverseContrastColor: inverseContrastColor,
+          onTap: (action) {
+            ActionEffectivenessDialog.show(
+              context: context,
+              action: action,
+              botiquin: profile.botiquin,
+              contrastColor: contrastColor,
+              inverseContrastColor: inverseContrastColor,
+            ).then((updated) {
+              if (updated != null) {
+                onCompleteFollowUp(updated);
+              }
+            });
+          },
+        ),
+
+        // Sprint F.E — retro symptom check-in banner
+        // (90 min < age < 24 h, no matching ActionTaken)
+        RetroSymptomBanner(
+          pendingSymptoms: _pendingRetroSymptoms(profile),
+          contrastColor: contrastColor,
+          inverseContrastColor: inverseContrastColor,
+          onTap: (symptom) {
+            RetroSymptomDialog.show(
+              context: context,
+              symptom: symptom,
+              botiquin: profile.botiquin,
+              doseHistory: profile.doseHistory,
+              contrastColor: contrastColor,
+              inverseContrastColor: inverseContrastColor,
+            ).then((action) {
+              if (action != null) {
+                onSaveRetroSymptom(action);
+              }
+            });
+          },
+        ),
+
         // 2. URGENT — pending outcome check-ins.
         if (dueOutcomes.isNotEmpty) ...[
           _SectionHeader(
@@ -167,15 +266,17 @@ class HoyTab extends StatelessWidget {
             contrastColor: contrastColor,
           ),
           const SizedBox(height: 8),
-          ...dueOutcomes.map((o) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: _OutcomeAnswerCard(
-                  outcome: o,
-                  contrastColor: contrastColor,
-                  inverseContrastColor: inverseContrastColor,
-                  onAnswer: onAnswerOutcome,
-                ),
-              )),
+          ...dueOutcomes.map(
+            (o) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _OutcomeAnswerCard(
+                outcome: o,
+                contrastColor: contrastColor,
+                inverseContrastColor: inverseContrastColor,
+                onAnswer: onAnswerOutcome,
+              ),
+            ),
+          ),
           const SizedBox(height: 24),
         ],
 
@@ -211,11 +312,18 @@ class HoyTab extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.cloud_outlined, color: contrastColor.withValues(alpha: 0.7), size: 14),
+                Icon(
+                  Icons.cloud_outlined,
+                  color: contrastColor.withValues(alpha: 0.7),
+                  size: 14,
+                ),
                 const SizedBox(width: 6),
                 Text(
                   todayWeather!.shortSummary(),
-                  style: TextStyle(color: contrastColor.withValues(alpha: 0.7), fontSize: 12),
+                  style: TextStyle(
+                    color: contrastColor.withValues(alpha: 0.7),
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -223,7 +331,7 @@ class HoyTab extends StatelessWidget {
           const SizedBox(height: 24),
         ],
 
-        // 3. New Mood section. 
+        // 3. New Mood section.
         MoodSection(
           profile: profile,
           selectedDate: selectedDate,
@@ -305,8 +413,10 @@ class _HoyHeader extends StatelessWidget {
     // Each locale controls its own date pattern through the ARB. The
     // pattern is a DateFormat skeleton (not an ICU template) so
     // single-quoted literals like 'de' in Spanish pass through verbatim.
-    final dateLine = DateFormat(l10n.hoyHeaderDatePattern, l10n.localeName)
-        .format(date);
+    final dateLine = DateFormat(
+      l10n.hoyHeaderDatePattern,
+      l10n.localeName,
+    ).format(date);
     // Capitalize the first character for languages where the natural
     // form starts lowercase (Spanish weekday names). Locales whose first
     // character is already uppercase (English) or non-cased (zh-TW)
@@ -362,9 +472,7 @@ class _HoyHeader extends StatelessWidget {
                 ),
                 const SizedBox(width: 6),
                 Text(
-                  isPacing
-                      ? l10n.pacingActiveState
-                      : l10n.pacingInactiveState,
+                  isPacing ? l10n.pacingActiveState : l10n.pacingInactiveState,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -441,8 +549,12 @@ class _OutcomeAnswerCard extends StatefulWidget {
   final MedicationOutcome outcome;
   final Color contrastColor;
   final Color inverseContrastColor;
-  final void Function(MedicationOutcome,
-      {required int severityAfter, OutcomeReason? reason}) onAnswer;
+  final void Function(
+    MedicationOutcome, {
+    required int severityAfter,
+    OutcomeReason? reason,
+  })
+  onAnswer;
 
   const _OutcomeAnswerCard({
     required this.outcome,
@@ -539,10 +651,7 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
           if (_showReasonPicker) ...[
             Text(
               l10n.outcomeCardAttributionQuestion,
-              style: TextStyle(
-                fontSize: 12,
-                color: cc.withValues(alpha: 0.7),
-              ),
+              style: TextStyle(fontSize: 12, color: cc.withValues(alpha: 0.7)),
             ),
             const SizedBox(height: 6),
             Wrap(
@@ -552,9 +661,11 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                 final sel = _reason == r;
                 return ChoiceChip(
                   selected: sel,
-                  label: Text(r.outcomeReasonLabel(l10n), style: const TextStyle(fontSize: 11)),
-                  onSelected: (v) =>
-                      setState(() => _reason = v ? r : null),
+                  label: Text(
+                    r.outcomeReasonLabel(l10n),
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                  onSelected: (v) => setState(() => _reason = v ? r : null),
                   selectedColor: cc,
                   labelStyle: TextStyle(
                     color: sel ? widget.inverseContrastColor : cc,
@@ -580,7 +691,9 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                   color: cc.withValues(alpha: 0.7),
                 ),
                 label: Text(
-                  _showReasonPicker ? l10n.hoyOutcomeHideReasons : l10n.outcomeActionAddFactor,
+                  _showReasonPicker
+                      ? l10n.hoyOutcomeHideReasons
+                      : l10n.outcomeActionAddFactor,
                   style: TextStyle(
                     fontSize: 12,
                     color: cc.withValues(alpha: 0.7),
@@ -597,24 +710,25 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                 onPressed: _selected == null
                     ? null
                     : () => widget.onAnswer(
-                          o,
-                          severityAfter: _selected!.value,
-                          reason: _reason,
-                        ),
+                        o,
+                        severityAfter: _selected!.value,
+                        reason: _reason,
+                      ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: cc,
                   foregroundColor: widget.inverseContrastColor,
-                  disabledBackgroundColor:
-                      cc.withValues(alpha: 0.2),
+                  disabledBackgroundColor: cc.withValues(alpha: 0.2),
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 8),
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                 ),
                 child: Text(
                   l10n.actionSave,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 13),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                 ),
               ),
             ],
@@ -635,7 +749,7 @@ class _MentalDetailsSection extends StatefulWidget {
   final Color contrastColor;
   final Color inverseContrastColor;
   final void Function(MentalState state, int severity, {DateTime? timestamp})
-      onLogMental;
+  onLogMental;
 
   const _MentalDetailsSection({
     required this.profile,
@@ -656,16 +770,20 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
   Widget build(BuildContext context) {
     final cc = widget.contrastColor;
     final l10n = context.l10n;
-    final loggedToday = <MentalState>{
-      MentalState.anxiety,
-      MentalState.emotionalEnergy,
-      MentalState.brainFog,
-      MentalState.dissociation,
-      MentalState.irritability,
-    }
-        .where((s) =>
-            widget.profile.latestMentalSeverity(s, widget.selectedDate) != null)
-        .length;
+    final loggedToday =
+        <MentalState>{
+              MentalState.anxiety,
+              MentalState.emotionalEnergy,
+              MentalState.brainFog,
+              MentalState.dissociation,
+              MentalState.irritability,
+            }
+            .where(
+              (s) =>
+                  widget.profile.latestMentalSeverity(s, widget.selectedDate) !=
+                  null,
+            )
+            .length;
 
     return Container(
       decoration: BoxDecoration(
@@ -699,7 +817,9 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                     const SizedBox(width: 8),
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 7, vertical: 1),
+                        horizontal: 7,
+                        vertical: 1,
+                      ),
                       decoration: BoxDecoration(
                         color: cc.withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(10),
@@ -737,15 +857,20 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                   _MentalSlider(
                     state: MentalState.anxiety,
                     current: widget.profile.latestMentalSeverity(
-                        MentalState.anxiety, widget.selectedDate),
+                      MentalState.anxiety,
+                      widget.selectedDate,
+                    ),
                     contrastColor: cc,
-                    onChanged: (v) => widget.onLogMental(MentalState.anxiety, v),
+                    onChanged: (v) =>
+                        widget.onLogMental(MentalState.anxiety, v),
                   ),
                   const SizedBox(height: 14),
                   _MentalSlider(
                     state: MentalState.emotionalEnergy,
                     current: widget.profile.latestMentalSeverity(
-                        MentalState.emotionalEnergy, widget.selectedDate),
+                      MentalState.emotionalEnergy,
+                      widget.selectedDate,
+                    ),
                     contrastColor: cc,
                     onChanged: (v) =>
                         widget.onLogMental(MentalState.emotionalEnergy, v),
@@ -754,45 +879,54 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                   Wrap(
                     spacing: 6,
                     runSpacing: 6,
-                    children: [
-                      MentalState.brainFog,
-                      MentalState.dissociation,
-                      MentalState.irritability,
-                    ].map((s) {
-                      final latest = widget.profile
-                          .latestMentalSeverity(s, widget.selectedDate);
-                      final logged = latest != null;
-                      return InkWell(
-                        onTap: () => _showMentalChipPicker(context, s),
-                        borderRadius: BorderRadius.circular(16),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: logged
-                                ? cc.withValues(alpha: 0.12)
-                                : Colors.transparent,
+                    children:
+                        [
+                          MentalState.brainFog,
+                          MentalState.dissociation,
+                          MentalState.irritability,
+                        ].map((s) {
+                          final latest = widget.profile.latestMentalSeverity(
+                            s,
+                            widget.selectedDate,
+                          );
+                          final logged = latest != null;
+                          return InkWell(
+                            onTap: () => _showMentalChipPicker(context, s),
                             borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: cc.withValues(alpha: logged ? 0.4 : 0.25),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: logged
+                                    ? cc.withValues(alpha: 0.12)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: cc.withValues(
+                                    alpha: logged ? 0.4 : 0.25,
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                logged
+                                    ? '${s.emoji} ${s.mentalStateLabel(l10n)} · $latest'
+                                    : '${s.emoji} ${s.mentalStateLabel(l10n)}',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: cc.withValues(
+                                    alpha: logged ? 1.0 : 0.7,
+                                  ),
+                                  fontWeight: logged
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                ),
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            logged
-                                ? '${s.emoji} ${s.mentalStateLabel(l10n)} · $latest'
-                                : '${s.emoji} ${s.mentalStateLabel(l10n)}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: cc.withValues(alpha: logged ? 1.0 : 0.7),
-                              fontWeight: logged
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
+                          );
+                        }).toList(),
                   ),
                 ],
               ),
@@ -813,7 +947,8 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
       builder: (ctx) {
         return Padding(
           padding: EdgeInsets.only(
-              bottom: MediaQuery.of(ctx).viewInsets.bottom),
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
           child: Container(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -839,8 +974,10 @@ class _MentalDetailsSectionState extends State<_MentalDetailsSection> {
                 const SizedBox(height: 16),
                 _MentalSlider(
                   state: state,
-                  current: widget.profile
-                      .latestMentalSeverity(state, widget.selectedDate),
+                  current: widget.profile.latestMentalSeverity(
+                    state,
+                    widget.selectedDate,
+                  ),
                   contrastColor: widget.contrastColor,
                   onChanged: (v) {
                     widget.onLogMental(state, v);
@@ -922,7 +1059,8 @@ class _MentalSlider extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: contrastColor.withValues(
-                            alpha: selected ? 1.0 : 0.25),
+                          alpha: selected ? 1.0 : 0.25,
+                        ),
                       ),
                     ),
                     alignment: Alignment.center,
@@ -931,8 +1069,8 @@ class _MentalSlider extends StatelessWidget {
                       style: TextStyle(
                         color: selected
                             ? (contrastColor.computeLuminance() > 0.5
-                                ? Colors.black87
-                                : Colors.white)
+                                  ? Colors.black87
+                                  : Colors.white)
                             : contrastColor.withValues(alpha: 0.7),
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
@@ -996,8 +1134,11 @@ class _NarrativeSummary extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.auto_stories_outlined,
-                  size: 16, color: contrastColor.withValues(alpha: 0.6)),
+              Icon(
+                Icons.auto_stories_outlined,
+                size: 16,
+                color: contrastColor.withValues(alpha: 0.6),
+              ),
               const SizedBox(width: 6),
               Text(
                 l10n.summaryTitle,
@@ -1011,17 +1152,19 @@ class _NarrativeSummary extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 10),
-          ...sentences.map((s) => Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Text(
-                  s,
-                  style: TextStyle(
-                    fontSize: 14,
-                    height: 1.45,
-                    color: contrastColor,
-                  ),
+          ...sentences.map(
+            (s) => Padding(
+              padding: const EdgeInsets.only(bottom: 6),
+              child: Text(
+                s,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.45,
+                  color: contrastColor,
                 ),
-              )),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1038,14 +1181,19 @@ class _NarrativeSummary extends StatelessWidget {
   }) {
     final out = <String>[];
 
-    if (syms.isEmpty && structs.isEmpty && doses.isEmpty && mentals.isEmpty && emaMoods.isEmpty) {
+    if (syms.isEmpty &&
+        structs.isEmpty &&
+        doses.isEmpty &&
+        mentals.isEmpty &&
+        emaMoods.isEmpty) {
       out.add(isPacing ? l10n.hoyNarrativeEmptyPacing : l10n.hoyNarrativeEmpty);
       return out;
     }
 
     if (syms.isNotEmpty) {
-      final worst = syms.reduce((a, b) =>
-          a.severity.value >= b.severity.value ? a : b);
+      final worst = syms.reduce(
+        (a, b) => a.severity.value >= b.severity.value ? a : b,
+      );
       final n = syms.length;
       final worstName = worst.name.toLowerCase();
       final worstSev = worst.severity.severityLabel(l10n).toLowerCase();
@@ -1057,16 +1205,31 @@ class _NarrativeSummary extends StatelessWidget {
       // C.4: if the worst symptom of the day has headache detail, append
       // its chip summary as a separate sentence.
       if (worst.headacheDetail != null) {
-        final summary =
-            formatHeadacheDetailCompact(worst.headacheDetail!, l10n);
+        final summary = formatHeadacheDetailCompact(
+          worst.headacheDetail!,
+          l10n,
+        );
         if (summary.isNotEmpty) out.add(summary);
       }
       // D.1: same treatment for fatigue detail. Mutually exclusive
       // with headache detail per non-overlapping symptom aliases,
       // but the two blocks stay independent for defensive rendering.
       if (worst.fatigueDetail != null) {
-        final summary =
-            formatFatigueDetailCompact(worst.fatigueDetail!, l10n.localeName);
+        final summary = formatFatigueDetailCompact(
+          worst.fatigueDetail!,
+          l10n.localeName,
+        );
+        if (summary.isNotEmpty) out.add(summary);
+      }
+      // D.2: same treatment for abdominal detail. Aliases for the
+      // three symptoms do not overlap, so the three blocks are
+      // mutually exclusive in practice but remain independent for
+      // defensive rendering.
+      if (worst.abdominalDetail != null) {
+        final summary = formatAbdominalDetailCompact(
+          worst.abdominalDetail!,
+          l10n.localeName,
+        );
         if (summary.isNotEmpty) out.add(summary);
       }
     }
@@ -1074,8 +1237,11 @@ class _NarrativeSummary extends StatelessWidget {
     if (structs.isNotEmpty) {
       final n = structs.length;
       if (n == 1) {
-        out.add(l10n.hoyNarrativeStructuralSingleTemplate(
-            structs.first.zone.bodyZoneLabel(l10n).toLowerCase()));
+        out.add(
+          l10n.hoyNarrativeStructuralSingleTemplate(
+            structs.first.zone.bodyZoneLabel(l10n).toLowerCase(),
+          ),
+        );
       } else {
         out.add(l10n.hoyNarrativeStructuralManyTemplate(n));
       }
@@ -1088,13 +1254,19 @@ class _NarrativeSummary extends StatelessWidget {
       }
       final sorted = byMed.entries.toList()
         ..sort((a, b) => b.value.compareTo(a.value));
-      final shown = sorted.take(3).map((e) {
-        final q = e.value;
-        final qStr = q == q.roundToDouble() ? q.toInt().toString() : q.toString();
-        return '${e.key} ($qStr)';
-      }).join(', ');
-      final extra =
-          sorted.length > 3 ? l10n.hoyNarrativeDosesAndMore(sorted.length - 3) : '';
+      final shown = sorted
+          .take(3)
+          .map((e) {
+            final q = e.value;
+            final qStr = q == q.roundToDouble()
+                ? q.toInt().toString()
+                : q.toString();
+            return '${e.key} ($qStr)';
+          })
+          .join(', ');
+      final extra = sorted.length > 3
+          ? l10n.hoyNarrativeDosesAndMore(sorted.length - 3)
+          : '';
       final totalDoses = doses.length;
       final medsStr = '$shown$extra';
       if (totalDoses == 1) {
@@ -1108,7 +1280,9 @@ class _NarrativeSummary extends StatelessWidget {
       final allStates = emaMoods.expand((e) => e.states).toSet().toList();
       if (allStates.isNotEmpty) {
         final statesStr = allStates.take(4).join(', ');
-        final extra = allStates.length > 4 ? l10n.hoyNarrativeEmaStatesEllipsis : '';
+        final extra = allStates.length > 4
+            ? l10n.hoyNarrativeEmaStatesEllipsis
+            : '';
         out.add(l10n.hoyNarrativeEmaStatesTemplate('$statesStr$extra'));
       }
     }
@@ -1210,10 +1384,7 @@ class _BowelCounter extends StatelessWidget {
   final Profile profile;
   final Color contrastColor;
 
-  const _BowelCounter({
-    required this.profile,
-    required this.contrastColor,
-  });
+  const _BowelCounter({required this.profile, required this.contrastColor});
 
   @override
   Widget build(BuildContext context) {
@@ -1238,13 +1409,18 @@ class _BowelCounter extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.timeline,
-                color: contrastColor.withValues(alpha: 0.7), size: 14),
+            Icon(
+              Icons.timeline,
+              color: contrastColor.withValues(alpha: 0.7),
+              size: 14,
+            ),
             const SizedBox(width: 6),
             Text(
               label,
               style: TextStyle(
-                  color: contrastColor.withValues(alpha: 0.7), fontSize: 12),
+                color: contrastColor.withValues(alpha: 0.7),
+                fontSize: 12,
+              ),
             ),
           ],
         ),
@@ -1319,7 +1495,10 @@ class _DistentionBanner extends StatelessWidget {
             child: OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: contrastColor),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
               ),
               icon: Icon(Icons.arrow_forward, color: contrastColor, size: 14),
               label: Text(
@@ -1390,8 +1569,11 @@ class _FeverChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.thermostat,
-                  color: contrastColor.withValues(alpha: 0.7), size: 14),
+              Icon(
+                Icons.thermostat,
+                color: contrastColor.withValues(alpha: 0.7),
+                size: 14,
+              ),
               const SizedBox(width: 6),
               Text(
                 '${r.temperatureC.toStringAsFixed(1)}°C',

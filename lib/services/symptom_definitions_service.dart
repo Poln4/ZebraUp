@@ -128,6 +128,81 @@ class SymptomDefinitionsService {
   }
 
   // ---------------------------------------------------------------------------
+  // D.2 — Alias variant detection for progressive disclosure semántico
+  // ---------------------------------------------------------------------------
+
+  /// Returns a semantic-variant tag for [userInput] when [symptomKey]
+  /// has multiple semantic alias clusters. Used by the D.2 abdominal
+  /// detail sheet to pre-mark chips based on which term the user typed.
+  ///
+  /// Currently only 'abdominal_pain' has variants:
+  ///   - 'pain'     : dolor, cólico, retortijón, cramps, ...
+  ///   - 'bloating' : hinchazón, distensión, bloating, ...
+  ///   - 'gas'      : gases, pedos, peos, flatulencia, gas, ...
+  ///
+  /// Returns null for symptoms without variants (headache, fatigue) or
+  /// when no variant matches. Check order is bloating → gas → pain so
+  /// specific variants win over the generic pain cluster.
+  ///
+  /// Future symptoms with variants extend the mapping here. If the
+  /// number of variant-aware symptoms grows past 3-4, migrate to
+  /// JSON-driven variant markers instead of hard-coded lists.
+  String? detectAliasVariant(String userInput, String symptomKey) {
+    if (symptomKey != 'abdominal_pain') return null;
+    final norm = userInput.trim().toLowerCase();
+    if (norm.isEmpty) return null;
+
+    for (final a in _abdominalBloatingAliases) {
+      if (norm == a || norm.contains(a) || a.contains(norm)) {
+        return 'bloating';
+      }
+    }
+    for (final a in _abdominalGasAliases) {
+      if (norm == a || norm.contains(a) || a.contains(norm)) {
+        return 'gas';
+      }
+    }
+    for (final a in _abdominalPainAliases) {
+      if (norm == a || norm.contains(a) || a.contains(norm)) {
+        return 'pain';
+      }
+    }
+    return null;
+  }
+
+  // Variant clusters for abdominal_pain — lowercase for direct comparison.
+  static const _abdominalPainAliases = <String>[
+    // es
+    'dolor abdominal', 'dolor de estómago', 'dolor de guata',
+    'dolor de panza', 'dolor de barriga', 'dolor de vientre',
+    'cólico', 'cólicos', 'retortijón', 'retortijones',
+    // en
+    'abdominal pain', 'stomach pain', 'belly pain', 'tummy pain',
+    'cramps', 'cramping', 'gut pain',
+    // zh
+    '腹痛', '肚子痛', '胃痛',
+  ];
+
+  static const _abdominalBloatingAliases = <String>[
+    // es
+    'hinchazón', 'hinchazón abdominal', 'distensión',
+    'distensión abdominal', 'panza hinchada', 'guata hinchada',
+    // en
+    'bloating', 'abdominal distension',
+    // zh
+    '腹脹', '腹部脹氣',
+  ];
+
+  static const _abdominalGasAliases = <String>[
+    // es
+    'gases', 'pedos', 'peos', 'flatulencia', 'flatulencias',
+    // en
+    'gas', 'farting', 'flatulence',
+    // zh
+    '放屁', '排氣', '脹氣',
+  ];
+
+  // ---------------------------------------------------------------------------
   // Group + chip lookups
   // ---------------------------------------------------------------------------
 

@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../models/models.dart';
 import '../models/headache_detail.dart';
 import '../models/fatigue_detail.dart';
+import '../models/abdominal_detail.dart';
 import 'timestamp_picker.dart';
 import '../widgets/bowel_form_sheet.dart';
 import '../widgets/hemorrhoidal_form_sheet.dart';
@@ -12,6 +13,7 @@ import '../widgets/hydration_form_sheet.dart';
 import '../widgets/hrv_form_sheet.dart';
 import '../widgets/headache_detail_sheet.dart';
 import '../widgets/fatigue_detail_sheet.dart';
+import '../widgets/abdominal_detail_sheet.dart';
 import '../services/clinical_localizations.dart';
 import '../services/structural_taxonomy.dart';
 import '../services/symptom_definitions_service.dart';
@@ -19,11 +21,14 @@ import '../services/headache_red_flags.dart';
 import '../services/headache_detail_format.dart';
 import '../services/fatigue_red_flags.dart';
 import '../services/fatigue_detail_format.dart';
+import '../services/abdominal_red_flags.dart';
+import '../services/abdominal_detail_format.dart';
 import '../widgets/collapsible_section.dart';
 import '../widgets/severity_picker.dart';
 import '../extensions/context_ext.dart';
 import '../l10n/app_localizations.dart';
-
+import '../widgets/action_taken_sheet.dart';
+import '../models/action_taken.dart';
 
 /// Síntomas tab.
 ///
@@ -82,9 +87,17 @@ class _SintomasTabState extends State<SintomasTab> {
   DateTime _timestampForLog() {
     final now = DateTime.now();
     final sel = widget.selectedDate;
-    final isToday = sel.year == now.year && sel.month == now.month && sel.day == now.day;
+    final isToday =
+        sel.year == now.year && sel.month == now.month && sel.day == now.day;
     if (isToday) return now;
-    return DateTime(sel.year, sel.month, sel.day, now.hour, now.minute, now.second);
+    return DateTime(
+      sel.year,
+      sel.month,
+      sel.day,
+      now.hour,
+      now.minute,
+      now.second,
+    );
   }
 
   Color _severityColor(SymptomSeverity sev) {
@@ -135,6 +148,96 @@ class _SintomasTabState extends State<SintomasTab> {
   // excludeNone: true.
 
   // ---------------------------------------------------------------------------
+  // F.E3 — Retro action summary tag (rendered on symptom log entries
+  // when a retro check-in has been completed for the SymptomEvent)
+  // ---------------------------------------------------------------------------
+
+  static const _kindNaturalLabels = {
+    ActionKind.medication: 'medicación',
+    ActionKind.rest: 'descanso',
+    ActionKind.hydration: 'hidratación',
+    ActionKind.breathing: 'respiración',
+    ActionKind.heat: 'calor',
+    ActionKind.cold: 'frío',
+    ActionKind.elevation: 'piernas elevadas',
+    ActionKind.sensoryReduction: 'menos estímulos',
+    ActionKind.socialWithdrawal: 'aislamiento',
+    ActionKind.food: 'algo de comer',
+    ActionKind.movement: 'movimiento suave',
+    // custom / nothing handled specially in _retroActionTag
+  };
+
+  /// Compact natural-language summary of the retro check-in linked
+  /// to a SymptomEvent. Returns empty string when no completed retro
+  /// exists.
+  ///
+  /// Uses the most recent matching ActionTaken (by ActionTaken.timestamp)
+  /// in case of multiple edits/duplicates.
+  String _retroActionTag(SymptomEvent event) {
+    final linkedId = event.timestamp.toIso8601String();
+    ActionTaken? match;
+    for (final a in _p.actionsHistory) {
+      if (a.linkedEventType != LinkedEventType.symptom) continue;
+      if (a.linkedEventId != linkedId) continue;
+      if (!a.followUpCompleted) continue;
+      if (match == null || a.timestamp.isAfter(match.timestamp)) {
+        match = a;
+      }
+    }
+    if (match == null) return '';
+    final rating = match.effectivenessRating;
+    if (rating == null) return '';
+
+    // Nothing kind: no action clause.
+    if (match.kind == ActionKind.nothing) {
+      return switch (rating) {
+        EffectivenessRating.muchRelief => '⏳ mejoró mucho sin hacer nada',
+        EffectivenessRating.someRelief => '⏳ mejoró un poco sin hacer nada',
+        EffectivenessRating.partialReliefThenReturned =>
+          '⏳ mejoró un poco y después volvió',
+        EffectivenessRating.noChange => '⏳ sin cambios',
+        EffectivenessRating.worse => '⏳ empeoró',
+      };
+    }
+
+    // Action label — med name > custom label > kind natural label.
+    String actionLabel;
+    if (match.kind == ActionKind.medication && match.medicationRefId != null) {
+      final meds = _p.botiquin.where((m) => m.id == match!.medicationRefId);
+      actionLabel = meds.isNotEmpty ? meds.first.name : 'medicación';
+    } else if (match.kind == ActionKind.custom && match.customLabel != null) {
+      actionLabel = match.customLabel!;
+    } else {
+      actionLabel =
+          _kindNaturalLabels[match.kind] ?? match.kind.serializationKey;
+    }
+
+    return switch (rating) {
+      EffectivenessRating.muchRelief => '⏳ mejoró mucho con $actionLabel',
+      EffectivenessRating.someRelief => '⏳ mejoró un poco con $actionLabel',
+      EffectivenessRating.partialReliefThenReturned =>
+        '⏳ mejoró con $actionLabel y después volvió',
+      EffectivenessRating.noChange => '⏳ sin cambios con $actionLabel',
+      EffectivenessRating.worse => '⏳ empeoró con $actionLabel',
+    };
+  }
+
+  /// Wraps _retroActionTag in a Padding+Text matching the visual
+  /// language of the existing detail compact summaries. Returns
+  /// SizedBox.shrink() when the tag is empty (zero-cost absence).
+  Widget _retroActionWidget(SymptomEvent event) {
+    final tag = _retroActionTag(event);
+    if (tag.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 2.0),
+      child: Text(
+        tag,
+        style: TextStyle(color: _cc.withValues(alpha: 0.6), fontSize: 11),
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // BUILD
   // ---------------------------------------------------------------------------
 
@@ -152,27 +255,44 @@ class _SintomasTabState extends State<SintomasTab> {
     final isHydrationEnabled = _p.optionalTrackers['hydration'] ?? false;
     final isHrvEnabled = _p.optionalTrackers['hrv'] ?? false;
     final isCarefulMode = _p.optionalTrackers['careful_mode'] ?? false;
-    final trending = _p.getTrendingSymptoms(); 
+    final trending = _p.getTrendingSymptoms();
     final l10n = context.l10n;
 
     // F3: precompute each section's initial expanded state + hint label.
     // ValueKey on each CollapsibleSection includes isCarefulMode so toggling
     // it from settings forces a rebuild that re-applies initiallyExpanded.
     final structState = _sectionState(
-        _p.structuralHistory.map((e) => e.timestamp), l10n, isCarefulMode);
+      _p.structuralHistory.map((e) => e.timestamp),
+      l10n,
+      isCarefulMode,
+    );
     final bowelState = _sectionState(
-        _p.bowelHistory.map((e) => e.timestamp).followedBy(
-            _p.hemorrhoidalHistory.map((e) => e.timestamp)),
-        l10n,
-        isCarefulMode);
+      _p.bowelHistory
+          .map((e) => e.timestamp)
+          .followedBy(_p.hemorrhoidalHistory.map((e) => e.timestamp)),
+      l10n,
+      isCarefulMode,
+    );
     final feverState = _sectionState(
-        _p.feverHistory.map((e) => e.timestamp), l10n, isCarefulMode);
+      _p.feverHistory.map((e) => e.timestamp),
+      l10n,
+      isCarefulMode,
+    );
     final sleepState = _sectionState(
-        _p.sleepHistory.map((e) => e.timestamp), l10n, isCarefulMode);
+      _p.sleepHistory.map((e) => e.timestamp),
+      l10n,
+      isCarefulMode,
+    );
     final hydrationState = _sectionState(
-        _p.hydrationHistory.map((e) => e.timestamp), l10n, isCarefulMode);
+      _p.hydrationHistory.map((e) => e.timestamp),
+      l10n,
+      isCarefulMode,
+    );
     final hrvState = _sectionState(
-        _p.hrvHistory.map((e) => e.timestamp), l10n, isCarefulMode);
+      _p.hrvHistory.map((e) => e.timestamp),
+      l10n,
+      isCarefulMode,
+    );
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -209,19 +329,28 @@ class _SintomasTabState extends State<SintomasTab> {
                       spacing: 6,
                       runSpacing: 6,
                       children: zones
-                          .map((zone) => ActionChip(
-                                backgroundColor: Colors.transparent,
-                                side: BorderSide(color: _cc.withValues(alpha: 0.6)),
-                                label: Text(zone.bodyZoneLabel(l10n),
-                                    style: TextStyle(color: _cc, fontSize: 11)),
-                                onPressed: () => _openStructuralMenu(zone),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                                labelPadding: const EdgeInsets.symmetric(
-                                    horizontal: 6),
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 4, vertical: 2),
-                              ))
+                          .map(
+                            (zone) => ActionChip(
+                              backgroundColor: Colors.transparent,
+                              side: BorderSide(
+                                color: _cc.withValues(alpha: 0.6),
+                              ),
+                              label: Text(
+                                zone.bodyZoneLabel(l10n),
+                                style: TextStyle(color: _cc, fontSize: 11),
+                              ),
+                              onPressed: () => _openStructuralMenu(zone),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              labelPadding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                            ),
+                          )
                           .toList(),
                     ),
                   ],
@@ -244,7 +373,11 @@ class _SintomasTabState extends State<SintomasTab> {
             children: [
               Row(
                 children: [
-                  _bucketCard(BowelBucket.constipation, Icons.remove_circle_outline, l10n),
+                  _bucketCard(
+                    BowelBucket.constipation,
+                    Icons.remove_circle_outline,
+                    l10n,
+                  ),
                   _bucketCard(BowelBucket.normal, Icons.circle_outlined, l10n),
                   _bucketCard(BowelBucket.diarrhea, Icons.waves, l10n),
                 ],
@@ -253,9 +386,14 @@ class _SintomasTabState extends State<SintomasTab> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.4))),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: _cc.withValues(alpha: 0.4)),
+                  ),
                   icon: Icon(Icons.add, color: _cc, size: 16),
-                  label: Text(l10n.symptomsActionAddHemorrhoid, style: TextStyle(color: _cc, fontSize: 12)),
+                  label: Text(
+                    l10n.symptomsActionAddHemorrhoid,
+                    style: TextStyle(color: _cc, fontSize: 12),
+                  ),
                   onPressed: _openHemorrhoidalForm,
                 ),
               ),
@@ -274,10 +412,18 @@ class _SintomasTabState extends State<SintomasTab> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+              ),
               icon: Icon(Icons.thermostat, color: _cc, size: 18),
-              label: Text(l10n.feverActionAddReading,
-                  style: TextStyle(color: _cc, fontSize: 12, fontWeight: FontWeight.bold)),
+              label: Text(
+                l10n.feverActionAddReading,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               onPressed: _openFeverForm,
             ),
           ),
@@ -296,13 +442,17 @@ class _SintomasTabState extends State<SintomasTab> {
               alignment: Alignment.centerLeft,
               child: OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                  side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                ),
                 icon: Icon(Icons.bedtime_outlined, color: _cc, size: 18),
-                label: Text(l10n.sleepActionAddEntry,
-                    style: TextStyle(
-                        color: _cc,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold)),
+                label: Text(
+                  l10n.sleepActionAddEntry,
+                  style: TextStyle(
+                    color: _cc,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: _openSleepForm,
               ),
             ),
@@ -322,13 +472,17 @@ class _SintomasTabState extends State<SintomasTab> {
               alignment: Alignment.centerLeft,
               child: OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                  side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                ),
                 icon: Icon(Icons.local_drink_outlined, color: _cc, size: 18),
-                label: Text(l10n.hydrationActionAddEntry,
-                    style: TextStyle(
-                        color: _cc,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold)),
+                label: Text(
+                  l10n.hydrationActionAddEntry,
+                  style: TextStyle(
+                    color: _cc,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: _openHydrationForm,
               ),
             ),
@@ -348,13 +502,17 @@ class _SintomasTabState extends State<SintomasTab> {
               alignment: Alignment.centerLeft,
               child: OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                  side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                ),
                 icon: Icon(Icons.favorite_border, color: _cc, size: 18),
-                label: Text(l10n.hrvActionAddEntry,
-                    style: TextStyle(
-                        color: _cc,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold)),
+                label: Text(
+                  l10n.hrvActionAddEntry,
+                  style: TextStyle(
+                    color: _cc,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 onPressed: _openHrvForm,
               ),
             ),
@@ -371,307 +529,383 @@ class _SintomasTabState extends State<SintomasTab> {
             todaysHydration.isNotEmpty ||
             todaysHrv.isNotEmpty) ...[
           const SizedBox(height: 24),
-          Text(l10n.symptomsSectionTodaysLogs,
-              style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
+          Text(
+            l10n.symptomsSectionTodaysLogs,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+              fontSize: 14,
+              color: _cc,
+            ),
+          ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(border: Border.all(color: _cc)),
             child: Column(
               children: [
-                ...todaysStructs.map((e) => InkWell(
-                      onLongPress: () => _editStructuralEvent(e),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Icon(Icons.warning_amber_rounded, color: _cc, size: 16),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                "[${DateFormat('HH:mm').format(e.timestamp)}] "
-                                "${e.zone.bodyZoneLabel(l10n)}: "
-                                "${e.type.structuralTypeLabel(l10n)}"
-                                "${e.isResolved ? ' ✓' : ''}",
-                                style: TextStyle(color: _cc, fontSize: 13),
-                              ),
+                ...todaysStructs.map(
+                  (e) => InkWell(
+                    onLongPress: () => _editStructuralEvent(e),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: _cc,
+                            size: 16,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              "[${DateFormat('HH:mm').format(e.timestamp)}] "
+                              "${e.zone.bodyZoneLabel(l10n)}: "
+                              "${e.type.structuralTypeLabel(l10n)}"
+                              "${e.isResolved ? ' ✓' : ''}",
+                              style: TextStyle(color: _cc, fontSize: 13),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                setState(() => _p.structuralHistory.remove(e));
-                                widget.onProfileChanged();
-                              },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
                             ),
-                          ],
-                        ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() => _p.structuralHistory.remove(e));
+                              widget.onProfileChanged();
+                            },
+                          ),
+                        ],
                       ),
-                    )),
-                ...todaysBowel.map((e) => InkWell(
-                      onLongPress: () => _editBowelEvent(e),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Icon(
-                              switch (e.bucket) {
-                                BowelBucket.constipation => Icons.remove_circle_outline,
-                                BowelBucket.normal => Icons.circle_outlined,
-                                BowelBucket.diarrhea => Icons.waves,
-                              },
-                              color: _cc,
-                              size: 14,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "[${DateFormat('HH:mm').format(e.timestamp)}] ${e.bucket.bowelBucketLabel(l10n)}"
-                                    "${e.bristolType != null ? ' · ${l10n.bowelLogBristolTypeTemplate(e.bristolType!)}' : ''}"
-                                    "${e.urgency ? ' · ${l10n.bowelLogTagUrgency}' : ''}"
-                                    "${e.bloodPresent ? ' · ${l10n.bowelLogTagBleeding}' : ''}"
-                                    "${e.incompleteEvacuation ? ' · ${l10n.bowelLogTagIncomplete}' : ''}",
-                                    style: TextStyle(color: _cc, fontSize: 13),
-                                  ),
-                                  if (e.note != null && e.note!.trim().isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.0),
-                                      child: Text(e.note!,
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 11,
-                                              fontStyle: FontStyle.italic)),
+                    ),
+                  ),
+                ),
+                ...todaysBowel.map(
+                  (e) => InkWell(
+                    onLongPress: () => _editBowelEvent(e),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            switch (e.bucket) {
+                              BowelBucket.constipation =>
+                                Icons.remove_circle_outline,
+                              BowelBucket.normal => Icons.circle_outlined,
+                              BowelBucket.diarrhea => Icons.waves,
+                            },
+                            color: _cc,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "[${DateFormat('HH:mm').format(e.timestamp)}] ${e.bucket.bowelBucketLabel(l10n)}"
+                                  "${e.bristolType != null ? ' · ${l10n.bowelLogBristolTypeTemplate(e.bristolType!)}' : ''}"
+                                  "${e.urgency ? ' · ${l10n.bowelLogTagUrgency}' : ''}"
+                                  "${e.bloodPresent ? ' · ${l10n.bowelLogTagBleeding}' : ''}"
+                                  "${e.incompleteEvacuation ? ' · ${l10n.bowelLogTagIncomplete}' : ''}",
+                                  style: TextStyle(color: _cc, fontSize: 13),
+                                ),
+                                if (e.note != null && e.note!.trim().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      e.note!,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                      ),
                                     ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                setState(() => _p.bowelHistory.remove(e));
-                                widget.onProfileChanged();
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
-                ...todaysHemorrhoidal.map((e) => InkWell(
-                      onLongPress: () => _editHemorrhoidalEvent(e),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Icon(Icons.healing, color: _cc, size: 14),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "[${DateFormat('HH:mm').format(e.timestamp)}] ${l10n.hemorrhoidalLogLabel}"
-                                    "${e.bleeding ? ' · ${l10n.hemorrhoidalLogTagBleeding}' : ''}"
-                                    "${e.severity != SymptomSeverity.none ? ' (${e.severity.severityLabel(l10n).toLowerCase()})' : ''}",
-                                    style: TextStyle(color: _cc, fontSize: 13),
                                   ),
-                                  if (e.note != null && e.note!.trim().isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.0),
-                                      child: Text(e.note!,
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 11,
-                                              fontStyle: FontStyle.italic)),
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                setState(() => _p.hemorrhoidalHistory.remove(e));
-                                widget.onProfileChanged();
-                              },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
                             ),
-                          ],
-                        ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() => _p.bowelHistory.remove(e));
+                              widget.onProfileChanged();
+                            },
+                          ),
+                        ],
                       ),
-                    )),
-                ...todaysFever.map((e) => InkWell(
-                      onLongPress: () => _editFeverEvent(e),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Icon(Icons.thermostat, color: _cc, size: 14),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "[${DateFormat('HH:mm').format(e.timestamp)}] "
-                                    "${e.temperatureC.toStringAsFixed(1)}°C"
-                                    " · ${e.site.label(l10n)}"
-                                    "${e.antipyreticTaken ? ' · ${l10n.feverLogLabelWithAntipyretic}' : ''}",
-                                    style: TextStyle(color: _cc, fontSize: 13),
+                    ),
+                  ),
+                ),
+                ...todaysHemorrhoidal.map(
+                  (e) => InkWell(
+                    onLongPress: () => _editHemorrhoidalEvent(e),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(Icons.healing, color: _cc, size: 14),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "[${DateFormat('HH:mm').format(e.timestamp)}] ${l10n.hemorrhoidalLogLabel}"
+                                  "${e.bleeding ? ' · ${l10n.hemorrhoidalLogTagBleeding}' : ''}"
+                                  "${e.severity != SymptomSeverity.none ? ' (${e.severity.severityLabel(l10n).toLowerCase()})' : ''}",
+                                  style: TextStyle(color: _cc, fontSize: 13),
+                                ),
+                                if (e.note != null && e.note!.trim().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      e.note!,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
                                   ),
-                                  if (e.note != null && e.note!.trim().isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.0),
-                                      child: Text(e.note!,
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 11,
-                                              fontStyle: FontStyle.italic)),
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                setState(() => _p.feverHistory.remove(e));
-                                widget.onProfileChanged();
-                              },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
                             ),
-                          ],
-                        ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() => _p.hemorrhoidalHistory.remove(e));
+                              widget.onProfileChanged();
+                            },
+                          ),
+                        ],
                       ),
-                    )),
-                ...todaysSleep.map((e) => InkWell(
-                      onLongPress: () => _editSleepEvent(e),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Icon(Icons.bedtime_outlined, color: _cc, size: 14),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _formatSleepEntry(e, l10n),
-                                    style: TextStyle(color: _cc, fontSize: 13),
+                    ),
+                  ),
+                ),
+                ...todaysFever.map(
+                  (e) => InkWell(
+                    onLongPress: () => _editFeverEvent(e),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(Icons.thermostat, color: _cc, size: 14),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "[${DateFormat('HH:mm').format(e.timestamp)}] "
+                                  "${e.temperatureC.toStringAsFixed(1)}°C"
+                                  " · ${e.site.label(l10n)}"
+                                  "${e.antipyreticTaken ? ' · ${l10n.feverLogLabelWithAntipyretic}' : ''}",
+                                  style: TextStyle(color: _cc, fontSize: 13),
+                                ),
+                                if (e.note != null && e.note!.trim().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      e.note!,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
                                   ),
-                                  if (e.note != null && e.note!.trim().isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.0),
-                                      child: Text(e.note!,
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 11,
-                                              fontStyle: FontStyle.italic)),
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                setState(() => _p.sleepHistory.remove(e));
-                                widget.onProfileChanged();
-                              },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
                             ),
-                          ],
-                        ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() => _p.feverHistory.remove(e));
+                              widget.onProfileChanged();
+                            },
+                          ),
+                        ],
                       ),
-                    )),
-                ...todaysHydration.map((e) => InkWell(
-                      onLongPress: () => _editHydrationEvent(e),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Icon(Icons.local_drink_outlined, color: _cc, size: 14),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _formatHydrationEntry(e, l10n),
-                                    style: TextStyle(color: _cc, fontSize: 13),
+                    ),
+                  ),
+                ),
+                ...todaysSleep.map(
+                  (e) => InkWell(
+                    onLongPress: () => _editSleepEvent(e),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(Icons.bedtime_outlined, color: _cc, size: 14),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _formatSleepEntry(e, l10n),
+                                  style: TextStyle(color: _cc, fontSize: 13),
+                                ),
+                                if (e.note != null && e.note!.trim().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      e.note!,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
                                   ),
-                                  if (e.note != null && e.note!.trim().isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.0),
-                                      child: Text(e.note!,
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 11,
-                                              fontStyle: FontStyle.italic)),
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                setState(() => _p.hydrationHistory.remove(e));
-                                widget.onProfileChanged();
-                              },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
                             ),
-                          ],
-                        ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() => _p.sleepHistory.remove(e));
+                              widget.onProfileChanged();
+                            },
+                          ),
+                        ],
                       ),
-                    )),
-                ...todaysHrv.map((e) => InkWell(
-                      onLongPress: () => _editHrvEvent(e),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            Icon(Icons.favorite_border, color: _cc, size: 14),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    _formatHrvEntry(e, l10n),
-                                    style: TextStyle(color: _cc, fontSize: 13),
+                    ),
+                  ),
+                ),
+                ...todaysHydration.map(
+                  (e) => InkWell(
+                    onLongPress: () => _editHydrationEvent(e),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.local_drink_outlined,
+                            color: _cc,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _formatHydrationEntry(e, l10n),
+                                  style: TextStyle(color: _cc, fontSize: 13),
+                                ),
+                                if (e.note != null && e.note!.trim().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      e.note!,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
                                   ),
-                                  if (e.note != null && e.note!.trim().isNotEmpty)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.0),
-                                      child: Text(e.note!,
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 11,
-                                              fontStyle: FontStyle.italic)),
-                                    ),
-                                ],
-                              ),
+                              ],
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 18),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () {
-                                setState(() => _p.hrvHistory.remove(e));
-                                widget.onProfileChanged();
-                              },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
                             ),
-                          ],
-                        ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() => _p.hydrationHistory.remove(e));
+                              widget.onProfileChanged();
+                            },
+                          ),
+                        ],
                       ),
-                    )),
+                    ),
+                  ),
+                ),
+                ...todaysHrv.map(
+                  (e) => InkWell(
+                    onLongPress: () => _editHrvEvent(e),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(Icons.favorite_border, color: _cc, size: 14),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _formatHrvEntry(e, l10n),
+                                  style: TextStyle(color: _cc, fontSize: 13),
+                                ),
+                                if (e.note != null && e.note!.trim().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      e.note!,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() => _p.hrvHistory.remove(e));
+                              widget.onProfileChanged();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 ...todaysSymptoms.map((event) {
                   final unrated = _isUnrated(event.severity);
                   return InkWell(
@@ -681,8 +915,12 @@ class _SintomasTabState extends State<SintomasTab> {
                       child: Row(
                         children: [
                           Icon(
-                            unrated ? Icons.radio_button_unchecked : Icons.circle,
-                            color: unrated ? Colors.grey : _severityColor(event.severity),
+                            unrated
+                                ? Icons.radio_button_unchecked
+                                : Icons.circle,
+                            color: unrated
+                                ? Colors.grey
+                                : _severityColor(event.severity),
                             size: 12,
                           ),
                           const SizedBox(width: 8),
@@ -697,16 +935,24 @@ class _SintomasTabState extends State<SintomasTab> {
                                   style: TextStyle(
                                     color: _cc,
                                     fontSize: 13,
-                                    fontStyle: unrated ? FontStyle.italic : FontStyle.normal,
+                                    fontStyle: unrated
+                                        ? FontStyle.italic
+                                        : FontStyle.normal,
                                   ),
                                 ),
                                 // C.4: headache detail compact summary
                                 if (event.headacheDetail != null &&
-                                    formatHeadacheDetailCompact(event.headacheDetail!, l10n).isNotEmpty)
+                                    formatHeadacheDetailCompact(
+                                      event.headacheDetail!,
+                                      l10n,
+                                    ).isNotEmpty)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 2.0),
                                     child: Text(
-                                      formatHeadacheDetailCompact(event.headacheDetail!, l10n),
+                                      formatHeadacheDetailCompact(
+                                        event.headacheDetail!,
+                                        l10n,
+                                      ),
                                       style: TextStyle(
                                         color: _cc.withValues(alpha: 0.6),
                                         fontSize: 11,
@@ -715,31 +961,66 @@ class _SintomasTabState extends State<SintomasTab> {
                                   ),
                                 // D.1: fatigue detail compact summary
                                 if (event.fatigueDetail != null &&
-                                    formatFatigueDetailCompact(event.fatigueDetail!, l10n.localeName).isNotEmpty)
+                                    formatFatigueDetailCompact(
+                                      event.fatigueDetail!,
+                                      l10n.localeName,
+                                    ).isNotEmpty)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 2.0),
                                     child: Text(
-                                      formatFatigueDetailCompact(event.fatigueDetail!, l10n.localeName),
+                                      formatFatigueDetailCompact(
+                                        event.fatigueDetail!,
+                                        l10n.localeName,
+                                      ),
                                       style: TextStyle(
                                         color: _cc.withValues(alpha: 0.6),
                                         fontSize: 11,
                                       ),
                                     ),
                                   ),
-                                if (event.note != null && event.note!.trim().isNotEmpty)
+                                // D.2: abdominal detail compact summary
+                                if (event.abdominalDetail != null &&
+                                    formatAbdominalDetailCompact(
+                                      event.abdominalDetail!,
+                                      l10n.localeName,
+                                    ).isNotEmpty)
                                   Padding(
                                     padding: const EdgeInsets.only(top: 2.0),
-                                    child: Text(event.note!,
-                                        style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 11,
-                                            fontStyle: FontStyle.italic)),
+                                    child: Text(
+                                      formatAbdominalDetailCompact(
+                                        event.abdominalDetail!,
+                                        l10n.localeName,
+                                      ),
+                                      style: TextStyle(
+                                        color: _cc.withValues(alpha: 0.6),
+                                        fontSize: 11,
+                                      ),
+                                    ),
                                   ),
+                                if (event.note != null &&
+                                    event.note!.trim().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      event.note!,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ),
+                                // Sprint F.E3 — retro action summary tag
+                                _retroActionWidget(event),
                               ],
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.close, color: Colors.red, size: 18),
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
+                            ),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
                             onPressed: () {
@@ -756,48 +1037,87 @@ class _SintomasTabState extends State<SintomasTab> {
             ),
           ),
           const SizedBox(height: 6),
-          Text(l10n.symptomsFootnoteLongPressEdit,
-              style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic)),
+          Text(
+            l10n.symptomsFootnoteLongPressEdit,
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
         ],
 
         // 3. TRENDING
         const SizedBox(height: 28),
-        Text(l10n.symptomsSectionTrending,
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
+        Text(
+          l10n.symptomsSectionTrending,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+            fontSize: 14,
+            color: _cc,
+          ),
+        ),
         const SizedBox(height: 8),
         if (trending.isEmpty)
-          Text(l10n.symptomsTrendingEmpty,
-              style: TextStyle(fontStyle: FontStyle.italic, color: Colors.grey, fontSize: 14))
+          Text(
+            l10n.symptomsTrendingEmpty,
+            style: TextStyle(
+              fontStyle: FontStyle.italic,
+              color: Colors.grey,
+              fontSize: 14,
+            ),
+          )
         else
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: trending
-                .map((s) => ActionChip(
-                      backgroundColor: _ic,
-                      side: BorderSide(color: _cc, width: 2),
-                      label: Text(s,
-                          style: TextStyle(color: _cc, fontSize: 14, fontWeight: FontWeight.bold)),
-                      onPressed: () => _openSeverityMenu(s),
-                    ))
+                .map(
+                  (s) => ActionChip(
+                    backgroundColor: _ic,
+                    side: BorderSide(color: _cc, width: 2),
+                    label: Text(
+                      s,
+                      style: TextStyle(
+                        color: _cc,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () => _openSeverityMenu(s),
+                  ),
+                )
                 .toList(),
           ),
 
         // 4. SYMPTOM VAULT + INLINE ADD
         const SizedBox(height: 28),
-        Text(l10n.symptomsSectionVault,
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1, fontSize: 14, color: _cc)),
+        Text(
+          l10n.symptomsSectionVault,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+            fontSize: 14,
+            color: _cc,
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: _p.symptomVault
-              .map((s) => ActionChip(
-                    backgroundColor: _ic,
-                    side: const BorderSide(color: Colors.grey),
-                    label: Text(s, style: const TextStyle(color: Colors.grey, fontSize: 14)),
-                    onPressed: () => _openSeverityMenu(s),
-                  ))
+              .map(
+                (s) => ActionChip(
+                  backgroundColor: _ic,
+                  side: const BorderSide(color: Colors.grey),
+                  label: Text(
+                    s,
+                    style: const TextStyle(color: Colors.grey, fontSize: 14),
+                  ),
+                  onPressed: () => _openSeverityMenu(s),
+                ),
+              )
               .toList(),
         ),
         const SizedBox(height: 12),
@@ -847,7 +1167,9 @@ class _SintomasTabState extends State<SintomasTab> {
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
           child: Container(
             padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
@@ -856,54 +1178,81 @@ class _SintomasTabState extends State<SintomasTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      context.l10n.symptomsModalLogHeader(
-                          zone.bodyZoneLabel(context.l10n).toUpperCase()),
-                      style: TextStyle(
-                          color: _cc, fontSize: 16, fontWeight: FontWeight.bold)),
+                    context.l10n.symptomsModalLogHeader(
+                      zone.bodyZoneLabel(context.l10n).toUpperCase(),
+                    ),
+                    style: TextStyle(
+                      color: _cc,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                    ),
                     icon: Icon(Icons.access_time, color: _cc, size: 16),
-                    label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                        style: TextStyle(color: _cc, fontSize: 12)),
+                    label: Text(
+                      DateFormat('EEE d MMM, HH:mm').format(ts),
+                      style: TextStyle(color: _cc, fontSize: 12),
+                    ),
                     onPressed: () async {
                       final picked = await pickTimestamp(
-                          context: ctx, initial: ts, contrastColor: _cc, inverseContrastColor: _ic);
+                        context: ctx,
+                        initial: ts,
+                        contrastColor: _cc,
+                        inverseContrastColor: _ic,
+                      );
                       if (picked != null) setSheet(() => ts = picked);
                     },
                   ),
                   const SizedBox(height: 16),
-                  ...kStructuralTaxonomy.entries.expand((entry) => [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 14, bottom: 2),
-                          child: Text(
-                            entry.key.label(context.l10n).toUpperCase(),
-                            style: TextStyle(
-                              color: _cc.withValues(alpha: 0.55),
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
-                            ),
+                  ...kStructuralTaxonomy.entries.expand(
+                    (entry) => [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 14, bottom: 2),
+                        child: Text(
+                          entry.key.label(context.l10n).toUpperCase(),
+                          style: TextStyle(
+                            color: _cc.withValues(alpha: 0.55),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
                           ),
                         ),
-                        ...entry.value.map((type) => ListTile(
-                              contentPadding: EdgeInsets.zero,
-                              dense: true,
-                              leading: Icon(_iconForKind(entry.key), color: _cc, size: 18),
-                              title: Text(type.structuralTypeLabel(context.l10n),
-                                  style: TextStyle(color: _cc, fontSize: 13)),
-                              onTap: () {
-                                setState(() => _p.structuralHistory.add(StructuralEvent(
-                                      timestamp: ts,
-                                      zone: zone,
-                                      kind: entry.key,
-                                      type: type,
-                                    )));
-                                widget.onProfileChanged();
-                                Navigator.pop(ctx);
-                              },
-                            )),
-                      ]),
+                      ),
+                      ...entry.value.map(
+                        (type) => ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          leading: Icon(
+                            _iconForKind(entry.key),
+                            color: _cc,
+                            size: 18,
+                          ),
+                          title: Text(
+                            type.structuralTypeLabel(context.l10n),
+                            style: TextStyle(color: _cc, fontSize: 13),
+                          ),
+                          onTap: () {
+                            setState(
+                              () => _p.structuralHistory.add(
+                                StructuralEvent(
+                                  timestamp: ts,
+                                  zone: zone,
+                                  kind: entry.key,
+                                  type: type,
+                                ),
+                              ),
+                            );
+                            widget.onProfileChanged();
+                            Navigator.pop(ctx);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -925,7 +1274,9 @@ class _SintomasTabState extends State<SintomasTab> {
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
           child: Container(
             padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
@@ -934,23 +1285,42 @@ class _SintomasTabState extends State<SintomasTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      context.l10n.symptomsModalEditHeader(
-                          event.zone.bodyZoneLabel(context.l10n).toUpperCase(),
-                          event.type.structuralTypeLabel(context.l10n)),
-                      style: TextStyle(
-                          color: _cc, fontSize: 14, fontWeight: FontWeight.bold)),
+                    context.l10n.symptomsModalEditHeader(
+                      event.zone.bodyZoneLabel(context.l10n).toUpperCase(),
+                      event.type.structuralTypeLabel(context.l10n),
+                    ),
+                    style: TextStyle(
+                      color: _cc,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(event.kind.label(context.l10n),
-                      style: TextStyle(color: _cc.withValues(alpha: 0.55), fontSize: 11, letterSpacing: 0.5)),
+                  Text(
+                    event.kind.label(context.l10n),
+                    style: TextStyle(
+                      color: _cc.withValues(alpha: 0.55),
+                      fontSize: 11,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                    ),
                     icon: Icon(Icons.access_time, color: _cc, size: 16),
-                    label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                        style: TextStyle(color: _cc, fontSize: 12)),
+                    label: Text(
+                      DateFormat('EEE d MMM, HH:mm').format(ts),
+                      style: TextStyle(color: _cc, fontSize: 12),
+                    ),
                     onPressed: () async {
                       final picked = await pickTimestamp(
-                          context: ctx, initial: ts, contrastColor: _cc, inverseContrastColor: _ic);
+                        context: ctx,
+                        initial: ts,
+                        contrastColor: _cc,
+                        inverseContrastColor: _ic,
+                      );
                       if (picked != null) setSheet(() => ts = picked);
                     },
                   ),
@@ -958,7 +1328,10 @@ class _SintomasTabState extends State<SintomasTab> {
 
                   // Healing tracking section
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       border: Border.all(color: _cc.withValues(alpha: 0.2)),
                       borderRadius: BorderRadius.circular(8),
@@ -968,18 +1341,23 @@ class _SintomasTabState extends State<SintomasTab> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 6, bottom: 2),
-                          child: Text(context.l10n.structuralFormFollowupHeader,
-                              style: TextStyle(
-                                color: _cc.withValues(alpha: 0.55),
-                                fontSize: 10,
-                                letterSpacing: 1.0,
-                                fontWeight: FontWeight.bold,
-                              )),
+                          child: Text(
+                            context.l10n.structuralFormFollowupHeader,
+                            style: TextStyle(
+                              color: _cc.withValues(alpha: 0.55),
+                              fontSize: 10,
+                              letterSpacing: 1.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                         SwitchListTile(
                           contentPadding: EdgeInsets.zero,
                           dense: true,
-                          title: Text(context.l10n.structuralFormFollowupResolvedQuestion, style: TextStyle(color: _cc, fontSize: 13)),
+                          title: Text(
+                            context.l10n.structuralFormFollowupResolvedQuestion,
+                            style: TextStyle(color: _cc, fontSize: 13),
+                          ),
                           value: resolvedAt != null,
                           activeColor: _cc,
                           onChanged: (v) async {
@@ -1005,8 +1383,12 @@ class _SintomasTabState extends State<SintomasTab> {
                           Padding(
                             padding: const EdgeInsets.only(left: 4, bottom: 8),
                             child: Text(
-                              context.l10n.structuralFormFollowupResolvedDateTemplate(
-                                  DateFormat('d MMM yyyy').format(resolvedAt!)),
+                              context.l10n
+                                  .structuralFormFollowupResolvedDateTemplate(
+                                    DateFormat(
+                                      'd MMM yyyy',
+                                    ).format(resolvedAt!),
+                                  ),
                               style: TextStyle(
                                 color: _cc.withValues(alpha: 0.65),
                                 fontSize: 12,
@@ -1017,10 +1399,20 @@ class _SintomasTabState extends State<SintomasTab> {
                           SwitchListTile(
                             contentPadding: EdgeInsets.zero,
                             dense: true,
-                            title: Text(context.l10n.structuralFormFollowupStillPainfulQuestion, style: TextStyle(color: _cc, fontSize: 13)),
+                            title: Text(
+                              context
+                                  .l10n
+                                  .structuralFormFollowupStillPainfulQuestion,
+                              style: TextStyle(color: _cc, fontSize: 13),
+                            ),
                             subtitle: Text(
-                              context.l10n.structuralFormFollowupStillPainfulSubtitle,
-                              style: TextStyle(color: _cc.withValues(alpha: 0.5), fontSize: 11),
+                              context
+                                  .l10n
+                                  .structuralFormFollowupStillPainfulSubtitle,
+                              style: TextStyle(
+                                color: _cc.withValues(alpha: 0.5),
+                                fontSize: 11,
+                              ),
                             ),
                             value: stillPainful,
                             activeColor: _cc,
@@ -1040,17 +1432,22 @@ class _SintomasTabState extends State<SintomasTab> {
                     onPressed: () {
                       final idx = _p.structuralHistory.indexOf(event);
                       if (idx >= 0) {
-                        setState(() => _p.structuralHistory[idx] = event.copyWith(
-                              timestamp: ts,
-                              resolvedAt: resolvedAt,
-                              clearResolvedAt: resolvedAt == null,
-                              stillPainful: stillPainful,
-                            ));
+                        setState(
+                          () => _p.structuralHistory[idx] = event.copyWith(
+                            timestamp: ts,
+                            resolvedAt: resolvedAt,
+                            clearResolvedAt: resolvedAt == null,
+                            stillPainful: stillPainful,
+                          ),
+                        );
                         widget.onProfileChanged();
                       }
                       Navigator.pop(ctx);
                     },
-                    child: Text(context.l10n.symptomsActionSave, style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      context.l10n.symptomsActionSave,
+                      style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -1063,13 +1460,13 @@ class _SintomasTabState extends State<SintomasTab> {
 
   // F4: icon per kind for the cascading picker
   IconData _iconForKind(StructuralEventKind kind) => switch (kind) {
-        StructuralEventKind.joint => Icons.adjust,
-        StructuralEventKind.muscle => Icons.fitness_center,
-        StructuralEventKind.tendon => Icons.gesture,
-        StructuralEventKind.ligament => Icons.link,
-        StructuralEventKind.softTissue => Icons.healing,
-        StructuralEventKind.nerve => Icons.flash_on,
-      };
+    StructuralEventKind.joint => Icons.adjust,
+    StructuralEventKind.muscle => Icons.fitness_center,
+    StructuralEventKind.tendon => Icons.gesture,
+    StructuralEventKind.ligament => Icons.link,
+    StructuralEventKind.softTissue => Icons.healing,
+    StructuralEventKind.nerve => Icons.flash_on,
+  };
 
   // ---------------------------------------------------------------------------
   // SYMPTOM MODALS
@@ -1082,9 +1479,10 @@ class _SintomasTabState extends State<SintomasTab> {
     Future<void> saveWith(SymptomSeverity sev, BuildContext ctx) async {
       final note = noteCtrl.text.trim();
 
-      // C.4 / D.1: offer the appropriate detail layer when the
-      // symptom matches cefalea or fatiga AND the corresponding
-      // tracker is enabled. Aliases for the two symptoms do not
+      // C.4 / D.1 / D.2: offer the appropriate detail layer when
+      // the symptom matches cefalea, fatiga or dolor abdominal
+      // (including bloating/gas variants) AND the corresponding
+      // tracker is enabled. Aliases for the three symptoms do not
       // overlap, so at most one branch fires per save.
       final svc = SymptomDefinitionsService.instance;
       final isHeadache = svc.matchesSymptomKey(symptom, 'headache');
@@ -1093,9 +1491,13 @@ class _SintomasTabState extends State<SintomasTab> {
       final isFatigue = svc.matchesSymptomKey(symptom, 'fatigue');
       final fatigueLayerEnabled =
           _p.optionalTrackers['fatigue_detail'] ?? false;
+      final isAbdominal = svc.matchesSymptomKey(symptom, 'abdominal_pain');
+      final abdominalLayerEnabled =
+          _p.optionalTrackers['abdominal_detail'] ?? false;
 
       HeadacheDetail? headacheDetail;
       FatigueDetail? fatigueDetail;
+      AbdominalDetail? abdominalDetail;
       if (isHeadache && headacheLayerEnabled) {
         // Close the severity sheet first so the detail sheet stacks
         // over the SintomasTab, not over the severity modal.
@@ -1116,23 +1518,43 @@ class _SintomasTabState extends State<SintomasTab> {
           inverseContrastColor: _ic,
         );
         if (!mounted) return;
+      } else if (isAbdominal && abdominalLayerEnabled) {
+        Navigator.pop(ctx);
+        if (!mounted) return;
+        abdominalDetail = await showAbdominalDetailSheet(
+          context,
+          symptomInput: symptom,
+          contrastColor: _cc,
+          inverseContrastColor: _ic,
+        );
+        if (!mounted) return;
       } else {
         Navigator.pop(ctx);
       }
 
-      setState(() => _p.symptomHistory.add(SymptomEvent(
-            timestamp: ts,
-            name: symptom,
-            severity: sev,
-            note: note.isEmpty ? null : note,
-            headacheDetail: headacheDetail,
-            fatigueDetail: fatigueDetail,
-          )));
+      // D.2.E: reverse integration on save.
+      if (abdominalDetail != null) {
+        abdominalDetail = await _maybeLinkToBowelEvent(abdominalDetail, ts);
+        if (!mounted) return;
+      }
+
+      final newSymptomEvent = SymptomEvent(
+        timestamp: ts,
+        name: symptom,
+        severity: sev,
+        note: note.isEmpty ? null : note,
+        headacheDetail: headacheDetail,
+        fatigueDetail: fatigueDetail,
+        abdominalDetail: abdominalDetail,
+      );
+      setState(() => _p.symptomHistory.add(newSymptomEvent));
       widget.onProfileChanged();
 
-      // Surface advisory red flags after save. URGENT flags
-      // (cefalea thunderclap) are handled inside the sheet with
-      // their own confirmation dialog. Fatigue has no URGENT flags.
+      // Surface advisory / urgent red flags after save.
+      // - Cefalea thunderclap handled IN-SHEET.
+      // - Fatiga has no URGENT flags.
+      // - Abdominal tearing pain handled IN-SHEET; hematochezia
+      //   and hematemesis surfaced here as URGENT.
       if (headacheDetail != null) {
         final flags = detectHeadacheRedFlags(
           detail: headacheDetail,
@@ -1147,10 +1569,22 @@ class _SintomasTabState extends State<SintomasTab> {
         );
         await _showFatigueAdvisoryFlags(flags);
       }
+      if (abdominalDetail != null) {
+        final flags = detectAbdominalRedFlags(
+          detail: abdominalDetail,
+          severityIndex: sev.value,
+          noteText: note.isEmpty ? null : note,
+        );
+        await _showAbdominalUrgentFlags(flags);
+        if (!mounted) return;
+        await _showAbdominalAdvisoryFlags(flags);
+      }
     }
 
-    final unratedSentinel =
-        SymptomSeverity.values.firstWhere((s) => _isUnrated(s), orElse: () => SymptomSeverity.values.first);
+    final unratedSentinel = SymptomSeverity.values.firstWhere(
+      (s) => _isUnrated(s),
+      orElse: () => SymptomSeverity.values.first,
+    );
 
     showModalBottomSheet(
       context: context,
@@ -1159,7 +1593,9 @@ class _SintomasTabState extends State<SintomasTab> {
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
           child: Container(
             padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
@@ -1167,17 +1603,31 @@ class _SintomasTabState extends State<SintomasTab> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(symptom.toUpperCase(),
-                      style: TextStyle(color: _cc, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(
+                    symptom.toUpperCase(),
+                    style: TextStyle(
+                      color: _cc,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                    ),
                     icon: Icon(Icons.access_time, color: _cc, size: 16),
-                    label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                        style: TextStyle(color: _cc, fontSize: 12)),
+                    label: Text(
+                      DateFormat('EEE d MMM, HH:mm').format(ts),
+                      style: TextStyle(color: _cc, fontSize: 12),
+                    ),
                     onPressed: () async {
                       final picked = await pickTimestamp(
-                          context: ctx, initial: ts, contrastColor: _cc, inverseContrastColor: _ic);
+                        context: ctx,
+                        initial: ts,
+                        contrastColor: _cc,
+                        inverseContrastColor: _ic,
+                      );
                       if (picked != null) setSheet(() => ts = picked);
                     },
                   ),
@@ -1191,12 +1641,15 @@ class _SintomasTabState extends State<SintomasTab> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(context.l10n.symptomsLabelSeverityGrading,
-                      style: TextStyle(
-                          color: _cc.withValues(alpha: 0.7),
-                          fontSize: 11,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.bold)),
+                  Text(
+                    context.l10n.symptomsLabelSeverityGrading,
+                    style: TextStyle(
+                      color: _cc.withValues(alpha: 0.7),
+                      fontSize: 11,
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   SeverityDotPicker(
                     showLabels: true,
@@ -1240,7 +1693,9 @@ class _SintomasTabState extends State<SintomasTab> {
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
           child: Container(
             padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
@@ -1248,17 +1703,33 @@ class _SintomasTabState extends State<SintomasTab> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(context.l10n.symptomsModalEditSymptomHeader(event.name.toUpperCase()),
-                      style: TextStyle(color: _cc, fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text(
+                    context.l10n.symptomsModalEditSymptomHeader(
+                      event.name.toUpperCase(),
+                    ),
+                    style: TextStyle(
+                      color: _cc,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                    ),
                     icon: Icon(Icons.access_time, color: _cc, size: 16),
-                    label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                        style: TextStyle(color: _cc, fontSize: 12)),
+                    label: Text(
+                      DateFormat('EEE d MMM, HH:mm').format(ts),
+                      style: TextStyle(color: _cc, fontSize: 12),
+                    ),
                     onPressed: () async {
                       final picked = await pickTimestamp(
-                          context: ctx, initial: ts, contrastColor: _cc, inverseContrastColor: _ic);
+                        context: ctx,
+                        initial: ts,
+                        contrastColor: _cc,
+                        inverseContrastColor: _ic,
+                      );
                       if (picked != null) setSheet(() => ts = picked);
                     },
                   ),
@@ -1267,15 +1738,20 @@ class _SintomasTabState extends State<SintomasTab> {
                     controller: noteCtrl,
                     style: TextStyle(color: _cc),
                     decoration: InputDecoration(
-                        hintText: context.l10n.symptomsLabelOptionalNoteSimple, hintStyle: TextStyle(color: Colors.grey)),
+                      hintText: context.l10n.symptomsLabelOptionalNoteSimple,
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  Text(context.l10n.symptomsLabelSeverityGrading,
-                      style: TextStyle(
-                          color: _cc.withValues(alpha: 0.7),
-                          fontSize: 11,
-                          letterSpacing: 1,
-                          fontWeight: FontWeight.bold)),
+                  Text(
+                    context.l10n.symptomsLabelSeverityGrading,
+                    style: TextStyle(
+                      color: _cc.withValues(alpha: 0.7),
+                      fontSize: 11,
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 8),
                   SeverityDotPicker(
                     showLabels: true,
@@ -1311,24 +1787,35 @@ class _SintomasTabState extends State<SintomasTab> {
                         return;
                       }
 
-                      // C.4 / D.1: offer the appropriate detail layer
-                      // on edit too. Null result from the sheet means
-                      // "preserve existing detail" — explicit clearing
-                      // is deferred (would need a clear flag on
-                      // copyWith). Aliases for cefalea and fatiga do
-                      // not overlap, so at most one branch fires.
+                      // C.4 / D.1 / D.2: offer the appropriate detail
+                      // layer on edit too. Null result from the sheet
+                      // means "preserve existing detail" — explicit
+                      // clearing is deferred (would need a clear flag
+                      // on copyWith). Aliases for the three symptoms
+                      // do not overlap, so at most one branch fires.
                       final svc = SymptomDefinitionsService.instance;
-                      final isHeadache =
-                          svc.matchesSymptomKey(event.name, 'headache');
+                      final isHeadache = svc.matchesSymptomKey(
+                        event.name,
+                        'headache',
+                      );
                       final headacheLayerEnabled =
                           _p.optionalTrackers['headache_detail'] ?? false;
-                      final isFatigue =
-                          svc.matchesSymptomKey(event.name, 'fatigue');
+                      final isFatigue = svc.matchesSymptomKey(
+                        event.name,
+                        'fatigue',
+                      );
                       final fatigueLayerEnabled =
                           _p.optionalTrackers['fatigue_detail'] ?? false;
+                      final isAbdominal = svc.matchesSymptomKey(
+                        event.name,
+                        'abdominal_pain',
+                      );
+                      final abdominalLayerEnabled =
+                          _p.optionalTrackers['abdominal_detail'] ?? false;
 
                       HeadacheDetail? headacheDetail = event.headacheDetail;
                       FatigueDetail? fatigueDetail = event.fatigueDetail;
+                      AbdominalDetail? abdominalDetail = event.abdominalDetail;
                       if (isHeadache && headacheLayerEnabled) {
                         Navigator.pop(ctx);
                         if (!mounted) return;
@@ -1351,17 +1838,41 @@ class _SintomasTabState extends State<SintomasTab> {
                         );
                         if (!mounted) return;
                         if (result != null) fatigueDetail = result;
+                      } else if (isAbdominal && abdominalLayerEnabled) {
+                        Navigator.pop(ctx);
+                        if (!mounted) return;
+                        final result = await showAbdominalDetailSheet(
+                          context,
+                          symptomInput: event.name,
+                          contrastColor: _cc,
+                          inverseContrastColor: _ic,
+                          existing: event.abdominalDetail,
+                        );
+                        if (!mounted) return;
+                        if (result != null) abdominalDetail = result;
                       } else {
                         Navigator.pop(ctx);
                       }
 
-                      setState(() => _p.symptomHistory[idx] = event.copyWith(
-                            timestamp: ts,
-                            severity: sev,
-                            note: note.isEmpty ? null : note,
-                            headacheDetail: headacheDetail,
-                            fatigueDetail: fatigueDetail,
-                          ));
+                      // D.2.E: reverse integration on edit.
+                      if (abdominalDetail != null) {
+                        abdominalDetail = await _maybeLinkToBowelEvent(
+                          abdominalDetail,
+                          ts,
+                        );
+                        if (!mounted) return;
+                      }
+
+                      setState(
+                        () => _p.symptomHistory[idx] = event.copyWith(
+                          timestamp: ts,
+                          severity: sev,
+                          note: note.isEmpty ? null : note,
+                          headacheDetail: headacheDetail,
+                          fatigueDetail: fatigueDetail,
+                          abdominalDetail: abdominalDetail,
+                        ),
+                      );
                       widget.onProfileChanged();
 
                       if (headacheDetail != null) {
@@ -1378,8 +1889,21 @@ class _SintomasTabState extends State<SintomasTab> {
                         );
                         await _showFatigueAdvisoryFlags(flags);
                       }
+                      if (abdominalDetail != null) {
+                        final flags = detectAbdominalRedFlags(
+                          detail: abdominalDetail,
+                          severityIndex: sev.value,
+                          noteText: note.isEmpty ? null : note,
+                        );
+                        await _showAbdominalUrgentFlags(flags);
+                        if (!mounted) return;
+                        await _showAbdominalAdvisoryFlags(flags);
+                      }
                     },
-                    child: Text(context.l10n.symptomsActionSaveChanges, style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      context.l10n.symptomsActionSaveChanges,
+                      style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -1449,17 +1973,15 @@ class _SintomasTabState extends State<SintomasTab> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: messages
-                .map((m) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        m,
-                        style: TextStyle(
-                          color: _cc,
-                          fontSize: 13,
-                          height: 1.5,
-                        ),
-                      ),
-                    ))
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
                 .toList(),
           ),
         ),
@@ -1536,17 +2058,15 @@ class _SintomasTabState extends State<SintomasTab> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: messages
-                .map((m) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        m,
-                        style: TextStyle(
-                          color: _cc,
-                          fontSize: 13,
-                          height: 1.5,
-                        ),
-                      ),
-                    ))
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
                 .toList(),
           ),
         ),
@@ -1561,6 +2081,326 @@ class _SintomasTabState extends State<SintomasTab> {
         ],
       ),
     );
+  }
+
+  // ---------------------------------------------------------------------------
+  // D.2 — Abdominal detail layer: urgent + advisory red-flag presentation
+  // ---------------------------------------------------------------------------
+
+  /// Shows a prominent dialog for URGENT flags detected post-save.
+  /// EXPLICITLY SKIPS `tearingPainSedv` because that flag was already
+  /// handled IN-SHEET by the abdominal sheet's emergency dialog —
+  /// surfacing it again would create alarm fatigue for someone who
+  /// just acknowledged the in-sheet warning.
+  Future<void> _showAbdominalUrgentFlags(List<AbdominalRedFlag> flags) async {
+    final urgents = flags
+        .where((f) => f.severity == AbdominalRedFlagSeverity.urgent)
+        .where((f) => f != AbdominalRedFlag.tearingPainSedv)
+        .toList();
+    if (urgents.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in urgents) {
+      switch (f) {
+        case AbdominalRedFlag.massiveHematochezia:
+          messages.add(l10n.abdominalRedFlagMassiveHematocheziaUrgent);
+          break;
+        case AbdominalRedFlag.hematemesis:
+          messages.add(l10n.abdominalRedFlagHematemesisUrgent);
+          break;
+        case AbdominalRedFlag.tearingPainSedv:
+        case AbdominalRedFlag.nocturnalPainAdvisory:
+        case AbdominalRedFlag.gastroparesisPatternAdvisory:
+          break;
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(side: BorderSide(color: _cc, width: 2)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: _cc, size: 24),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.abdominalAdvisoryDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Shows a dialog summarising ADVISORY flags for the abdominal
+  /// detail layer. URGENT flags are handled by
+  /// _showAbdominalUrgentFlags (and tearingPainSedv by the sheet).
+  Future<void> _showAbdominalAdvisoryFlags(List<AbdominalRedFlag> flags) async {
+    final advisories = flags
+        .where((f) => f.severity == AbdominalRedFlagSeverity.advisory)
+        .toList();
+    if (advisories.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in advisories) {
+      switch (f) {
+        case AbdominalRedFlag.nocturnalPainAdvisory:
+          messages.add(l10n.abdominalRedFlagNocturnalPainAdvisory);
+          break;
+        case AbdominalRedFlag.gastroparesisPatternAdvisory:
+          messages.add(l10n.abdominalRedFlagGastroparesisAdvisory);
+          break;
+        case AbdominalRedFlag.tearingPainSedv:
+        case AbdominalRedFlag.massiveHematochezia:
+        case AbdominalRedFlag.hematemesis:
+          break;
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _cc.withValues(alpha: 0.5), width: 1.5),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info_outline, color: _cc, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.abdominalAdvisoryDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // D.2.E — Bidirectional integration BowelEvent <-> AbdominalDetail
+  // ---------------------------------------------------------------------------
+
+  Future<void> _promptBowelToAbdominal(BowelEvent bowelEvent) async {
+    if (!mounted) return;
+    final l10n = context.l10n;
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (dctx) => AlertDialog(
+        backgroundColor: _ic,
+        title: Text(
+          l10n.bowelToAbdominalPromptTitle,
+          style: TextStyle(
+            color: _cc,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          l10n.bowelToAbdominalPromptBody,
+          style: TextStyle(color: _cc, fontSize: 13, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dctx, false),
+            style: TextButton.styleFrom(foregroundColor: _cc),
+            child: Text(l10n.abdominalIntegrationNo),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dctx, true),
+            style: TextButton.styleFrom(foregroundColor: _cc),
+            child: Text(
+              l10n.abdominalIntegrationYes,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (proceed != true || !mounted) return;
+
+    final canonicalName =
+        SymptomDefinitionsService.instance
+            .getMasterLabel('abdominal_pain', l10n.localeName)
+            ?.toLowerCase() ??
+        'dolor abdominal';
+    final detail = await showAbdominalDetailSheet(
+      context,
+      symptomInput: canonicalName,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+    );
+    if (!mounted || detail == null || detail.isEmpty) return;
+
+    final linkedDetail = detail.copyWith(linkedBowelEventId: bowelEvent.id);
+    final defaultSeverity = SymptomSeverity.fromValue(2);
+    setState(
+      () => _p.symptomHistory.add(
+        SymptomEvent(
+          timestamp: bowelEvent.timestamp,
+          name: canonicalName,
+          severity: defaultSeverity,
+          abdominalDetail: linkedDetail,
+        ),
+      ),
+    );
+    widget.onProfileChanged();
+
+    final flags = detectAbdominalRedFlags(
+      detail: linkedDetail,
+      severityIndex: defaultSeverity.value,
+      noteText: null,
+    );
+    await _showAbdominalUrgentFlags(flags);
+    if (!mounted) return;
+    await _showAbdominalAdvisoryFlags(flags);
+  }
+
+  Future<AbdominalDetail> _maybeLinkToBowelEvent(
+    AbdominalDetail detail,
+    DateTime eventTime,
+  ) async {
+    if (detail.timing != AbdominalTiming.bowelRelated) return detail;
+    if (detail.linkedBowelEventId != null) return detail;
+    if (!mounted) return detail;
+
+    final windowStart = eventTime.subtract(const Duration(hours: 1));
+    final windowEnd = eventTime.add(const Duration(hours: 1));
+    BowelEvent? candidate;
+    Duration? minDelta;
+    for (final b in _p.bowelHistory) {
+      if (b.timestamp.isAfter(windowStart) && b.timestamp.isBefore(windowEnd)) {
+        final delta = b.timestamp.difference(eventTime).abs();
+        if (candidate == null || delta < minDelta!) {
+          candidate = b;
+          minDelta = delta;
+        }
+      }
+    }
+    if (candidate == null || !mounted) return detail;
+
+    final l10n = context.l10n;
+    final formattedTime = TimeOfDay.fromDateTime(
+      candidate.timestamp,
+    ).format(context);
+    final proceed = await showDialog<bool?>(
+      context: context,
+      builder: (dctx) => AlertDialog(
+        backgroundColor: _ic,
+        title: Text(
+          l10n.abdominalToBowelPromptTitle,
+          style: TextStyle(
+            color: _cc,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Text(
+          l10n.abdominalToBowelPromptBody(formattedTime),
+          style: TextStyle(color: _cc, fontSize: 13, height: 1.4),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dctx, null),
+            style: TextButton.styleFrom(foregroundColor: _cc),
+            child: Text(l10n.abdominalIntegrationDontKnow),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dctx, false),
+            style: TextButton.styleFrom(foregroundColor: _cc),
+            child: Text(l10n.abdominalIntegrationNo),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(dctx, true),
+            style: TextButton.styleFrom(foregroundColor: _cc),
+            child: Text(
+              l10n.abdominalIntegrationYes,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (proceed == true) {
+      return detail.copyWith(linkedBowelEventId: candidate.id);
+    }
+    return detail;
   }
 
   // ---------------------------------------------------------------------------
@@ -1609,6 +2449,33 @@ class _SintomasTabState extends State<SintomasTab> {
     if (result == null) return;
     setState(() => _p.bowelHistory.add(result));
     widget.onProfileChanged();
+
+    // Sprint F.B+C — post-save action capture prompt (bowel)
+    if (!mounted) return;
+    // Sprint F.E2 — bowel: skip when bucket == normal.
+    // Routine tracking of normal transit shouldn't prompt.
+    if ((_p.optionalTrackers['action_taken'] ?? true) &&
+        result.bucket != BowelBucket.normal) {
+      final actionBowel = await ActionTakenSheet.show(
+        context: context,
+        contrastColor: _cc,
+        inverseContrastColor: _ic,
+        linkedEventId: result.timestamp.toIso8601String(),
+        linkedEventType: LinkedEventType.bowel,
+        botiquin: _p.botiquin,
+      );
+      if (!mounted) return;
+      if (actionBowel != null && !actionBowel.isEmpty) {
+        setState(() => _p.actionsHistory.add(actionBowel));
+        widget.onProfileChanged();
+      }
+    }
+
+    // D.2.E: forward integration.
+    if (_p.optionalTrackers['abdominal_detail'] ?? false) {
+      await _promptBowelToAbdominal(result);
+      if (!mounted) return;
+    }
   }
 
   Future<void> _editBowelEvent(BowelEvent event) async {
@@ -1637,6 +2504,24 @@ class _SintomasTabState extends State<SintomasTab> {
     if (result == null) return;
     setState(() => _p.hemorrhoidalHistory.add(result));
     widget.onProfileChanged();
+
+    // Sprint F.B+C — post-save action capture prompt (hemorrhoidal)
+    if (!mounted) return;
+    if (_p.optionalTrackers['action_taken'] ?? true) {
+      final actionHem = await ActionTakenSheet.show(
+        context: context,
+        contrastColor: _cc,
+        inverseContrastColor: _ic,
+        linkedEventId: result.timestamp.toIso8601String(),
+        linkedEventType: LinkedEventType.hemorrhoidal,
+        botiquin: _p.botiquin,
+      );
+      if (!mounted) return;
+      if (actionHem != null && !actionHem.isEmpty) {
+        setState(() => _p.actionsHistory.add(actionHem));
+        widget.onProfileChanged();
+      }
+    }
   }
 
   Future<void> _editHemorrhoidalEvent(HemorrhoidalEvent event) async {
@@ -1669,6 +2554,24 @@ class _SintomasTabState extends State<SintomasTab> {
     if (result == null) return;
     setState(() => _p.feverHistory.add(result));
     widget.onProfileChanged();
+
+    // Sprint F.B+C — post-save action capture prompt (fever)
+    if (!mounted) return;
+    if (_p.optionalTrackers['action_taken'] ?? true) {
+      final actionFever = await ActionTakenSheet.show(
+        context: context,
+        contrastColor: _cc,
+        inverseContrastColor: _ic,
+        linkedEventId: result.timestamp.toIso8601String(),
+        linkedEventType: LinkedEventType.fever,
+        botiquin: _p.botiquin,
+      );
+      if (!mounted) return;
+      if (actionFever != null && !actionFever.isEmpty) {
+        setState(() => _p.actionsHistory.add(actionFever));
+        widget.onProfileChanged();
+      }
+    }
   }
 
   Future<void> _editFeverEvent(FeverReading event) async {
@@ -1695,9 +2598,12 @@ class _SintomasTabState extends State<SintomasTab> {
   /// Shape: "[HH:mm] dormí <quality> · <Xh> · <N>× despertares · pesadilla"
   /// Optional details only appear when present.
   String _formatSleepEntry(SleepEntry e, AppLocalizations l10n) {
-    final time = '[${e.timestamp.hour.toString().padLeft(2, "0")}:'
+    final time =
+        '[${e.timestamp.hour.toString().padLeft(2, "0")}:'
         '${e.timestamp.minute.toString().padLeft(2, "0")}]';
-    final parts = <String>['$time ${l10n.sleepLogLabelSlept} ${e.quality.label(l10n)}'];
+    final parts = <String>[
+      '$time ${l10n.sleepLogLabelSlept} ${e.quality.label(l10n)}',
+    ];
     if (e.durationMinutes != null) {
       final hours = (e.durationMinutes! / 60).toStringAsFixed(1);
       parts.add(l10n.sleepLogLabelHours(hours));
@@ -1716,8 +2622,13 @@ class _SintomasTabState extends State<SintomasTab> {
 
   Future<void> _openSleepForm() async {
     // Default to the morning of the selected date (waking time convention).
-    final defaultTs = DateTime(widget.selectedDate.year,
-        widget.selectedDate.month, widget.selectedDate.day, 7, 30);
+    final defaultTs = DateTime(
+      widget.selectedDate.year,
+      widget.selectedDate.month,
+      widget.selectedDate.day,
+      7,
+      30,
+    );
     final result = await showSleepFormSheet(
       context: context,
       contrastColor: _cc,
@@ -1752,7 +2663,8 @@ class _SintomasTabState extends State<SintomasTab> {
   /// Compact display for a hydration entry. Shape:
   ///   "[HH:mm] 250 ml · agua · pizca de sal"
   String _formatHydrationEntry(HydrationEntry e, AppLocalizations l10n) {
-    final time = '[${e.timestamp.hour.toString().padLeft(2, "0")}:'
+    final time =
+        '[${e.timestamp.hour.toString().padLeft(2, "0")}:'
         '${e.timestamp.minute.toString().padLeft(2, "0")}]';
     final parts = <String>[time];
     if (e.volumeMl != null) {
@@ -1802,7 +2714,8 @@ class _SintomasTabState extends State<SintomasTab> {
   /// Compact display for an HRV reading. Shape:
   ///   "[HH:mm] 35 ms · matinal · Apple Watch"
   String _formatHrvEntry(HrvReading e, AppLocalizations l10n) {
-    final time = '[${e.timestamp.hour.toString().padLeft(2, "0")}:'
+    final time =
+        '[${e.timestamp.hour.toString().padLeft(2, "0")}:'
         '${e.timestamp.minute.toString().padLeft(2, "0")}]';
     return '$time · '
         '${l10n.hrvLogLabelRmssd(e.rmssdMs.round().toString())} · '

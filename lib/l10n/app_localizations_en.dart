@@ -2186,4 +2186,78 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsModuleFatigueDetailDescription =>
       'When logging fatigue, add type, temporal pattern, and accompaniments.';
+
+  @override
+  String get abdominalSheetTitle => 'Abdominal detail';
+
+  @override
+  String get abdominalSheetSubtitle =>
+      'Optional details help identify patterns.';
+
+  @override
+  String get abdominalActionSaveDetail => 'Save detail';
+
+  @override
+  String get abdominalTearingEmergencyTitle => 'Tearing-type pain';
+
+  @override
+  String get abdominalTearingEmergencyBody =>
+      'Sudden, very severe tearing pain may indicate a medical emergency in people with Ehlers-Danlos syndrome. It is worth going to the emergency room now to rule out arterial or intestinal rupture.\n\nIf you go, inform the medical team of your clEDS diagnosis (classical-like Ehlers-Danlos syndrome, due to TNXB mutation).\n\nIf the pain improved significantly and you would no longer describe it as tearing, you can change the pain quality and save the record normally.';
+
+  @override
+  String get abdominalTearingEmergencyChangeQuality =>
+      'Change quality and save';
+
+  @override
+  String get abdominalTearingEmergencySaveAsIs => 'Save as is (emergency)';
+
+  @override
+  String get abdominalAdvisoryDialogTitle => 'Detected patterns';
+
+  @override
+  String get abdominalRedFlagMassiveHematocheziaUrgent =>
+      'This pattern (blood in stool together with nausea or vomiting and intense pain) may indicate active GI bleeding. If the bleeding is abundant or you notice significant weakness or dizziness, go to the emergency room now.';
+
+  @override
+  String get abdominalRedFlagHematemesisUrgent =>
+      'In your note you mentioned vomiting blood. This symptom indicates upper GI bleeding and requires immediate emergency evaluation.';
+
+  @override
+  String get abdominalRedFlagNocturnalPainAdvisory =>
+      'Your pain woke you up at night. This pattern is an alarm sign worth mentioning to your doctor, especially if you notice involuntary weight loss or fever.';
+
+  @override
+  String get abdominalRedFlagGastroparesisAdvisory =>
+      'Your pain appears right when eating and you feel full quickly. This pattern may indicate your stomach empties more slowly than normal. It is common in people with EDS and dysautonomia. Worth mentioning to your doctor.';
+
+  @override
+  String get settingsModuleAbdominalDetailLabel => 'Abdominal detail';
+
+  @override
+  String get settingsModuleAbdominalDetailDescription =>
+      'When logging pain, bloating, or gas, add location, quality, timing, and accompaniments.';
+
+  @override
+  String get bowelToAbdominalPromptTitle => 'Record pain detail?';
+
+  @override
+  String get bowelToAbdominalPromptBody =>
+      'You marked this event as accompanied by abdominal pain. Record the detail now to help identify patterns?';
+
+  @override
+  String get abdominalToBowelPromptTitle => 'Linked to a bowel movement?';
+
+  @override
+  String abdominalToBowelPromptBody(String time) {
+    return 'You marked this pain as related to a bowel movement. You logged a bowel movement at $time. Is it the same one?';
+  }
+
+  @override
+  String get abdominalIntegrationYes => 'Yes';
+
+  @override
+  String get abdominalIntegrationNo => 'No';
+
+  @override
+  String get abdominalIntegrationDontKnow => 'I don\'t know';
 }

@@ -2087,6 +2087,77 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsModuleFatigueDetailDescription => '記錄疲勞時,追蹤類型、時間模式和伴隨症狀。';
+
+  @override
+  String get abdominalSheetTitle => '腹痛細節';
+
+  @override
+  String get abdominalSheetSubtitle => '選填的細節有助於識別模式。';
+
+  @override
+  String get abdominalActionSaveDetail => '儲存細節';
+
+  @override
+  String get abdominalTearingEmergencyTitle => '撕裂型疼痛';
+
+  @override
+  String get abdominalTearingEmergencyBody =>
+      '突發的極度劇烈撕裂型疼痛在Ehlers-Danlos症候群患者中可能表示醫療急症。建議你現在就去急診以排除動脈或腸道破裂。\n\n如果你去,請告知醫療團隊你的clEDS診斷(類典型Ehlers-Danlos症候群,由TNXB基因突變引起)。\n\n如果疼痛已顯著改善,你不再認為它是撕裂感,你可以更改疼痛性質並正常儲存記錄。';
+
+  @override
+  String get abdominalTearingEmergencyChangeQuality => '更改性質並儲存';
+
+  @override
+  String get abdominalTearingEmergencySaveAsIs => '照原樣儲存(急症)';
+
+  @override
+  String get abdominalAdvisoryDialogTitle => '檢測到的模式';
+
+  @override
+  String get abdominalRedFlagMassiveHematocheziaUrgent =>
+      '這個模式(糞便帶血伴隨噁心或嘔吐和劇烈疼痛)可能表示活動性GI出血。若出血量多或你注意到明顯虛弱或頭暈,請立即就醫。';
+
+  @override
+  String get abdominalRedFlagHematemesisUrgent =>
+      '在你的備註中提到嘔血。此症狀表示上消化道出血,需立即急診評估。';
+
+  @override
+  String get abdominalRedFlagNocturnalPainAdvisory =>
+      '你的疼痛在夜間將你喚醒。這是值得告訴你的醫生的警示訊號,尤其若你注意到非自願性體重減輕或發燒。';
+
+  @override
+  String get abdominalRedFlagGastroparesisAdvisory =>
+      '你的疼痛在剛進食時出現且很快感到飽足。這個模式可能表示你的胃排空比正常慢。在伴隨自主神經功能障礙的EDS患者中常見。值得告訴你的醫生。';
+
+  @override
+  String get settingsModuleAbdominalDetailLabel => '腹痛細節';
+
+  @override
+  String get settingsModuleAbdominalDetailDescription =>
+      '記錄疼痛、腹脹或排氣時,追蹤位置、性質、時間關係和伴隨症狀。';
+
+  @override
+  String get bowelToAbdominalPromptTitle => '記錄疼痛細節?';
+
+  @override
+  String get bowelToAbdominalPromptBody => '你將此事件標記為伴隨腹痛。現在記錄細節以幫助識別模式?';
+
+  @override
+  String get abdominalToBowelPromptTitle => '與排便有關?';
+
+  @override
+  String abdominalToBowelPromptBody(String time) {
+    return '你將此疼痛標記為與排便有關。你記錄了 $time 的一次排便。是同一次嗎?';
+  }
+
+  @override
+  String get abdominalIntegrationYes => '是';
+
+  @override
+  String get abdominalIntegrationNo => '否';
+
+  @override
+  String get abdominalIntegrationDontKnow => '我不知道';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4172,4 +4243,75 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get settingsModuleFatigueDetailDescription => '記錄疲勞時,追蹤類型、時間模式和伴隨症狀。';
+
+  @override
+  String get abdominalSheetTitle => '腹痛細節';
+
+  @override
+  String get abdominalSheetSubtitle => '選填的細節有助於識別模式。';
+
+  @override
+  String get abdominalActionSaveDetail => '儲存細節';
+
+  @override
+  String get abdominalTearingEmergencyTitle => '撕裂型疼痛';
+
+  @override
+  String get abdominalTearingEmergencyBody =>
+      '突發的極度劇烈撕裂型疼痛在Ehlers-Danlos症候群患者中可能表示醫療急症。建議你現在就去急診以排除動脈或腸道破裂。\n\n如果你去,請告知醫療團隊你的clEDS診斷(類典型Ehlers-Danlos症候群,由TNXB基因突變引起)。\n\n如果疼痛已顯著改善,你不再認為它是撕裂感,你可以更改疼痛性質並正常儲存記錄。';
+
+  @override
+  String get abdominalTearingEmergencyChangeQuality => '更改性質並儲存';
+
+  @override
+  String get abdominalTearingEmergencySaveAsIs => '照原樣儲存(急症)';
+
+  @override
+  String get abdominalAdvisoryDialogTitle => '檢測到的模式';
+
+  @override
+  String get abdominalRedFlagMassiveHematocheziaUrgent =>
+      '這個模式(糞便帶血伴隨噁心或嘔吐和劇烈疼痛)可能表示活動性GI出血。若出血量多或你注意到明顯虛弱或頭暈,請立即就醫。';
+
+  @override
+  String get abdominalRedFlagHematemesisUrgent =>
+      '在你的備註中提到嘔血。此症狀表示上消化道出血,需立即急診評估。';
+
+  @override
+  String get abdominalRedFlagNocturnalPainAdvisory =>
+      '你的疼痛在夜間將你喚醒。這是值得告訴你的醫生的警示訊號,尤其若你注意到非自願性體重減輕或發燒。';
+
+  @override
+  String get abdominalRedFlagGastroparesisAdvisory =>
+      '你的疼痛在剛進食時出現且很快感到飽足。這個模式可能表示你的胃排空比正常慢。在伴隨自主神經功能障礙的EDS患者中常見。值得告訴你的醫生。';
+
+  @override
+  String get settingsModuleAbdominalDetailLabel => '腹痛細節';
+
+  @override
+  String get settingsModuleAbdominalDetailDescription =>
+      '記錄疼痛、腹脹或排氣時,追蹤位置、性質、時間關係和伴隨症狀。';
+
+  @override
+  String get bowelToAbdominalPromptTitle => '記錄疼痛細節?';
+
+  @override
+  String get bowelToAbdominalPromptBody => '你將此事件標記為伴隨腹痛。現在記錄細節以幫助識別模式?';
+
+  @override
+  String get abdominalToBowelPromptTitle => '與排便有關?';
+
+  @override
+  String abdominalToBowelPromptBody(String time) {
+    return '你將此疼痛標記為與排便有關。你記錄了 $time 的一次排便。是同一次嗎?';
+  }
+
+  @override
+  String get abdominalIntegrationYes => '是';
+
+  @override
+  String get abdominalIntegrationNo => '否';
+
+  @override
+  String get abdominalIntegrationDontKnow => '我不知道';
 }

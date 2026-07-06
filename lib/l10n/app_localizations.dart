@@ -3822,6 +3822,132 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Al registrar fatiga, agrega tipo, patrón temporal y acompañantes.'**
   String get settingsModuleFatigueDetailDescription;
+
+  /// Title of the modal sheet that captures structured abdominal detail.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle del dolor abdominal'**
+  String get abdominalSheetTitle;
+
+  /// Subtitle explaining why filling the optional detail helps.
+  ///
+  /// In es, this message translates to:
+  /// **'Los detalles opcionales ayudan a identificar patrones.'**
+  String get abdominalSheetSubtitle;
+
+  /// Save button label at the bottom of the abdominal detail sheet.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar detalle'**
+  String get abdominalActionSaveDetail;
+
+  /// Title of the in-sheet emergency dialog fired when quality=tearing on save attempt (SEDv-adjacent presentation).
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor tipo desgarro'**
+  String get abdominalTearingEmergencyTitle;
+
+  /// Body of the tearing-pain emergency dialog. Advises ER visit and communication of clEDS diagnosis to paramedics. Approved by Paulina 2026-07-02.
+  ///
+  /// In es, this message translates to:
+  /// **'El dolor de desgarro súbito y muy severo puede indicar una emergencia médica en personas con síndrome de Ehlers-Danlos. Vale la pena que vayas a urgencias ahora para descartar rotura arterial o intestinal.\n\nSi vas, informa al equipo médico tu diagnóstico de clEDS (síndrome de Ehlers-Danlos clásico-like, por mutación de TNXB).\n\nSi el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar la calidad del dolor y guardar el registro normalmente.'**
+  String get abdominalTearingEmergencyBody;
+
+  /// Dialog action: return to sheet to revise the quality selection.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar calidad y guardar'**
+  String get abdominalTearingEmergencyChangeQuality;
+
+  /// Dialog action: acknowledge emergency and save the record as-is.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar como está (emergencia)'**
+  String get abdominalTearingEmergencySaveAsIs;
+
+  /// Title of the advisory dialog shown after saving an abdominal log when a red flag pattern is detected.
+  ///
+  /// In es, this message translates to:
+  /// **'Patrones detectados'**
+  String get abdominalAdvisoryDialogTitle;
+
+  /// URGENT advisory for compound bleed pattern (bloody_stool + nausea/vomiting + severity >= 3).
+  ///
+  /// In es, this message translates to:
+  /// **'Este patrón (sangre en heces junto con náusea o vómito y dolor intenso) puede indicar un sangrado GI activo. Si el sangrado es abundante o notas mucha debilidad o mareo, ve a urgencias ahora.'**
+  String get abdominalRedFlagMassiveHematocheziaUrgent;
+
+  /// URGENT advisory when the free-text note matches hematemesis keywords.
+  ///
+  /// In es, this message translates to:
+  /// **'En tu nota mencionaste vómito con sangre. Este síntoma indica sangrado del sistema digestivo alto y requiere evaluación en urgencias inmediatamente.'**
+  String get abdominalRedFlagHematemesisUrgent;
+
+  /// ADVISORY for nocturnal pain (timing=nocturnal + severity >= 3). Rome IV alarm criterion.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu dolor te despertó por la noche. Este patrón es un signo de alarma que vale mencionar a tu médico, especialmente si notas pérdida de peso involuntaria o fiebre.'**
+  String get abdominalRedFlagNocturnalPainAdvisory;
+
+  /// ADVISORY for gastroparesis pattern (postprandial immediate + early satiety + severity >= 2). Nelson 2015 — 25% prevalence in EDS.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu dolor aparece justo al comer y sientes saciedad temprana. Este patrón puede indicar que tu estómago se vacía más lento de lo normal. Es común en personas con EDS y disautonomía. Vale mencionárselo a tu médico.'**
+  String get abdominalRedFlagGastroparesisAdvisory;
+
+  /// Label of the optional abdominal detail tracker switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de dolor abdominal'**
+  String get settingsModuleAbdominalDetailLabel;
+
+  /// Description under the abdominal detail switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Al registrar dolor, hinchazón o gases, agrega ubicación, calidad, timing y acompañantes.'**
+  String get settingsModuleAbdominalDetailDescription;
+
+  /// Title of the dialog offered after saving a BowelEvent marked as accompaniedByPain, asking the user to also capture the abdominal detail.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Registrar detalle del dolor?'**
+  String get bowelToAbdominalPromptTitle;
+
+  /// Body of the bowel→abdominal integration prompt dialog.
+  ///
+  /// In es, this message translates to:
+  /// **'Marcaste este evento como acompañado de dolor abdominal. ¿Registrar el detalle ahora para identificar patrones?'**
+  String get bowelToAbdominalPromptBody;
+
+  /// Title of the dialog offered when the user saves an abdominal detail with timing=bowelRelated and there's a recent BowelEvent.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Vinculado a una evacuación?'**
+  String get abdominalToBowelPromptTitle;
+
+  /// Body of the abdominal→bowel integration prompt dialog. {time} is the formatted time of the recent BowelEvent.
+  ///
+  /// In es, this message translates to:
+  /// **'Marcaste este dolor como relacionado con evacuación. Registraste una evacuación a las {time}. ¿Es la misma?'**
+  String abdominalToBowelPromptBody(String time);
+
+  /// Yes button for D.2.E integration prompts.
+  ///
+  /// In es, this message translates to:
+  /// **'Sí'**
+  String get abdominalIntegrationYes;
+
+  /// No button for D.2.E integration prompts.
+  ///
+  /// In es, this message translates to:
+  /// **'No'**
+  String get abdominalIntegrationNo;
+
+  /// 'I don't know' button for D.2.E integration prompts. Treated the same as No but semantically distinct.
+  ///
+  /// In es, this message translates to:
+  /// **'No lo sé'**
+  String get abdominalIntegrationDontKnow;
 }
 
 class _AppLocalizationsDelegate

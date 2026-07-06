@@ -244,3 +244,706 @@ Para evaluar si la capa de detalle está siendo útil tras un mes de uso por los
 ---
 
 *Fin del documento. Última revisión: cierre del sprint C.4 (jun-2026). Próximo sprint planificado: capa de detalle para fatiga (IOM 2015 ME/CFS + CDC framework).*
+<!-- D.1_PART_C_APPENDED -->
+
+---
+
+## 8. D.1 — Fatigue detail layer
+
+**Sprint completed:** 2026-07-02. This section closes out the fatigue
+detail layer, which was scoped, designed, implemented, hot-fixed, and
+verified across sub-sprints D.1.A → D.1.D.2.
+
+### 8.1 Clinical grounding
+
+Fatigue was chosen as the second symptom in the detail-layer roadmap
+because (a) it is a core zebra symptom present in ME/CFS, fibromyalgia,
+and EDS with dysautonomia; (b) it is heterogeneous — five clinically
+separable subtypes per Jason MFTQ 2010 — so a schema-closed detail
+layer materially improves clinical utility; and (c) unlike cefalea, it
+has no acute URGENT patterns, making it a good test of the
+ADVISORY-only red-flag path in `sintomas_tab._showFatigueAdvisoryFlags`.
+
+Primary references (verified DOIs, embedded in
+`lib/models/fatigue_detail.dart` and `lib/services/fatigue_red_flags.dart`
+headers):
+
+- Clayton EW. IOM 2015 ME/CFS criteria (SEID) —
+  DOI: 10.1001/jama.2015.1346
+- Mateo LJ et al. 2020 — PEM quantification, 24-72h onset, 51%
+  unrecovered at day 7. DOI: 10.3233/wor-203168
+- Jason LA et al. 2010 — MFTQ 5 clinically distinguishable fatigue
+  types including "wired" as factorially separable.
+  DOI: 10.1080/08964280903521370
+- De Wandele I et al. 2016 — orthostatic intolerance in 74.4% of
+  EDS-HT; fatigue +3.1 NRS post-tilt vs +0.5 controls.
+  DOI: 10.1093/rheumatology/kew032
+- Voermans NC et al. 2010 — fatigue as frequent and clinically
+  relevant problem in EDS.
+  DOI: 10.1016/j.semarthrit.2009.08.003
+- Rowe PC et al. 1999 — EDS + CFS + orthostatism co-occurrence.
+  DOI: 10.1016/s0022-3476(99)70173-3
+- Davies T et al. 2019 CHI — tracking fatigue UX; symptom-tracking
+  fatigue is a first-order UX concern.
+  DOI: 10.1145/3290605.3300452
+- Morren M et al. 2009 — ≤20 items EMA rule; determined chip count
+  ceiling. DOI: 10.1016/j.ejpain.2008.05.010
+
+### 8.2 Final schema
+
+Four groups, 20 chips total (at the Morren 2009 ceiling):
+
+| Group             | Kind          | Chips |
+|-------------------|---------------|-------|
+| type              | single_select | 5     |
+| temporal_pattern  | single_select | 4     |
+| accompaniments    | multi_select  | 8     |
+| trigger           | multi_select  | 3     |
+
+Chip serialization keys (stable across releases; safe to reference from
+analytics and clinical exports):
+
+- **type**: `cognitive_drain`, `muscle_unresponsive`, `orthostatic`,
+  `post_exertional`, `hpa_wired`
+- **temporal_pattern**: `since_waking`, `during_day`, `post_meal`,
+  `post_trigger`
+- **accompaniments**: `brain_fog`, `dizziness_standing`,
+  `unrefreshing_sleep`, `resting_tachycardia`, `headache`,
+  `diffuse_muscle_pain`, `light_sound_intolerance`, `temp_dysregulation`
+- **trigger**: `past_exertion`, `bad_night`, `emotional_stress`
+
+Aliases (JSON-level, flat list — see 8.6 for why this shape matters):
+
+- es: fatiga, cansancio, agotamiento, agotada, agotado, drenada,
+  drenado, sin energía
+- en: fatigue, exhaustion, exhausted, tired, worn out, weary
+- zh: 疲勞, 疲倦, 疲憊, 累
+
+### 8.3 Design iterations with the user
+
+The chip set went through three rounds of feedback before implementation:
+
+**Iteration 1** — 6 type chips proposed: cognitive_drain,
+muscle_unresponsive, orthostatic, post_exertional, hpa_wired, PLUS
+`only_want_to_lie_down`.
+
+User feedback: `only_want_to_lie_down` was descriptive of her
+experience but did not correspond to a distinct physiological
+mechanism — the phenomenology emerges from a combination of orthostatic
++ PEM + unrefreshing sleep, all of which are separately covered.
+Removed to preserve schema parsimony.
+
+**Iteration 2** — chip label for `hpa_wired` was originally *"Agotada
+pero acelerada, no puedo descansar"*. User flagged the feminine
+adjective and asked for gender-neutral phrasing.
+
+Three candidates evaluated:
+
+- *"No logro descansar"* — rejected: too broad, applies to 5+ distinct
+  mechanisms (pain, insomnia, anxiety, apnea, wired-but-tired) and
+  loses clinical discriminability
+- *"El cuerpo no logra apagarse aunque estoy exhausta"* — rejected:
+  still feminine
+- **"No logro descansar aunque el cuerpo está exhausto"** — chosen
+
+The chosen phrasing preserves the wired-but-tired specificity (Jason
+2010 MFTQ separates this from generic sleep issues) while being fully
+gender-neutral in LatAm Spanish.
+
+**Iteration 3** — added `resting_tachycardia` to accompaniments after
+user reported resting tachycardia during iron-deficiency episodes and
+observed the same in her Chilean beta community. Chip also serves POTS
+and dysautonomia phenotype detection, which is separately common in
+EDS.
+
+The MFTQ "flu-like" (inflammatory) subtype was **deliberately not
+included** as a fifth accompaniment cluster:
+
+- Fever is already a first-class event (`FeverReading`, schema v3)
+- Sore throat and adenopathies are rare in the current beta phenotype
+- Adding would exceed Morren's 20-item ceiling
+
+Reactivate if Long COVID users join the beta and inflammatory fatigue
+becomes prevalent.
+
+### 8.4 Red flags: ADVISORY only, plain language
+
+Fatigue has three detectable patterns, all surfaced as ADVISORY (no
+URGENT). Contrast with cefalea, whose `thunderclap` fires an in-sheet
+emergency dialog *before* save.
+
+**Detection gate:** `severityIndex >= 3` (intense or unbearable). Below
+that, the pattern is captured in `SymptomEvent.fatigueDetail` for
+retrospective review but not surfaced as an advisory — avoids alert
+fatigue during mild episodes.
+
+**Patterns:**
+
+- `pemPattern` — type = `post_exertional` AND severity ≥ 3
+- `orthostaticPattern` — type = `orthostatic` AND severity ≥ 3
+- `hpaPattern` — type = `hpa_wired` AND severity ≥ 3
+
+**Message language.** The initial drafts used clinical shorthand.
+Per user request, all three messages were rewritten in everyday
+Spanish. Comparison for the PEM pattern:
+
+Original (rejected):
+
+> *"Este patrón puede sugerir malestar post-esfuerzo (PEM), criterio
+> central de ME/SFC y frecuente en EDS con disautonomía. La aparición
+> 24-72h después del esfuerzo es característica."*
+
+Shipped:
+
+> *"Este patrón muestra que tu fatiga aparece 1-3 días después de un
+> esfuerzo. Puede indicar que tu cuerpo tiene menos reservas de energía
+> de lo habitual y necesita más días para recuperarse. Si se repite,
+> considera mencionárselo a tu médico."*
+
+Rules for advisory copy applied uniformly across the three patterns:
+
+1. No acronyms (PEM, POTS, ME/SFC, HPA, tilt test, cortisol).
+2. Explain mechanism in everyday terms (*"tu cuerpo tiene menos
+   reservas de energía"*, *"tu sistema de estrés lleva mucho tiempo
+   activado"*).
+3. Close with *"considera mencionárselo"* or *"vale mencionárselo"* —
+   soft suggestion, not imperative.
+4. Preserve epistemic humility: *"puede indicar"*, never *"indica"* or
+   *"confirma"*.
+
+### 8.5 Replication template application
+
+The C.4 cefalea 11-step replication template held with two refinements
+required for D.1. Actual work log per step:
+
+1. **Research consolidation** — MFTQ, IOM 2015, De Wandele 2016
+   yielded chip set
+2. **JSON extension** — `assets/symptom_definitions.json` +fatigue
+   entry (see 8.6 for the shape bug hot-fixed post-implementation)
+3. **Model file** — `lib/models/fatigue_detail.dart` with 4 typed enums
+4. **Red flag service** — `lib/services/fatigue_red_flags.dart`
+5. **SymptomEvent extension** — `fatigueDetail` field, parallel to
+   `headacheDetail`
+6. **Sheet widget** — `lib/widgets/fatigue_detail_sheet.dart`
+7. **Format helper** — `lib/services/fatigue_detail_format.dart`
+8. **sintomas_tab integration** — save flow, edit flow, TODAY log
+   render, advisory dialog
+9. **ARB additions** — 9 new keys × 3 locales
+10. **Settings switch** — `_hasFatigueRelevance()` gate,
+    `optionalTrackers['fatigue_detail']`
+11. **hoy_tab narrative** — `_buildSentences` extension
+
+**Refinement 1:** the model file gained `clearType` and
+`clearTemporalPattern` flags on `copyWith` to allow explicit clearing
+of single-select fields — a gap that was implicit in the cefalea
+`HeadacheDetail` and would have needed a follow-up refactor. Adopted
+into the template for D.2+.
+
+**Refinement 2:** deferred consolidation of `HeadacheRedFlagSeverity`
+and `FatigueRedFlagSeverity` into a shared `RedFlagSeverity` enum.
+Duplication is documented in `fatigue_red_flags.dart` header. Not
+blocking D.2; consolidate before D.3 to avoid a third duplicate.
+
+### 8.6 Lessons learned — D.1.A.fix
+
+**The bug.** The initial `phase_d1a_json.py` used a nested-dict schema
+for aliases, labels, headers, and definitions:
+
+```json
+"aliases": {"es": [...], "en": [...], "zh_TW": [...]},
+"label": {"es": "Fatiga", "en": "Fatigue", "zh_TW": "疲勞"},
+"groups": {"type": {"header": {"es": "..."}, "chips": {...}}}
+```
+
+The actual convention (established by cefalea, expected by
+`SymptomDefinitionsService`) is flat suffix keys:
+
+```json
+"aliases": ["fatiga", "cansancio", "fatigue", "疲勞", ...],
+"master": {"label_es": "Fatiga", "label_en": "Fatigue", "label_zh": "疲勞"},
+"groups": {
+  "type": {
+    "header_es": "...",
+    "chips": {
+      "cognitive_drain": {"label_es": "...", "def_es": "..."}
+    }
+  }
+}
+```
+
+Additional gotchas discovered during the fix:
+
+- Chip definition key is `def_XX`, **not** `definition_XX`. The
+  service calls `_localizedString(source, 'def', localeCode)`.
+- Chinese suffix is `_zh`, **not** `_zh_TW`. `_langSuffixFor('zh_TW')`
+  normalises to `'zh'` before the key lookup.
+- The `master` sub-node is required — labels and definitions cannot
+  live at the symptom root.
+
+**Impact.** Silent failure. The JSON loaded successfully ("loaded 2
+symptoms" appeared in the browser console) but every downstream lookup
+returned `null` or `[]`. `matchesSymptomKey('fatiga', 'fatigue')`
+returned false because `getAliases` bailed at the `is! List` check.
+Consequences: settings switch never appeared, sheet never triggered on
+log, no visible sign that anything was broken until end-to-end testing.
+
+**Root cause.** The D.1.A JSON was designed without inspecting
+cefalea's JSON or reading `SymptomDefinitionsService.dart`. A "cleaner"
+nested schema was assumed without verifying the production convention.
+
+**Fix.** `phase_d1a_fix_json_shape.py` transformed the fatigue entry
+in place, verbatim — no content re-typed, only structure rewritten.
+Idempotent via `fatigue.master` sentinel.
+
+**Preflight check adopted as step 0 of the replication template.**
+Before writing a new symptom's JSON entry, read
+`lib/services/symptom_definitions_service.dart` and inspect the JSON
+block of the most recently added symptom. Verify:
+
+1. Are aliases a flat list or a nested dict?
+2. Do labels use `_es` suffix or nested `{es: ...}`?
+3. Is the definition key `def_XX` or `definition_XX`?
+4. Which locale suffix is used for zh-TW (`_zh` or `_zh_TW`)?
+5. Is a `master` sub-node required for symptom-level fields, or do
+   they live at the root?
+
+This five-question sanity check would have prevented D.1.A.fix.
+Applies to D.2+ and to any future assumption about a convention
+established by a previously-shipped symptom.
+
+---
+
+## 9. Sprint completion log
+
+| Sprint | Symptom       | Status     | Groups | Chips | URGENT flags | Notes                                             |
+|--------|---------------|------------|--------|-------|--------------|---------------------------------------------------|
+| C.4    | Cefalea       | ✓ 2026-06  | 5      | 19    | 1 (thunderclap) | +`temp_dysregulation` added post-launch          |
+| D.1    | Fatiga        | ✓ 2026-07  | 4      | 20    | 0            | Structural hot-fix D.1.A.fix applied              |
+| D.2    | Dolor abdominal | Planned  | TBD    | TBD   | 3-4 expected | Rome IV framework, 5 abstract quadrants           |
+| D.3    | Presíncope    | Backlog    | —      | —     | TBD          | Likely orthostatic-focused                        |
+| D.4    | Dolor pélvico | Backlog    | —      | —     | TBD          | Trauma-informed design considerations             |
+| D.5    | Dolor torácico | Backlog   | —      | —     | Multiple expected | Cardiac ruling-out UX critical                |
+
+**Coverage metric:** 2 of 6 planned symptoms implemented (33%). Both
+have working sheet, advisory-flag detection, TODAY log render, hoy_tab
+narrative render, and gated settings switch. D.2 pending research
+consolidation (Rome IV + EDS-GI phenotype papers from
+Fikree/Zeitoun/Nelson; DOIs verified by NotebookLM 2026-07-02).
+
+### 9.1 Files touched in D.1 (delta from post-C.4 state)
+
+New files:
+
+- `lib/models/fatigue_detail.dart`
+- `lib/services/fatigue_red_flags.dart`
+- `lib/services/fatigue_detail_format.dart`
+- `lib/widgets/fatigue_detail_sheet.dart`
+
+Modified files:
+
+- `assets/symptom_definitions.json` — +fatigue entry (post-fix shape)
+- `lib/models/models.dart` — +`fatigueDetail` field on `SymptomEvent`
+  (import, constructor, `copyWith`, `toMap`, `fromMap`)
+- `lib/screens/sintomas_tab.dart` — save/edit fatigue branches, TODAY
+  log render, `_showFatigueAdvisoryFlags` method
+- `lib/screens/main_screen.dart` — `_hasFatigueRelevance()` helper,
+  gated fatigue `SwitchListTile`
+- `lib/screens/hoy_tab.dart` — narrative render extension, import
+- `lib/l10n/app_es.arb` + `app_en.arb` + `app_zh_TW.arb` — +9 keys per
+  locale
+
+Zero migrations required — all changes additive per the
+`optionalTrackers` extension pattern established in F6.a.
+<!-- D.2_PART_C_APPENDED -->
+
+---
+
+## 10. D.2 — Abdominal detail layer
+
+**Sprint completed:** 2026-07-02. Third detail layer in the roadmap
+(after cefalea and fatiga). Introduces three new patterns not present
+in earlier layers: progressive disclosure semántico, in-sheet emergency
+dialog for tearing quality, and bidirectional integration with an
+existing typed event (BowelEvent).
+
+### 10.1 Clinical grounding
+
+Abdominal pain was chosen as the third symptom because (a) it is the
+most heterogeneous of the six planned symptoms — Rome IV separates it
+into functional dyspepsia, IBS, biliary functional pain, and CAPS by
+observable pattern alone; (b) it has the highest URGENT-flag surface
+area of any detail layer to date (three vs. one in cefalea, zero in
+fatiga), including the vascular-rupture risk from clEDS; and (c) the
+EDS phenotype is well characterised — Fikree, Zeitoun, and Nelson
+cohorts report 66-84% GI symptom prevalence and 25% gastroparesis in
+EDS populations.
+
+Primary references (verified DOIs, embedded in
+`lib/models/abdominal_detail.dart` and
+`lib/services/abdominal_red_flags.dart` headers):
+
+- Palsson OS et al. 2016 — Rome IV Diagnostic Questionnaire for
+  Adults. DOI: 10.1053/j.gastro.2016.02.014
+- Zeitoun JD et al. 2013 — Functional digestive symptoms and quality
+  of life in EDS (n=134, 84% GI prevalence).
+  DOI: 10.1371/journal.pone.0080321
+- Fikree A et al. 2014 — GI symptoms in JHS prospective cohort.
+  DOI: 10.1016/j.cgh.2014.01.014
+- Fikree A et al. 2015 — FGID + JHS case-control.
+  DOI: 10.1111/nmo.12535
+- Fikree A et al. 2017 — GI involvement in EDS review.
+  DOI: 10.1002/ajmg.c.31546
+- Nelson AD et al. 2015 — Mayo Clinic 20-year retrospective (66% GI,
+  25% gastroparesis, 30% abnormal colonic transit).
+  DOI: 10.1111/nmo.12665
+- Lackner JM et al. 2014 — Accuracy of patient-reported measures for
+  IBS. DOI: 10.1097/PSY.0000000000000109
+
+### 10.2 Final schema
+
+Five groups, 22 chips total — **intentionally exceeds** the Morren
+2009 ≤20 ceiling (see 10.3 for rationale):
+
+| Group           | Kind          | Chips |
+|-----------------|---------------|-------|
+| location        | single_select | 5     |
+| quality         | single_select | 4     |
+| timing          | single_select | 4     |
+| accompaniments  | multi_select  | 6     |
+| trigger         | multi_select  | 3     |
+
+Chip serialization keys (stable across releases):
+
+- **location**: `epigastric`, `periumbilical`, `hypogastric`, `ruq`,
+  `diffuse`
+- **quality**: `colicky`, `burning`, `pressure`, `tearing`
+- **timing**: `postprandial_immediate`, `postprandial_delayed`,
+  `nocturnal`, `bowel_related`
+- **accompaniments**: `nausea`, `vomiting`, `early_satiety`,
+  `bloating`, `excessive_gas`, `bloody_stool`
+- **trigger**: `specific_food`, `emotional_stress`, `menstrual_cycle`
+
+Aliases (JSON-level, flat list, 41 total) span three semantic
+clusters — this is new versus cefalea and fatiga which each have a
+single semantic cluster:
+
+- **Pain** (es/en/zh): dolor abdominal, dolor de estómago, dolor de
+  guata, dolor de panza, cólico, retortijón, abdominal pain, stomach
+  pain, cramps, 腹痛, 肚子痛, 胃痛, ...
+- **Bloating**: hinchazón, distensión, panza hinchada, guata hinchada,
+  bloating, abdominal distension, 腹脹, 腹部脹氣
+- **Gas**: gases, pedos, peos, flatulencia, gas, farting, flatulence,
+  放屁, 排氣, 脹氣
+
+### 10.3 Chip ceiling deviation
+
+22 chips exceeds the Morren 2009 EMA guideline of ≤20 items per
+episode capture. The deviation was accepted after weighing:
+
+- Morren 2009 studied general symptom EMA in pain populations, not
+  domain-specific abdominal capture
+- Rome IV distinguishes 4+ functional GI disorders by chip
+  combinations that require the full location × quality × timing
+  matrix
+- EDS GI phenotype (Fikree, Nelson) is polymorbid — patients often
+  present multiple accompanying features simultaneously; forcing them
+  to pick one of two accompaniments would lose information
+
+Trade-off accepted: two extra chips of cognitive load vs. losing
+clinical discriminability. Chips considered for cutting but retained:
+`ruq` (rare in clEDS but standard-of-care for biliary pain),
+`vomiting` (distinct severity signal vs. nausea alone), `bloody_stool`
+(URGENT gate compound), `menstrual_cycle` (central for adenomyosis
+phenotype).
+
+Future ceiling adjustments: if D.4 pélvico or D.5 torácico also
+exceed 20, formalise the deviation as a domain-specific override in
+this document rather than treating each as an exception.
+
+### 10.4 Progressive disclosure semántico
+
+**New pattern introduced in D.2.** Aliases for a single symptom key
+now belong to distinct semantic clusters (pain / bloating / gas). The
+sheet detects which alias variant triggered the sheet open and
+pre-marks context-appropriate chips.
+
+Implementation:
+
+- `SymptomDefinitionsService.detectAliasVariant(userInput, symptomKey)`
+  returns `'pain'` / `'bloating'` / `'gas'` / `null`
+- Called by `showAbdominalDetailSheet` in `initState` when
+  `widget.existing == null` (skip in edit mode — user's stored
+  selections take precedence)
+- Pre-selection is minimal: `bloating` variant pre-marks the
+  `bloating` chip in accompaniments; `gas` variant pre-marks
+  `excessive_gas`. `pain` variant marks nothing (default full sheet).
+- **All groups remain visible regardless of variant.** The variant
+  informs pre-selection but does not gate what the user can log —
+  bloating with cramps is a valid combination and must be capturable.
+
+Check order in `detectAliasVariant`: bloating → gas → pain. Specific
+variants win over the generic pain cluster when a user input matches
+multiple (e.g., "hinchazón" matches bloating cluster; a hypothetical
+"cólico hinchazón" would match bloating first because that check
+runs before pain).
+
+Rationale for pattern: the same symptom key (`abdominal_pain`) has
+multiple lay-terms that carry semantic content ("gases" implies
+flatulence, "hinchazón" implies distension). Rather than force these
+into separate symptom keys with duplicate schemas, one key + variant
+detection preserves data-model simplicity while respecting user
+vocabulary. Reactivate for D.4 pélvico if similar variant clustering
+emerges (menstrual vs. ovulation vs. non-cyclical pelvic pain).
+
+### 10.5 In-sheet emergency dialog for tearing quality
+
+**Second new pattern in D.2**, extending the cefalea thunderclap
+approach.
+
+When the user selects `quality = tearing` and taps "Guardar detalle",
+the sheet intercepts before save and shows an emergency dialog with
+warning icon, thick border, and Paulina-approved copy specific to the
+clEDS phenotype (mentions TNXB mutation and instruction to
+communicate the diagnosis to paramedics).
+
+Two branches:
+
+- **"Cambiar calidad y guardar"** — returns `false`, sheet regains
+  focus, user can revise quality and save with the standard flow
+- **"Guardar como está (emergencia)"** — returns `true`, sheet
+  commits the save with `quality = tearing` as-is
+
+Design differences from cefalea thunderclap:
+
+1. **Fires on save attempt, not on chip selection.** The user can
+   explore quality options — tap tearing, read the definition,
+   change mind — without being warned repeatedly. Only the actual
+   commit triggers the dialog.
+2. **`barrierDismissible: false`** — the user must make an explicit
+   choice, cannot dismiss by tapping outside.
+3. **Post-save red flag detection SKIPS `tearingPainSedv`.** The
+   `_showAbdominalUrgentFlags` method explicitly filters out this
+   flag because it was already handled in-sheet. Surfacing it again
+   would create alarm fatigue for someone who just acknowledged the
+   in-sheet warning.
+
+Text scope caveat: the current copy mentions clEDS + TNXB explicitly.
+For future users with hEDS, vEDS, or other subtypes, this text will
+need Profile-conditions-driven personalization. Deferred to a future
+refinement sprint — Paulina is the initial user and the copy is
+correct for her phenotype.
+
+### 10.6 Three-tier red flag handling
+
+Cefalea had two tiers (in-sheet URGENT thunderclap + post-save
+ADVISORY). Fatiga had one tier (post-save ADVISORY only). D.2
+introduces a **three-tier structure**:
+
+- **In-sheet URGENT** (`tearingPainSedv`): handled by the sheet's
+  emergency dialog before save commits
+- **Post-save URGENT** (`massiveHematochezia`, `hematemesis`):
+  handled by `_showAbdominalUrgentFlags` — prominent dialog with
+  warning icon, thick border, `barrierDismissible: false`
+- **Post-save ADVISORY** (`nocturnalPainAdvisory`,
+  `gastroparesisPatternAdvisory`): handled by
+  `_showAbdominalAdvisoryFlags` — softer info-icon dialog, thin
+  border
+
+Gates:
+
+- Tearing pain: **no severity gate** — user asserting tearing quality
+  is trusted regardless of numeric severity (patients often
+  understate in-progress emergencies)
+- Massive hematochezia: **compound gate** — `bloody_stool` +
+  (`nausea` OR `vomiting`) + severity ≥ 3. Isolated hemorrhoidal
+  bleeding does NOT fire.
+- Hematemesis: **note text scan** — no chip exists to avoid daily
+  users seeing "vómito con sangre" every time they log; keyword
+  match on the free-text note field with an es/en/zh keyword set of
+  15 terms
+- Nocturnal advisory: `timing == nocturnal AND severity >= 3` (Rome
+  IV alarm criterion)
+- Gastroparesis advisory: `timing == postprandial_immediate AND
+  accompaniments has early_satiety AND severity >= 2` (lower gate
+  because the pattern itself is specific per Nelson 2015)
+
+Post-save call order: URGENT first, ADVISORY second. Both sequential
+with `if (!mounted) return;` guards between.
+
+### 10.7 Bidirectional integration with BowelEvent (D.2.E)
+
+**Third new pattern in D.2.** The abdominal detail layer is the
+first to integrate with another existing typed event
+(`BowelEvent` from Phase 5.1) via a bidirectional prompt system.
+
+Forward direction (BowelEvent → AbdominalDetail):
+
+- Triggered in `_openBowelForm` after a NEW BowelEvent is saved AND
+  the `abdominal_detail` tracker is enabled
+- Prompt: "¿Registrar detalle del dolor?"
+- If Yes: opens `showAbdominalDetailSheet` with
+  `symptomInput = canonicalName` (localized master label, produces
+  `pain` variant, no pre-marked chips)
+- On save: creates a new `SymptomEvent` with `severity = moderate` (2),
+  `name = canonicalName`, `timestamp = bowelEvent.timestamp`,
+  `abdominalDetail.linkedBowelEventId = bowelEvent.id`
+- URGENT/ADVISORY dialogs surface normally after save
+
+Reverse direction (AbdominalDetail → BowelEvent):
+
+- Triggered by `_maybeLinkToBowelEvent(detail, eventTime)` in `saveWith`
+  and `_editSymptomEvent` when the abdominal detail has
+  `timing == bowelRelated` AND `linkedBowelEventId == null`
+- Searches `_p.bowelHistory` for a BowelEvent within ±1 hour of
+  `eventTime`, closest by absolute delta
+- Prompt: "¿Vinculado a una evacuación de las {time}?"
+- Options: Sí / No / No lo sé (all three distinct; "No lo sé"
+  returns null which is treated as No for linkage but is
+  semantically distinct as future analytics signal)
+- On Yes: `detail.copyWith(linkedBowelEventId: candidate.id)` before
+  `setState`
+
+Design decisions in D.2.E:
+
+- **`accompaniedByPain` field on BowelEvent does not exist yet.**
+  My initial plan gated the forward prompt on `result.accompaniedByPain`
+  but the field is not in the model. Deferred to a future refactor;
+  for now the forward prompt fires on every new BowelEvent when the
+  tracker is enabled. UX trade-off: mild intrusion vs. missed
+  linkages. If UX becomes noisy, add the field to BowelEvent and
+  gate on it.
+- **Default severity = moderate (2).** The forward flow doesn't
+  include a severity picker to keep the flow lightweight. User can
+  edit via TODAY log if the pain was worse.
+- **`linkedBowelEventId` is best-effort FK.** Referential integrity
+  is not enforced — if the referenced BowelEvent is deleted, the
+  abdominal detail retains the dangling ID for future analytics
+  recovery.
+- **Skip on edits (forward direction only).** The forward prompt
+  only fires for NEW BowelEvents (`existing == null` in the outer
+  flow) to avoid re-prompting on every edit. Reverse direction
+  fires on both save and edit — a user might change timing to
+  `bowelRelated` on edit and want to link retroactively.
+
+### 10.8 Replication template refinements from D.2
+
+The 11-step template held for D.2 with additions:
+
+- **Step 0 (preflight)** worked as designed. All 5 JSON convention
+  questions were verified against cefalea + fatiga post-fix state
+  before writing the D.2 JSON. No structural mismatches occurred —
+  first sprint using the preflight and it caught nothing (which is
+  the goal).
+- **New step 12: integration cruzada.** For symptoms with meaningful
+  temporal overlap with other typed events (like abdominal ↔ bowel),
+  add a `linkedXxxEventId` field to the detail model and a
+  bidirectional prompt system. Template for D.4 pélvico
+  (potentially links to menstrual tracking when added) and D.5
+  torácico (potentially links to activity tracking).
+- **Progressive disclosure semántico** is a new pattern available
+  for future symptoms with multi-cluster aliases. Reusable via
+  `detectAliasVariant` extension in the service.
+
+Deferred refactors (documented for D.3+):
+
+- `HeadacheRedFlagSeverity`, `FatigueRedFlagSeverity`,
+  `AbdominalRedFlagSeverity` are triplicated. Consolidate into a
+  shared `RedFlagSeverity` enum before D.3 to avoid quadruplication.
+- `_showAdvisoryFlags` (cefalea) is not named `_showHeadacheAdvisoryFlags`
+  for symmetry with the other two. Rename before D.3 as part of the
+  shared severity refactor.
+
+### 10.9 Lessons learned — anchor drift
+
+**The bug:** Multiple D.2.E patch scripts failed with "anchor not
+found" errors because the assumed structure of `_openBowelSheet` did
+not match the actual file. The actual method is called `_openBowelForm`
+(not `_openBowelSheet`), lives inside `sintomas_tab.dart` (not a
+separate widget file), has a different signature (uses
+`prefilledBucket` not `existing`-only), and lacks fields I assumed
+existed (like `accompaniedByPain` on BowelEvent).
+
+**Root cause:** I based my patch anchors on a `_openBowelSheet` block
+that Paulina pasted in an earlier turn. That block was either from a
+different app state or was a reconstruction — not verbatim from the
+current file. I did not verify the anchor against the file state
+before writing the patch, and did not ask for a fresh paste of the
+target region before delivering D.2.E.
+
+**Impact:** Three failed patch attempts, cognitive-load cost to
+Paulina, wasted iteration credits. Eventually resolved via
+`grep -rn "showBowelFormSheet"` + `sed -n '1820,1900p'` to see the
+actual code, followed by manual snippet application.
+
+**Rules adopted for D.3+:**
+
+1. **Before writing any anchor for an existing file, request a
+   FRESH paste of the target region** — do not rely on paste from
+   earlier turns.
+2. **When targeting a method by name, verify the exact method name
+   in the current file first.** Assumptions about naming (e.g.
+   `_openBowelSheet` vs. `_openBowelForm`) cost real iterations.
+3. **Verify field/getter names before generating code that
+   references them.** `accompaniedByPain` cost an extra compile
+   iteration.
+4. **When the user asks for manual snippets over automation, deliver
+   manual snippets without further script attempts.** The switch to
+   manual mode was resisted when it should have been accepted
+   immediately.
+
+Preflight-style questions to ask before writing any patch to an
+existing file (in addition to the 5-question JSON preflight from
+D.1.A.fix):
+
+1. What is the exact current method name?
+2. What is the exact method signature (params + return type)?
+3. What fields on referenced types (e.g., BowelEvent.accompaniedByPain)
+   actually exist?
+4. Have I seen the target region within the current session, or is
+   the paste from a stale earlier turn?
+
+---
+
+## 11. Sprint completion log (updated)
+
+| Sprint | Symptom       | Status     | Groups | Chips | URGENT flags | Notes                                             |
+|--------|---------------|------------|--------|-------|--------------|---------------------------------------------------|
+| C.4    | Cefalea       | ✓ 2026-06  | 5      | 19    | 1 (thunderclap) | +`temp_dysregulation` added post-launch          |
+| D.1    | Fatiga        | ✓ 2026-07  | 4      | 20    | 0            | Structural hot-fix D.1.A.fix applied              |
+| D.2    | Dolor abd.    | ✓ 2026-07  | 5      | 22    | 3 (1 in-sheet, 2 post-save) | Progressive disclosure, bidirectional bowel integration |
+| D.3    | Presíncope    | Backlog    | —      | —     | TBD          | Likely orthostatic-focused                        |
+| D.4    | Dolor pélvico | Backlog    | —      | —     | TBD          | Trauma-informed; menstrual integration candidate  |
+| D.5    | Dolor torácico | Backlog   | —      | —     | Multiple expected | Cardiac ruling-out UX critical                |
+
+**Coverage metric:** 3 of 6 planned symptoms implemented (50%). All
+three ship with working sheet, red-flag detection, TODAY log render,
+hoy_tab narrative render, and gated settings switch. D.2 additionally
+ships bidirectional BowelEvent integration.
+
+### 11.1 Files touched in D.2 (delta from post-D.1 state)
+
+New files:
+
+- `lib/models/abdominal_detail.dart`
+- `lib/services/abdominal_red_flags.dart`
+- `lib/services/abdominal_detail_format.dart`
+- `lib/widgets/abdominal_detail_sheet.dart`
+
+Modified files:
+
+- `assets/symptom_definitions.json` — +abdominal_pain entry
+- `lib/models/models.dart` — +`abdominalDetail` field on `SymptomEvent`
+- `lib/services/symptom_definitions_service.dart` —
+  +`detectAliasVariant` method +3 static const alias clusters
+- `lib/screens/sintomas_tab.dart` — save/edit abdominal branches,
+  TODAY log render, `_showAbdominalUrgentFlags`,
+  `_showAbdominalAdvisoryFlags`, `_promptBowelToAbdominal`,
+  `_maybeLinkToBowelEvent`, forward integration in `_openBowelForm`
+- `lib/screens/main_screen.dart` — `_hasAbdominalRelevance()` helper,
+  gated abdominal `SwitchListTile`
+- `lib/screens/hoy_tab.dart` — narrative render extension, import
+- `lib/l10n/app_es.arb` + `app_en.arb` + `app_zh_TW.arb` — +14 keys
+  (D.2.C) + 7 keys (D.2.E)
+
+Zero migrations required. All changes additive per the
+`optionalTrackers` extension pattern.
