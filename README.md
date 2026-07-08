@@ -4,7 +4,7 @@
 
 It's currently in beta, targeting Spanish-speaking patients in Chile first.
 
-🌐 **Web version**: [zebraup.netlify.app](https://zebraup.netlify.app)
+🌐 **Web version**: [zebraup-beta.netlify.app](https://zebraup-beta.netlify.app)
 
 ---
 
