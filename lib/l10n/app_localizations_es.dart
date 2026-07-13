@@ -663,7 +663,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get onboardingStepMedsNameHint => 'Nombre';
 
   @override
-  String get onboardingStepMedsDoseHint => 'Dosis (ej. 400mg)';
+  String get onboardingStepMedsDoseHint => 'Notas (ej. tomar con comida)';
 
   @override
   String get onboardingStepMedsEmpty =>
@@ -2273,4 +2273,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get abdominalIntegrationDontKnow => 'No lo sé';
+
+  @override
+  String get onboardingStepMedsUnitHint => '1';
+
+  @override
+  String get onboardingStepMedsStrengthHint => 'mg';
 }

@@ -26,13 +26,13 @@ import '../l10n/app_localizations.dart';
 
 extension StructuralEventKindLocalization on StructuralEventKind {
   String label(AppLocalizations l10n) => switch (this) {
-        StructuralEventKind.joint => l10n.structKindJoint,
-        StructuralEventKind.muscle => l10n.structKindMuscle,
-        StructuralEventKind.tendon => l10n.structKindTendon,
-        StructuralEventKind.ligament => l10n.structKindLigament,
-        StructuralEventKind.softTissue => l10n.structKindSoftTissue,
-        StructuralEventKind.nerve => l10n.structKindNerve,
-      };
+    StructuralEventKind.joint => l10n.structKindJoint,
+    StructuralEventKind.muscle => l10n.structKindMuscle,
+    StructuralEventKind.tendon => l10n.structKindTendon,
+    StructuralEventKind.ligament => l10n.structKindLigament,
+    StructuralEventKind.softTissue => l10n.structKindSoftTissue,
+    StructuralEventKind.nerve => l10n.structKindNerve,
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -50,42 +50,42 @@ extension StructuralEventKindLocalization on StructuralEventKind {
 /// The remaining 21 are new in F6.a.
 extension StructuralEventTypeLocalization on String {
   String structuralTypeLabel(AppLocalizations l10n) => switch (this) {
-        // joint
-        'subluxation' => l10n.structTypeSubluxation,
-        'dislocation' => l10n.structTypeDislocation,
-        'joint_instability' => l10n.structTypeInstability,
-        'joint_pain' => l10n.structTypeJointPain,
-        // muscle
-        'muscle_strain' => l10n.structTypeMuscleStrain,
-        'muscle_distension' => l10n.structTypeMuscleDistension,
-        'muscle_tear' => l10n.structTypeMuscleTear,
-        'contracture' => l10n.structTypeContracture,
-        'muscle_spasm' => l10n.structTypeMuscleSpasm,
-        'myofascial_pain' => l10n.structTypeMyofascial,
-        // tendon
-        'tendinitis' => l10n.structTypeTendinitis,
-        'tendinosis' => l10n.structTypeTendinosis,
-        'bursitis' => l10n.structTypeBursitis,
-        'enthesitis' => l10n.structTypeEnthesitis,
-        'tendon_fissure' => l10n.structTypeTendonFissure,
-        // ligament
-        'mild_sprain' => l10n.structTypeMildSprain,
-        'severe_sprain' => l10n.structTypeSevereSprain,
-        'ligament_tear' => l10n.structTypeLigamentTear,
-        // softTissue
-        'superficial_cut' => l10n.structTypeSuperficialCut,
-        'skin_fissure' => l10n.structTypeSkinFissure,
-        'deep_wound' => l10n.structTypeDeepWound,
-        'hematoma' => l10n.structTypeHematoma,
-        'contusion' => l10n.structTypeContusion,
-        'burn' => l10n.structTypeBurn,
-        'abrasion' => l10n.structTypeAbrasion,
-        // nerve
-        'neuropathic_pain' => l10n.structTypeNeuropathic,
-        'paresthesia' => l10n.structTypeParesthesia,
-        // Unknown ID — log in debug builds, return raw for the UI.
-        _ => _unknownIdFallback(this, 'structuralType'),
-      };
+    // joint
+    'subluxation' => l10n.structTypeSubluxation,
+    'dislocation' => l10n.structTypeDislocation,
+    'joint_instability' => l10n.structTypeInstability,
+    'joint_pain' => l10n.structTypeJointPain,
+    // muscle
+    'muscle_strain' => l10n.structTypeMuscleStrain,
+    'muscle_distension' => l10n.structTypeMuscleDistension,
+    'muscle_tear' => l10n.structTypeMuscleTear,
+    'contracture' => l10n.structTypeContracture,
+    'muscle_spasm' => l10n.structTypeMuscleSpasm,
+    'myofascial_pain' => l10n.structTypeMyofascial,
+    // tendon
+    'tendinitis' => l10n.structTypeTendinitis,
+    'tendinosis' => l10n.structTypeTendinosis,
+    'bursitis' => l10n.structTypeBursitis,
+    'enthesitis' => l10n.structTypeEnthesitis,
+    'tendon_fissure' => l10n.structTypeTendonFissure,
+    // ligament
+    'mild_sprain' => l10n.structTypeMildSprain,
+    'severe_sprain' => l10n.structTypeSevereSprain,
+    'ligament_tear' => l10n.structTypeLigamentTear,
+    // softTissue
+    'superficial_cut' => l10n.structTypeSuperficialCut,
+    'skin_fissure' => l10n.structTypeSkinFissure,
+    'deep_wound' => l10n.structTypeDeepWound,
+    'hematoma' => l10n.structTypeHematoma,
+    'contusion' => l10n.structTypeContusion,
+    'burn' => l10n.structTypeBurn,
+    'abrasion' => l10n.structTypeAbrasion,
+    // nerve
+    'neuropathic_pain' => l10n.structTypeNeuropathic,
+    'paresthesia' => l10n.structTypeParesthesia,
+    // Unknown ID — log in debug builds, return raw for the UI.
+    _ => _unknownIdFallback(this, 'structuralType'),
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -98,38 +98,38 @@ extension StructuralEventTypeLocalization on String {
 /// is pre-existing and not worth a sweeping rename pass right now.
 extension BodyZoneLocalization on String {
   String bodyZoneLabel(AppLocalizations l10n) => switch (this) {
-        // head/neck
-        'cervical' => l10n.zoneCervical,
-        'jaw' => l10n.zoneJaw,
-        'temple' => l10n.zoneTemple,
-        // shoulders/upper back
-        'shoulders' => l10n.zoneHombros,
-        'shoulder_blades' => l10n.zoneShoulderBlades,
-        'upper_back' => l10n.zoneUpperBack,
-        // arms
-        'upper_arm' => l10n.zoneUpperArm,
-        'elbow' => l10n.zoneElbow,
-        'forearm' => l10n.zoneForearm,
-        'wrists' => l10n.zoneMunecas,
-        'hands' => l10n.zoneManos,
-        // chest/abdomen
-        'chest' => l10n.zoneChest,
-        'side' => l10n.zoneSide,
-        'ribs' => l10n.zoneRibs,
-        'abdomen' => l10n.zoneAbdomen,
-        // lower back/pelvis
-        'lumbar_pelvis' => l10n.zoneLumbarPelvis,
-        'hips' => l10n.zoneCaderas,
-        'glutes' => l10n.zoneGlutes,
-        // legs
-        'front_thigh' => l10n.zoneFrontThigh,
-        'back_thigh' => l10n.zoneBackThigh,
-        'knees' => l10n.zoneRodillas,
-        'calf' => l10n.zoneCalf,
-        'ankles' => l10n.zoneTobillos,
-        'feet' => l10n.zoneFeet,
-        _ => _unknownIdFallback(this, 'bodyZone'),
-      };
+    // head/neck
+    'cervical' => l10n.zoneCervical,
+    'jaw' => l10n.zoneJaw,
+    'temple' => l10n.zoneTemple,
+    // shoulders/upper back
+    'shoulders' => l10n.zoneHombros,
+    'shoulder_blades' => l10n.zoneShoulderBlades,
+    'upper_back' => l10n.zoneUpperBack,
+    // arms
+    'upper_arm' => l10n.zoneUpperArm,
+    'elbow' => l10n.zoneElbow,
+    'forearm' => l10n.zoneForearm,
+    'wrists' => l10n.zoneMunecas,
+    'hands' => l10n.zoneManos,
+    // chest/abdomen
+    'chest' => l10n.zoneChest,
+    'side' => l10n.zoneSide,
+    'ribs' => l10n.zoneRibs,
+    'abdomen' => l10n.zoneAbdomen,
+    // lower back/pelvis
+    'lumbar_pelvis' => l10n.zoneLumbarPelvis,
+    'hips' => l10n.zoneCaderas,
+    'glutes' => l10n.zoneGlutes,
+    // legs
+    'front_thigh' => l10n.zoneFrontThigh,
+    'back_thigh' => l10n.zoneBackThigh,
+    'knees' => l10n.zoneRodillas,
+    'calf' => l10n.zoneCalf,
+    'ankles' => l10n.zoneTobillos,
+    'feet' => l10n.zoneFeet,
+    _ => _unknownIdFallback(this, 'bodyZone'),
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -138,13 +138,13 @@ extension BodyZoneLocalization on String {
 
 extension BodyRegionLocalization on BodyRegion {
   String label(AppLocalizations l10n) => switch (this) {
-        BodyRegion.headNeck => l10n.bodyRegionHeadNeck,
-        BodyRegion.shouldersUpperBack => l10n.bodyRegionShouldersUpperBack,
-        BodyRegion.arms => l10n.bodyRegionArms,
-        BodyRegion.chestAbdomen => l10n.bodyRegionChestAbdomen,
-        BodyRegion.lowerBackPelvis => l10n.bodyRegionLowerBackPelvis,
-        BodyRegion.legs => l10n.bodyRegionLegs,
-      };
+    BodyRegion.headNeck => l10n.bodyRegionHeadNeck,
+    BodyRegion.shouldersUpperBack => l10n.bodyRegionShouldersUpperBack,
+    BodyRegion.arms => l10n.bodyRegionArms,
+    BodyRegion.chestAbdomen => l10n.bodyRegionChestAbdomen,
+    BodyRegion.lowerBackPelvis => l10n.bodyRegionLowerBackPelvis,
+    BodyRegion.legs => l10n.bodyRegionLegs,
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -156,8 +156,10 @@ extension BodyRegionLocalization on BodyRegion {
 /// taxonomy drift early in beta testing.
 String _unknownIdFallback(String id, String category) {
   assert(() {
-    debugPrint('[structural_taxonomy] Unknown $category ID: "$id" — '
-        'add to lib/services/structural_taxonomy.dart and ARB.');
+    debugPrint(
+      '[structural_taxonomy] Unknown $category ID: "$id" — '
+      'add to lib/services/structural_taxonomy.dart and ARB.',
+    );
     return true;
   }());
   return id;

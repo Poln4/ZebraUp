@@ -409,7 +409,7 @@
   "onboardingStepMedsTitle": "Tu botiquín.",
   "onboardingStepMedsBody": "Agrega los medicamentos que tomas habitualmente. Vas a poder registrar cada dosis con un toque desde la pestaña Botiquín.",
   "onboardingStepMedsNameHint": "Nombre",
-  "onboardingStepMedsDoseHint": "Dosis (ej. 400mg)",
+  "onboardingStepMedsDoseHint": "Notas (ej. tomar con comida)",
   "onboardingStepMedsEmpty": "Sin medicamentos por ahora. Puedes saltar este paso.",
   "symptomsSectionStructuralZones": "ZONAS ESTRUCTURALES",
   "symptomsSectionBowelTransit": "TRÁNSITO INTESTINAL",
@@ -1451,5 +1451,8 @@
   "abdominalIntegrationDontKnow": "No lo sé",
   "@abdominalIntegrationDontKnow": {
     "description": "'I don't know' button for D.2.E integration prompts. Treated the same as No but semantically distinct."
-  }
+  },
+  "onboardingStepMedsUnitHint": "1",
+  "onboardingStepMedsStrengthHint": "mg"
+
 }

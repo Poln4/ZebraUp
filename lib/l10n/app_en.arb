@@ -1325,5 +1325,7 @@
   "abdominalToBowelPromptBody": "You marked this pain as related to a bowel movement. You logged a bowel movement at {time}. Is it the same one?",
   "abdominalIntegrationYes": "Yes",
   "abdominalIntegrationNo": "No",
-  "abdominalIntegrationDontKnow": "I don't know"
+  "abdominalIntegrationDontKnow": "I don't know",
+  "onboardingStepMedsUnitHint": "1",
+  "onboardingStepMedsStrengthHint": "mg"
 }

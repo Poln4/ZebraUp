@@ -164,8 +164,9 @@ class FatigueDetail {
       map['temporal_pattern'] = temporalPattern!.serializationKey;
     }
     if (accompaniments.isNotEmpty) {
-      map['accompaniments'] =
-          accompaniments.map((e) => e.serializationKey).toList();
+      map['accompaniments'] = accompaniments
+          .map((e) => e.serializationKey)
+          .toList();
     }
     if (triggers.isNotEmpty) {
       map['triggers'] = triggers.map((e) => e.serializationKey).toList();
@@ -179,20 +180,21 @@ class FatigueDetail {
     return FatigueDetail(
       type: FatigueType.fromKey(map['type'] as String?),
       temporalPattern: FatigueTemporalPattern.fromKey(
-          map['temporal_pattern'] as String?),
+        map['temporal_pattern'] as String?,
+      ),
       accompaniments: accRaw is List
           ? accRaw
-              .whereType<String>()
-              .map(FatigueAccompaniment.fromKey)
-              .whereType<FatigueAccompaniment>()
-              .toSet()
+                .whereType<String>()
+                .map(FatigueAccompaniment.fromKey)
+                .whereType<FatigueAccompaniment>()
+                .toSet()
           : const <FatigueAccompaniment>{},
       triggers: trigRaw is List
           ? trigRaw
-              .whereType<String>()
-              .map(FatigueTrigger.fromKey)
-              .whereType<FatigueTrigger>()
-              .toSet()
+                .whereType<String>()
+                .map(FatigueTrigger.fromKey)
+                .whereType<FatigueTrigger>()
+                .toSet()
           : const <FatigueTrigger>{},
     );
   }

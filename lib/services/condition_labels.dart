@@ -55,7 +55,8 @@ const Map<String, CompendiumDomain> kConditionToDomain = {
   'EDS & Proprioceptive Learning': CompendiumDomain.connectiveTissueJointsEyes,
   'Proprioception': CompendiumDomain.connectiveTissueJointsEyes,
   'TMJ & Cervical Synergy': CompendiumDomain.connectiveTissueJointsEyes,
-  'Tendon Elongation & Strength Training': CompendiumDomain.connectiveTissueJointsEyes,
+  'Tendon Elongation & Strength Training':
+      CompendiumDomain.connectiveTissueJointsEyes,
   'Endothelial Fragility': CompendiumDomain.connectiveTissueJointsEyes,
   'Integrin Signaling': CompendiumDomain.connectiveTissueJointsEyes,
   'Ocular Manifestations': CompendiumDomain.connectiveTissueJointsEyes,
@@ -109,7 +110,8 @@ const Map<String, CompendiumDomain> kConditionToDomain = {
   'Visual Processing & ASD': CompendiumDomain.neurodivergenceSensory,
 
   // Gastrointestinal
-  'Gastrointestinal Issues & The Nervous System': CompendiumDomain.gastrointestinal,
+  'Gastrointestinal Issues & The Nervous System':
+      CompendiumDomain.gastrointestinal,
   'The Gut-Brain-Joint Axis': CompendiumDomain.gastrointestinal,
 
   // Hormones & pelvic floor
@@ -149,11 +151,7 @@ const Map<CompendiumDomain, Map<String, String>> _domainLabels = {
     'en': 'Connective tissue, joints and eyes',
     'zh': '結締組織、關節與眼睛',
   },
-  CompendiumDomain.fascia: {
-    'es': 'Fascia',
-    'en': 'Fascia',
-    'zh': '筋膜',
-  },
+  CompendiumDomain.fascia: {'es': 'Fascia', 'en': 'Fascia', 'zh': '筋膜'},
   CompendiumDomain.exerciseRehab: {
     'es': 'Ejercicio y rehabilitación',
     'en': 'Exercise and rehabilitation',
@@ -204,11 +202,7 @@ const Map<CompendiumDomain, Map<String, String>> _domainLabels = {
     'en': 'Foot health',
     'zh': '足部健康',
   },
-  CompendiumDomain.other: {
-    'es': 'Otros',
-    'en': 'Other',
-    'zh': '其他',
-  },
+  CompendiumDomain.other: {'es': 'Otros', 'en': 'Other', 'zh': '其他'},
 };
 
 /// Returns the domain for a JSON `condition` value. Unknown values map
@@ -232,9 +226,7 @@ Set<CompendiumDomain> domainsForUserCondition(String userCondition) {
   }
 
   // EDS variants (hEDS, cEDS, clEDS, vEDS, kEDS, etc.)
-  if (c.contains('eds') ||
-      c.contains('ehlers') ||
-      c.contains('danlos')) {
+  if (c.contains('eds') || c.contains('ehlers') || c.contains('danlos')) {
     out.add(CompendiumDomain.connectiveTissueJointsEyes);
     out.add(CompendiumDomain.fascia);
     out.add(CompendiumDomain.exerciseRehab);
@@ -302,8 +294,8 @@ String localizedDomainLabel(CompendiumDomain domain, AppLocalizations l10n) {
   final lang = code.startsWith('zh')
       ? 'zh'
       : code.startsWith('en')
-          ? 'en'
-          : 'es';
+      ? 'en'
+      : 'es';
   final labels = _domainLabels[domain];
   if (labels == null) return '???';
   return labels[lang] ?? labels['en'] ?? labels['es'] ?? '???';

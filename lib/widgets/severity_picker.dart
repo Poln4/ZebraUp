@@ -94,9 +94,7 @@ class _SeverityDotPickerState extends State<SeverityDotPicker> {
   int? _previewIdx;
 
   List<SymptomSeverity> get _severities => widget.excludeNone
-      ? SymptomSeverity.values
-          .where((s) => s != SymptomSeverity.none)
-          .toList()
+      ? SymptomSeverity.values.where((s) => s != SymptomSeverity.none).toList()
       : SymptomSeverity.values.toList();
 
   Color _resolveContrast(BuildContext context) =>
@@ -210,8 +208,7 @@ class _SeverityDotPickerState extends State<SeverityDotPicker> {
             onEnter: (_) => _onHoverEnter(i),
             onExit: (_) => _onHoverExit(i),
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
               child: Column(
                 children: [
                   AnimatedContainer(
@@ -222,16 +219,15 @@ class _SeverityDotPickerState extends State<SeverityDotPicker> {
                       shape: BoxShape.circle,
                       color: highlighted
                           ? color
-                          : color.withValues(
-                              alpha: isAnchorRef ? 0.35 : 0.18),
+                          : color.withValues(alpha: isAnchorRef ? 0.35 : 0.18),
                       border: Border.all(
                         color: isSelected
                             ? cc
                             : (isPreview
-                                ? color
-                                : (isAnchorRef
-                                    ? color.withValues(alpha: 0.6)
-                                    : Colors.transparent)),
+                                  ? color
+                                  : (isAnchorRef
+                                        ? color.withValues(alpha: 0.6)
+                                        : Colors.transparent)),
                         width: isSelected
                             ? 2.5
                             : (isPreview ? 2 : (isAnchorRef ? 2 : 0)),
@@ -242,7 +238,7 @@ class _SeverityDotPickerState extends State<SeverityDotPicker> {
                                 color: color.withValues(alpha: 0.4),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
-                              )
+                              ),
                             ]
                           : null,
                     ),
@@ -254,11 +250,10 @@ class _SeverityDotPickerState extends State<SeverityDotPicker> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 10,
-                        fontWeight:
-                            highlighted ? FontWeight.bold : FontWeight.normal,
-                        color: highlighted
-                            ? color
-                            : cc.withValues(alpha: 0.7),
+                        fontWeight: highlighted
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                        color: highlighted ? color : cc.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -301,14 +296,14 @@ class _SeverityDotPickerState extends State<SeverityDotPicker> {
         duration: const Duration(milliseconds: 150),
         switchInCurve: Curves.easeOut,
         switchOutCurve: Curves.easeIn,
-        transitionBuilder: (child, anim) => FadeTransition(
-          opacity: anim,
-          child: child,
-        ),
+        transitionBuilder: (child, anim) =>
+            FadeTransition(opacity: anim, child: child),
         child: SizedBox(
           // Key with severity name + preview-vs-committed so the
           // AnimatedSwitcher fires on every transition.
-          key: ValueKey('${activeSev.name}_${isPreview ? 'preview' : 'committed'}'),
+          key: ValueKey(
+            '${activeSev.name}_${isPreview ? 'preview' : 'committed'}',
+          ),
           width: double.infinity,
           child: Text(
             anchorText,

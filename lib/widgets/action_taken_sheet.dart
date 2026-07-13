@@ -1,7 +1,7 @@
 // Sprint F.B+C — Post-event action capture sheet.
 //
 // Shown after a SymptomEvent, BowelEvent, HemorrhoidalEvent or FeverReading
-// is saved when `_p.optionalTrackers['action_taken']` is enabled.
+// is saved when `_p.settings.optionalTrackers['action_taken']` is enabled.
 //
 // Captures:
 //   • ActionKind (12 kinds — medication / rest / hydration / breathing /
@@ -64,9 +64,7 @@ class ActionTakenSheet extends StatefulWidget {
       isScrollControlled: true,
       backgroundColor: inverseContrastColor,
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(ctx).viewInsets.bottom,
-        ),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
         child: ActionTakenSheet(
           contrastColor: contrastColor,
           inverseContrastColor: inverseContrastColor,
@@ -98,8 +96,9 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
     // Default follow-up: 60 min for symptom-linked events; none for others.
     // Bowel/hem/fever tend to be discrete events without a clean check-in
     // window; user can still opt in to a follow-up manually.
-    _followUpMinutes =
-        widget.linkedEventType == LinkedEventType.symptom ? 60 : null;
+    _followUpMinutes = widget.linkedEventType == LinkedEventType.symptom
+        ? 60
+        : null;
   }
 
   @override
@@ -167,8 +166,7 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
       kind: _kind!,
       linkedEventId: widget.linkedEventId,
       linkedEventType: widget.linkedEventType,
-      medicationRefId:
-          _kind == ActionKind.medication ? _medicationRefId : null,
+      medicationRefId: _kind == ActionKind.medication ? _medicationRefId : null,
       customLabel: _kind == ActionKind.custom ? _customCtrl.text.trim() : null,
       severityBeforeAction: _severityBefore,
       followUpMinutes: _followUpMinutes,
@@ -225,35 +223,36 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                 children: ActionKind.values
                     .where((k) => k != ActionKind.nothing)
                     .map((k) {
-                  final selected = _kind == k;
-                  final label = _kindLabels[k] ?? k.serializationKey;
-                  final emoji = _kindEmojis[k] ?? '•';
-                  return ActionChip(
-                    label: Text(
-                      '$emoji  $label',
-                      style: TextStyle(
-                        color: selected ? ic : cc,
-                        fontSize: 12,
-                        fontWeight:
-                            selected ? FontWeight.bold : FontWeight.normal,
-                      ),
-                    ),
-                    backgroundColor:
-                        selected ? cc : Colors.transparent,
-                    side: BorderSide(color: cc),
-                    onPressed: () {
-                      setState(() {
-                        _kind = k;
-                        if (k != ActionKind.medication) {
-                          _medicationRefId = null;
-                        }
-                        if (k != ActionKind.custom) {
-                          _customCtrl.clear();
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
+                      final selected = _kind == k;
+                      final label = _kindLabels[k] ?? k.serializationKey;
+                      final emoji = _kindEmojis[k] ?? '•';
+                      return ActionChip(
+                        label: Text(
+                          '$emoji  $label',
+                          style: TextStyle(
+                            color: selected ? ic : cc,
+                            fontSize: 12,
+                            fontWeight: selected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                        backgroundColor: selected ? cc : Colors.transparent,
+                        side: BorderSide(color: cc),
+                        onPressed: () {
+                          setState(() {
+                            _kind = k;
+                            if (k != ActionKind.medication) {
+                              _medicationRefId = null;
+                            }
+                            if (k != ActionKind.custom) {
+                              _customCtrl.clear();
+                            }
+                          });
+                        },
+                      );
+                    })
+                    .toList(),
               ),
 
               // ── Movement redirect message ────────────────────────────
@@ -261,9 +260,7 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                 const SizedBox(height: 16),
                 Container(
                   padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: cc),
-                  ),
+                  decoration: BoxDecoration(border: Border.all(color: cc)),
                   child: Text(
                     'El movimiento va en su pestaña. Registra acupuntura, TENS, '
                     'estiramiento o cualquier ejercicio en Movimiento para tener '
@@ -276,26 +273,30 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
               // ── Medication picker ────────────────────────────────────
               if (_kind == ActionKind.medication) ...[
                 const SizedBox(height: 16),
-                Text('¿Qué medicamento?',
-                    style: TextStyle(
-                      color: cc,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    )),
+                Text(
+                  '¿Qué medicamento?',
+                  style: TextStyle(
+                    color: cc,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 if (widget.botiquin.isEmpty)
-                  Text('Sin medicamentos en el botiquín todavía.',
-                      style: TextStyle(color: cc, fontSize: 12))
+                  Text(
+                    'Sin medicamentos en el botiquín todavía.',
+                    style: TextStyle(color: cc, fontSize: 12),
+                  )
                 else
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: cc),
-                    ),
+                    decoration: BoxDecoration(border: Border.all(color: cc)),
                     child: DropdownButton<String>(
                       value: _medicationRefId,
-                      hint: Text('Elegir',
-                          style: TextStyle(color: cc, fontSize: 13)),
+                      hint: Text(
+                        'Elegir',
+                        style: TextStyle(color: cc, fontSize: 13),
+                      ),
                       dropdownColor: ic,
                       isExpanded: true,
                       underline: const SizedBox.shrink(),
@@ -304,12 +305,10 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                       items: widget.botiquin.map((m) {
                         return DropdownMenuItem<String>(
                           value: m.id,
-                          child: Text(m.name,
-                              style: TextStyle(color: cc)),
+                          child: Text(m.name, style: TextStyle(color: cc)),
                         );
                       }).toList(),
-                      onChanged: (v) =>
-                          setState(() => _medicationRefId = v),
+                      onChanged: (v) => setState(() => _medicationRefId = v),
                     ),
                   ),
               ],
@@ -317,26 +316,30 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
               // ── Custom label field ───────────────────────────────────
               if (_kind == ActionKind.custom) ...[
                 const SizedBox(height: 16),
-                Text('¿Qué hiciste?',
-                    style: TextStyle(
-                      color: cc,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    )),
+                Text(
+                  '¿Qué hiciste?',
+                  style: TextStyle(
+                    color: cc,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 TextField(
                   controller: _customCtrl,
                   style: TextStyle(color: cc, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Escribe brevemente',
-                    hintStyle:
-                        TextStyle(color: cc.withValues(alpha: 0.5)),
+                    hintStyle: TextStyle(color: cc.withValues(alpha: 0.5)),
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc)),
+                      borderSide: BorderSide(color: cc),
+                    ),
                     enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc)),
+                      borderSide: BorderSide(color: cc),
+                    ),
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc, width: 2)),
+                      borderSide: BorderSide(color: cc, width: 2),
+                    ),
                   ),
                   onChanged: (_) => setState(() {}),
                 ),
@@ -346,36 +349,37 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
               if (showExtras &&
                   widget.linkedEventType == LinkedEventType.symptom) ...[
                 const SizedBox(height: 20),
-                Text('¿Cómo estaba el síntoma justo antes?',
-                    style: TextStyle(
-                      color: cc,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    )),
+                Text(
+                  '¿Cómo estaba el síntoma justo antes?',
+                  style: TextStyle(
+                    color: cc,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: List.generate(5, (i) {
                     final selected = _severityBefore == i;
                     return Expanded(
                       child: Padding(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
                         child: InkWell(
-                          onTap: () =>
-                              setState(() => _severityBefore = i),
+                          onTap: () => setState(() => _severityBefore = i),
                           child: Container(
                             height: 36,
                             decoration: BoxDecoration(
-                              color:
-                                  selected ? cc : Colors.transparent,
+                              color: selected ? cc : Colors.transparent,
                               border: Border.all(color: cc),
                             ),
                             child: Center(
-                              child: Text('$i',
-                                  style: TextStyle(
-                                    color: selected ? ic : cc,
-                                    fontWeight: FontWeight.bold,
-                                  )),
+                              child: Text(
+                                '$i',
+                                style: TextStyle(
+                                  color: selected ? ic : cc,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -384,20 +388,26 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                   }),
                 ),
                 const SizedBox(height: 2),
-                Text('0 = sin síntoma · 4 = incapacitante',
-                    style: TextStyle(
-                        color: cc.withValues(alpha: 0.7), fontSize: 10)),
+                Text(
+                  '0 = sin síntoma · 4 = incapacitante',
+                  style: TextStyle(
+                    color: cc.withValues(alpha: 0.7),
+                    fontSize: 10,
+                  ),
+                ),
               ],
 
               // ── Follow-up window ─────────────────────────────────────
               if (showExtras) ...[
                 const SizedBox(height: 20),
-                Text('¿Cuándo lo revisamos?',
-                    style: TextStyle(
-                      color: cc,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    )),
+                Text(
+                  '¿Cuándo lo revisamos?',
+                  style: TextStyle(
+                    color: cc,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Wrap(
                   spacing: 6,
@@ -415,12 +425,14 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
               // ── Notes ────────────────────────────────────────────────
               if (showExtras) ...[
                 const SizedBox(height: 16),
-                Text('Notas (opcional)',
-                    style: TextStyle(
-                      color: cc,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    )),
+                Text(
+                  'Notas (opcional)',
+                  style: TextStyle(
+                    color: cc,
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 TextField(
                   controller: _notesCtrl,
@@ -428,14 +440,16 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                   maxLines: 2,
                   decoration: InputDecoration(
                     hintText: 'Detalles, dosis, contexto…',
-                    hintStyle:
-                        TextStyle(color: cc.withValues(alpha: 0.5)),
+                    hintStyle: TextStyle(color: cc.withValues(alpha: 0.5)),
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc)),
+                      borderSide: BorderSide(color: cc),
+                    ),
                     enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc)),
+                      borderSide: BorderSide(color: cc),
+                    ),
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc, width: 2)),
+                      borderSide: BorderSide(color: cc, width: 2),
+                    ),
                   ),
                 ),
               ],
@@ -450,10 +464,8 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                         side: BorderSide(color: cc),
                         minimumSize: const Size.fromHeight(48),
                       ),
-                      onPressed: () =>
-                          Navigator.of(context).pop(null),
-                      child: Text('Ahora no',
-                          style: TextStyle(color: cc)),
+                      onPressed: () => Navigator.of(context).pop(null),
+                      child: Text('Ahora no', style: TextStyle(color: cc)),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -465,9 +477,7 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                       ),
                       onPressed: _canSave ? _save : null,
                       child: Text(
-                        isMovement
-                            ? 'Ir a Movimiento'
-                            : 'Registrar acción',
+                        isMovement ? 'Ir a Movimiento' : 'Registrar acción',
                         style: TextStyle(color: ic),
                       ),
                     ),
@@ -482,16 +492,17 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
     );
   }
 
-  Widget _followUpChip(
-      int? minutes, String label, Color cc, Color ic) {
+  Widget _followUpChip(int? minutes, String label, Color cc, Color ic) {
     final selected = _followUpMinutes == minutes;
     return ActionChip(
-      label: Text(label,
-          style: TextStyle(
-            color: selected ? ic : cc,
-            fontSize: 12,
-            fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-          )),
+      label: Text(
+        label,
+        style: TextStyle(
+          color: selected ? ic : cc,
+          fontSize: 12,
+          fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
       backgroundColor: selected ? cc : Colors.transparent,
       side: BorderSide(color: cc),
       onPressed: () => setState(() => _followUpMinutes = minutes),

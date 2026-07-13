@@ -44,7 +44,8 @@ Future<FeverReading?> showFeverFormSheet({
     context: context,
     backgroundColor: inverseContrastColor,
     shape: RoundedRectangleBorder(
-        side: BorderSide(color: contrastColor, width: 2)),
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     isScrollControlled: true,
     builder: (ctx) => _FeverForm(
       contrastColor: contrastColor,
@@ -95,8 +96,9 @@ class _FeverFormState extends State<_FeverForm> {
     _temperatureC = e?.temperatureC ?? _defaultTemp;
     _site = e?.site ?? FeverSite.axillary;
     _antipyreticTaken = e?.antipyreticTaken ?? false;
-    _antipyreticNameCtrl =
-        TextEditingController(text: e?.antipyreticName ?? '');
+    _antipyreticNameCtrl = TextEditingController(
+      text: e?.antipyreticName ?? '',
+    );
     _noteCtrl = TextEditingController(text: e?.note ?? '');
   }
 
@@ -122,8 +124,7 @@ class _FeverFormState extends State<_FeverForm> {
 
   Future<void> _editTempDirectly() async {
     final l10n = context.l10n;
-    final ctrl =
-        TextEditingController(text: _temperatureC.toStringAsFixed(1));
+    final ctrl = TextEditingController(text: _temperatureC.toStringAsFixed(1));
     final result = await showDialog<double>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -175,8 +176,7 @@ class _FeverFormState extends State<_FeverForm> {
       temperatureC: _temperatureC,
       site: _site,
       antipyreticTaken: _antipyreticTaken,
-      antipyreticName:
-          (_antipyreticTaken && apName.isNotEmpty) ? apName : null,
+      antipyreticName: (_antipyreticTaken && apName.isNotEmpty) ? apName : null,
       note: note.isEmpty ? null : note,
     );
     Navigator.pop(context, result);
@@ -193,7 +193,8 @@ class _FeverFormState extends State<_FeverForm> {
         decoration: BoxDecoration(
           color: selected ? _cc : Colors.transparent,
           border: Border.all(
-              color: _cc.withValues(alpha: selected ? 1.0 : 0.4)),
+            color: _cc.withValues(alpha: selected ? 1.0 : 0.4),
+          ),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
@@ -215,8 +216,9 @@ class _FeverFormState extends State<_FeverForm> {
     final title = isEdit ? l10n.feverModalEditHeader : l10n.feverModalLogHeader;
 
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -261,8 +263,7 @@ class _FeverFormState extends State<_FeverForm> {
                     children: [
                       IconButton(
                         onPressed: () => _adjustTemp(-_stepTemp),
-                        icon: const Icon(Icons.remove_circle_outline,
-                            size: 36),
+                        icon: const Icon(Icons.remove_circle_outline, size: 36),
                         color: _cc,
                       ),
                       const SizedBox(width: 4),
@@ -271,7 +272,9 @@ class _FeverFormState extends State<_FeverForm> {
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
                           child: Text(
                             '${_temperatureC.toStringAsFixed(1)}°C',
                             style: TextStyle(
@@ -340,12 +343,14 @@ class _FeverFormState extends State<_FeverForm> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 8),
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: _antipyreticTaken ? _cc : Colors.transparent,
                   border: Border.all(
-                      color: _cc.withValues(
-                          alpha: _antipyreticTaken ? 1.0 : 0.4)),
+                    color: _cc.withValues(alpha: _antipyreticTaken ? 1.0 : 0.4),
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(

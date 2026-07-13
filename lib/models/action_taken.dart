@@ -203,8 +203,7 @@ class ActionTaken {
   }
 
   /// True when a follow-up is scheduled but not yet answered.
-  bool get hasPendingFollowUp =>
-      followUpMinutes != null && !followUpCompleted;
+  bool get hasPendingFollowUp => followUpMinutes != null && !followUpCompleted;
 
   /// True when the follow-up window has elapsed and awaits capture.
   bool get followUpIsDue {
@@ -254,8 +253,9 @@ class ActionTaken {
       severityAfterAction: clearSeverityAfterAction
           ? null
           : (severityAfterAction ?? this.severityAfterAction),
-      followUpMinutes:
-          clearFollowUp ? null : (followUpMinutes ?? this.followUpMinutes),
+      followUpMinutes: clearFollowUp
+          ? null
+          : (followUpMinutes ?? this.followUpMinutes),
       followUpCompleted: followUpCompleted ?? this.followUpCompleted,
       effectivenessRating: clearEffectivenessRating
           ? null
@@ -299,15 +299,16 @@ class ActionTaken {
       linkedEventId: map['linkedEventId'] as String,
       linkedEventType:
           LinkedEventType.fromKey(map['linkedEventType'] as String?) ??
-              LinkedEventType.symptom,
+          LinkedEventType.symptom,
       medicationRefId: map['medicationRefId'] as String?,
       customLabel: map['customLabel'] as String?,
       severityBeforeAction: (map['severityBeforeAction'] as num?)?.toInt(),
       severityAfterAction: (map['severityAfterAction'] as num?)?.toInt(),
       followUpMinutes: (map['followUpMinutes'] as num?)?.toInt(),
       followUpCompleted: map['followUpCompleted'] as bool? ?? false,
-      effectivenessRating:
-          EffectivenessRating.fromKey(map['effectivenessRating'] as String?),
+      effectivenessRating: EffectivenessRating.fromKey(
+        map['effectivenessRating'] as String?,
+      ),
       notes: map['notes'] as String?,
     );
   }

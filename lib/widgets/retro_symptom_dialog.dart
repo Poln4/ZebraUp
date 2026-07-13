@@ -52,9 +52,7 @@ class RetroSymptomDialog extends StatefulWidget {
       isScrollControlled: true,
       backgroundColor: inverseContrastColor,
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(ctx).viewInsets.bottom,
-        ),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
         child: RetroSymptomDialog(
           symptom: symptom,
           botiquin: botiquin,
@@ -171,8 +169,7 @@ class _RetroSymptomDialogState extends State<RetroSymptomDialog> {
       kind: _kind!,
       linkedEventId: widget.symptom.timestamp.toIso8601String(),
       linkedEventType: LinkedEventType.symptom,
-      medicationRefId:
-          _kind == ActionKind.medication ? _medicationRefId : null,
+      medicationRefId: _kind == ActionKind.medication ? _medicationRefId : null,
       customLabel: _kind == ActionKind.custom ? _customCtrl.text.trim() : null,
       severityBeforeAction: widget.symptom.severity.value,
       severityAfterAction: _severityAfter,
@@ -291,7 +288,8 @@ class _RetroSymptomDialogState extends State<RetroSymptomDialog> {
                 const SizedBox(height: 10),
                 InkWell(
                   onTap: () => setState(
-                      () => _reliefThenReturned = !_reliefThenReturned),
+                    () => _reliefThenReturned = !_reliefThenReturned,
+                  ),
                   child: Row(
                     children: [
                       Icon(
@@ -338,8 +336,9 @@ class _RetroSymptomDialogState extends State<RetroSymptomDialog> {
                       style: TextStyle(
                         color: selected ? ic : cc,
                         fontSize: 12,
-                        fontWeight:
-                            selected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: selected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                     backgroundColor: selected ? cc : Colors.transparent,
@@ -376,12 +375,14 @@ class _RetroSymptomDialogState extends State<RetroSymptomDialog> {
                   ...doses.map((d) {
                     final selected = _medicationRefId == d.medicationId;
                     return InkWell(
-                      onTap: () => setState(
-                          () => _medicationRefId = d.medicationId),
+                      onTap: () =>
+                          setState(() => _medicationRefId = d.medicationId),
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 4),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 10),
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                         decoration: BoxDecoration(
                           color: selected ? cc : Colors.transparent,
                           border: Border.all(color: cc),
@@ -443,9 +444,7 @@ class _RetroSymptomDialogState extends State<RetroSymptomDialog> {
                   else
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: cc),
-                      ),
+                      decoration: BoxDecoration(border: Border.all(color: cc)),
                       child: DropdownButton<String>(
                         value: _medicationRefId,
                         hint: Text(
@@ -463,8 +462,7 @@ class _RetroSymptomDialogState extends State<RetroSymptomDialog> {
                             child: Text(m.name, style: TextStyle(color: cc)),
                           );
                         }).toList(),
-                        onChanged: (v) =>
-                            setState(() => _medicationRefId = v),
+                        onChanged: (v) => setState(() => _medicationRefId = v),
                       ),
                     ),
                 ],
@@ -487,14 +485,16 @@ class _RetroSymptomDialogState extends State<RetroSymptomDialog> {
                   style: TextStyle(color: cc, fontSize: 13),
                   decoration: InputDecoration(
                     hintText: 'Escribe brevemente',
-                    hintStyle:
-                        TextStyle(color: cc.withValues(alpha: 0.5)),
+                    hintStyle: TextStyle(color: cc.withValues(alpha: 0.5)),
                     border: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc)),
+                      borderSide: BorderSide(color: cc),
+                    ),
                     enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc)),
+                      borderSide: BorderSide(color: cc),
+                    ),
                     focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(color: cc, width: 2)),
+                      borderSide: BorderSide(color: cc, width: 2),
+                    ),
                   ),
                   onChanged: (_) => setState(() {}),
                 ),
@@ -519,12 +519,13 @@ class _RetroSymptomDialogState extends State<RetroSymptomDialog> {
                 decoration: InputDecoration(
                   hintText: 'Contexto, dosis, patrón…',
                   hintStyle: TextStyle(color: cc.withValues(alpha: 0.5)),
-                  border:
-                      OutlineInputBorder(borderSide: BorderSide(color: cc)),
-                  enabledBorder:
-                      OutlineInputBorder(borderSide: BorderSide(color: cc)),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: cc)),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: cc),
+                  ),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: cc, width: 2)),
+                    borderSide: BorderSide(color: cc, width: 2),
+                  ),
                 ),
               ),
 

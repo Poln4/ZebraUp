@@ -46,9 +46,7 @@ class ActionEffectivenessDialog extends StatefulWidget {
       isScrollControlled: true,
       backgroundColor: inverseContrastColor,
       builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(ctx).viewInsets.bottom,
-        ),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
         child: ActionEffectivenessDialog(
           action: action,
           botiquin: botiquin,
@@ -64,8 +62,7 @@ class ActionEffectivenessDialog extends StatefulWidget {
       _ActionEffectivenessDialogState();
 }
 
-class _ActionEffectivenessDialogState
-    extends State<ActionEffectivenessDialog> {
+class _ActionEffectivenessDialogState extends State<ActionEffectivenessDialog> {
   int? _severityAfter;
   EffectivenessRating? _rating;
   final TextEditingController _notesCtrl = TextEditingController();
@@ -133,8 +130,7 @@ class _ActionEffectivenessDialogState
     final a = widget.action;
     final base = _kindLabels[a.kind] ?? a.kind.serializationKey;
     if (a.kind == ActionKind.medication && a.medicationRefId != null) {
-      final matches =
-          widget.botiquin.where((m) => m.id == a.medicationRefId);
+      final matches = widget.botiquin.where((m) => m.id == a.medicationRefId);
       if (matches.isNotEmpty) return '$base: ${matches.first.name}';
     }
     if (a.kind == ActionKind.custom && a.customLabel != null) {
@@ -149,9 +145,7 @@ class _ActionEffectivenessDialogState
       followUpCompleted: true,
       severityAfterAction: _severityAfter,
       effectivenessRating: _rating,
-      notes: _notesCtrl.text.trim().isEmpty
-          ? null
-          : _notesCtrl.text.trim(),
+      notes: _notesCtrl.text.trim().isEmpty ? null : _notesCtrl.text.trim(),
     );
     Navigator.of(context).pop(updated);
   }
@@ -238,16 +232,13 @@ class _ActionEffectivenessDialogState
                     final selected = _severityAfter == i;
                     return Expanded(
                       child: Padding(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
                         child: InkWell(
-                          onTap: () =>
-                              setState(() => _severityAfter = i),
+                          onTap: () => setState(() => _severityAfter = i),
                           child: Container(
                             height: 36,
                             decoration: BoxDecoration(
-                              color:
-                                  selected ? cc : Colors.transparent,
+                              color: selected ? cc : Colors.transparent,
                               border: Border.all(color: cc),
                             ),
                             child: Center(
@@ -266,10 +257,13 @@ class _ActionEffectivenessDialogState
                   }),
                 ),
                 const SizedBox(height: 2),
-                Text('0 = sin síntoma · 4 = incapacitante',
-                    style: TextStyle(
-                        color: cc.withValues(alpha: 0.6),
-                        fontSize: 10)),
+                Text(
+                  '0 = sin síntoma · 4 = incapacitante',
+                  style: TextStyle(
+                    color: cc.withValues(alpha: 0.6),
+                    fontSize: 10,
+                  ),
+                ),
                 const SizedBox(height: 20),
               ],
 
@@ -348,14 +342,14 @@ class _ActionEffectivenessDialogState
                 maxLines: 2,
                 decoration: InputDecoration(
                   hintText: 'Contexto, efectos, patrón…',
-                  hintStyle:
-                      TextStyle(color: cc.withValues(alpha: 0.5)),
-                  border: OutlineInputBorder(
-                      borderSide: BorderSide(color: cc)),
+                  hintStyle: TextStyle(color: cc.withValues(alpha: 0.5)),
+                  border: OutlineInputBorder(borderSide: BorderSide(color: cc)),
                   enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: cc)),
+                    borderSide: BorderSide(color: cc),
+                  ),
                   focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: cc, width: 2)),
+                    borderSide: BorderSide(color: cc, width: 2),
+                  ),
                 ),
               ),
 
@@ -370,10 +364,8 @@ class _ActionEffectivenessDialogState
                         side: BorderSide(color: cc),
                         minimumSize: const Size.fromHeight(48),
                       ),
-                      onPressed: () =>
-                          Navigator.of(context).pop(null),
-                      child: Text('Ahora no',
-                          style: TextStyle(color: cc)),
+                      onPressed: () => Navigator.of(context).pop(null),
+                      child: Text('Ahora no', style: TextStyle(color: cc)),
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -384,8 +376,7 @@ class _ActionEffectivenessDialogState
                         minimumSize: const Size.fromHeight(48),
                       ),
                       onPressed: _canSave ? _save : null,
-                      child: Text('Guardar',
-                          style: TextStyle(color: ic)),
+                      child: Text('Guardar', style: TextStyle(color: ic)),
                     ),
                   ),
                 ],

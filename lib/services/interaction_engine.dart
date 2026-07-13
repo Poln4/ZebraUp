@@ -51,12 +51,14 @@ class InteractionRule {
     required List<String> medsLower,
     required List<String> conditionsLower,
   }) {
-    final medsOk =
-        medicationKeys.every((key) => medsLower.any((m) => m.contains(key)));
+    final medsOk = medicationKeys.every(
+      (key) => medsLower.any((m) => m.contains(key)),
+    );
     if (!medsOk) return false;
     if (requiredConditions == null || requiredConditions!.isEmpty) return true;
-    return requiredConditions!
-        .any((c) => conditionsLower.any((dx) => dx.contains(c)));
+    return requiredConditions!.any(
+      (c) => conditionsLower.any((dx) => dx.contains(c)),
+    );
   }
 }
 
@@ -119,7 +121,8 @@ const List<InteractionRule> kInteractionRules = [
         '🚨 ALERTA HEMORRÁGICA: La duloxetina (ISRSN) inhibe la recaptación '
         'de serotonina plaquetaria. Combinada con un AINE como ibuprofeno '
         'multiplica el riesgo de sangrado, ya elevado en EDS y adenomiosis.',
-    reference: 'SNRI + NSAID class warning. Relevante en EDS/SED y adenomiosis.',
+    reference:
+        'SNRI + NSAID class warning. Relevante en EDS/SED y adenomiosis.',
   ),
   InteractionRule(
     medicationKeys: ['duloxetina', 'naproxeno'],
@@ -201,8 +204,7 @@ const List<InteractionRule> kInteractionRules = [
   InteractionRule(
     medicationKeys: ['sertralina', 'tramadol'],
     level: InteractionLevel.severe,
-    message:
-        '🚨 SÍNDROME SEROTONINÉRGICO: ISRS + tramadol — riesgo elevado.',
+    message: '🚨 SÍNDROME SEROTONINÉRGICO: ISRS + tramadol — riesgo elevado.',
   ),
   InteractionRule(
     medicationKeys: ['sumatriptán', 'duloxetina'],

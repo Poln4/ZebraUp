@@ -119,27 +119,35 @@ class ReportTrendsService {
     final symptoms = <SymptomTrend>[];
     symptomsByName.forEach((name, list) {
       final dayKeys = list
-          .map((sym) =>
-              '${sym.timestamp.year}-${sym.timestamp.month}-${sym.timestamp.day}')
+          .map(
+            (sym) =>
+                '${sym.timestamp.year}-${sym.timestamp.month}-${sym.timestamp.day}',
+          )
           .toSet();
-      final ratedList =
-          list.where((sym) => sym.severity != SymptomSeverity.none).toList();
+      final ratedList = list
+          .where((sym) => sym.severity != SymptomSeverity.none)
+          .toList();
       if (ratedList.isEmpty) {
-        symptoms.add(SymptomTrend(
-          name: name,
-          daysAppeared: dayKeys.length,
-          worstSeverity: SymptomSeverity.none,
-          allUnrated: true,
-        ));
+        symptoms.add(
+          SymptomTrend(
+            name: name,
+            daysAppeared: dayKeys.length,
+            worstSeverity: SymptomSeverity.none,
+            allUnrated: true,
+          ),
+        );
       } else {
         final worstSym = ratedList.reduce(
-            (a, b) => a.severity.index >= b.severity.index ? a : b);
-        symptoms.add(SymptomTrend(
-          name: name,
-          daysAppeared: dayKeys.length,
-          worstSeverity: worstSym.severity,
-          allUnrated: false,
-        ));
+          (a, b) => a.severity.index >= b.severity.index ? a : b,
+        );
+        symptoms.add(
+          SymptomTrend(
+            name: name,
+            daysAppeared: dayKeys.length,
+            worstSeverity: worstSym.severity,
+            allUnrated: false,
+          ),
+        );
       }
     });
     // Sort: most-days first; tiebreak by worst severity desc.
@@ -162,16 +170,14 @@ class ReportTrendsService {
     final allEpisodes = FeverAnalysis.detectEpisodes(profile.feverHistory);
     final periodEndExcl = e.add(const Duration(days: 1));
     final feverEpisodes = allEpisodes
-        .where((ep) =>
-            ep.start.isBefore(periodEndExcl) && !ep.end.isBefore(s))
+        .where((ep) => ep.start.isBefore(periodEndExcl) && !ep.end.isBefore(s))
         .toList();
 
     final feverishDays = <String>{};
     for (final ep in feverEpisodes) {
       final epStart = ep.start.isBefore(s) ? s : ep.start;
       final epEnd = ep.end.isAfter(e) ? e : ep.end;
-      final epStartDay =
-          DateTime(epStart.year, epStart.month, epStart.day);
+      final epStartDay = DateTime(epStart.year, epStart.month, epStart.day);
       final epEndDay = DateTime(epEnd.year, epEnd.month, epEnd.day);
       final epDays = epEndDay.difference(epStartDay).inDays + 1;
       for (int j = 0; j < epDays; j++) {

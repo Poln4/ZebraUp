@@ -67,15 +67,14 @@ class CorrelationResult {
     required int windowDays,
     required int sampleSize,
     DateTime? computedAt,
-  }) =>
-      CorrelationResult(
-        ruleId: ruleId,
-        confidence: CorrelationConfidence.insufficientData,
-        sampleSize: sampleSize,
-        windowDays: windowDays,
-        data: const {},
-        computedAt: computedAt ?? DateTime.now(),
-      );
+  }) => CorrelationResult(
+    ruleId: ruleId,
+    confidence: CorrelationConfidence.insufficientData,
+    sampleSize: sampleSize,
+    windowDays: windowDays,
+    data: const {},
+    computedAt: computedAt ?? DateTime.now(),
+  );
 
   bool get hasEnoughData =>
       confidence != CorrelationConfidence.insufficientData;
@@ -83,10 +82,8 @@ class CorrelationResult {
 
 /// Signature for the evaluator function on a [CorrelationRule]. Implementations
 /// are pure: they read the profile and return a result without side effects.
-typedef CorrelationEvaluator = CorrelationResult Function(
-  Profile profile,
-  DateTime now,
-);
+typedef CorrelationEvaluator =
+    CorrelationResult Function(Profile profile, DateTime now);
 
 /// A single correlation pattern the engine can evaluate.
 ///
@@ -130,12 +127,7 @@ final List<CorrelationRule> kCorrelationRules = <CorrelationRule>[];
 /// Convenience: evaluate every registered rule and return one result per rule.
 ///
 /// `now` is parameterized so tests can pin time. UI callers pass DateTime.now().
-List<CorrelationResult> runAllCorrelations(
-  Profile profile, {
-  DateTime? now,
-}) {
+List<CorrelationResult> runAllCorrelations(Profile profile, {DateTime? now}) {
   final t = now ?? DateTime.now();
-  return [
-    for (final rule in kCorrelationRules) rule.evaluate(profile, t),
-  ];
+  return [for (final rule in kCorrelationRules) rule.evaluate(profile, t)];
 }

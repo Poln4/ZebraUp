@@ -100,10 +100,10 @@ class VademecumInteraction {
   });
 
   String description(VademecumLocale locale) => switch (locale) {
-        VademecumLocale.es => descriptionEs,
-        VademecumLocale.en => descriptionEn,
-        VademecumLocale.zh => descriptionZh,
-      };
+    VademecumLocale.es => descriptionEs,
+    VademecumLocale.en => descriptionEn,
+    VademecumLocale.zh => descriptionZh,
+  };
 
   factory VademecumInteraction.fromMap(Map<String, dynamic> m) =>
       VademecumInteraction(
@@ -151,16 +151,16 @@ class _DrugEntry {
   });
 
   String label(VademecumLocale l) => switch (l) {
-        VademecumLocale.es => labelEs,
-        VademecumLocale.en => labelEn,
-        VademecumLocale.zh => labelZh,
-      };
+    VademecumLocale.es => labelEs,
+    VademecumLocale.en => labelEn,
+    VademecumLocale.zh => labelZh,
+  };
 
   String summary(VademecumLocale l) => switch (l) {
-        VademecumLocale.es => summaryEs,
-        VademecumLocale.en => summaryEn,
-        VademecumLocale.zh => summaryZh,
-      };
+    VademecumLocale.es => summaryEs,
+    VademecumLocale.en => summaryEn,
+    VademecumLocale.zh => summaryZh,
+  };
 
   String? notes(VademecumLocale l) {
     final raw = switch (l) {
@@ -173,24 +173,26 @@ class _DrugEntry {
   }
 
   factory _DrugEntry.fromMap(Map<String, dynamic> m) => _DrugEntry(
-        aliases: List<String>.from(m['aliases'] as List? ?? []),
-        rxcui: m['rxcui'] as String?,
-        labelEs: m['label'] as String? ?? '',
-        labelEn: m['label_en'] as String? ?? '',
-        labelZh: m['label_zh'] as String? ?? '',
-        kind: VademecumKind.parse(m['kind'] as String?),
-        confidence: m['confidence'] as String? ?? 'high',
-        summaryEs: m['summary_es'] as String? ?? '',
-        summaryEn: m['summary_en'] as String? ?? '',
-        summaryZh: m['summary_zh'] as String? ?? '',
-        notesEs: m['notes'] as String?,
-        notesEn: m['notes_en'] as String?,
-        notesZh: m['notes_zh'] as String?,
-        interactions: ((m['interactions'] as List?) ?? const [])
-            .map((x) =>
-                VademecumInteraction.fromMap(Map<String, dynamic>.from(x as Map)))
-            .toList(),
-      );
+    aliases: List<String>.from(m['aliases'] as List? ?? []),
+    rxcui: m['rxcui'] as String?,
+    labelEs: m['label'] as String? ?? '',
+    labelEn: m['label_en'] as String? ?? '',
+    labelZh: m['label_zh'] as String? ?? '',
+    kind: VademecumKind.parse(m['kind'] as String?),
+    confidence: m['confidence'] as String? ?? 'high',
+    summaryEs: m['summary_es'] as String? ?? '',
+    summaryEn: m['summary_en'] as String? ?? '',
+    summaryZh: m['summary_zh'] as String? ?? '',
+    notesEs: m['notes'] as String?,
+    notesEn: m['notes_en'] as String?,
+    notesZh: m['notes_zh'] as String?,
+    interactions: ((m['interactions'] as List?) ?? const [])
+        .map(
+          (x) =>
+              VademecumInteraction.fromMap(Map<String, dynamic>.from(x as Map)),
+        )
+        .toList(),
+  );
 }
 
 /// Result of resolving a MedicationDef against the vademecum.
@@ -256,8 +258,9 @@ class VademecumService {
   Future<void> _ensureConditionsLoaded() async {
     if (_conditionMappings != null) return;
     try {
-      final jsonStr =
-          await rootBundle.loadString('assets/condition_codes.json');
+      final jsonStr = await rootBundle.loadString(
+        'assets/condition_codes.json',
+      );
       final data = jsonDecode(jsonStr) as Map<String, dynamic>;
       final list = (data['mappings'] as List?) ?? [];
       _conditionMappings = list
@@ -282,7 +285,8 @@ class VademecumService {
       for (final m in _conditionMappings!) {
         for (final alias in m.aliases) {
           if (norm.contains(alias.toLowerCase()) ||
-              alias.toLowerCase().contains(norm)) return m;
+              alias.toLowerCase().contains(norm))
+            return m;
         }
       }
     }
@@ -309,7 +313,8 @@ class VademecumService {
       final parts = icd10.split('.');
       if (parts[1].length > 1) {
         content = await _fetchConditionFromApi(
-            '${parts[0]}.${parts[1].substring(0, 1)}');
+          '${parts[0]}.${parts[1].substring(0, 1)}',
+        );
       }
     }
     if (content == null && icd10.contains('.')) {
@@ -330,21 +335,26 @@ class VademecumService {
   }
 
   Future<MedlinePlusContent?> _fetchConditionFromApi(String queryIcd) async {
-    final url = Uri.parse('$_base?'
-        'mainSearchCriteria.v.cs=2.16.840.1.113883.6.90'
-        '&mainSearchCriteria.v.c=${Uri.encodeComponent(queryIcd)}'
-        '&informationRecipient.languageCode.c=es'
-        '&knowledgeResponseType=application/json');
+    final url = Uri.parse(
+      '$_base?'
+      'mainSearchCriteria.v.cs=2.16.840.1.113883.6.90'
+      '&mainSearchCriteria.v.c=${Uri.encodeComponent(queryIcd)}'
+      '&informationRecipient.languageCode.c=es'
+      '&knowledgeResponseType=application/json',
+    );
     try {
       final resp = await http.get(url).timeout(const Duration(seconds: 10));
       if (resp.statusCode != 200) {
         debugPrint(
-            'VademecumService._fetchConditionFromApi: HTTP ${resp.statusCode} for $queryIcd');
+          'VademecumService._fetchConditionFromApi: HTTP ${resp.statusCode} for $queryIcd',
+        );
         return null;
       }
       return _parseConditionResponse(resp.body, queryIcd);
     } catch (e) {
-      debugPrint('VademecumService._fetchConditionFromApi error ($queryIcd): $e');
+      debugPrint(
+        'VademecumService._fetchConditionFromApi error ($queryIcd): $e',
+      );
       return null;
     }
   }
@@ -407,7 +417,8 @@ class VademecumService {
           .map((m) => _DrugEntry.fromMap(m as Map<String, dynamic>))
           .toList();
       debugPrint(
-          'VademecumService: loaded ${_drugEntries!.length} drug entries');
+        'VademecumService: loaded ${_drugEntries!.length} drug entries',
+      );
     } catch (e, st) {
       debugPrint('VademecumService._ensureDrugsLoaded: $e\n$st');
       _drugEntries = [];
@@ -552,7 +563,8 @@ class VademecumService {
         }
       } catch (e) {
         debugPrint(
-            'VademecumService._getDrugInfoFromMedlinePlus cache error: $e');
+          'VademecumService._getDrugInfoFromMedlinePlus cache error: $e',
+        );
       }
     }
     final content = await _fetchDrugFromApi(rxcui, lang);
@@ -566,22 +578,26 @@ class VademecumService {
     String rxcui,
     String lang,
   ) async {
-    final url = Uri.parse('$_base?'
-        'mainSearchCriteria.v.cs=2.16.840.1.113883.6.88'
-        '&mainSearchCriteria.v.c=${Uri.encodeComponent(rxcui)}'
-        '&informationRecipient.languageCode.c=$lang'
-        '&knowledgeResponseType=application/json');
+    final url = Uri.parse(
+      '$_base?'
+      'mainSearchCriteria.v.cs=2.16.840.1.113883.6.88'
+      '&mainSearchCriteria.v.c=${Uri.encodeComponent(rxcui)}'
+      '&informationRecipient.languageCode.c=$lang'
+      '&knowledgeResponseType=application/json',
+    );
     try {
       final resp = await http.get(url).timeout(const Duration(seconds: 10));
       if (resp.statusCode != 200) {
         debugPrint(
-            'VademecumService._fetchDrugFromApi: HTTP ${resp.statusCode} for rxcui=$rxcui lang=$lang');
+          'VademecumService._fetchDrugFromApi: HTTP ${resp.statusCode} for rxcui=$rxcui lang=$lang',
+        );
         return null;
       }
       return _parseDrugResponse(resp.body, rxcui);
     } catch (e) {
       debugPrint(
-          'VademecumService._fetchDrugFromApi error (rxcui=$rxcui lang=$lang): $e');
+        'VademecumService._fetchDrugFromApi error (rxcui=$rxcui lang=$lang): $e',
+      );
       return null;
     }
   }
@@ -652,11 +668,13 @@ class VademecumService {
       final key = '${other.id}|${inter.severity.name}|${inter.descriptionEs}';
       if (seen.contains(key)) return;
       seen.add(key);
-      detected.add(DetectedInteraction(
-        other: other,
-        severity: inter.severity,
-        description: inter.description(locale),
-      ));
+      detected.add(
+        DetectedInteraction(
+          other: other,
+          severity: inter.severity,
+          description: inter.description(locale),
+        ),
+      );
     }
 
     // Direction 1: interactions declared on target → look up which
@@ -690,13 +708,15 @@ class VademecumService {
 
   bool _medMatchesAlias(MedicationDef med, String aliasLower) {
     final name = med.name.trim().toLowerCase();
-    if (name == aliasLower || name.contains(aliasLower) ||
+    if (name == aliasLower ||
+        name.contains(aliasLower) ||
         aliasLower.contains(name)) {
       return true;
     }
     final ai = med.activeIngredient?.trim().toLowerCase();
     if (ai != null && ai.isNotEmpty) {
-      if (ai == aliasLower || ai.contains(aliasLower) ||
+      if (ai == aliasLower ||
+          ai.contains(aliasLower) ||
           aliasLower.contains(ai)) {
         return true;
       }
@@ -726,8 +746,11 @@ class _ConditionMapping {
   final String icd10;
   final String label;
 
-  _ConditionMapping(
-      {required this.aliases, required this.icd10, required this.label});
+  _ConditionMapping({
+    required this.aliases,
+    required this.icd10,
+    required this.label,
+  });
 
   factory _ConditionMapping.fromMap(Map<String, dynamic> m) =>
       _ConditionMapping(
@@ -753,12 +776,12 @@ class MedlinePlusContent {
   });
 
   Map<String, dynamic> toMap() => {
-        'icd10': icd10,
-        'title': title,
-        'summary': summary,
-        'link': link,
-        'fetchedAt': fetchedAt.toIso8601String(),
-      };
+    'icd10': icd10,
+    'title': title,
+    'summary': summary,
+    'link': link,
+    'fetchedAt': fetchedAt.toIso8601String(),
+  };
 
   factory MedlinePlusContent.fromMap(Map<String, dynamic> m) =>
       MedlinePlusContent(
@@ -786,12 +809,12 @@ class MedlinePlusDrugContent {
   });
 
   Map<String, dynamic> toMap() => {
-        'rxcui': rxcui,
-        'title': title,
-        'summary': summary,
-        'link': link,
-        'fetchedAt': fetchedAt.toIso8601String(),
-      };
+    'rxcui': rxcui,
+    'title': title,
+    'summary': summary,
+    'link': link,
+    'fetchedAt': fetchedAt.toIso8601String(),
+  };
 
   factory MedlinePlusDrugContent.fromMap(Map<String, dynamic> m) =>
       MedlinePlusDrugContent(

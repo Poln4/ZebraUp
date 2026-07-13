@@ -1,7 +1,7 @@
 // Sprint E.A — MCAS (Mast Cell Activation Syndrome) detail layer.
 //
 // Optional detail on SymptomEvent for MCAS-specific reactions. Applied
-// when `_p.optionalTrackers['mcas_detail']` is enabled (settings toggle
+// when `_p.settings.optionalTrackers['mcas_detail']` is enabled (settings toggle
 // arrives in Sprint E.E).
 //
 // Captures four independent aspects of a mast cell event:
@@ -257,7 +257,7 @@ String formatMCASDetailCompact(MCASDetail detail, String localeName) {
   if (detail.reactionKinds.isNotEmpty) {
     final labels = detail.reactionKinds
         .take(3)
-        .map(_reactionKindShortLabel)
+        .map((k) => mcasReactionKindShortLabel(k))
         .toList();
     var text = labels.join(' · ');
     if (detail.reactionKinds.length > 3) {
@@ -269,13 +269,13 @@ String formatMCASDetailCompact(MCASDetail detail, String localeName) {
   // Onset window (skip if unknown — noise)
   if (detail.onsetWindow != null &&
       detail.onsetWindow != MCASOnsetWindow.unknown) {
-    parts.add('inicio ${_onsetShortLabel(detail.onsetWindow!)}');
+    parts.add('inicio ${mcasOnsetShortLabel(detail.onsetWindow!)}');
   }
 
   // First trigger with count of others
   if (detail.suspectedTriggers.isNotEmpty) {
     final t = detail.suspectedTriggers.first;
-    final label = t.hasLabel ? t.label! : _triggerKindShortLabel(t.kind);
+    final label = t.hasLabel ? t.label! : mcasTriggerKindShortLabel(t.kind);
     var text = 'gatillo: $label';
     if (detail.suspectedTriggers.length > 1) {
       text += ' +${detail.suspectedTriggers.length - 1}';
@@ -291,7 +291,7 @@ String formatMCASDetailCompact(MCASDetail detail, String localeName) {
   return parts.join(' · ');
 }
 
-String _reactionKindShortLabel(MCASReactionKind k) => switch (k) {
+String mcasReactionKindShortLabel(MCASReactionKind k) => switch (k) {
   MCASReactionKind.flushing => 'enrojecimiento',
   MCASReactionKind.urticaria => 'habones',
   MCASReactionKind.itching => 'picazón',
@@ -304,7 +304,7 @@ String _reactionKindShortLabel(MCASReactionKind k) => switch (k) {
   MCASReactionKind.other => 'otra reacción',
 };
 
-String _onsetShortLabel(MCASOnsetWindow w) => switch (w) {
+String mcasOnsetShortLabel(MCASOnsetWindow w) => switch (w) {
   MCASOnsetWindow.immediate => 'inmediato',
   MCASOnsetWindow.earlyMinutes => '5-30 min',
   MCASOnsetWindow.lateMinutes => '30 min-2 h',
@@ -313,7 +313,7 @@ String _onsetShortLabel(MCASOnsetWindow w) => switch (w) {
   MCASOnsetWindow.unknown => 'incierto',
 };
 
-String _triggerKindShortLabel(TriggerKind k) => switch (k) {
+String mcasTriggerKindShortLabel(TriggerKind k) => switch (k) {
   TriggerKind.food => 'comida',
   TriggerKind.medication => 'medicamento',
   TriggerKind.environmental => 'ambiental',

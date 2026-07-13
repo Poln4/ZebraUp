@@ -701,6 +701,331 @@
       "fact_ko": "허밍이나 가글링 운동은 미조신경을 자극하여 자율신경계 과민 반응 상태에서 벗어날 수 있는 비용이 들지 않고 생리학적인 방법을 제공합니다.",
       "tone": "Optimistic",
       "source": "Porges, The Polyvagal Theory"
-    }
+    },
+    {
+    "condition": "EDS & Bleeding/Bruising",
+    "fact_en": "Severe bruising and bleeding in EDS are driven by a cellular defect, not just clumsy accidents. Platelets from EDS patients exhibit reduced Glycoprotein VI (GPVI) receptor levels and impaired integrin signaling, which physically prevents normal blood clotting at injury sites, even when standard coagulation tests appear normal.",
+    "fact_es": "Los hematomas severos y el sangrado en el SED son impulsados por un defecto celular, no solo por torpeza. Las plaquetas de los pacientes con SED muestran niveles reducidos del receptor de Glicoproteína VI (GPVI) y una señalización de integrina alterada, lo que impide físicamente la coagulación normal en el sitio de la lesión, incluso cuando las pruebas de coagulación estándar parecen normales.",
+    "fact_zh": "在EDS中嚴重的瘀青和出血是由細胞缺陷引起的，而不僅僅是笨拙的意外。EDS患者的血小板表現出糖蛋白VI（GPVI）受體水平降低和整合素信號傳導受損，這在物理上阻礙了受傷部位的正常血液凝固，即使常規凝血測試看起來正常。",
+    "fact_ko": "EDS에서 심한 멍과 출혈은 단순한 사고가 아니라 세포 결함에 의해 발생합니다. EDS 환자의 혈소판은 당단백질 VI(GPVI) 수용체 수치가 감소하고 인테그린 신호 전달이 손상되어, 표준 응고 검사가 정상으로 보이더라도 부상 부위의 정상적인 혈액 응고를 물리적으로 방해합니다.",
+    "tone": "Validating",
+    "source": "Kumskova et al., Blood (2023) [1, 2]"
+  },
+  {
+    "condition": "C-PTSD & Unrefreshing Sleep",
+    "fact_en": "Your unrefreshing sleep has a physiological footprint. Research on sleep heart rate dynamics shows that for individuals with a history of trauma, the heart takes significantly longer to reach its lowest resting rate during sleep. This delayed cardiovascular recovery prevents the nervous system from fully shifting into 'rest and digest' mode.",
+    "fact_es": "Tu sueño no reparador tiene una huella fisiológica. La investigación sobre la dinámica de la frecuencia cardíaca durante el sueño muestra que, en personas con historial de trauma, el corazón tarda mucho más en alcanzar su frecuencia de reposo más baja. Esta recuperación cardiovascular retrasada impide que el sistema nervioso entre completamente en modo de 'descanso y digestión'.",
+    "fact_zh": "你的睡眠無法恢復精神是有生理痕跡的。關於睡眠心率動態的研究顯示，對於有創傷史的人來說，心臟在睡眠期間需要明顯更長的時間才能達到最低靜息心率。這種心血管恢復的延遲阻礙了神經系統完全轉換為「休息與消化」模式。",
+    "fact_ko": "수면 후에도 개운하지 않은 것에는 생리학적 흔적이 있습니다. 수면 심박수 역학 연구에 따르면, 트라우마 병력이 있는 사람들은 수면 중 심장이 최저 안정시 심박수에 도달하는 데 훨씬 더 오랜 시간이 걸립니다. 이러한 심혈관 회복의 지연은 신경계가 '휴식 및 소화' 모드로 완전히 전환되는 것을 막습니다.",
+    "tone": "Validating",
+    "source": "Fudolig et al., Digit Biomark (2024) [3, 4]"
+  },
+  {
+    "condition": "hEDS & Genetic Architecture",
+    "fact_en": "Hypermobile EDS is a complex genetic and multisystemic disorder. Recent studies have identified specific gene variants, such as KLK15 mutations, that disrupt the extracellular matrix and immune regulation. Large-scale genetic analyses also prove hEDS shares a profound genetic architecture with chronic fatigue syndrome, fibromyalgia, and IBS.",
+    "fact_es": "El SED hiperlaxo es un trastorno genético y multisistémico complejo. Estudios recientes han identificado variantes genéticas específicas, como las mutaciones en KLK15, que interrumpen la matriz extracelular y la regulación inmunológica. Los análisis genéticos a gran escala también prueban que el SEDh comparte una profunda arquitectura genética con el síndrome de fatiga crónica, la fibromialgia y el SII.",
+    "fact_zh": "關節過度活動型EDS（hEDS）是一種複雜的遺傳性和多系統性疾病。近期研究已確定特定基因變異（如KLK15突變）會破壞細胞外基質和免疫調節。大規模遺傳分析也證明hEDS與慢性疲勞症候群、纖維肌痛和腸躁症（IBS）具有深度的共同遺傳基礎。",
+    "fact_ko": "과운동성 EDS(hEDS)는 복잡한 유전적 및 다계통 질환입니다. 최근 연구에서는 세포외 기질 및 면역 조절을 방해하는 KLK15 돌연변이와 같은 특정 유전자 변이를 확인했습니다. 대규모 유전 분석은 또한 hEDS가 만성 피로 증후군, 섬유근육통 및 과민성 대장 증후군(IBS)과 깊은 유전적 구조를 공유함을 증명합니다.",
+    "tone": "Educational",
+    "source": "Norris et al., iScience (2025) / Petrucci-Nelson et al., GWAS (2025) [5-7]"
+  },
+  {
+    "condition": "Fascial Densification & Stiffness",
+    "fact_en": "Feeling unbearably stiff despite being hypermobile is a documented biological process. In EDS, connective tissue cells pathologically overreact to stress, creating dense, sticky fascia that loses its ability to glide. This 'fascial densification' irritates embedded nerves and causes chronic widespread pain.",
+    "fact_es": "Sentirse insoportablemente rígido a pesar de ser hiperlaxo es un proceso biológico documentado. En el SED, las células del tejido conectivo reaccionan de forma patológica al estrés, creando una fascia densa y pegajosa que pierde su capacidad de deslizarse. Esta 'densificación fascial' irrita los nervios incrustados y causa dolor crónico generalizado.",
+    "fact_zh": "儘管關節過度活動卻感到難以忍受的僵硬，這是一個有記錄的生物學過程。在EDS中，結締組織細胞對壓力產生病理性過度反應，形成失去滑動能力的緻密、黏稠筋膜。這種「筋膜緻密化」會刺激周圍的神經並導致慢性廣泛性疼痛。",
+    "fact_ko": "유연함에도 불구하고 참을 수 없을 정도로 뻣뻣함을 느끼는 것은 기록된 생물학적 과정입니다. EDS에서 결합 조직 세포는 스트레스에 병리학적으로 과잉 반응하여 미끄러지는 능력을 잃은 빽빽하고 끈적끈적한 근막을 만듭니다. 이러한 '근막 경직'은 내장된 신경을 자극하고 만성적인 전신 통증을 유발합니다.",
+    "tone": "Educational",
+    "source": "Wang et al., Int. J. Mol. Sci. (2025) [8]"
+  },
+  {
+    "condition": "Myofascial Pain Syndrome (MPS)",
+    "fact_en": "Your muscles hurt because they are doing the job your ligaments cannot. The 'Cinderella Hypothesis' explains that your smaller muscle fibers are forced to work continuously without rest to stabilize your joints. This relentless metabolic overload causes cell damage and painful trigger points.",
+    "fact_es": "Tus músculos duelen porque están haciendo el trabajo que tus ligamentos no pueden. La 'Hipótesis de Cenicienta' explica que tus fibras musculares más pequeñas se ven obligadas a trabajar continuamente sin descanso para estabilizar tus articulaciones. Esta implacable sobrecarga metabólica causa daño celular y dolorosos puntos gatillo.",
+    "fact_zh": "你的肌肉會痛是因為它們正在做韌帶無法完成的工作。「灰姑娘假說」解釋了你較小的肌肉纖維被迫持續工作而不休息，以穩定你的關節。這種無情的代謝超載會導致細胞損傷和疼痛的激痛點。",
+    "fact_ko": "근육이 아픈 이유는 인대가 할 수 없는 일을 대신하고 있기 때문입니다. '신데렐라 가설'은 더 작은 근육 섬유가 관절을 안정시키기 위해 쉬지 않고 계속 일해야 함을 설명합니다. 이러한 끊임없는 대사 과부하는 세포 손상과 고통스러운 유발점을 유발합니다.",
+    "tone": "Validating",
+    "source": "Hägg, 2003 / Gerwin, 2010 [9, 10]"
+  },
+  {
+    "condition": "Diagnostic Delay & Validation",
+    "fact_en": "If it took you years to get answers, you are not alone. A 2025 global survey found that hypermobile EDS patients face a staggering average diagnostic delay of 22.1 years and manage around 24 comorbid conditions. Your complex symptoms are real and connected.",
+    "fact_es": "Si tardaste años en obtener respuestas, no estás solo. Una encuesta global de 2025 reveló que los pacientes con SEDh enfrentan un asombroso retraso diagnóstico promedio de 22.1 años y manejan alrededor de 24 condiciones comórbidas. Tus síntomas complejos son reales y están conectados.",
+    "fact_zh": "如果你花了數年時間才得到答案，你並不孤單。2025年的一項全球調查發現，關節過度活動型EDS患者面臨著平均長達22.1年的驚人診斷延遲，並需要應對大約24種共病。你複雜的症狀是真實存在且相互關聯的。",
+    "fact_ko": "답을 얻기 위해 수년을 보냈더라도 당신은 혼자가 아닙니다. 2025년 글로벌 설문조사에 따르면 과운동성 EDS 환자는 평균 22.1년이라는 엄청난 진단 지연을 겪으며 약 24개의 동반 질환을 관리하는 것으로 나타났습니다. 당신의 복합적인 증상은 실제이며 연결되어 있습니다.",
+    "tone": "Validating",
+    "source": "Daylor et al., J. Clin. Med. (2025)"
+  },
+  {
+    "condition": "Non-Anemic Iron Deficiency (NAID)",
+    "fact_en": "You can be severely iron deficient even if your hemoglobin is normal. For symptomatic adults, particularly those with dysautonomia or chronic pain, a ferritin level below 50 ng/mL is considered a functional iron deficiency that requires immediate treatment.",
+    "fact_es": "Puedes tener una deficiencia severa de hierro incluso si tu hemoglobina es normal. Para los adultos sintomáticos, particularmente aquellos con disautonomía o dolor crónico, un nivel de ferritina por debajo de 50 ng/mL se considera una deficiencia funcional de hierro que requiere tratamiento inmediato.",
+    "fact_zh": "即使你的血紅素正常，你也可能患有嚴重的缺鐵症。對於有症狀的成年人，特別是那些患有自律神經失調或慢性疼痛的人來說，鐵蛋白水平低於 50 ng/mL 被認為是需要立即治療的功能性缺鐵症。",
+    "fact_ko": "헤모글로빈이 정상이더라도 심각한 철분 결핍 상태일 수 있습니다. 증상이 있는 성인, 특히 자율신경실조증이나 만성 통증이 있는 사람의 경우 페리틴 수치가 50ng/mL 미만이면 즉각적인 치료가 필요한 기능적 철분 결핍으로 간주됩니다.",
+    "tone": "Empowering",
+    "source": "Cancado et al., Diagnostics (2025)"
+  },
+  {
+    "condition": "POTS & Blood Volume",
+    "fact_en": "Iron deficiency in POTS isn't just about fatigue; it directly affects your blood volume. Research shows that low iron storage can reduce red blood cell volume, which severely worsens orthostatic intolerance and dizziness when you stand.",
+    "fact_es": "La deficiencia de hierro en el POTS no solo causa fatiga; afecta directamente tu volumen sanguíneo. La investigación muestra que los niveles bajos de almacenamiento de hierro pueden reducir el volumen de glóbulos rojos, lo que empeora severamente la intolerancia ortostática y los mareos al ponerte de pie.",
+    "fact_zh": "POTS中的缺鐵不僅關乎疲勞；它直接影響你的血容量。研究顯示，鐵儲存量低會減少紅血球體積，這會在你站立時嚴重惡化直立不耐症和頭暈。",
+    "fact_ko": "POTS에서 철분 결핍은 단순한 피로가 아니라 혈액량에 직접적인 영향을 미칩니다. 연구에 따르면 철분 저장량이 낮으면 적혈구 부피가 감소하여 일어설 때 기립성 불내증과 어지러움이 심각하게 악화될 수 있습니다.",
+    "tone": "Educational",
+    "source": "Raj et al., Circulation (2005) / PatientsCount.org"
+  },
+  {
+    "condition": "Medical Gaslighting",
+    "fact_en": "Validation is a legitimate therapeutic tool. Clinical experts emphasize that in EDS, providers must 'partner, don’t presume', because the lived experience of the patient is the most accurate guide to connecting the dots of their multisystemic symptoms.",
+    "fact_es": "La validación es una herramienta terapéutica legítima. Los expertos clínicos enfatizan que en el SED, los médicos deben 'colaborar, no suponer', porque la experiencia vivida del paciente es la guía más precisa para conectar los puntos de sus síntomas multisistémicos.",
+    "fact_zh": "認可與驗證（Validation）是一種正當的治療工具。臨床專家強調，在EDS中，醫療服務提供者必須「合作，而不是預設」，因為患者的親身經歷是將其多系統症狀串聯起來的最準確指南。",
+    "fact_ko": "타당성 인정(Validation)은 합법적인 치료 도구입니다. 임상 전문가들은 EDS에서 의료 제공자가 '추측하지 말고 협력'해야 한다고 강조합니다. 환자의 살아있는 경험이 다계통 증상을 연결하는 가장 정확한 지침이기 때문입니다.",
+    "tone": "Validating",
+    "source": "Maitland & Bloom, MUSC News (2024)"
+  },
+  {
+    "condition": "Neurodivergence & Sensory Overload",
+    "fact_en": "When feeling overwhelmed by physical symptoms or emotional triggers, try the HALT framework: Ask yourself if you are Hungry, Angry, Lonely, or Tired. Addressing these basic physiological needs first can drastically calm a hypervigilant nervous system.",
+    "fact_es": "Cuando te sientas abrumado por los síntomas físicos o desencadenantes emocionales, prueba el método HALT: pregúntate si tienes Hambre, Enojo (Anger), Soledad (Lonely) o Cansancio (Tired). Atender estas necesidades fisiológicas básicas primero puede calmar drásticamente un sistema nervioso hipervigilante.",
+    "fact_zh": "當你因身體症狀或情緒觸發因素而感到不知所措時，請嘗試HALT框架：問問自己是否感到飢餓（Hungry）、憤怒（Angry）、孤獨（Lonely）或疲憊（Tired）。首先解決這些基本的生理需求可以大幅安撫過度警覺的神經系統。",
+    "fact_ko": "신체적 증상이나 감정적 촉발 요인으로 인해 압도당할 때 HALT 프레임워크를 시도해 보세요. 배고픔(Hungry), 화남(Angry), 외로움(Lonely), 피곤함(Tired) 중 해당하는 것이 있는지 스스로에게 물어보세요. 이러한 기본적인 생리적 요구를 먼저 해결하면 과각성된 신경계를 크게 진정시킬 수 있습니다.",
+    "tone": "Actionable",
+    "source": "Lee et al., JMIR Research Protocols (2025)"
+  },
+  {
+    "condition": "Exercise & Joint Strain",
+    "fact_en": "For hypermobile bodies, extreme muscle damage and soreness often come from the 'eccentric' (lengthening under tension) portion of an exercise. Adapting workouts to limit excessive stretching can help you build stabilizing strength safely without micro-tears.",
+    "fact_es": "Para los cuerpos hiperlaxos, el daño y el dolor muscular extremo a menudo provienen de la fase 'excéntrica' (alargamiento bajo tensión) de un ejercicio. Adaptar tus rutinas para limitar el estiramiento excesivo puede ayudarte a desarrollar fuerza estabilizadora de manera segura sin microdesgarros.",
+    "fact_zh": "對於過度活動的身體來說，極端的肌肉損傷和痠痛通常來自於運動中的「離心」（在張力下拉長）階段。調整鍛鍊方式以限制過度拉伸，可以幫助你安全地建立穩定力量，而不會造成微小撕裂。",
+    "fact_ko": "과운동성 신체의 경우, 극심한 근육 손상과 통증은 종종 운동의 '원심성'(긴장 상태에서 길어짐) 부분에서 발생합니다. 과도한 스트레칭을 제한하도록 운동을 조정하면 미세 파열 없이 안정시키는 근력을 안전하게 키우는 데 도움이 될 수 있습니다.",
+    "tone": "Actionable",
+    "source": "Systemic Kinesiological Analysis of Hybrid Calisthenics"
+  },
+  {
+    "condition": "IBS & Symptom Fluctuation",
+    "fact_en": "If your digestion is completely unpredictable, it is part of the condition. Clinical data shows that 78% of all IBS patients fluctuate rapidly between the extremes of watery diarrhea and severe constipation.",
+    "fact_es": "Si tu digestión es completamente impredecible, es parte de la condición. Los datos clínicos muestran que el 78% de los pacientes con SII fluctúan rápidamente entre los extremos de diarrea líquida y estreñimiento severo.",
+    "fact_zh": "如果你的消化狀況完全無法預測，這是該疾病的一部分。臨床數據顯示，78%的IBS患者會在水瀉和嚴重便秘的極端之間快速波動。",
+    "fact_ko": "소화 상태를 전혀 예측할 수 없다면 그것은 질환의 일부입니다. 임상 데이터에 따르면 모든 IBS 환자의 78%가 물 설사와 심한 변비의 양극단 사이에서 빠르게 변동하는 것으로 나타났습니다.",
+    "tone": "Validating",
+    "source": "Palsson et al., Am J Gastroenterol (2013)"
+  },
+  {
+    "condition": "IBS Pain Mechanisms",
+    "fact_en": "Abdominal pain has different triggers depending on the day. In diarrhea phases, pain is usually linked to the imminent passage of stool. In constipation phases, pain increases progressively due to distention from accumulated days without evacuating.",
+    "fact_es": "El dolor abdominal tiene diferentes detonantes según el día. En las fases de diarrea, el dolor suele estar asociado al paso inminente de heces. En las fases de estreñimiento, el dolor aumenta progresivamente por la distensión de los días acumulados sin evacuar.",
+    "fact_zh": "腹痛的觸發因素因天而異。在腹瀉階段，疼痛通常與即將排便有關。在便秘階段，疼痛會因為累積多日未排便造成的腹脹而逐漸加劇。",
+    "fact_ko": "복통은 그날그날 다른 유발 요인을 가지고 있습니다. 설사 단계에서는 통증이 보통 임박한 배변과 관련이 있습니다. 변비 단계에서는 배변 없이 며칠이 축적된 팽창으로 인해 통증이 점진적으로 증가합니다.",
+    "tone": "Educational",
+    "source": "Palsson et al., Am J Gastroenterol (2013)"
+  },
+  {
+    "condition": "MCAS & IBS Overlap",
+    "fact_en": "Gut barrier dysfunction and mast cell activation often overlap in Irritable Bowel Syndrome. Dietary modifications, like the low-FODMAP diet, can actively improve colonic barrier function and calm mast cell overactivity.",
+    "fact_es": "La disfunción de la barrera intestinal y la activación de mastocitos a menudo se superponen en el Síndrome del Intestino Irritable. Las modificaciones dietéticas, como la dieta baja en FODMAP, pueden mejorar activamente la función de la barrera colónica y calmar la hiperactividad de los mastocitos.",
+    "fact_zh": "腸道屏障功能障礙和肥大細胞活化在腸躁症中經常重疊。飲食調整（如低FODMAP飲食）可以主動改善結腸屏障功能，並安撫肥大細胞的過度活躍。",
+    "fact_ko": "장 장벽 기능 장애와 비만 세포 활성화는 과민성 대장 증후군에서 종종 겹칩니다. 저포드맵(low-FODMAP) 식단과 같은 식단 수정은 대장 장벽 기능을 적극적으로 개선하고 비만 세포 과활성화를 진정시킬 수 있습니다.",
+    "tone": "Actionable",
+    "source": "Gao et al., Gastroenterology (2025)"
+  },
+  {
+    "condition": "Iron Supplementation Timing",
+    "fact_en": "Taking oral iron every single day can actually block its absorption due to hepcidin spikes. Studies show that taking iron supplements on alternate days (every other day) significantly increases how much iron your body actually absorbs.",
+    "fact_es": "Tomar hierro oral todos los días puede bloquear su absorción debido a los picos de hepcidina. Los estudios muestran que tomar suplementos de hierro en días alternos (un día sí y un día no) aumenta significativamente la cantidad de hierro que el cuerpo realmente absorbe.",
+    "fact_zh": "每天口服鐵劑實際上可能會因為鐵調素（Hepcidin）的激增而阻礙其吸收。研究顯示，隔天（每兩天一次）服用鐵補充劑會顯著增加身體實際吸收的鐵量。",
+    "fact_ko": "매일 경구용 철분을 복용하는 것은 헵시딘(hepcidin) 급증으로 인해 실제로 흡수를 방해할 수 있습니다. 연구에 따르면 격일로 철분 보충제를 복용하면 신체가 실제로 흡수하는 철분의 양이 현저히 증가하는 것으로 나타났습니다.",
+    "tone": "Actionable",
+    "source": "Stoffel et al., Haematologica / Aust Prescr (2020)"
+  },
+  {
+    "condition": "Folic Acid & Cystic Acne",
+    "fact_en": "If multivitamins break you out, there is a chemical reason. High doses of synthetic folic acid or B12 can upregulate porphyrin production in skin bacteria, triggering severe cystic acneiform eruptions.",
+    "fact_es": "Si los multivitamínicos te causan brotes, hay una razón química. Las altas dosis de ácido fólico sintético o B12 pueden incrementar la producción de porfirinas en las bacterias de la piel, desencadenando erupciones acneiformes quísticas severas.",
+    "fact_zh": "如果多種維生素會讓你長痘痘，這是有化學原因的。高劑量的合成葉酸或B12會增加皮膚細菌中紫質（Porphyrin）的產生，引發嚴重的囊腫性痤瘡樣皮疹。",
+    "fact_ko": "종합비타민이 피부 트러블을 유발한다면 거기에는 화학적 이유가 있습니다. 고용량의 합성 엽산이나 B12는 피부 박테리아에서 포르피린(porphyrin) 생성을 상향 조절하여 심각한 낭포성 여드름 발진을 유발할 수 있습니다.",
+    "tone": "Validating",
+    "source": "Owen et al., BUMC Proceedings (2025)"
+  },
+  {
+    "condition": "Muscle Wasting & Creatinine",
+    "fact_en": "Chronically low creatinine levels on blood tests do not mean you have 'super kidneys.' In chronic pain patients, it is a biological marker indicating significant skeletal muscle mass depletion (muscle wasting).",
+    "fact_es": "Tener niveles crónicamente bajos de creatinina en los análisis de sangre no significa que tengas 'súper riñones'. En pacientes con dolor crónico, es un marcador biológico que indica una reducción significativa de la masa muscular esquelética (desgaste muscular).",
+    "fact_zh": "血液檢查中肌酸酐水平長期偏低並不意味著你擁有「超級腎臟」。在慢性疼痛患者中，這是一個生物標記，表明骨骼肌質量顯著流失（肌肉消耗）。",
+    "fact_ko": "혈액 검사에서 만성적으로 낮은 크레아티닌 수치가 '슈퍼 신장'을 가지고 있음을 의미하는 것은 아닙니다. 만성 통증 환자의 경우, 이는 심각한 골격근량 감소(근육 위축)를 나타내는 생물학적 지표입니다.",
+    "tone": "Informative",
+    "source": "Delanaye et al., Nephron (2017)"
+  },
+  {
+    "condition": "POTS & Cardiac Atrophy",
+    "fact_en": "Being sedentary because of joint pain worsens dysautonomia. A lack of upright physical activity decreases blood volume and physically shrinks the left chamber of the heart (cardiac atrophy), making POTS symptoms much more severe when you stand.",
+    "fact_es": "Ser sedentario a causa del dolor articular empeora la disautonomía. La falta de actividad física en posición vertical disminuye el volumen sanguíneo y reduce físicamente la cámara izquierda del corazón (atrofia cardíaca), haciendo que los síntomas del POTS sean mucho más severos al estar de pie.",
+    "fact_zh": "因關節痛而久坐不動會使自律神經失調惡化。缺乏直立的體力活動會減少血容量，並使心臟左心室物理性縮小（心臟萎縮），導致你在站立時POTS的症狀嚴重許多。",
+    "fact_ko": "관절통으로 인해 앉아만 있는 것은 자율신경실조증을 악화시킵니다. 직립 상태의 신체 활동 부족은 혈액량을 감소시키고 심장의 좌심실을 물리적으로 수축시켜(심장 위축) 일어설 때 POTS 증상을 훨씬 더 심각하게 만듭니다.",
+    "tone": "Educational",
+    "source": "Ruiz Maya et al., Am J Med Genet (2021)"
+  },
+  {
+    "condition": "hEDS Genetic Overlap",
+    "fact_en": "Your multi-system symptoms have a shared root. Large-scale genetic analyses prove that hypermobile EDS shares a profound genetic architecture with chronic fatigue syndrome, fibromyalgia, irritable bowel syndrome, and depression.",
+    "fact_es": "Tus síntomas multisistémicos tienen una raíz compartida. Los análisis genéticos a gran escala prueban que el SED hiperlaxo comparte una profunda arquitectura genética con el síndrome de fatiga crónica, la fibromialgia, el intestino irritable y la depresión.",
+    "fact_zh": "你的多系統症狀有一個共同的根源。大規模遺傳分析證明，關節過度活動型EDS與慢性疲勞症候群、纖維肌痛、腸躁症和憂鬱症具有深度的共同遺傳基礎。",
+    "fact_ko": "당신의 다계통 증상에는 공유되는 뿌리가 있습니다. 대규모 유전 분석은 과운동성 EDS가 만성 피로 증후군, 섬유근육통, 과민성 대장 증후군 및 우울증과 깊은 유전적 구조를 공유함을 증명합니다.",
+    "tone": "Validating",
+    "source": "Petrucci-Nelson et al., GWAS (2025)"
+  },
+  {
+    "condition": "Psychotherapy & Connective Tissue",
+    "fact_en": "Living with an invisible, structural illness takes a massive psychological toll. Studies show that multidisciplinary care, including tailored psychotherapy, is highly beneficial in managing the complex biopsychosocial impact of EDS and HSD.",
+    "fact_es": "Vivir con una enfermedad estructural e invisible tiene un costo psicológico enorme. Los estudios muestran que la atención multidisciplinaria, incluida la psicoterapia adaptada, es muy beneficiosa para manejar el complejo impacto biopsicosocial del SED y el TEH.",
+    "fact_zh": "忍受一種看不見的結構性疾病會帶來巨大的心理代價。研究顯示，包含量身定制心理治療在內的多學科照護，在管理EDS和HSD複雜的生物心理社會影響方面非常有益。",
+    "fact_ko": "보이지 않는 구조적 질환을 안고 사는 것은 막대한 심리적 대가를 치릅니다. 연구에 따르면 맞춤형 심리 치료를 포함한 다학제적 치료는 EDS 및 HSD의 복잡한 생물심리사회적 영향을 관리하는 데 매우 유익한 것으로 나타났습니다.",
+    "tone": "Supportive",
+    "source": "Henning et al., Orphanet J Rare Dis (2026)"
+  },
+  {
+    "condition": "Health App 'Streaks'",
+    "fact_en": "Digital tracking 'streaks' punish patients with chronic illnesses. Your consistency depends on your body's fluctuating symptoms, not a lack of discipline. Taking a break to rest is an act of health, not a failure.",
+    "fact_es": "Las 'rachas' de las aplicaciones digitales castigan a los pacientes con enfermedades crónicas. Tu consistencia depende de los síntomas fluctuantes de tu cuerpo, no de una falta de disciplina. Tomar un descanso es un acto de salud, no un fracaso.",
+    "fact_zh": "數位追蹤的「打卡連續紀錄」對慢性病患者來說是一種懲罰。你的持續性取決於你身體波動的症狀，而不是缺乏自律。休息是為了健康的行為，而不是失敗。",
+    "fact_ko": "디지털 추적 '연속 기록(streaks)'은 만성 질환 환자에게 벌을 주는 것과 같습니다. 당신의 일관성은 규율의 부족이 아니라 신체의 변동하는 증상에 달려 있습니다. 휴식을 취하는 것은 실패가 아니라 건강을 위한 행동입니다.",
+    "tone": "Validating",
+    "source": "ZebraUp Design Principles / JMIR (2020)"
+  },
+  {
+    "condition": "Memory vs. Daily Tracking",
+    "fact_en": "When dealing with fluctuating diseases, human memory is flawed. Ecological Momentary Assessment (EMA) proves that tracking daily, observable features is far more clinically accurate than trying to remember how you felt weeks ago.",
+    "fact_es": "Al lidiar con enfermedades fluctuantes, la memoria humana es falible. La Evaluación Ecológica Momentánea (EMA) prueba que rastrear características observables diarias es mucho más exacto clínicamente que intentar recordar cómo te sentiste hace semanas.",
+    "fact_zh": "在應對波動的疾病時，人類的記憶是不可靠的。生態瞬時評估（EMA）證明，追蹤每日可觀察的特徵在臨床上比試圖回憶幾週前的感受要準確得多。",
+    "fact_ko": "변동이 심한 질환을 다룰 때 인간의 기억은 결함이 있습니다. 생태순간평가(EMA)는 매일의 관찰 가능한 특징을 추적하는 것이 몇 주 전에 어떻게 느꼈는지 기억하려는 것보다 임상적으로 훨씬 더 정확하다는 것을 증명합니다.",
+    "tone": "Educational",
+    "source": "Palsson et al., Am J Gastroenterol (2013)"
+  },
+  {
+    "condition": "Medical Gaslighting & Diagnostic Delay",
+    "fact_en": "If you fought for years to be believed, the data backs you up. A global survey found that hypermobile EDS patients endure an average diagnostic delay of 22.1 years. Your search for answers was justified.",
+    "fact_es": "Si luchaste durante años para que te creyeran, los datos te respaldan. Una encuesta global reveló que los pacientes con SEDh soportan un retraso diagnóstico promedio de 22.1 años. Tu búsqueda de respuestas estaba justificada.",
+    "fact_zh": "如果你為了被相信而奮鬥了數年，數據是支持你的。一項全球調查發現，關節過度活動型EDS患者平均忍受22.1年的診斷延遲。你尋找答案的過程是合理的。",
+    "fact_ko": "믿음을 얻기 위해 수년을 싸웠다면 데이터가 당신을 뒷받침합니다. 글로벌 설문조사에 따르면 과운동성 EDS 환자는 평균 22.1년의 진단 지연을 견디는 것으로 나타났습니다. 답을 찾으려는 당신의 노력은 정당했습니다.",
+    "tone": "Empowering",
+    "source": "Daylor et al., J Clin Med (2025)"
+  },
+  {
+    "condition": "Calisthenics Tempo & Joints",
+    "fact_en": "Using a slow tempo during calisthenics (like 2 seconds down, 2 seconds up) eliminates momentum. This forces your muscles to do the active work of stabilizing the joint, preventing dangerous ligament overextension.",
+    "fact_es": "Usar un tempo lento en la calistenia (como 2 segundos al bajar y 2 al subir) elimina el impulso. Esto obliga a tus músculos a hacer el trabajo activo de estabilizar la articulación, previniendo la peligrosa hiperextensión de los ligamentos.",
+    "fact_zh": "在徒手健身時使用緩慢的節奏（例如下降2秒，上升2秒）可以消除慣性。這迫使你的肌肉去做穩定關節的主動工作，防止危險的韌帶過度伸展。",
+    "fact_ko": "맨몸 운동 중 느린 템포(예: 2초 동안 내려가고 2초 동안 올라가기)를 사용하면 관성이 제거됩니다. 이것은 근육이 관절을 안정시키는 능동적인 작업을 하도록 강제하여 위험한 인대 과신전을 방지합니다.",
+    "tone": "Actionable",
+    "source": "Hybrid Calisthenics Biomechanical Analysis"
+  },
+  {
+    "condition": "Cerebral Hypoperfusion (Brain Fog)",
+    "fact_en": "The 'brain fog' in dysautonomia isn't just tiredness; it is often caused by cerebral hypoperfusion. When upright, gravity pools your blood in your lower body, temporarily reducing the oxygen delivered to your brain.",
+    "fact_es": "La 'niebla mental' en la disautonomía no es solo cansancio; a menudo es causada por hipoperfusión cerebral. Al estar de pie, la gravedad acumula la sangre en la parte inferior de tu cuerpo, reduciendo temporalmente el oxígeno que llega al cerebro.",
+    "fact_zh": "自律神經失調中的「腦霧」不只是疲倦；它通常是由腦部血流灌注不足引起的。當你直立時，重力會讓血液積聚在下半身，暫時減少輸送到大腦的氧氣。",
+    "fact_ko": "자율신경실조증의 '브레인 포그'는 단순한 피로가 아닙니다. 그것은 종종 뇌 관류 저하에 의해 발생합니다. 일어섰을 때 중력은 혈액을 하체로 고이게 하여 일시적으로 뇌로 전달되는 산소를 감소시킵니다.",
+    "tone": "Educational",
+    "source": "Garland et al. / Maya et al. (2021)"
+  },
+  {
+    "condition": "The Gut-Brain Axis & IBS",
+    "fact_en": "Mind-body practices like Yoga have been systematically proven to reduce the severity of IBS symptoms, as they help shift the nervous system out of 'fight-or-flight' mode, restoring normal gut motility.",
+    "fact_es": "Las prácticas de mente y cuerpo como el Yoga han demostrado sistemáticamente reducir la severidad de los síntomas del SII, ya que ayudan a sacar al sistema nervioso del modo 'lucha o huida', restaurando la motilidad intestinal normal.",
+    "fact_zh": "像瑜伽這樣的身心練習已被系統性地證明可以減輕IBS症狀的嚴重程度，因為它們有助於讓神經系統脫離「戰或逃」模式，恢復正常的腸道蠕動。",
+    "fact_ko": "요가와 같은 심신 수련은 신경계가 '투쟁-도피' 모드에서 벗어나도록 도와 정상적인 장 운동성을 회복시킴으로써 IBS 증상의 심각성을 줄이는 것으로 체계적으로 입증되었습니다.",
+    "tone": "Actionable",
+    "source": "Pavan et al., Compr Physiol (2025)"
+  },
+  {
+    "condition": "Hemorrhoids & Connective Tissue",
+    "fact_en": "Hemorrhoids are not just 'swollen veins.' Recent clinical research classifies them as a collagen disease. In EDS, the extracellular matrix and supportive connective tissue in the anal canal degrade, meaning hemorrhoids are a structural failure, not just a result of constipation.",
+    "fact_es": "Las hemorroides no son solo 'venas hinchadas'. La investigación clínica reciente las clasifica como una enfermedad del colágeno. En el SED, la matriz extracelular y el tejido conectivo de soporte en el canal anal se degradan, lo que significa que las hemorroides son una falla estructural, no solo un resultado del estreñimiento.",
+    "tone": "Validating",
+    "source": "Sandler & Peery (2019) / Plackett et al. (2014)"
+  },
+  {
+    "condition": "PTSD as a Systemic Disorder",
+    "fact_en": "PTSD is not just in your head; it is a systemic, whole-body metabolic disorder. The psychological symptoms are just the 'tip of the iceberg' of a condition that actively alters your cardiovascular, immune, and endocrine systems.",
+    "fact_es": "El TEPT no está solo en tu cabeza; es un trastorno metabólico sistémico de todo el cuerpo. Los síntomas psicológicos son solo la 'punta del iceberg' de una condición que altera activamente tus sistemas cardiovascular, inmunológico y endocrino.",
+    "tone": "Validating",
+    "source": "Krantz et al., Health Psychol (2022)"
+  },
+  {
+    "condition": "Pain & Trauma Loop",
+    "fact_en": "There is a vicious, bidirectional cycle between physical pain and PTSD. Severe physical pain actively drives and worsens PTSD symptoms, meaning your nervous system cannot fully recover from trauma while your body is structurally hurting.",
+    "fact_es": "Existe un círculo vicioso y bidireccional entre el dolor físico y el TEPT. El dolor físico severo impulsa y empeora activamente los síntomas del TEPT, lo que significa que tu sistema nervioso no puede recuperarse completamente del trauma mientras tu cuerpo sufra estructuralmente.",
+    "tone": "Educational",
+    "source": "Short et al., J Psychopathol Clin Sci (2025)"
+  },
+  {
+    "condition": "Triggering Events (hEDS/HSD)",
+    "fact_en": "If your health suddenly crashed after an illness or trauma, it wasn't a coincidence. Over two-thirds of hEDS/HSD patients report a major triggering event (like a viral infection, severe stress, or physical trauma) that suddenly 'unmasks' or permanently worsens their systemic symptoms.",
+    "fact_es": "Si tu salud se desplomó repentinamente después de una enfermedad o trauma, no fue una coincidencia. Más de dos tercios de los pacientes con SEDh/TEH reportan un evento desencadenante importante (como una infección viral, estrés severo o trauma físico) que 'desenmascara' o empeora permanentemente sus síntomas sistémicos.",
+    "tone": "Validating",
+    "source": "Daylor et al., J Clin Med (2025)"
+  },
+  {
+    "condition": "Vitamins & Cystic Acne",
+    "fact_en": "If B-vitamin supplements cause painful acne, it is a proven biological reaction. Research shows that high doses of B12 alter the transcriptome of skin bacteria (P. acnes). The bacteria downregulate their own B12 synthesis and upregulate porphyrins, triggering aggressive, inflammatory cystic breakouts.",
+    "fact_es": "Si los suplementos de vitamina B causan acné doloroso, es una reacción biológica comprobada. La investigación demuestra que altas dosis de B12 alteran el transcriptoma de las bacterias de la piel (P. acnes). Las bacterias disminuyen su propia síntesis de B12 y aumentan la producción de porfirinas, desencadenando brotes quísticos inflamatorios y agresivos.",
+    "tone": "Informative",
+    "source": "Kang et al., Sci Transl Med (2015)"
+  },
+  {
+    "condition": "Antacids & B12 Malabsorption",
+    "fact_en": "Taking daily antacids (like for GERD) suppresses stomach acid and pepsin. Without pepsin, your body cannot separate Vitamin B12 from the food you eat, leading to cellular starvation even if your blood levels appear 'borderline normal'.",
+    "fact_es": "Tomar antiácidos diarios (como para el ERGE) suprime el ácido del estómago y la pepsina. Sin pepsina, tu cuerpo no puede separar la vitamina B12 de los alimentos que comes, lo que lleva a una inanición celular incluso si tus niveles en sangre parecen 'casi normales'.",
+    "tone": "Actionable",
+    "source": "Dharmarajan et al., Geriatrics (2003) / Onur et al. (2024)"
+  },
+  {
+    "condition": "Flawed Human Memory (EMA)",
+    "fact_en": "When dealing with fluctuating chronic illnesses, retrospective human memory is naturally flawed. This is why tracking symptoms in the moment is crucial—patients reliably overestimate the severity of past symptoms when asked at a doctor's appointment weeks later.",
+    "fact_es": "Al lidiar con enfermedades crónicas fluctuantes, la memoria humana retrospectiva es naturalmente defectuosa. Es por esto que rastrear los síntomas en el momento es crucial: los pacientes sobreestiman de manera confiable la gravedad de los síntomas pasados cuando se les pregunta en una cita médica semanas después.",
+    "tone": "Educational",
+    "source": "Palsson et al., Am J Gastroenterol (2012)"
+  },
+  {
+    "condition": "Tracking Motivation",
+    "fact_en": "Chronic illness patients are not 'too tired' to track their health. Studies show that when an app reduces cognitive load and provides clinical relevance, patients with chronic pain maintain a highly robust 79% tracking compliance rate.",
+    "fact_es": "Los pacientes con enfermedades crónicas no están 'demasiado cansados' para rastrear su salud. Los estudios muestran que cuando una aplicación reduce la carga cognitiva y proporciona relevancia clínica, los pacientes con dolor crónico mantienen una tasa de cumplimiento de seguimiento altamente robusta del 79%.",
+    "tone": "Empowering",
+    "source": "Wrzus & Neubauer, Assessment (2023)"
+  },
+  {
+    "condition": "Restless Legs Syndrome (RLS) & Iron",
+    "fact_en": "Restless Legs Syndrome is not just 'nervous energy'; it is deeply linked to low iron in the brain. If your ferritin drops below 75 ng/mL, iron supplementation is actually the first-line treatment for the uncontrollable urge to move your legs at night.",
+    "fact_es": "El Síndrome de Piernas Inquietas no es solo 'energía nerviosa'; está profundamente relacionado con niveles bajos de hierro en el cerebro. Si tu ferritina cae por debajo de 75 ng/mL, la suplementación con hierro es en realidad el tratamiento de primera línea para la necesidad incontrolable de mover las piernas por la noche.",
+    "tone": "Actionable",
+    "source": "Zhu et al., Front Neurol (2020) / Aust Prescr (2021)"
+  },
+  {
+    "condition": "Local Anesthetic Resistance",
+    "fact_en": "If numbing shots at the dentist wear off quickly or don't work at all, it's not in your head. Local anesthetic resistance is a clinically documented and measurable phenomenon specific to Ehlers-Danlos Syndromes.",
+    "fact_es": "Si las inyecciones de anestesia en el dentista pierden su efecto rápidamente o no funcionan en absoluto, no está en tu cabeza. La resistencia a los anestésicos locales es un fenómeno clínicamente documentado y medible específico de los Síndromes de Ehlers-Danlos.",
+    "tone": "Validating",
+    "source": "Bourne et al. (2026) / The Ehlers-Danlos Society"
+  },
+  {
+    "condition": "IBS Pain Mechanisms",
+    "fact_en": "Pain in Irritable Bowel Syndrome changes based on its trigger. Pain from diarrhea is usually tied to the immediate passage of stool, while pain from constipation builds up progressively from cumulative days of bowel distention.",
+    "fact_es": "El dolor en el Síndrome del Intestino Irritable cambia según su detonante. El dolor por diarrea generalmente está ligado al paso inmediato de las heces, mientras que el dolor por estreñimiento se acumula progresivamente por los días acumulados de distensión intestinal.",
+    "tone": "Informative",
+    "source": "Palsson et al., Am J Gastroenterol (2012)"
+  },
+  {
+    "condition": "The 'Iron Flu'",
+    "fact_en": "Experiencing severe body aches and exhaustion 24-48 hours after an IV iron infusion is a common inflammatory response known as the 'iron flu.' It is a temporary sign that your immune system is processing the large influx of iron.",
+    "fact_es": "Experimentar dolores corporales severos y agotamiento 24-48 horas después de una infusión de hierro intravenoso es una respuesta inflamatoria común conocida como la 'gripe del hierro'. Es una señal temporal de que tu sistema inmunológico está procesando la gran afluencia de hierro.",
+    "tone": "Educational",
+    "source": "Clinical Hematology Management Protocols"
+  },
+  {
+    "condition": "Neuroimmune Crosstalk",
+    "fact_en": "Hypermobility is not just a musculoskeletal issue; it is a marker of broader neuroimmune dysregulation. Triggering events can unmask this immune involvement, causing sudden hypersensitivity and mast cell activation.",
+    "fact_es": "La hiperlaxitud no es solo un problema musculoesquelético; es un marcador de una disregulación neuroinmune más amplia. Los eventos desencadenantes pueden desenmascarar esta participación inmunológica, causando hipersensibilidad repentina y activación de mastocitos.",
+    "tone": "Validating",
+    "source": "Norris Lab, MUSC (2024/2025)"
+  }
   ]
 }

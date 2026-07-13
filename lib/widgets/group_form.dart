@@ -114,17 +114,17 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
 
   void _save() {
     final entries = _checkedQuantities.entries
-        .map((e) => MedicationGroupEntry(
-              medicationId: e.key,
-              quantity: e.value,
-            ))
+        .map(
+          (e) => MedicationGroupEntry(medicationId: e.key, quantity: e.value),
+        )
         .toList();
 
     final group = MedicationGroup(
       id: widget.existing?.id, // preserve id on edit
       name: _nameCtrl.text.trim(),
-      defaultTimeMinutes:
-          _useDefaultTime ? _defaultTime.hour * 60 + _defaultTime.minute : null,
+      defaultTimeMinutes: _useDefaultTime
+          ? _defaultTime.hour * 60 + _defaultTime.minute
+          : null,
       entries: entries,
     );
     Navigator.of(context).pop(group);
@@ -135,30 +135,37 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: widget.inverseContrastColor,
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16)),
-        title: Text('¿Eliminar este grupo?',
-            style: TextStyle(color: widget.contrastColor)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          '¿Eliminar este grupo?',
+          style: TextStyle(color: widget.contrastColor),
+        ),
         content: Text(
           'El grupo se elimina, pero los medicamentos siguen en tu botiquín.',
           style: TextStyle(
-              color: widget.contrastColor.withValues(alpha: 0.8),
-              height: 1.45),
+            color: widget.contrastColor.withValues(alpha: 0.8),
+            height: 1.45,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text('Cancelar',
-                style: TextStyle(
-                    color:
-                        widget.contrastColor.withValues(alpha: 0.7))),
+            child: Text(
+              'Cancelar',
+              style: TextStyle(
+                color: widget.contrastColor.withValues(alpha: 0.7),
+              ),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text('Eliminar',
-                style: TextStyle(
-                    color: const Color(0xFFE57373),
-                    fontWeight: FontWeight.bold)),
+            child: Text(
+              'Eliminar',
+              style: TextStyle(
+                color: const Color(0xFFE57373),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
       ),
@@ -237,7 +244,9 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
                 controller: _nameCtrl,
                 style: TextStyle(color: cc),
                 decoration: _inputDeco(
-                    'p. ej. Meds de la noche, Vitaminas mañana', cc),
+                  'p. ej. Meds de la noche, Vitaminas mañana',
+                  cc,
+                ),
                 onChanged: (_) => setState(() {}),
               ),
               const SizedBox(height: 14),
@@ -246,7 +255,9 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
               _fieldLabel('Hora por defecto', cc),
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 4),
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: cc.withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(8),
@@ -256,8 +267,7 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
                   children: [
                     Switch(
                       value: _useDefaultTime,
-                      onChanged: (v) =>
-                          setState(() => _useDefaultTime = v),
+                      onChanged: (v) => setState(() => _useDefaultTime = v),
                       activeColor: cc,
                     ),
                     if (_useDefaultTime) ...[
@@ -274,10 +284,11 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
                         onPressed: _pickTime,
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
                           minimumSize: const Size(0, 32),
-                          tapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
                           _defaultTime.format(context),
@@ -304,9 +315,10 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
 
               // Med checklist
               _fieldLabel(
-                  'Medicamentos${_checkedQuantities.isEmpty ? "" : " · ${_checkedQuantities.length} seleccionados"}',
-                  cc,
-                  required: true),
+                'Medicamentos${_checkedQuantities.isEmpty ? "" : " · ${_checkedQuantities.length} seleccionados"}',
+                cc,
+                required: true,
+              ),
               if (meds.isEmpty)
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -326,26 +338,30 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
                 )
               else
                 Column(
-                  children: meds.map((m) => _MedCheckRow(
-                        med: m,
-                        contrastColor: cc,
-                        checkedQuantity: _checkedQuantities[m.id],
-                        onToggle: (checked) {
-                          setState(() {
-                            if (checked) {
-                              _checkedQuantities[m.id] =
-                                  m.defaultQuantity == 0
-                                      ? 1.0
-                                      : m.defaultQuantity;
-                            } else {
-                              _checkedQuantities.remove(m.id);
-                            }
-                          });
-                        },
-                        onQuantityChanged: (q) {
-                          setState(() => _checkedQuantities[m.id] = q);
-                        },
-                      )).toList(),
+                  children: meds
+                      .map(
+                        (m) => _MedCheckRow(
+                          med: m,
+                          contrastColor: cc,
+                          checkedQuantity: _checkedQuantities[m.id],
+                          onToggle: (checked) {
+                            setState(() {
+                              if (checked) {
+                                _checkedQuantities[m.id] =
+                                    m.defaultQuantity == 0
+                                    ? 1.0
+                                    : m.defaultQuantity;
+                              } else {
+                                _checkedQuantities.remove(m.id);
+                              }
+                            });
+                          },
+                          onQuantityChanged: (q) {
+                            setState(() => _checkedQuantities[m.id] = q);
+                          },
+                        ),
+                      )
+                      .toList(),
                 ),
               const SizedBox(height: 24),
 
@@ -360,12 +376,15 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
                     disabledBackgroundColor: cc.withValues(alpha: 0.2),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(
                     _isEditing ? 'Guardar cambios' : 'Crear grupo',
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),
@@ -376,8 +395,11 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
                 Center(
                   child: TextButton.icon(
                     onPressed: _confirmDelete,
-                    icon: Icon(Icons.delete_outline,
-                        size: 16, color: const Color(0xFFE57373)),
+                    icon: Icon(
+                      Icons.delete_outline,
+                      size: 16,
+                      color: const Color(0xFFE57373),
+                    ),
                     label: const Text(
                       'Eliminar grupo',
                       style: TextStyle(
@@ -412,10 +434,13 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
             ),
           ),
           if (required)
-            Text(' *',
-                style: TextStyle(
-                    color: Colors.red.shade400,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              ' *',
+              style: TextStyle(
+                color: Colors.red.shade400,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
         ],
       ),
     );
@@ -428,8 +453,7 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
     );
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(
-          color: cc.withValues(alpha: 0.35), fontSize: 13),
+      hintStyle: TextStyle(color: cc.withValues(alpha: 0.35), fontSize: 13),
       filled: true,
       fillColor: cc.withValues(alpha: 0.04),
       border: border,
@@ -438,8 +462,7 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: cc, width: 1.5),
       ),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       isDense: true,
     );
   }
@@ -481,9 +504,7 @@ class _MedCheckRow extends StatelessWidget {
             ? cc.withValues(alpha: 0.08)
             : cc.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: cc.withValues(alpha: checked ? 0.35 : 0.12),
-        ),
+        border: Border.all(color: cc.withValues(alpha: checked ? 0.35 : 0.12)),
       ),
       child: Column(
         children: [

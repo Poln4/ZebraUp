@@ -80,6 +80,8 @@ flutter:
     - assets/ema_moods.json
     - assets/drug_codes.json
     - assets/symptom_definitions.json
+    - assets/images/zebraup_logo.png
+    - assets/images/favicon.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

@@ -99,15 +99,26 @@ class _InvestigacionTabState extends State<InvestigacionTab>
         children: [
           Text(
             "Resultados recientes de PubMed",
-            style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1),
+            style: TextStyle(
+              color: cc,
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+              letterSpacing: 1,
+            ),
           ),
           const SizedBox(height: 4),
           Text(
             "Desliza para actualizar. Solo informativo, no es consejo médico.",
-            style: TextStyle(color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic),
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
           ),
           const SizedBox(height: 16),
-          ...widget.profile.conditions.map((c) => _buildConditionSection(c, cc, ic)),
+          ...widget.profile.conditions.map(
+            (c) => _buildConditionSection(c, cc, ic),
+          ),
         ],
       ),
     );
@@ -125,7 +136,8 @@ class _InvestigacionTabState extends State<InvestigacionTab>
         padding: const EdgeInsets.only(top: 2),
         child: Text(
           l10n.investigationConditionArticleCountTemplate(
-              result.articles.length),
+            result.articles.length,
+          ),
           style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
         ),
       );
@@ -154,10 +166,11 @@ class _InvestigacionTabState extends State<InvestigacionTab>
               child: Text(
                 condition.toUpperCase(),
                 style: TextStyle(
-                    color: cc,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    letterSpacing: 1),
+                  color: cc,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  letterSpacing: 1,
+                ),
               ),
             ),
             if (result != null && result.fromCache && !isLoading)
@@ -165,8 +178,11 @@ class _InvestigacionTabState extends State<InvestigacionTab>
                 padding: const EdgeInsets.only(left: 8),
                 child: Tooltip(
                   message: l10n.researchTooltipOffline,
-                  child: Icon(Icons.cloud_off_outlined,
-                      color: Colors.grey, size: 14),
+                  child: Icon(
+                    Icons.cloud_off_outlined,
+                    color: Colors.grey,
+                    size: 14,
+                  ),
                 ),
               ),
           ],
@@ -186,14 +202,18 @@ class _InvestigacionTabState extends State<InvestigacionTab>
             if (result.error != null)
               Padding(
                 padding: const EdgeInsets.all(12),
-                child: Text(result.error!,
-                    style: const TextStyle(color: Colors.orange, fontSize: 12)),
+                child: Text(
+                  result.error!,
+                  style: const TextStyle(color: Colors.orange, fontSize: 12),
+                ),
               ),
             if (result.articles.isEmpty && result.error == null)
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text("No se encontraron resultados recientes.",
-                    style: TextStyle(color: Colors.grey, fontSize: 12)),
+                child: Text(
+                  "No se encontraron resultados recientes.",
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
               ),
             ...result.articles.map((a) => _buildArticleTile(a, cc, ic)),
             if (result.articles.isNotEmpty)
@@ -202,17 +222,20 @@ class _InvestigacionTabState extends State<InvestigacionTab>
                 child: Text(
                   "Actualizado: ${DateFormat('d MMM HH:mm').format(result.fetchedAt)}",
                   style: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 10,
-                      fontStyle: FontStyle.italic),
+                    color: Colors.grey,
+                    fontSize: 10,
+                    fontStyle: FontStyle.italic,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ),
           ] else if (!isLoading)
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Text("Sin datos. Tira hacia abajo para buscar.",
-                  style: TextStyle(color: Colors.grey, fontSize: 12)),
+              child: Text(
+                "Sin datos. Tira hacia abajo para buscar.",
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
             ),
         ],
       ),
@@ -230,7 +253,11 @@ class _InvestigacionTabState extends State<InvestigacionTab>
         collapsedIconColor: cc,
         title: Text(
           a.title,
-          style: TextStyle(color: cc, fontSize: 13, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: cc,
+            fontSize: 13,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
@@ -239,7 +266,16 @@ class _InvestigacionTabState extends State<InvestigacionTab>
             style: const TextStyle(color: Colors.grey, fontSize: 11),
           ),
         ),
-        children: [_ArticleDetail(article: a, service: widget.service, contrastColor: cc, inverseContrastColor: ic, isSaved: isSaved, onToggleSave: () => widget.onToggleSave(a.pmid))],
+        children: [
+          _ArticleDetail(
+            article: a,
+            service: widget.service,
+            contrastColor: cc,
+            inverseContrastColor: ic,
+            isSaved: isSaved,
+            onToggleSave: () => widget.onToggleSave(a.pmid),
+          ),
+        ],
       ),
     );
   }
@@ -301,21 +337,32 @@ class _ArticleDetailState extends State<_ArticleDetail> {
               child: Row(
                 children: [
                   SizedBox(
-                      width: 14,
-                      height: 14,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: cc)),
+                    width: 14,
+                    height: 14,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: cc),
+                  ),
                   const SizedBox(width: 8),
-                  Text("Cargando resumen…",
-                      style: TextStyle(color: Colors.grey, fontSize: 12)),
+                  Text(
+                    "Cargando resumen…",
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
                 ],
               ),
             )
           else if (_abstract == null || _abstract!.isEmpty)
-            Text("Resumen no disponible. Abre el artículo en PubMed para más detalles.",
-                style: TextStyle(color: Colors.grey, fontSize: 12, fontStyle: FontStyle.italic))
+            Text(
+              "Resumen no disponible. Abre el artículo en PubMed para más detalles.",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            )
           else
-            SelectableText(_abstract!,
-                style: TextStyle(color: cc, fontSize: 12, height: 1.5)),
+            SelectableText(
+              _abstract!,
+              style: TextStyle(color: cc, fontSize: 12, height: 1.5),
+            ),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -325,17 +372,22 @@ class _ArticleDetailState extends State<_ArticleDetail> {
                 style: OutlinedButton.styleFrom(side: BorderSide(color: cc)),
                 icon: Icon(
                   widget.isSaved ? Icons.bookmark : Icons.bookmark_border,
-                  color: cc, size: 16,
+                  color: cc,
+                  size: 16,
                 ),
-                label: Text(widget.isSaved ? 'Guardado' : 'Guardar',
-                    style: TextStyle(color: cc, fontSize: 12)),
+                label: Text(
+                  widget.isSaved ? 'Guardado' : 'Guardar',
+                  style: TextStyle(color: cc, fontSize: 12),
+                ),
                 onPressed: widget.onToggleSave,
               ),
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(side: BorderSide(color: cc)),
                 icon: Icon(Icons.open_in_new, color: cc, size: 16),
-                label: Text('Abrir en PubMed',
-                    style: TextStyle(color: cc, fontSize: 12)),
+                label: Text(
+                  'Abrir en PubMed',
+                  style: TextStyle(color: cc, fontSize: 12),
+                ),
                 onPressed: () async {
                   final uri = Uri.parse(widget.article.pubmedUrl);
                   await launchUrl(uri, mode: LaunchMode.externalApplication);
@@ -344,10 +396,14 @@ class _ArticleDetailState extends State<_ArticleDetail> {
               OutlinedButton.icon(
                 style: OutlinedButton.styleFrom(side: BorderSide(color: cc)),
                 icon: Icon(Icons.copy, color: cc, size: 16),
-                label: Text('Copiar PMID',
-                    style: TextStyle(color: cc, fontSize: 12)),
+                label: Text(
+                  'Copiar PMID',
+                  style: TextStyle(color: cc, fontSize: 12),
+                ),
                 onPressed: () async {
-                  await Clipboard.setData(ClipboardData(text: widget.article.pmid));
+                  await Clipboard.setData(
+                    ClipboardData(text: widget.article.pmid),
+                  );
                   if (!mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

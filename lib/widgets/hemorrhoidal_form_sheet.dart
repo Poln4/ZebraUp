@@ -34,7 +34,8 @@ Future<HemorrhoidalEvent?> showHemorrhoidalFormSheet({
     context: context,
     backgroundColor: inverseContrastColor,
     shape: RoundedRectangleBorder(
-        side: BorderSide(color: contrastColor, width: 2)),
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     isScrollControlled: true,
     builder: (ctx) => _HemorrhoidalForm(
       contrastColor: contrastColor,
@@ -103,11 +104,14 @@ class _HemorrhoidalFormState extends State<_HemorrhoidalForm> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.existing != null;
-    final title =
-        isEdit ? l10n.hemorrhoidalFormTitleEdit : l10n.hemorrhoidalFormTitleNew;
+    final title = isEdit
+        ? l10n.hemorrhoidalFormTitleEdit
+        : l10n.hemorrhoidalFormTitleNew;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -164,21 +168,22 @@ class _HemorrhoidalFormState extends State<_HemorrhoidalForm> {
               borderRadius: BorderRadius.circular(16),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: _bleeding ? _cc : Colors.transparent,
                   border: Border.all(
-                      color: _cc.withValues(alpha: _bleeding ? 1.0 : 0.4)),
+                    color: _cc.withValues(alpha: _bleeding ? 1.0 : 0.4),
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      _bleeding
-                          ? Icons.check_circle
-                          : Icons.circle_outlined,
+                      _bleeding ? Icons.check_circle : Icons.circle_outlined,
                       color: _bleeding ? _ic : _cc.withValues(alpha: 0.6),
                       size: 16,
                     ),

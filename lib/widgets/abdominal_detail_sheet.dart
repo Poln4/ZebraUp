@@ -86,16 +86,20 @@ class _AbdominalDetailSheetContentState
     _quality = widget.existing?.quality;
     _timing = widget.existing?.timing;
     _accompaniments = Set<AbdominalAccompaniment>.from(
-        widget.existing?.accompaniments ?? const {});
+      widget.existing?.accompaniments ?? const {},
+    );
     _triggers = Set<AbdominalTrigger>.from(
-        widget.existing?.triggers ?? const {});
+      widget.existing?.triggers ?? const {},
+    );
 
     // D.2: Progressive disclosure semántico.
     // Only apply variant pre-selection when NOT editing existing detail
     // — in edit mode, the user's stored selections take precedence.
     if (widget.existing == null) {
-      final variant = SymptomDefinitionsService.instance
-          .detectAliasVariant(widget.symptomInput, 'abdominal_pain');
+      final variant = SymptomDefinitionsService.instance.detectAliasVariant(
+        widget.symptomInput,
+        'abdominal_pain',
+      );
       switch (variant) {
         case 'bloating':
           _accompaniments.add(AbdominalAccompaniment.bloating);
@@ -132,16 +136,26 @@ class _AbdominalDetailSheetContentState
                   controller: scrollController,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   children: [
-                    _buildGroup(ctx, locale,
-                        groupKey: 'location', single: true),
-                    _buildGroup(ctx, locale,
-                        groupKey: 'quality', single: true),
-                    _buildGroup(ctx, locale,
-                        groupKey: 'timing', single: true),
-                    _buildGroup(ctx, locale,
-                        groupKey: 'accompaniments', single: false),
-                    _buildGroup(ctx, locale,
-                        groupKey: 'trigger', single: false),
+                    _buildGroup(
+                      ctx,
+                      locale,
+                      groupKey: 'location',
+                      single: true,
+                    ),
+                    _buildGroup(ctx, locale, groupKey: 'quality', single: true),
+                    _buildGroup(ctx, locale, groupKey: 'timing', single: true),
+                    _buildGroup(
+                      ctx,
+                      locale,
+                      groupKey: 'accompaniments',
+                      single: false,
+                    ),
+                    _buildGroup(
+                      ctx,
+                      locale,
+                      groupKey: 'trigger',
+                      single: false,
+                    ),
                     const SizedBox(height: 16),
                   ],
                 ),
@@ -159,14 +173,14 @@ class _AbdominalDetailSheetContentState
   // ---------------------------------------------------------------------
 
   Widget _handleBar() => Container(
-        margin: const EdgeInsets.only(top: 8),
-        width: 40,
-        height: 4,
-        decoration: BoxDecoration(
-          color: widget.contrastColor.withOpacity(0.3),
-          borderRadius: BorderRadius.circular(2),
-        ),
-      );
+    margin: const EdgeInsets.only(top: 8),
+    width: 40,
+    height: 4,
+    decoration: BoxDecoration(
+      color: widget.contrastColor.withOpacity(0.3),
+      borderRadius: BorderRadius.circular(2),
+    ),
+  );
 
   Widget _titleRow(BuildContext ctx, AppLocalizations l10n, String locale) =>
       Padding(
@@ -211,46 +225,45 @@ class _AbdominalDetailSheetContentState
       );
 
   Widget _actionBar(BuildContext ctx, AppLocalizations l10n) => SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-          child: Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(ctx).pop(null),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: BorderSide(color: widget.contrastColor),
-                    foregroundColor: widget.contrastColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(l10n.actionSkip),
+    top: false,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton(
+              onPressed: () => Navigator.of(ctx).pop(null),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                side: BorderSide(color: widget.contrastColor),
+                foregroundColor: widget.contrastColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: _canSave() ? () => _attemptSave(ctx) : null,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: widget.contrastColor,
-                    foregroundColor: widget.inverseContrastColor,
-                    disabledBackgroundColor:
-                        widget.contrastColor.withOpacity(0.3),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text(l10n.abdominalActionSaveDetail),
-                ),
-              ),
-            ],
+              child: Text(l10n.actionSkip),
+            ),
           ),
-        ),
-      );
+          const SizedBox(width: 12),
+          Expanded(
+            child: ElevatedButton(
+              onPressed: _canSave() ? () => _attemptSave(ctx) : null,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                backgroundColor: widget.contrastColor,
+                foregroundColor: widget.inverseContrastColor,
+                disabledBackgroundColor: widget.contrastColor.withOpacity(0.3),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(l10n.abdominalActionSaveDetail),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 
   // ---------------------------------------------------------------------
   // Selection state
@@ -299,8 +312,11 @@ class _AbdominalDetailSheetContentState
         ),
         title: Row(
           children: [
-            Icon(Icons.warning_amber_rounded,
-                color: widget.contrastColor, size: 24),
+            Icon(
+              Icons.warning_amber_rounded,
+              color: widget.contrastColor,
+              size: 24,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -327,14 +343,12 @@ class _AbdominalDetailSheetContentState
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dctx).pop(false),
-            style: TextButton.styleFrom(
-                foregroundColor: widget.contrastColor),
+            style: TextButton.styleFrom(foregroundColor: widget.contrastColor),
             child: Text(l10n.abdominalTearingEmergencyChangeQuality),
           ),
           TextButton(
             onPressed: () => Navigator.of(dctx).pop(true),
-            style: TextButton.styleFrom(
-                foregroundColor: widget.contrastColor),
+            style: TextButton.styleFrom(foregroundColor: widget.contrastColor),
             child: Text(
               l10n.abdominalTearingEmergencySaveAsIs,
               style: const TextStyle(fontWeight: FontWeight.bold),
@@ -448,12 +462,14 @@ class _AbdominalDetailSheetContentState
             spacing: 6,
             runSpacing: 6,
             children: chipKeys
-                .map((chipKey) => _buildChip(
-                      ctx,
-                      locale,
-                      groupKey: groupKey,
-                      chipKey: chipKey,
-                    ))
+                .map(
+                  (chipKey) => _buildChip(
+                    ctx,
+                    locale,
+                    groupKey: groupKey,
+                    chipKey: chipKey,
+                  ),
+                )
                 .toList(),
           ),
         ],
@@ -468,8 +484,8 @@ class _AbdominalDetailSheetContentState
     required String chipKey,
   }) {
     final svc = SymptomDefinitionsService.instance;
-    final label = svc.getChipLabel(
-            'abdominal_pain', groupKey, chipKey, locale) ??
+    final label =
+        svc.getChipLabel('abdominal_pain', groupKey, chipKey, locale) ??
         chipKey;
     final selected = _isSelected(groupKey, chipKey);
 
@@ -489,10 +505,7 @@ class _AbdominalDetailSheetContentState
       side: BorderSide(
         color: widget.contrastColor.withOpacity(selected ? 0.6 : 0.25),
       ),
-      labelStyle: TextStyle(
-        color: widget.contrastColor,
-        fontSize: 13,
-      ),
+      labelStyle: TextStyle(color: widget.contrastColor, fontSize: 13),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     );
   }
@@ -505,8 +518,7 @@ class _AbdominalDetailSheetContentState
     final svc = SymptomDefinitionsService.instance;
     final label =
         svc.getMasterLabel('abdominal_pain', locale) ?? 'Dolor abdominal';
-    final definition =
-        svc.getMasterDefinition('abdominal_pain', locale) ?? '';
+    final definition = svc.getMasterDefinition('abdominal_pain', locale) ?? '';
     _showDefinitionDialog(ctx, label, definition);
   }
 
@@ -517,17 +529,20 @@ class _AbdominalDetailSheetContentState
     String locale,
   ) {
     final svc = SymptomDefinitionsService.instance;
-    final label = svc.getChipLabel(
-            'abdominal_pain', groupKey, chipKey, locale) ??
+    final label =
+        svc.getChipLabel('abdominal_pain', groupKey, chipKey, locale) ??
         chipKey;
-    final definition = svc.getChipDefinition(
-            'abdominal_pain', groupKey, chipKey, locale) ??
+    final definition =
+        svc.getChipDefinition('abdominal_pain', groupKey, chipKey, locale) ??
         '';
     _showDefinitionDialog(ctx, label, definition);
   }
 
   void _showDefinitionDialog(
-      BuildContext ctx, String title, String definition) {
+    BuildContext ctx,
+    String title,
+    String definition,
+  ) {
     showDialog<void>(
       context: ctx,
       builder: (dctx) {

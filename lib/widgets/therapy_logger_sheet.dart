@@ -18,7 +18,9 @@ Future<TherapyEvent?> showTherapyLoggerSheet({
     context: context,
     backgroundColor: inverseContrastColor,
     isScrollControlled: true,
-    shape: RoundedRectangleBorder(side: BorderSide(color: contrastColor, width: 2)),
+    shape: RoundedRectangleBorder(
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     builder: (_) => _TherapyLoggerBody(
       contrastColor: contrastColor,
       inverseContrastColor: inverseContrastColor,
@@ -75,13 +77,16 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
     final e = widget.existing;
     _ts = e?.timestamp ?? widget.defaultTimestamp;
     _areaCtrl = TextEditingController(text: e?.bodyArea ?? '');
-    _durationCtrl = TextEditingController(text: e?.durationMinutes?.toString() ?? '');
+    _durationCtrl = TextEditingController(
+      text: e?.durationMinutes?.toString() ?? '',
+    );
     _therapistCtrl = TextEditingController(text: e?.therapistOrPlace ?? '');
     _costCtrl = TextEditingController(text: e?.cost?.toString() ?? '');
     _noteCtrl = TextEditingController(text: e?.note ?? '');
     _before = e?.severityBefore;
     _after = e?.severityAfter;
-    _showExtras = (e?.therapistOrPlace?.isNotEmpty == true) ||
+    _showExtras =
+        (e?.therapistOrPlace?.isNotEmpty == true) ||
         (e?.cost != null) ||
         (e?.note?.isNotEmpty == true);
   }
@@ -103,7 +108,9 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
       modality: widget.modality,
       bodyArea: _areaCtrl.text.trim().isEmpty ? null : _areaCtrl.text.trim(),
       durationMinutes: int.tryParse(_durationCtrl.text.trim()),
-      therapistOrPlace: _therapistCtrl.text.trim().isEmpty ? null : _therapistCtrl.text.trim(),
+      therapistOrPlace: _therapistCtrl.text.trim().isEmpty
+          ? null
+          : _therapistCtrl.text.trim(),
       cost: int.tryParse(_costCtrl.text.trim()),
       severityBefore: _before,
       severityAfter: _after,
@@ -127,7 +134,9 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
     ];
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -137,21 +146,37 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
             children: [
               Text(
                 isEdit
-                    ? l10n.movementModalTitleEditTemplate(widget.modality.toUpperCase())
-                    : l10n.movementModalTitleRegisterTemplate(widget.modality.toUpperCase()),
-                style: TextStyle(color: cc, fontSize: 16, fontWeight: FontWeight.bold),
+                    ? l10n.movementModalTitleEditTemplate(
+                        widget.modality.toUpperCase(),
+                      )
+                    : l10n.movementModalTitleRegisterTemplate(
+                        widget.modality.toUpperCase(),
+                      ),
+                style: TextStyle(
+                  color: cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
 
               // Timestamp
               OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(side: BorderSide(color: cc.withValues(alpha: 0.5))),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: cc.withValues(alpha: 0.5)),
+                ),
                 icon: Icon(Icons.access_time, color: cc, size: 16),
-                label: Text(DateFormat('EEE d MMM, HH:mm').format(_ts),
-                    style: TextStyle(color: cc, fontSize: 12)),
+                label: Text(
+                  DateFormat('EEE d MMM, HH:mm').format(_ts),
+                  style: TextStyle(color: cc, fontSize: 12),
+                ),
                 onPressed: () async {
                   final picked = await pickTimestamp(
-                      context: context, initial: _ts, contrastColor: cc, inverseContrastColor: ic);
+                    context: context,
+                    initial: _ts,
+                    contrastColor: cc,
+                    inverseContrastColor: ic,
+                  );
                   if (picked != null) setState(() => _ts = picked);
                 },
               ),
@@ -191,26 +216,40 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
               const SizedBox(height: 20),
 
               // e-VAS before
-              Text(l10n.therapySectionPainBefore,
-                  style: TextStyle(
-                      color: cc.withValues(alpha: 0.7),
-                      fontSize: 11,
-                      letterSpacing: 1,
-                      fontWeight: FontWeight.bold)),
+              Text(
+                l10n.therapySectionPainBefore,
+                style: TextStyle(
+                  color: cc.withValues(alpha: 0.7),
+                  fontSize: 11,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 6),
-              _severityRow(_before, severityLabels, (v) => setState(() => _before = v)),
+              _severityRow(
+                _before,
+                severityLabels,
+                (v) => setState(() => _before = v),
+              ),
 
               const SizedBox(height: 16),
 
               // e-VAS after
-              Text(l10n.therapySectionPainAfter,
-                  style: TextStyle(
-                      color: cc.withValues(alpha: 0.7),
-                      fontSize: 11,
-                      letterSpacing: 1,
-                      fontWeight: FontWeight.bold)),
+              Text(
+                l10n.therapySectionPainAfter,
+                style: TextStyle(
+                  color: cc.withValues(alpha: 0.7),
+                  fontSize: 11,
+                  letterSpacing: 1,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 6),
-              _severityRow(_after, severityLabels, (v) => setState(() => _after = v)),
+              _severityRow(
+                _after,
+                severityLabels,
+                (v) => setState(() => _after = v),
+              ),
 
               // Delta hint
               if (_before != null && _after != null) ...[
@@ -224,10 +263,22 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
               if (!_showExtras)
                 TextButton.icon(
                   onPressed: () => setState(() => _showExtras = true),
-                  style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero),
-                  icon: Icon(Icons.add, color: cc.withValues(alpha: 0.7), size: 14),
-                  label: Text(l10n.therapyActionMoreDetails,
-                      style: TextStyle(color: cc.withValues(alpha: 0.7), fontSize: 12)),
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                  ),
+                  icon: Icon(
+                    Icons.add,
+                    color: cc.withValues(alpha: 0.7),
+                    size: 14,
+                  ),
+                  label: Text(
+                    l10n.therapyActionMoreDetails,
+                    style: TextStyle(
+                      color: cc.withValues(alpha: 0.7),
+                      fontSize: 12,
+                    ),
+                  ),
                 )
               else ...[
                 TextField(
@@ -270,15 +321,21 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                   minimumSize: const Size.fromHeight(48),
                 ),
                 onPressed: _save,
-                child: Text(isEdit ? l10n.therapyActionSaveChanges : l10n.therapyActionLog,
-                    style: TextStyle(color: ic, fontWeight: FontWeight.bold)),
+                child: Text(
+                  isEdit
+                      ? l10n.therapyActionSaveChanges
+                      : l10n.therapyActionLog,
+                  style: TextStyle(color: ic, fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(height: 8),
               Center(
                 child: TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.actionCancel.toLowerCase(),
-                      style: TextStyle(color: cc.withValues(alpha: 0.6))),
+                  child: Text(
+                    l10n.actionCancel.toLowerCase(),
+                    style: TextStyle(color: cc.withValues(alpha: 0.6)),
+                  ),
                 ),
               ),
             ],
@@ -288,7 +345,11 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
     );
   }
 
-  Widget _severityRow(int? value, List<String> severityLabels, ValueChanged<int?> onTap) {
+  Widget _severityRow(
+    int? value,
+    List<String> severityLabels,
+    ValueChanged<int?> onTap,
+  ) {
     final cc = widget.contrastColor;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -320,7 +381,9 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
                   style: TextStyle(
                     color: cc,
                     fontSize: 9,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
                   ),
                 ),
               ],
@@ -361,7 +424,14 @@ class _TherapyLoggerBodyState extends State<_TherapyLoggerBody> {
         children: [
           Icon(icon, color: color, size: 14),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );

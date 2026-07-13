@@ -20,17 +20,17 @@ extension MoodQuadrantLocalization on MoodQuadrant {
   /// / "活化 · 不適". Falls back to the Spanish default if a key is missing
   /// from the ARB.
   String quadrantLabel(AppLocalizations l10n) => switch (this) {
-        MoodQuadrant.activatedUnpleasant => l10n.moodQuadrantActivatedUnpleasant,
-        MoodQuadrant.activatedPleasant => l10n.moodQuadrantActivatedPleasant,
-        MoodQuadrant.calmUnpleasant => l10n.moodQuadrantCalmUnpleasant,
-        MoodQuadrant.calmPleasant => l10n.moodQuadrantCalmPleasant,
-      };
+    MoodQuadrant.activatedUnpleasant => l10n.moodQuadrantActivatedUnpleasant,
+    MoodQuadrant.activatedPleasant => l10n.moodQuadrantActivatedPleasant,
+    MoodQuadrant.calmUnpleasant => l10n.moodQuadrantCalmUnpleasant,
+    MoodQuadrant.calmPleasant => l10n.moodQuadrantCalmPleasant,
+  };
 
   /// Localized teaser of representative emotions for the quadrant card.
   String quadrantTeaser(AppLocalizations l10n) => switch (this) {
-        MoodQuadrant.activatedUnpleasant => l10n.moodTeaserActivatedUnpleasant,
-        MoodQuadrant.activatedPleasant => l10n.moodTeaserActivatedPleasant,
-        MoodQuadrant.calmUnpleasant => l10n.moodTeaserCalmUnpleasant,
-        MoodQuadrant.calmPleasant => l10n.moodTeaserCalmPleasant,
-      };
+    MoodQuadrant.activatedUnpleasant => l10n.moodTeaserActivatedUnpleasant,
+    MoodQuadrant.activatedPleasant => l10n.moodTeaserActivatedPleasant,
+    MoodQuadrant.calmUnpleasant => l10n.moodTeaserCalmUnpleasant,
+    MoodQuadrant.calmPleasant => l10n.moodTeaserCalmPleasant,
+  };
 }

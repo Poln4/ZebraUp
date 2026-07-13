@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 class DoseQuantityStepper extends StatelessWidget {
   final double value;
   final ValueChanged<double> onChanged;
+
   /// Singular form label, e.g. 'pastilla', 'cápsula', 'gota', 'parche'.
   /// The widget pluralizes by appending 's' for values != 1.
   final String formLabel;

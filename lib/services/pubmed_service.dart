@@ -58,7 +58,8 @@ class PubMedService {
     if (cachedRaw != null) {
       try {
         cached = PubMedSearchResult.fromMap(
-            Map<String, dynamic>.from(jsonDecode(cachedRaw as String)));
+          Map<String, dynamic>.from(jsonDecode(cachedRaw as String)),
+        );
       } catch (e) {
         debugPrint('PubMed cache decode failed: $e');
       }
@@ -124,8 +125,11 @@ class PubMedService {
       final raw = box.get('article:$pmid');
       if (raw != null) {
         try {
-          results.add(PubMedArticle.fromMap(
-              Map<String, dynamic>.from(jsonDecode(raw as String))));
+          results.add(
+            PubMedArticle.fromMap(
+              Map<String, dynamic>.from(jsonDecode(raw as String)),
+            ),
+          );
         } catch (_) {
           missing.add(pmid);
         }
@@ -152,13 +156,18 @@ class PubMedService {
 
   // --- Internal API calls ---
 
-  Future<List<String>> _esearch(String term, int maxResults, int recentDays) async {
+  Future<List<String>> _esearch(
+    String term,
+    int maxResults,
+    int recentDays,
+  ) async {
     await _throttle();
     final encodedTerm = Uri.encodeComponent(term);
     final uri = Uri.parse(
-        '$_baseUrl/esearch.fcgi?db=pubmed&term=$encodedTerm'
-        '&retmax=$maxResults&sort=relevance&reldate=$recentDays'
-        '&datetype=pdat&retmode=json&tool=$_tool&email=$_email');
+      '$_baseUrl/esearch.fcgi?db=pubmed&term=$encodedTerm'
+      '&retmax=$maxResults&sort=relevance&reldate=$recentDays'
+      '&datetype=pdat&retmode=json&tool=$_tool&email=$_email',
+    );
     final response = await http.get(uri).timeout(const Duration(seconds: 10));
     if (response.statusCode != 200) {
       throw _PubMedException('esearch HTTP ${response.statusCode}');
@@ -172,11 +181,16 @@ class PubMedService {
     return idList.map((e) => e.toString()).toList();
   }
 
-  Future<List<PubMedArticle>> _esummary(List<String> pmids, String condition) async {
+  Future<List<PubMedArticle>> _esummary(
+    List<String> pmids,
+    String condition,
+  ) async {
     if (pmids.isEmpty) return [];
     await _throttle();
-    final uri = Uri.parse('$_baseUrl/esummary.fcgi?db=pubmed&id=${pmids.join(",")}'
-        '&retmode=json&tool=$_tool&email=$_email');
+    final uri = Uri.parse(
+      '$_baseUrl/esummary.fcgi?db=pubmed&id=${pmids.join(",")}'
+      '&retmode=json&tool=$_tool&email=$_email',
+    );
     final response = await http.get(uri).timeout(const Duration(seconds: 15));
     if (response.statusCode != 200) {
       throw _PubMedException('esummary HTTP ${response.statusCode}');
@@ -196,10 +210,15 @@ class PubMedService {
     return articles;
   }
 
-  PubMedArticle? _articleFromSummary(String pmid, Map<String, dynamic> raw, String condition) {
+  PubMedArticle? _articleFromSummary(
+    String pmid,
+    Map<String, dynamic> raw,
+    String condition,
+  ) {
     try {
       final title = (raw['title'] as String?)?.trim() ?? 'Sin título';
-      final journal = (raw['fulljournalname'] as String?) ??
+      final journal =
+          (raw['fulljournalname'] as String?) ??
           (raw['source'] as String?) ??
           '';
       final authorsRaw = raw['authors'] as List<dynamic>? ?? [];
@@ -209,11 +228,14 @@ class PubMedService {
           .toList();
       DateTime pubDate;
       try {
-        pubDate = DateTime.parse(raw['sortpubdate'] as String? ?? raw['pubdate'] as String);
+        pubDate = DateTime.parse(
+          raw['sortpubdate'] as String? ?? raw['pubdate'] as String,
+        );
       } catch (_) {
         // PubMed pubdates can be "2024 Mar" or "2024" — fall back
         final s = (raw['pubdate'] as String?) ?? '';
-        pubDate = DateTime.tryParse(s) ??
+        pubDate =
+            DateTime.tryParse(s) ??
             DateTime.tryParse('$s-01-01') ??
             DateTime.now();
       }
@@ -240,8 +262,10 @@ class PubMedService {
 
     try {
       await _throttle();
-      final uri = Uri.parse('$_baseUrl/efetch.fcgi?db=pubmed&id=$pmid'
-          '&rettype=abstract&retmode=xml&tool=$_tool&email=$_email');
+      final uri = Uri.parse(
+        '$_baseUrl/efetch.fcgi?db=pubmed&id=$pmid'
+        '&rettype=abstract&retmode=xml&tool=$_tool&email=$_email',
+      );
       final response = await http.get(uri).timeout(const Duration(seconds: 15));
       if (response.statusCode != 200) return null;
       final doc = XmlDocument.parse(response.body);
@@ -318,10 +342,10 @@ class PubMedSearchResult {
       );
 
   Map<String, dynamic> toMap() => {
-        'condition': condition,
-        'articles': articles.map((a) => a.toMap()).toList(),
-        'fetchedAt': fetchedAt.toIso8601String(),
-      };
+    'condition': condition,
+    'articles': articles.map((a) => a.toMap()).toList(),
+    'fetchedAt': fetchedAt.toIso8601String(),
+  };
 
   factory PubMedSearchResult.fromMap(Map<String, dynamic> map) =>
       PubMedSearchResult(

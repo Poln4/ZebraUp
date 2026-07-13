@@ -35,11 +35,11 @@ enum HeadacheRedFlag {
   thunderclap;
 
   HeadacheRedFlagSeverity get severity => switch (this) {
-        HeadacheRedFlag.thunderclap => HeadacheRedFlagSeverity.urgent,
-        HeadacheRedFlag.csfLeakPattern => HeadacheRedFlagSeverity.advisory,
-        HeadacheRedFlag.intracranialHypertension =>
-          HeadacheRedFlagSeverity.advisory,
-      };
+    HeadacheRedFlag.thunderclap => HeadacheRedFlagSeverity.urgent,
+    HeadacheRedFlag.csfLeakPattern => HeadacheRedFlagSeverity.advisory,
+    HeadacheRedFlag.intracranialHypertension =>
+      HeadacheRedFlagSeverity.advisory,
+  };
 }
 
 enum HeadacheRedFlagSeverity {

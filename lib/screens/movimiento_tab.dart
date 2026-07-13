@@ -65,9 +65,17 @@ class _MovimientoTabState extends State<MovimientoTab> {
   DateTime _timestampForLog() {
     final now = DateTime.now();
     final sel = widget.selectedDate;
-    final isToday = sel.year == now.year && sel.month == now.month && sel.day == now.day;
+    final isToday =
+        sel.year == now.year && sel.month == now.month && sel.day == now.day;
     if (isToday) return now;
-    return DateTime(sel.year, sel.month, sel.day, now.hour, now.minute, now.second);
+    return DateTime(
+      sel.year,
+      sel.month,
+      sel.day,
+      now.hour,
+      now.minute,
+      now.second,
+    );
   }
 
   String _getDateKey(DateTime d) =>
@@ -76,7 +84,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final isPacing = _p.pacingDays.contains(_getDateKey(widget.selectedDate));
+    final isPacing = _p.state.pacingDays.contains(
+      _getDateKey(widget.selectedDate),
+    );
     final todaysActivity = _p.getActivityForDay(widget.selectedDate);
     final todaysTherapy = _p.getTherapyForDay(widget.selectedDate);
 
@@ -104,7 +114,11 @@ class _MovimientoTabState extends State<MovimientoTab> {
                 Expanded(
                   child: Text(
                     l10n.movementSectionPacingActive,
-                    style: TextStyle(color: _cc, fontSize: 13, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      color: _cc,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],
@@ -115,24 +129,30 @@ class _MovimientoTabState extends State<MovimientoTab> {
 
         // 2. COMBINED TODAY LOG
         if (combined.isNotEmpty) ...[
-          Text(l10n.movementSectionHistoryTitle,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                  fontSize: 14,
-                  color: _cc)),
+          Text(
+            l10n.movementSectionHistoryTitle,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1,
+              fontSize: 14,
+              color: _cc,
+            ),
+          ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(border: Border.all(color: _cc)),
-            child: Column(
-              children: combined.map(_buildLogRow).toList(),
-            ),
+            child: Column(children: combined.map(_buildLogRow).toList()),
           ),
           const SizedBox(height: 4),
-          Text(l10n.movementFootnoteLongPressEdit,
-              style: TextStyle(
-                  color: Colors.grey, fontSize: 11, fontStyle: FontStyle.italic)),
+          Text(
+            l10n.movementFootnoteLongPressEdit,
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 11,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
           const SizedBox(height: 28),
         ] else if (!isPacing) ...[
           // Soft empty state, anti-kinesiophobia framing
@@ -145,13 +165,22 @@ class _MovimientoTabState extends State<MovimientoTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(l10n.movementEmptyStateHeadline,
-                    style: TextStyle(
-                        color: _cc, fontSize: 14, fontWeight: FontWeight.w600)),
+                Text(
+                  l10n.movementEmptyStateHeadline,
+                  style: TextStyle(
+                    color: _cc,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
                   l10n.movementEmptyStateSubtitle,
-                  style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
+                  style: TextStyle(
+                    color: _cc.withValues(alpha: 0.7),
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
                 ),
               ],
             ),
@@ -160,26 +189,40 @@ class _MovimientoTabState extends State<MovimientoTab> {
         ],
 
         // 3. ACTIVITY CATALOG
-        Text(l10n.movementSectionActivityTitle,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-                fontSize: 14,
-                color: _cc)),
+        Text(
+          l10n.movementSectionActivityTitle,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+            fontSize: 14,
+            color: _cc,
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: [
-            ...kExerciseCatalog,
-            ..._p.customExercises.map((name) => ExerciseDef(name, 'Custom', durationBased: true)),
-          ].map((ex) => ActionChip(
-                backgroundColor: Colors.transparent,
-                side: BorderSide(color: _cc),
-                avatar: Icon(Icons.fitness_center, color: _cc, size: 14),
-                label: Text(ex.name, style: TextStyle(color: _cc, fontSize: 12)),
-                onPressed: () => _openActivityMenu(ex),
-              )).toList(),
+          children:
+              [
+                    ...kExerciseCatalog,
+                    ..._p.customExercises.map(
+                      (name) =>
+                          ExerciseDef(name, 'Custom', durationBased: true),
+                    ),
+                  ]
+                  .map(
+                    (ex) => ActionChip(
+                      backgroundColor: Colors.transparent,
+                      side: BorderSide(color: _cc),
+                      avatar: Icon(Icons.fitness_center, color: _cc, size: 14),
+                      label: Text(
+                        ex.name,
+                        style: TextStyle(color: _cc, fontSize: 12),
+                      ),
+                      onPressed: () => _openActivityMenu(ex),
+                    ),
+                  )
+                  .toList(),
         ),
         const SizedBox(height: 12),
         TextField(
@@ -199,26 +242,30 @@ class _MovimientoTabState extends State<MovimientoTab> {
 
         // 4. THERAPY CATALOG
         const SizedBox(height: 28),
-        Text(l10n.movementSectionTherapyTitle,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1,
-                fontSize: 14,
-                color: _cc)),
+        Text(
+          l10n.movementSectionTherapyTitle,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+            fontSize: 14,
+            color: _cc,
+          ),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: [
-            ...kTherapyCatalog,
-            ..._p.customTherapyModalities,
-          ].map((m) => ActionChip(
-                backgroundColor: Colors.transparent,
-                side: BorderSide(color: _cc),
-                avatar: Icon(Icons.healing_outlined, color: _cc, size: 14),
-                label: Text(m, style: TextStyle(color: _cc, fontSize: 12)),
-                onPressed: () => _logTherapy(m),
-              )).toList(),
+          children: [...kTherapyCatalog, ..._p.customTherapyModalities]
+              .map(
+                (m) => ActionChip(
+                  backgroundColor: Colors.transparent,
+                  side: BorderSide(color: _cc),
+                  avatar: Icon(Icons.healing_outlined, color: _cc, size: 14),
+                  label: Text(m, style: TextStyle(color: _cc, fontSize: 12)),
+                  onPressed: () => _logTherapy(m),
+                ),
+              )
+              .toList(),
         ),
         const SizedBox(height: 12),
         TextField(
@@ -260,13 +307,22 @@ class _MovimientoTabState extends State<MovimientoTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("[$time] ${entry.title}",
-                      style: TextStyle(
-                          color: _cc, fontSize: 13, fontWeight: FontWeight.w500)),
+                  Text(
+                    "[$time] ${entry.title}",
+                    style: TextStyle(
+                      color: _cc,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   if (entry.subtitle.isNotEmpty)
-                    Text(entry.subtitle,
-                        style: TextStyle(
-                            color: _cc.withValues(alpha: 0.7), fontSize: 11)),
+                    Text(
+                      entry.subtitle,
+                      style: TextStyle(
+                        color: _cc.withValues(alpha: 0.7),
+                        fontSize: 11,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -314,7 +370,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
       _newTherapyModalityCtrl.clear();
       return;
     }
-    setState(() => _p.customTherapyModalities = [..._p.customTherapyModalities, txt]);
+    setState(
+      () => _p.customTherapyModalities = [..._p.customTherapyModalities, txt],
+    );
     _newTherapyModalityCtrl.clear();
     widget.onProfileChanged();
   }
@@ -381,10 +439,15 @@ class _MovimientoTabState extends State<MovimientoTab> {
         ? (existing.durationMinutes != null && existing.durationMinutes! > 0)
         : ex!.durationBased;
 
-    final setsCtrl = TextEditingController(text: existing?.sets?.toString() ?? '');
-    final repsCtrl = TextEditingController(text: existing?.reps?.toString() ?? '');
-    final durationCtrl =
-        TextEditingController(text: existing?.durationMinutes?.toString() ?? '');
+    final setsCtrl = TextEditingController(
+      text: existing?.sets?.toString() ?? '',
+    );
+    final repsCtrl = TextEditingController(
+      text: existing?.reps?.toString() ?? '',
+    );
+    final durationCtrl = TextEditingController(
+      text: existing?.durationMinutes?.toString() ?? '',
+    );
     final hhrCtrl = TextEditingController(text: existing?.hhr ?? '');
     final noteCtrl = TextEditingController(text: existing?.note ?? '');
     int effort = existing?.effort ?? 5;
@@ -395,13 +458,13 @@ class _MovimientoTabState extends State<MovimientoTab> {
 
     final l10n = context.l10n;
     String feelingLabel(int v) => switch (v) {
-          1 => l10n.movementFeelingPainOrInjury,
-          2 => l10n.movementFeelingUncomfortable,
-          3 => l10n.movementFeelingNeutral,
-          4 => l10n.movementFeelingRelaxed,
-          5 => l10n.movementFeelingStrongConfident,
-          _ => '$v',
-        };
+      1 => l10n.movementFeelingPainOrInjury,
+      2 => l10n.movementFeelingUncomfortable,
+      3 => l10n.movementFeelingNeutral,
+      4 => l10n.movementFeelingRelaxed,
+      5 => l10n.movementFeelingStrongConfident,
+      _ => '$v',
+    };
     final painLabels = <String>[
       l10n.movementPainLevelNone,
       l10n.movementPainLevelMild,
@@ -417,7 +480,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheet) => Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(ctx).viewInsets.bottom,
+          ),
           child: Container(
             padding: const EdgeInsets.all(20),
             child: SingleChildScrollView(
@@ -426,19 +491,36 @@ class _MovimientoTabState extends State<MovimientoTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      isEdit
-                          ? l10n.movementModalTitleEditTemplate(name.toUpperCase())
-                          : l10n.movementModalTitleRegisterTemplate(name.toUpperCase()),
-                      style: TextStyle(color: _cc, fontSize: 16, fontWeight: FontWeight.bold)),
+                    isEdit
+                        ? l10n.movementModalTitleEditTemplate(
+                            name.toUpperCase(),
+                          )
+                        : l10n.movementModalTitleRegisterTemplate(
+                            name.toUpperCase(),
+                          ),
+                    style: TextStyle(
+                      color: _cc,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
-                    style: OutlinedButton.styleFrom(side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                    ),
                     icon: Icon(Icons.access_time, color: _cc, size: 16),
-                    label: Text(DateFormat('EEE d MMM, HH:mm').format(ts),
-                        style: TextStyle(color: _cc, fontSize: 12)),
+                    label: Text(
+                      DateFormat('EEE d MMM, HH:mm').format(ts),
+                      style: TextStyle(color: _cc, fontSize: 12),
+                    ),
                     onPressed: () async {
                       final picked = await pickTimestamp(
-                          context: ctx, initial: ts, contrastColor: _cc, inverseContrastColor: _ic);
+                        context: ctx,
+                        initial: ts,
+                        contrastColor: _cc,
+                        inverseContrastColor: _ic,
+                      );
                       if (picked != null) setSheet(() => ts = picked);
                     },
                   ),
@@ -451,8 +533,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
                       style: TextStyle(color: _cc),
                       keyboardType: TextInputType.number,
                       decoration: InputDecoration(
-                          hintText: l10n.movementModalHintDuration,
-                          hintStyle: const TextStyle(color: Colors.grey)),
+                        hintText: l10n.movementModalHintDuration,
+                        hintStyle: const TextStyle(color: Colors.grey),
+                      ),
                     )
                   else
                     Row(
@@ -463,8 +546,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
                             style: TextStyle(color: _cc),
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                                hintText: l10n.movementModalHintSets,
-                                hintStyle: const TextStyle(color: Colors.grey)),
+                              hintText: l10n.movementModalHintSets,
+                              hintStyle: const TextStyle(color: Colors.grey),
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -474,8 +558,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
                             style: TextStyle(color: _cc),
                             keyboardType: TextInputType.number,
                             decoration: InputDecoration(
-                                hintText: l10n.movementModalHintReps,
-                                hintStyle: const TextStyle(color: Colors.grey)),
+                              hintText: l10n.movementModalHintReps,
+                              hintStyle: const TextStyle(color: Colors.grey),
+                            ),
                           ),
                         ),
                       ],
@@ -485,32 +570,49 @@ class _MovimientoTabState extends State<MovimientoTab> {
                     controller: hhrCtrl,
                     style: TextStyle(color: _cc),
                     decoration: InputDecoration(
-                        hintText: l10n.movementModalHintHeartRate,
-                        hintStyle: const TextStyle(color: Colors.grey)),
+                      hintText: l10n.movementModalHintHeartRate,
+                      hintStyle: const TextStyle(color: Colors.grey),
+                    ),
                   ),
                   const SizedBox(height: 16),
 
                   // Effort
-                  Text(l10n.movementModalEffortLabelTemplate(effort),
-                      style: TextStyle(
-                          color: _cc, fontWeight: FontWeight.bold, fontSize: 12)),
+                  Text(
+                    l10n.movementModalEffortLabelTemplate(effort),
+                    style: TextStyle(
+                      color: _cc,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
                   Slider(
                     value: effort.toDouble(),
-                    min: 0, max: 10, divisions: 10,
+                    min: 0,
+                    max: 10,
+                    divisions: 10,
                     activeColor: _cc,
                     label: '$effort',
                     onChanged: (v) => setSheet(() => effort = v.toInt()),
                   ),
 
                   // Feeling
-                  Text(l10n.movementModalFeelingLabelTemplate(feeling),
-                      style: TextStyle(
-                          color: _cc, fontWeight: FontWeight.bold, fontSize: 12)),
-                  Text(feelingLabel(feeling),
-                      style: const TextStyle(color: Colors.grey, fontSize: 11)),
+                  Text(
+                    l10n.movementModalFeelingLabelTemplate(feeling),
+                    style: TextStyle(
+                      color: _cc,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                  Text(
+                    feelingLabel(feeling),
+                    style: const TextStyle(color: Colors.grey, fontSize: 11),
+                  ),
                   Slider(
                     value: feeling.toDouble(),
-                    min: 1, max: 5, divisions: 4,
+                    min: 1,
+                    max: 5,
+                    divisions: 4,
                     activeColor: _cc,
                     label: '$feeling',
                     onChanged: (v) => setSheet(() => feeling = v.toInt()),
@@ -523,32 +625,55 @@ class _MovimientoTabState extends State<MovimientoTab> {
                     TextButton.icon(
                       onPressed: () => setSheet(() => showPain = true),
                       style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero, minimumSize: Size.zero),
-                      icon: Icon(Icons.add, color: _cc.withValues(alpha: 0.7), size: 14),
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                      ),
+                      icon: Icon(
+                        Icons.add,
+                        color: _cc.withValues(alpha: 0.7),
+                        size: 14,
+                      ),
                       label: Text(
                         context.l10n.activityActionTogglePainRating,
-                        style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 12),
+                        style: TextStyle(
+                          color: _cc.withValues(alpha: 0.7),
+                          fontSize: 12,
+                        ),
                       ),
                     )
                   else ...[
                     const SizedBox(height: 4),
-                    Text(context.l10n.activityLabelPainBefore,
-                        style: TextStyle(
-                            color: _cc.withValues(alpha: 0.7),
-                            fontSize: 11,
-                            letterSpacing: 1,
-                            fontWeight: FontWeight.bold)),
+                    Text(
+                      context.l10n.activityLabelPainBefore,
+                      style: TextStyle(
+                        color: _cc.withValues(alpha: 0.7),
+                        fontSize: 11,
+                        letterSpacing: 1,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 6),
-                    _painRow(painBefore, painLabels, (v) => setSheet(() => painBefore = v)),
+                    _painRow(
+                      painBefore,
+                      painLabels,
+                      (v) => setSheet(() => painBefore = v),
+                    ),
                     const SizedBox(height: 12),
-                    Text(context.l10n.activityLabelPainAfter,
-                        style: TextStyle(
-                            color: _cc.withValues(alpha: 0.7),
-                            fontSize: 11,
-                            letterSpacing: 1,
-                            fontWeight: FontWeight.bold)),
+                    Text(
+                      context.l10n.activityLabelPainAfter,
+                      style: TextStyle(
+                        color: _cc.withValues(alpha: 0.7),
+                        fontSize: 11,
+                        letterSpacing: 1,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 6),
-                    _painRow(painAfter, painLabels, (v) => setSheet(() => painAfter = v)),
+                    _painRow(
+                      painAfter,
+                      painLabels,
+                      (v) => setSheet(() => painAfter = v),
+                    ),
                     if (painBefore != null && painAfter != null) ...[
                       const SizedBox(height: 8),
                       _painDeltaHint(painBefore!, painAfter!),
@@ -560,8 +685,9 @@ class _MovimientoTabState extends State<MovimientoTab> {
                     controller: noteCtrl,
                     style: TextStyle(color: _cc),
                     decoration: InputDecoration(
-                        hintText: context.l10n.symptomsLabelOptionalNoteSimple,
-                        hintStyle: TextStyle(color: Colors.grey)),
+                      hintText: context.l10n.symptomsLabelOptionalNoteSimple,
+                      hintStyle: TextStyle(color: Colors.grey),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
@@ -579,8 +705,12 @@ class _MovimientoTabState extends State<MovimientoTab> {
                         durationMinutes: int.tryParse(durationCtrl.text),
                         effort: effort,
                         feeling: feeling,
-                        hhr: hhrCtrl.text.trim().isEmpty ? null : hhrCtrl.text.trim(),
-                        note: noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim(),
+                        hhr: hhrCtrl.text.trim().isEmpty
+                            ? null
+                            : hhrCtrl.text.trim(),
+                        note: noteCtrl.text.trim().isEmpty
+                            ? null
+                            : noteCtrl.text.trim(),
                         painBefore: showPain ? painBefore : null,
                         painAfter: showPain ? painAfter : null,
                       );
@@ -595,8 +725,12 @@ class _MovimientoTabState extends State<MovimientoTab> {
                       widget.onProfileChanged();
                       Navigator.pop(ctx);
                     },
-                    child: Text(isEdit ? context.l10n.symptomsActionSaveChanges : context.l10n.activityActionSubmitLog,
-                        style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      isEdit
+                          ? context.l10n.symptomsActionSaveChanges
+                          : context.l10n.activityActionSubmitLog,
+                      style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -607,7 +741,11 @@ class _MovimientoTabState extends State<MovimientoTab> {
     );
   }
 
-  Widget _painRow(int? value, List<String> painLabels, ValueChanged<int?> onTap) {
+  Widget _painRow(
+    int? value,
+    List<String> painLabels,
+    ValueChanged<int?> onTap,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: List.generate(5, (i) {
@@ -633,12 +771,16 @@ class _MovimientoTabState extends State<MovimientoTab> {
                   ),
                 ),
                 const SizedBox(height: 3),
-                Text(painLabels[i],
-                    style: TextStyle(
-                      color: _cc,
-                      fontSize: 9,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    )),
+                Text(
+                  painLabels[i],
+                  style: TextStyle(
+                    color: _cc,
+                    fontSize: 9,
+                    fontWeight: isSelected
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
               ],
             ),
           ),
@@ -677,8 +819,14 @@ class _MovimientoTabState extends State<MovimientoTab> {
         children: [
           Icon(icon, color: color, size: 14),
           const SizedBox(width: 6),
-          Text(label,
-              style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -719,11 +867,13 @@ class _DayLogEntry {
     ];
     if (a.painDelta != null) {
       final d = a.painDelta!;
-      parts.add(d > 0
-          ? l10n.movementLogEntryDeltaImprovedTemplate(d)
-          : d < 0
-              ? l10n.movementLogEntryDeltaWorseTemplate(-d)
-              : l10n.movementLogEntryDeltaUnchanged);
+      parts.add(
+        d > 0
+            ? l10n.movementLogEntryDeltaImprovedTemplate(d)
+            : d < 0
+            ? l10n.movementLogEntryDeltaWorseTemplate(-d)
+            : l10n.movementLogEntryDeltaUnchanged,
+      );
     }
     return _DayLogEntry._(
       timestamp: a.timestamp,
@@ -740,11 +890,13 @@ class _DayLogEntry {
     if (t.durationMinutes != null) parts.add('${t.durationMinutes}min');
     if (t.severityDelta != null) {
       final d = t.severityDelta!;
-      parts.add(d > 0
-          ? l10n.movementLogEntryDeltaImprovedTemplate(d)
-          : d < 0
-              ? l10n.movementLogEntryDeltaWorseTemplate(-d)
-              : l10n.movementLogEntryTherapyDeltaSteady);
+      parts.add(
+        d > 0
+            ? l10n.movementLogEntryDeltaImprovedTemplate(d)
+            : d < 0
+            ? l10n.movementLogEntryDeltaWorseTemplate(-d)
+            : l10n.movementLogEntryTherapyDeltaSteady,
+      );
     }
     if (t.therapistOrPlace != null) parts.add(t.therapistOrPlace!);
     if (t.cost != null) parts.add('\$${t.cost}');

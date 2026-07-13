@@ -223,8 +223,9 @@ class AbdominalDetail {
       map['timing'] = timing!.serializationKey;
     }
     if (accompaniments.isNotEmpty) {
-      map['accompaniments'] =
-          accompaniments.map((e) => e.serializationKey).toList();
+      map['accompaniments'] = accompaniments
+          .map((e) => e.serializationKey)
+          .toList();
     }
     if (triggers.isNotEmpty) {
       map['triggers'] = triggers.map((e) => e.serializationKey).toList();
@@ -244,17 +245,17 @@ class AbdominalDetail {
       timing: AbdominalTiming.fromKey(map['timing'] as String?),
       accompaniments: accRaw is List
           ? accRaw
-              .whereType<String>()
-              .map(AbdominalAccompaniment.fromKey)
-              .whereType<AbdominalAccompaniment>()
-              .toSet()
+                .whereType<String>()
+                .map(AbdominalAccompaniment.fromKey)
+                .whereType<AbdominalAccompaniment>()
+                .toSet()
           : const <AbdominalAccompaniment>{},
       triggers: trigRaw is List
           ? trigRaw
-              .whereType<String>()
-              .map(AbdominalTrigger.fromKey)
-              .whereType<AbdominalTrigger>()
-              .toSet()
+                .whereType<String>()
+                .map(AbdominalTrigger.fromKey)
+                .whereType<AbdominalTrigger>()
+                .toSet()
           : const <AbdominalTrigger>{},
       linkedBowelEventId: map['linkedBowelEventId'] as String?,
     );

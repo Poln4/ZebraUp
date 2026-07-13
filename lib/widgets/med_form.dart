@@ -177,9 +177,7 @@ class _MedFormSheetState extends State<MedFormSheet> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _isEditing
-                              ? widget.existing!.name
-                              : 'Medicamento',
+                          _isEditing ? widget.existing!.name : 'Medicamento',
                           style: TextStyle(
                             color: cc,
                             fontSize: 20,
@@ -233,10 +231,12 @@ class _MedFormSheetState extends State<MedFormSheet> {
                           controller: _strengthCtrl,
                           style: TextStyle(color: cc),
                           keyboardType: const TextInputType.numberWithOptions(
-                              decimal: true),
+                            decimal: true,
+                          ),
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(
-                                RegExp(r'[0-9.,]')),
+                              RegExp(r'[0-9.,]'),
+                            ),
                           ],
                           decoration: _inputDeco('p. ej. 400', cc),
                         ),
@@ -281,12 +281,13 @@ class _MedFormSheetState extends State<MedFormSheet> {
               _fieldLabel('Rastrear si funcionó', cc),
               Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 4),
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: cc.withValues(alpha: 0.04),
                   borderRadius: BorderRadius.circular(8),
-                  border:
-                      Border.all(color: cc.withValues(alpha: 0.15)),
+                  border: Border.all(color: cc.withValues(alpha: 0.15)),
                 ),
                 child: Row(
                   children: [
@@ -358,8 +359,7 @@ class _MedFormSheetState extends State<MedFormSheet> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: cc,
                     foregroundColor: widget.inverseContrastColor,
-                    disabledBackgroundColor:
-                        cc.withValues(alpha: 0.2),
+                    disabledBackgroundColor: cc.withValues(alpha: 0.2),
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -368,7 +368,9 @@ class _MedFormSheetState extends State<MedFormSheet> {
                   child: Text(
                     _isEditing ? 'Guardar cambios' : 'Crear medicamento',
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 15),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),
@@ -395,10 +397,13 @@ class _MedFormSheetState extends State<MedFormSheet> {
             ),
           ),
           if (required)
-            Text(' *',
-                style: TextStyle(
-                    color: Colors.red.shade400,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              ' *',
+              style: TextStyle(
+                color: Colors.red.shade400,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
         ],
       ),
     );
@@ -411,8 +416,7 @@ class _MedFormSheetState extends State<MedFormSheet> {
     );
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(
-          color: cc.withValues(alpha: 0.35), fontSize: 13),
+      hintStyle: TextStyle(color: cc.withValues(alpha: 0.35), fontSize: 13),
       filled: true,
       fillColor: cc.withValues(alpha: 0.04),
       border: border,
@@ -421,8 +425,7 @@ class _MedFormSheetState extends State<MedFormSheet> {
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: cc, width: 1.5),
       ),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       isDense: true,
     );
   }
@@ -463,13 +466,15 @@ class _Dropdown<T> extends StatelessWidget {
           style: TextStyle(color: contrastColor, fontSize: 14),
           iconEnabledColor: contrastColor.withValues(alpha: 0.6),
           items: items
-              .map((it) => DropdownMenuItem(
-                    value: it,
-                    child: Text(
-                      itemLabel(it),
-                      style: TextStyle(color: contrastColor),
-                    ),
-                  ))
+              .map(
+                (it) => DropdownMenuItem(
+                  value: it,
+                  child: Text(
+                    itemLabel(it),
+                    style: TextStyle(color: contrastColor),
+                  ),
+                ),
+              )
               .toList(),
           onChanged: (v) {
             if (v != null) onChanged(v);
@@ -508,11 +513,12 @@ class _HoursDropdown extends StatelessWidget {
         ),
         iconEnabledColor: contrastColor.withValues(alpha: 0.6),
         items: _options
-            .map((h) => DropdownMenuItem(
-                  value: h,
-                  child: Text('${h}h',
-                      style: TextStyle(color: contrastColor)),
-                ))
+            .map(
+              (h) => DropdownMenuItem(
+                value: h,
+                child: Text('${h}h', style: TextStyle(color: contrastColor)),
+              ),
+            )
             .toList(),
         onChanged: (v) {
           if (v != null) onChanged(v);

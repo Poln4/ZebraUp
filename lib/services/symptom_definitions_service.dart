@@ -31,11 +31,14 @@ class SymptomDefinitionsService {
   Future<void> ensureLoaded() async {
     if (_data != null) return;
     try {
-      final jsonStr = await rootBundle
-          .loadString('assets/symptom_definitions.json');
+      final jsonStr = await rootBundle.loadString(
+        'assets/symptom_definitions.json',
+      );
       _data = jsonDecode(jsonStr) as Map<String, dynamic>;
-      debugPrint('SymptomDefinitionsService: loaded '
-          '${_data!.keys.where((k) => !k.startsWith('_')).length} symptoms');
+      debugPrint(
+        'SymptomDefinitionsService: loaded '
+        '${_data!.keys.where((k) => !k.startsWith('_')).length} symptoms',
+      );
     } catch (e, st) {
       debugPrint('SymptomDefinitionsService.ensureLoaded: $e\n$st');
       _data = {};
@@ -56,7 +59,10 @@ class SymptomDefinitionsService {
   /// Generic string lookup with fallback chain: requested locale → en
   /// → es → null.
   String? _localizedString(
-      Map<String, dynamic> source, String baseKey, String localeCode) {
+    Map<String, dynamic> source,
+    String baseKey,
+    String localeCode,
+  ) {
     final primary = _langSuffixFor(localeCode);
     final order = [primary, 'en', 'es'].toSet().toList();
     for (final lang in order) {
@@ -216,7 +222,10 @@ class SymptomDefinitionsService {
   }
 
   String? getGroupHeader(
-      String symptomKey, String groupKey, String localeCode) {
+    String symptomKey,
+    String groupKey,
+    String localeCode,
+  ) {
     final g = _groupNode(symptomKey, groupKey);
     if (g == null) return null;
     return _localizedString(g, 'header', localeCode);
@@ -231,7 +240,10 @@ class SymptomDefinitionsService {
   }
 
   Map<String, dynamic>? _chipNode(
-      String symptomKey, String groupKey, String chipKey) {
+    String symptomKey,
+    String groupKey,
+    String chipKey,
+  ) {
     final g = _groupNode(symptomKey, groupKey);
     if (g == null) return null;
     final chips = g['chips'];
@@ -240,15 +252,23 @@ class SymptomDefinitionsService {
     return c is Map<String, dynamic> ? c : null;
   }
 
-  String? getChipLabel(String symptomKey, String groupKey, String chipKey,
-      String localeCode) {
+  String? getChipLabel(
+    String symptomKey,
+    String groupKey,
+    String chipKey,
+    String localeCode,
+  ) {
     final c = _chipNode(symptomKey, groupKey, chipKey);
     if (c == null) return null;
     return _localizedString(c, 'label', localeCode);
   }
 
-  String? getChipDefinition(String symptomKey, String groupKey,
-      String chipKey, String localeCode) {
+  String? getChipDefinition(
+    String symptomKey,
+    String groupKey,
+    String chipKey,
+    String localeCode,
+  ) {
     final c = _chipNode(symptomKey, groupKey, chipKey);
     if (c == null) return null;
     return _localizedString(c, 'def', localeCode);

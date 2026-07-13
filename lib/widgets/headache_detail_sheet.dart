@@ -72,19 +72,18 @@ class _HeadacheDetailSheetBodyState extends State<_HeadacheDetailSheetBody> {
     final e = widget.existing;
     _locations = e?.locations.toSet() ?? <HeadacheLocation>{};
     _quality = e?.quality;
-    _accompaniments =
-        e?.accompaniments.toSet() ?? <HeadacheAccompaniment>{};
+    _accompaniments = e?.accompaniments.toSet() ?? <HeadacheAccompaniment>{};
     _posturalPattern = e?.posturalPattern;
     _onset = e?.onset;
   }
 
   HeadacheDetail _buildDetail() => HeadacheDetail(
-        locations: _locations,
-        quality: _quality,
-        accompaniments: _accompaniments,
-        posturalPattern: _posturalPattern,
-        onset: _onset,
-      );
+    locations: _locations,
+    quality: _quality,
+    accompaniments: _accompaniments,
+    posturalPattern: _posturalPattern,
+    onset: _onset,
+  );
 
   bool _isChipSelected(String groupKey, String chipKey) {
     switch (groupKey) {
@@ -108,7 +107,10 @@ class _HeadacheDetailSheetBodyState extends State<_HeadacheDetailSheetBody> {
   }
 
   Future<void> _handleChipTap(
-      BuildContext ctx, String groupKey, String chipKey) async {
+    BuildContext ctx,
+    String groupKey,
+    String chipKey,
+  ) async {
     switch (groupKey) {
       case 'location':
         final v = HeadacheLocation.fromKey(chipKey);
@@ -159,7 +161,8 @@ class _HeadacheDetailSheetBodyState extends State<_HeadacheDetailSheetBody> {
 
     final l10n = AppLocalizations.of(ctx)!;
     final locale = l10n.localeName;
-    final defBody = SymptomDefinitionsService.instance.getChipDefinition(
+    final defBody =
+        SymptomDefinitionsService.instance.getChipDefinition(
           'headache',
           'onset',
           'thunderclap',
@@ -176,8 +179,11 @@ class _HeadacheDetailSheetBodyState extends State<_HeadacheDetailSheetBody> {
         ),
         title: Row(
           children: [
-            const Icon(Icons.warning_amber_rounded,
-                color: Colors.red, size: 24),
+            const Icon(
+              Icons.warning_amber_rounded,
+              color: Colors.red,
+              size: 24,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -271,8 +277,11 @@ class _HeadacheDetailSheetBodyState extends State<_HeadacheDetailSheetBody> {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.info_outline,
-                        color: cc.withValues(alpha: 0.7), size: 20),
+                    icon: Icon(
+                      Icons.info_outline,
+                      color: cc.withValues(alpha: 0.7),
+                      size: 20,
+                    ),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     tooltip: l10n.actionUnderstood,
@@ -300,9 +309,8 @@ class _HeadacheDetailSheetBodyState extends State<_HeadacheDetailSheetBody> {
               ...svc.getGroupKeysInOrder('headache').map((groupKey) {
                 final header =
                     svc.getGroupHeader('headache', groupKey, locale) ??
-                        groupKey;
-                final chipKeys =
-                    svc.getChipKeysInOrder('headache', groupKey);
+                    groupKey;
+                final chipKeys = svc.getChipKeysInOrder('headache', groupKey);
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 18),
                   child: Column(
@@ -324,11 +332,15 @@ class _HeadacheDetailSheetBodyState extends State<_HeadacheDetailSheetBody> {
                         spacing: 8,
                         runSpacing: 8,
                         children: chipKeys.map((chipKey) {
-                          final chipLabel = svc.getChipLabel(
-                                  'headache', groupKey, chipKey, locale) ??
+                          final chipLabel =
+                              svc.getChipLabel(
+                                'headache',
+                                groupKey,
+                                chipKey,
+                                locale,
+                              ) ??
                               chipKey;
-                          final isSelected =
-                              _isChipSelected(groupKey, chipKey);
+                          final isSelected = _isChipSelected(groupKey, chipKey);
                           return _HeadacheChip(
                             label: chipLabel,
                             selected: isSelected,
@@ -385,8 +397,7 @@ class _HeadacheDetailSheetBodyState extends State<_HeadacheDetailSheetBody> {
                       onPressed: () {
                         final detail = _buildDetail();
                         // Empty detail = treat as skip.
-                        Navigator.pop(
-                            context, detail.isEmpty ? null : detail);
+                        Navigator.pop(context, detail.isEmpty ? null : detail);
                       },
                       child: Text(
                         l10n.headacheActionSaveDetail,
@@ -431,8 +442,9 @@ class _HeadacheChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final labelColor = selected ? ic : cc;
-    final iconColor =
-        selected ? ic.withValues(alpha: 0.7) : cc.withValues(alpha: 0.55);
+    final iconColor = selected
+        ? ic.withValues(alpha: 0.7)
+        : cc.withValues(alpha: 0.55);
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -448,10 +460,7 @@ class _HeadacheChip extends StatelessWidget {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
-                label,
-                style: TextStyle(color: labelColor, fontSize: 13),
-              ),
+              Text(label, style: TextStyle(color: labelColor, fontSize: 13)),
               const SizedBox(width: 2),
               // Inner gesture for info icon. Wrapping in Material+InkWell
               // creates a separate gesture arena, so taps here do NOT
@@ -463,11 +472,7 @@ class _HeadacheChip extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
                     padding: const EdgeInsets.all(4),
-                    child: Icon(
-                      Icons.info_outline,
-                      size: 14,
-                      color: iconColor,
-                    ),
+                    child: Icon(Icons.info_outline, size: 14, color: iconColor),
                   ),
                 ),
               ),

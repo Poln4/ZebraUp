@@ -363,3 +363,102 @@ String _symptomLabel(String name, int count) {
   final vez = count == 1 ? 'vez' : 'veces';
   return '$name $count $vez';
 }
+
+// ============================================================
+// SYMPTOM FREQUENCY DASHBOARD (Sprint T0.3)
+// ============================================================
+
+/// Frequency statistics for a single symptom name over a rolling
+/// window. Consumed by SymptomFrequencyDashboard widget.
+///
+/// `dailyCounts` is chronologically ordered — first element is the
+/// oldest day in the window, last element is today.
+class SymptomFrequencyStats {
+  final String name;
+  final int totalCount;
+  final List<int> dailyCounts;
+  final DateTime? lastLoggedAt;
+
+  const SymptomFrequencyStats({
+    required this.name,
+    required this.totalCount,
+    required this.dailyCounts,
+    this.lastLoggedAt,
+  });
+
+  bool get hasRecentActivity => totalCount > 0;
+
+  int get peak {
+    if (dailyCounts.isEmpty) return 0;
+    return dailyCounts.reduce((a, b) => a > b ? a : b);
+  }
+}
+
+/// Compute per-symptom frequency stats over a rolling window of
+/// [windowDays] ending at [now] (or DateTime.now() if omitted).
+///
+/// Returns up to [topN] symptoms sorted by totalCount desc, with
+/// lastLoggedAt desc as tiebreaker. Empty list when no symptom
+/// activity in the window.
+///
+/// Symptom names are normalized to lowercase + trim before grouping,
+/// so "Migraña" and "migraña " count as the same symptom.
+List<SymptomFrequencyStats> symptomFrequencyStats(
+  Profile profile, {
+  int windowDays = 30,
+  int topN = 10,
+  DateTime? now,
+}) {
+  final referenceNow = now ?? DateTime.now();
+  final windowStart = referenceNow.subtract(Duration(days: windowDays));
+
+  final byName = <String, List<SymptomEvent>>{};
+  for (final s in profile.symptomHistory) {
+    if (s.timestamp.isBefore(windowStart)) continue;
+    if (s.timestamp.isAfter(referenceNow)) continue;
+    final key = s.name.toLowerCase().trim();
+    if (key.isEmpty) continue;
+    byName.putIfAbsent(key, () => []).add(s);
+  }
+
+  if (byName.isEmpty) return const [];
+
+  final stats = <SymptomFrequencyStats>[];
+  for (final entry in byName.entries) {
+    final events = entry.value;
+    final dailyCounts = List<int>.filled(windowDays, 0);
+    DateTime? lastLoggedAt;
+
+    for (final e in events) {
+      final daysAgo = referenceNow.difference(e.timestamp).inDays;
+      // Map daysAgo (0 = today, windowDays-1 = oldest) into index
+      // (0 = oldest, windowDays-1 = today) for chronological ordering.
+      final idx = windowDays - 1 - daysAgo;
+      if (idx >= 0 && idx < windowDays) {
+        dailyCounts[idx]++;
+      }
+      if (lastLoggedAt == null || e.timestamp.isAfter(lastLoggedAt)) {
+        lastLoggedAt = e.timestamp;
+      }
+    }
+
+    stats.add(
+      SymptomFrequencyStats(
+        name: entry.key,
+        totalCount: events.length,
+        dailyCounts: dailyCounts,
+        lastLoggedAt: lastLoggedAt,
+      ),
+    );
+  }
+
+  stats.sort((a, b) {
+    final byCount = b.totalCount.compareTo(a.totalCount);
+    if (byCount != 0) return byCount;
+    final aTime = a.lastLoggedAt?.millisecondsSinceEpoch ?? 0;
+    final bTime = b.lastLoggedAt?.millisecondsSinceEpoch ?? 0;
+    return bTime.compareTo(aTime);
+  });
+
+  return stats.take(topN).toList();
+}

@@ -33,8 +33,9 @@ void showDrugInfoSheet({
     context: context,
     backgroundColor: inverseContrastColor,
     isScrollControlled: true,
-    shape:
-        RoundedRectangleBorder(side: BorderSide(color: contrastColor, width: 2)),
+    shape: RoundedRectangleBorder(
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     builder: (_) => _DrugInfoSheetBody(
       med: med,
       botiquin: botiquin,
@@ -77,10 +78,14 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
 
   Future<void> _load() async {
     final locale = VademecumLocale.fromCode(
-        Localizations.localeOf(context).languageCode);
+      Localizations.localeOf(context).languageCode,
+    );
     final content = await widget.service.getDrugContent(widget.med, locale);
     final inters = await widget.service.detectInteractions(
-        widget.med, widget.botiquin, locale);
+      widget.med,
+      widget.botiquin,
+      locale,
+    );
     if (!mounted) return;
     setState(() {
       _loading = false;
@@ -127,14 +132,18 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
                   child: Text(
                     widget.med.name,
                     style: TextStyle(
-                        color: cc,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+                      color: cc,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.close,
-                      color: cc.withValues(alpha: 0.6), size: 22),
+                  icon: Icon(
+                    Icons.close,
+                    color: cc.withValues(alpha: 0.6),
+                    size: 22,
+                  ),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
                   onPressed: () => Navigator.pop(context),
@@ -159,7 +168,8 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
 
   Widget _headerSubrow(Color cc, AppLocalizations l10n) {
     final c = _content!;
-    final showResolved = c.resolvedLabel.isNotEmpty &&
+    final showResolved =
+        c.resolvedLabel.isNotEmpty &&
         c.resolvedLabel.toLowerCase() != widget.med.name.toLowerCase();
     return Padding(
       padding: const EdgeInsets.only(top: 2),
@@ -173,9 +183,10 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
                 c.resolvedLabel,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                    color: cc.withValues(alpha: 0.55),
-                    fontSize: 11,
-                    fontStyle: FontStyle.italic),
+                  color: cc.withValues(alpha: 0.55),
+                  fontSize: 11,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
             ),
           ],
@@ -209,10 +220,10 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
   }
 
   IconData _iconForKind(VademecumKind? kind) => switch (kind) {
-        VademecumKind.supplement => Icons.eco_outlined,
-        VademecumKind.herbal => Icons.spa_outlined,
-        _ => Icons.medication_outlined,
-      };
+    VademecumKind.supplement => Icons.eco_outlined,
+    VademecumKind.herbal => Icons.spa_outlined,
+    _ => Icons.medication_outlined,
+  };
 
   Widget _buildBody(
     Color cc,
@@ -294,64 +305,69 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
             ],
           ),
           const SizedBox(height: 8),
-          ..._interactions.map((inter) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: _severityColor(inter.severity, cc),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            _severityLabel(inter.severity, l10n).toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.8,
-                            ),
+          ..._interactions.map(
+            (inter) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          color: _severityColor(inter.severity, cc),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          _severityLabel(inter.severity, l10n).toUpperCase(),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.8,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            inter.other.name,
-                            style: TextStyle(
-                              color: cc,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                            ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          inter.other.name,
+                          style: TextStyle(
+                            color: cc,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
-                      ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  SelectableText(
+                    inter.description,
+                    style: TextStyle(
+                      color: cc.withValues(alpha: 0.85),
+                      fontSize: 12,
+                      height: 1.4,
                     ),
-                    const SizedBox(height: 4),
-                    SelectableText(
-                      inter.description,
-                      style: TextStyle(
-                          color: cc.withValues(alpha: 0.85),
-                          fontSize: 12,
-                          height: 1.4),
-                    ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Color _severityColor(InteractionSeverity s, Color cc) => switch (s) {
-        InteractionSeverity.high => const Color(0xFFB71C1C),
-        InteractionSeverity.medium => const Color(0xFFE65100),
-        InteractionSeverity.low => cc.withValues(alpha: 0.6),
-      };
+    InteractionSeverity.high => const Color(0xFFB71C1C),
+    InteractionSeverity.medium => const Color(0xFFE65100),
+    InteractionSeverity.low => cc.withValues(alpha: 0.6),
+  };
 
   String _severityLabel(InteractionSeverity s, AppLocalizations l10n) =>
       switch (s) {
@@ -418,8 +434,11 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.cloud_off_outlined,
-              size: 18, color: cc.withValues(alpha: 0.6)),
+          Icon(
+            Icons.cloud_off_outlined,
+            size: 18,
+            color: cc.withValues(alpha: 0.6),
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -449,8 +468,7 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
       icon: Icon(Icons.open_in_new, color: cc, size: 16),
       label: Text(
         l10n.drugReadMoreMedlinePlus,
-        style: TextStyle(
-            color: cc, fontWeight: FontWeight.bold, fontSize: 13),
+        style: TextStyle(color: cc, fontWeight: FontWeight.bold, fontSize: 13),
       ),
       onPressed: () async {
         final uri = Uri.parse(link);
@@ -480,8 +498,7 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
       ),
       child: Row(
         children: [
-          Icon(Icons.help_outline,
-              size: 14, color: cc.withValues(alpha: 0.6)),
+          Icon(Icons.help_outline, size: 14, color: cc.withValues(alpha: 0.6)),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
@@ -516,16 +533,16 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline,
-              size: 14, color: cc.withValues(alpha: 0.6)),
+          Icon(Icons.info_outline, size: 14, color: cc.withValues(alpha: 0.6)),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               msg,
               style: TextStyle(
-                  color: cc.withValues(alpha: 0.6),
-                  fontSize: 11,
-                  height: 1.4),
+                color: cc.withValues(alpha: 0.6),
+                fontSize: 11,
+                height: 1.4,
+              ),
             ),
           ),
         ],
@@ -540,16 +557,20 @@ class _DrugInfoSheetBodyState extends State<_DrugInfoSheetBody> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.cloud_off_outlined,
-                color: cc.withValues(alpha: 0.5), size: 36),
+            Icon(
+              Icons.cloud_off_outlined,
+              color: cc.withValues(alpha: 0.5),
+              size: 36,
+            ),
             const SizedBox(height: 12),
             Text(
               msg ?? l10n.drugLoadError,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: cc.withValues(alpha: 0.7),
-                  fontSize: 14,
-                  height: 1.4),
+                color: cc.withValues(alpha: 0.7),
+                fontSize: 14,
+                height: 1.4,
+              ),
             ),
           ],
         ),

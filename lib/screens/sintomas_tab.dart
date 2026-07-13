@@ -29,6 +29,45 @@ import '../extensions/context_ext.dart';
 import '../l10n/app_localizations.dart';
 import '../widgets/action_taken_sheet.dart';
 import '../models/action_taken.dart';
+import '../widgets/mcas_detail_sheet.dart';
+import '../services/mcas_red_flag_service.dart';
+import '../widgets/mcas_advisory_dialog.dart';
+import '../models/mcas.dart';
+import '../widgets/symptom_frequency_dashboard.dart';
+import '../models/profile_state.dart';
+
+// ---------------------------------------------------------------------------
+// Sprint E.B.2 — MCAS symptom heuristic.
+// Keyword-matching against symptom name to decide whether to open the
+// MCAS detail sheet. Temporary approach — migrate to
+// svc.matchesSymptomKey(symptom, 'mcas_reaction') pattern once MCAS
+// aliases are curated in symptom_definitions_service.dart.
+// ---------------------------------------------------------------------------
+bool _isMCASSymptom(String symptom) {
+  final lower = symptom.toLowerCase();
+  const keywords = [
+    'urticaria',
+    'roncha',
+    'habon',
+    'angioedema',
+    'hinchazón',
+    'moretón',
+    'hematoma',
+    'flush',
+    'enrojec',
+    'rubor',
+    'picazón',
+    'prurito',
+    'comezón',
+    'sangrado abundante',
+    'palpita',
+    'taquicard',
+    'reacción alérgica',
+    'alergia',
+    'reacción histamínica',
+  ];
+  return keywords.any((k) => lower.contains(k));
+}
 
 /// Síntomas tab.
 ///
@@ -251,10 +290,11 @@ class _SintomasTabState extends State<SintomasTab> {
     final todaysSleep = _p.getSleepForDay(widget.selectedDate);
     final todaysHydration = _p.getHydrationForDay(widget.selectedDate);
     final todaysHrv = _p.getHrvForDay(widget.selectedDate);
-    final isSleepEnabled = _p.optionalTrackers['sleep'] ?? false;
-    final isHydrationEnabled = _p.optionalTrackers['hydration'] ?? false;
-    final isHrvEnabled = _p.optionalTrackers['hrv'] ?? false;
-    final isCarefulMode = _p.optionalTrackers['careful_mode'] ?? false;
+    final isSleepEnabled = _p.settings.optionalTrackers['sleep'] ?? false;
+    final isHydrationEnabled =
+        _p.settings.optionalTrackers['hydration'] ?? false;
+    final isHrvEnabled = _p.settings.optionalTrackers['hrv'] ?? false;
+    final isCarefulMode = _p.settings.optionalTrackers['careful_mode'] ?? false;
     final trending = _p.getTrendingSymptoms();
     final l10n = context.l10n;
 
@@ -997,6 +1037,25 @@ class _SintomasTabState extends State<SintomasTab> {
                                       ),
                                     ),
                                   ),
+                                // E.D: MCAS detail compact summary
+                                if (event.mcasDetail != null &&
+                                    formatMCASDetailCompact(
+                                      event.mcasDetail!,
+                                      l10n.localeName,
+                                    ).isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      formatMCASDetailCompact(
+                                        event.mcasDetail!,
+                                        l10n.localeName,
+                                      ),
+                                      style: TextStyle(
+                                        color: _cc.withValues(alpha: 0.6),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ),
                                 if (event.note != null &&
                                     event.note!.trim().isNotEmpty)
                                   Padding(
@@ -1090,6 +1149,11 @@ class _SintomasTabState extends State<SintomasTab> {
                 )
                 .toList(),
           ),
+
+        // Sprint T0.3 — symptom frequency dashboard (rolling 30 days)
+        // Sprint G.C — hide when in flare mode.
+        if (!_p.state.isInFlare)
+          SymptomFrequencyDashboard(profile: _p, contrastColor: _cc),
 
         // 4. SYMPTOM VAULT + INLINE ADD
         const SizedBox(height: 28),
@@ -1487,17 +1551,21 @@ class _SintomasTabState extends State<SintomasTab> {
       final svc = SymptomDefinitionsService.instance;
       final isHeadache = svc.matchesSymptomKey(symptom, 'headache');
       final headacheLayerEnabled =
-          _p.optionalTrackers['headache_detail'] ?? false;
+          _p.settings.optionalTrackers['headache_detail'] ?? false;
       final isFatigue = svc.matchesSymptomKey(symptom, 'fatigue');
       final fatigueLayerEnabled =
-          _p.optionalTrackers['fatigue_detail'] ?? false;
+          _p.settings.optionalTrackers['fatigue_detail'] ?? false;
       final isAbdominal = svc.matchesSymptomKey(symptom, 'abdominal_pain');
       final abdominalLayerEnabled =
-          _p.optionalTrackers['abdominal_detail'] ?? false;
+          _p.settings.optionalTrackers['abdominal_detail'] ?? false;
+      final isMCAS = _isMCASSymptom(symptom);
+      final mcasLayerEnabled =
+          _p.settings.optionalTrackers['mcas_detail'] ?? false;
 
       HeadacheDetail? headacheDetail;
       FatigueDetail? fatigueDetail;
       AbdominalDetail? abdominalDetail;
+      MCASDetail? mcasDetail;
       if (isHeadache && headacheLayerEnabled) {
         // Close the severity sheet first so the detail sheet stacks
         // over the SintomasTab, not over the severity modal.
@@ -1528,6 +1596,16 @@ class _SintomasTabState extends State<SintomasTab> {
           inverseContrastColor: _ic,
         );
         if (!mounted) return;
+      } else if (isMCAS && mcasLayerEnabled) {
+        Navigator.pop(ctx);
+        if (!mounted) return;
+        mcasDetail = await showMCASDetailSheet(
+          context,
+          symptomInput: symptom,
+          contrastColor: _cc,
+          inverseContrastColor: _ic,
+        );
+        if (!mounted) return;
       } else {
         Navigator.pop(ctx);
       }
@@ -1546,6 +1624,7 @@ class _SintomasTabState extends State<SintomasTab> {
         headacheDetail: headacheDetail,
         fatigueDetail: fatigueDetail,
         abdominalDetail: abdominalDetail,
+        mcasDetail: mcasDetail,
       );
       setState(() => _p.symptomHistory.add(newSymptomEvent));
       widget.onProfileChanged();
@@ -1578,6 +1657,22 @@ class _SintomasTabState extends State<SintomasTab> {
         await _showAbdominalUrgentFlags(flags);
         if (!mounted) return;
         await _showAbdominalAdvisoryFlags(flags);
+      }
+
+      // Sprint E.C — MCAS red flag surfacing.
+      if (mcasDetail != null) {
+        final flags = detectMCASRedFlags(
+          detail: mcasDetail,
+          severityIndex: sev.value,
+        );
+        if (flags.isNotEmpty && mounted) {
+          await showMCASAdvisoryDialog(
+            context,
+            flags: flags,
+            contrastColor: _cc,
+            inverseContrastColor: _ic,
+          );
+        }
       }
     }
 
@@ -1799,19 +1894,22 @@ class _SintomasTabState extends State<SintomasTab> {
                         'headache',
                       );
                       final headacheLayerEnabled =
-                          _p.optionalTrackers['headache_detail'] ?? false;
+                          _p.settings.optionalTrackers['headache_detail'] ??
+                          false;
                       final isFatigue = svc.matchesSymptomKey(
                         event.name,
                         'fatigue',
                       );
                       final fatigueLayerEnabled =
-                          _p.optionalTrackers['fatigue_detail'] ?? false;
+                          _p.settings.optionalTrackers['fatigue_detail'] ??
+                          false;
                       final isAbdominal = svc.matchesSymptomKey(
                         event.name,
                         'abdominal_pain',
                       );
                       final abdominalLayerEnabled =
-                          _p.optionalTrackers['abdominal_detail'] ?? false;
+                          _p.settings.optionalTrackers['abdominal_detail'] ??
+                          false;
 
                       HeadacheDetail? headacheDetail = event.headacheDetail;
                       FatigueDetail? fatigueDetail = event.fatigueDetail;
@@ -2454,7 +2552,7 @@ class _SintomasTabState extends State<SintomasTab> {
     if (!mounted) return;
     // Sprint F.E2 — bowel: skip when bucket == normal.
     // Routine tracking of normal transit shouldn't prompt.
-    if ((_p.optionalTrackers['action_taken'] ?? true) &&
+    if ((_p.settings.optionalTrackers['action_taken'] ?? true) &&
         result.bucket != BowelBucket.normal) {
       final actionBowel = await ActionTakenSheet.show(
         context: context,
@@ -2472,7 +2570,7 @@ class _SintomasTabState extends State<SintomasTab> {
     }
 
     // D.2.E: forward integration.
-    if (_p.optionalTrackers['abdominal_detail'] ?? false) {
+    if (_p.settings.optionalTrackers['abdominal_detail'] ?? false) {
       await _promptBowelToAbdominal(result);
       if (!mounted) return;
     }
@@ -2507,7 +2605,7 @@ class _SintomasTabState extends State<SintomasTab> {
 
     // Sprint F.B+C — post-save action capture prompt (hemorrhoidal)
     if (!mounted) return;
-    if (_p.optionalTrackers['action_taken'] ?? true) {
+    if (_p.settings.optionalTrackers['action_taken'] ?? true) {
       final actionHem = await ActionTakenSheet.show(
         context: context,
         contrastColor: _cc,
@@ -2557,7 +2655,7 @@ class _SintomasTabState extends State<SintomasTab> {
 
     // Sprint F.B+C — post-save action capture prompt (fever)
     if (!mounted) return;
-    if (_p.optionalTrackers['action_taken'] ?? true) {
+    if (_p.settings.optionalTrackers['action_taken'] ?? true) {
       final actionFever = await ActionTakenSheet.show(
         context: context,
         contrastColor: _cc,

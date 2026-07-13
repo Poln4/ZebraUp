@@ -2158,6 +2158,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get abdominalIntegrationDontKnow => '我不知道';
+
+  @override
+  String get onboardingStepMedsUnitHint => '1';
+
+  @override
+  String get onboardingStepMedsStrengthHint => 'mg';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4314,4 +4320,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get abdominalIntegrationDontKnow => '我不知道';
+
+  @override
+  String get onboardingStepMedsUnitHint => '1';
+
+  @override
+  String get onboardingStepMedsStrengthHint => 'mg';
 }

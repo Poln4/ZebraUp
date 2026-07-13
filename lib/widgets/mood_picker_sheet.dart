@@ -29,7 +29,8 @@ Future<MoodEntry?> showMoodPickerSheet({
     backgroundColor: inverseContrastColor,
     isScrollControlled: true,
     shape: RoundedRectangleBorder(
-        side: BorderSide(color: contrastColor, width: 2)),
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     builder: (_) => _MoodPickerSheetBody(
       contrastColor: contrastColor,
       inverseContrastColor: inverseContrastColor,
@@ -77,20 +78,20 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
   }
 
   void _toggle(EmaMood mood) => setState(() {
-        if (_selectedEnglish.contains(mood.english)) {
-          _selectedEnglish.remove(mood.english);
-        } else {
-          _selectedEnglish.add(mood.english);
-        }
-      });
+    if (_selectedEnglish.contains(mood.english)) {
+      _selectedEnglish.remove(mood.english);
+    } else {
+      _selectedEnglish.add(mood.english);
+    }
+  });
 
   void _toggleSecondary(MoodQuadrant q) => setState(() {
-        if (_expandedSecondaries.contains(q)) {
-          _expandedSecondaries.remove(q);
-        } else {
-          _expandedSecondaries.add(q);
-        }
-      });
+    if (_expandedSecondaries.contains(q)) {
+      _expandedSecondaries.remove(q);
+    } else {
+      _expandedSecondaries.add(q);
+    }
+  });
 
   /// Resolves the selected English IDs to localized strings (in the
   /// active locale) before persisting, so `MoodEntry.states` stays in
@@ -140,7 +141,10 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
         title: Text(
           mood.label(localeCode).toUpperCase(),
           style: TextStyle(
-              color: _cc, fontWeight: FontWeight.bold, fontSize: 16),
+            color: _cc,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
         ),
         content: Text(
           mood.definition(localeCode),
@@ -149,8 +153,10 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.moodDefinitionDialogAction,
-                style: TextStyle(color: _cc, fontWeight: FontWeight.bold)),
+            child: Text(
+              l10n.moodDefinitionDialogAction,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -161,7 +167,9 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
   Widget build(BuildContext context) {
     return Padding(
       // Keep the notes field above the keyboard.
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         padding: const EdgeInsets.all(20),
         child: SingleChildScrollView(
@@ -184,29 +192,36 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
         Text(
           l10n.moodSheetStep1Title,
           style: TextStyle(
-              color: _cc,
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 1),
+            color: _cc,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
         ),
         const SizedBox(height: 16),
-        Row(children: [
-          Expanded(child: _quadrantCard(MoodQuadrant.activatedUnpleasant)),
-          const SizedBox(width: 8),
-          Expanded(child: _quadrantCard(MoodQuadrant.activatedPleasant)),
-        ]),
+        Row(
+          children: [
+            Expanded(child: _quadrantCard(MoodQuadrant.activatedUnpleasant)),
+            const SizedBox(width: 8),
+            Expanded(child: _quadrantCard(MoodQuadrant.activatedPleasant)),
+          ],
+        ),
         const SizedBox(height: 8),
-        Row(children: [
-          Expanded(child: _quadrantCard(MoodQuadrant.calmUnpleasant)),
-          const SizedBox(width: 8),
-          Expanded(child: _quadrantCard(MoodQuadrant.calmPleasant)),
-        ]),
+        Row(
+          children: [
+            Expanded(child: _quadrantCard(MoodQuadrant.calmUnpleasant)),
+            const SizedBox(width: 8),
+            Expanded(child: _quadrantCard(MoodQuadrant.calmPleasant)),
+          ],
+        ),
         const SizedBox(height: 16),
         Center(
           child: TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.moodSheetCancel,
-                style: TextStyle(color: _cc.withValues(alpha: 0.6))),
+            child: Text(
+              l10n.moodSheetCancel,
+              style: TextStyle(color: _cc.withValues(alpha: 0.6)),
+            ),
           ),
         ),
       ],
@@ -230,17 +245,25 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
         ),
         child: Column(
           children: [
-            Text(q.quadrantLabel(l10n),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.6),
-                    fontSize: 10,
-                    letterSpacing: 0.5)),
+            Text(
+              q.quadrantLabel(l10n),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.6),
+                fontSize: 10,
+                letterSpacing: 0.5,
+              ),
+            ),
             const SizedBox(height: 6),
-            Text(q.quadrantTeaser(l10n),
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: _cc, fontSize: 13, fontWeight: FontWeight.w500)),
+            Text(
+              q.quadrantTeaser(l10n),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: _cc,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),
@@ -276,15 +299,14 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
         Text(
           l10n.moodSheetAlsoFeelingHeader,
           style: TextStyle(
-              color: _cc.withValues(alpha: 0.6),
-              fontSize: 10,
-              letterSpacing: 1,
-              fontWeight: FontWeight.bold),
+            color: _cc.withValues(alpha: 0.6),
+            fontSize: 10,
+            letterSpacing: 1,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8),
-        ...secondaryQuadrants
-            .map((q) => _secondarySection(q, l10n))
-            .toList(),
+        ...secondaryQuadrants.map((q) => _secondarySection(q, l10n)).toList(),
 
         const SizedBox(height: 24),
 
@@ -292,10 +314,11 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
         Text(
           l10n.moodSheetNotesHeader,
           style: TextStyle(
-              color: _cc.withValues(alpha: 0.6),
-              fontSize: 10,
-              letterSpacing: 1,
-              fontWeight: FontWeight.bold),
+            color: _cc.withValues(alpha: 0.6),
+            fontSize: 10,
+            letterSpacing: 1,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -306,8 +329,10 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
           decoration: InputDecoration(
             hintText: l10n.moodSheetNotesPlaceholder,
             hintStyle: TextStyle(color: _cc.withValues(alpha: 0.3)),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 12,
+              vertical: 12,
+            ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: _cc.withValues(alpha: 0.3)),
               borderRadius: BorderRadius.circular(6),
@@ -324,19 +349,24 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
           style: ElevatedButton.styleFrom(
             backgroundColor: _cc,
             minimumSize: const Size.fromHeight(48),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(6),
+            ),
           ),
           onPressed: _selectedEnglish.isEmpty ? null : _save,
-          child: Text(l10n.moodSheetSaveButton,
-              style: TextStyle(color: _ic, fontWeight: FontWeight.bold)),
+          child: Text(
+            l10n.moodSheetSaveButton,
+            style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
+          ),
         ),
         const SizedBox(height: 4),
         Center(
           child: TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.moodSheetCancel,
-                style: TextStyle(color: _cc.withValues(alpha: 0.6))),
+            child: Text(
+              l10n.moodSheetCancel,
+              style: TextStyle(color: _cc.withValues(alpha: 0.6)),
+            ),
           ),
         ),
       ],
@@ -356,14 +386,21 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(primary.quadrantLabel(l10n),
-                    style: TextStyle(
-                        color: _cc.withValues(alpha: 0.6), fontSize: 10)),
-                Text(l10n.moodSheetStep2Prompt,
-                    style: TextStyle(
-                        color: _cc,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600)),
+                Text(
+                  primary.quadrantLabel(l10n),
+                  style: TextStyle(
+                    color: _cc.withValues(alpha: 0.6),
+                    fontSize: 10,
+                  ),
+                ),
+                Text(
+                  l10n.moodSheetStep2Prompt,
+                  style: TextStyle(
+                    color: _cc,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -374,9 +411,10 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
               _expandedSecondaries.clear();
               _notesController.clear();
             }),
-            child: Text(l10n.moodSheetChangeQuadrant,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.7), fontSize: 12)),
+            child: Text(
+              l10n.moodSheetChangeQuadrant,
+              style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 12),
+            ),
           ),
         ],
       ),
@@ -401,8 +439,7 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
             onTap: () => _toggleSecondary(q),
             borderRadius: BorderRadius.circular(6),
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
                 border: Border.all(color: _cc.withValues(alpha: 0.4)),
                 borderRadius: BorderRadius.circular(6),
@@ -421,16 +458,19 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
                     child: Text(
                       q.quadrantLabel(l10n),
                       style: TextStyle(
-                          color: _cc,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.3),
+                        color: _cc,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.3,
+                      ),
                     ),
                   ),
                   if (selectedInThis > 0)
                     Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: _cc,
                         borderRadius: BorderRadius.circular(10),
@@ -438,9 +478,10 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
                       child: Text(
                         '$selectedInThis',
                         style: TextStyle(
-                            color: _ic,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold),
+                          color: _ic,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                 ],
@@ -453,8 +494,7 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
             alignment: Alignment.topCenter,
             child: isExpanded
                 ? Padding(
-                    padding:
-                        const EdgeInsets.only(top: 10, bottom: 4, left: 4),
+                    padding: const EdgeInsets.only(top: 10, bottom: 4, left: 4),
                     child: Wrap(
                       spacing: 8,
                       runSpacing: 8,
@@ -479,15 +519,15 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
 
     final textColor = selected ? _ic : _cc;
     final borderColor = selected ? _cc : _cc.withValues(alpha: 0.4);
-    final iconColor =
-        selected ? _ic.withValues(alpha: 0.8) : _cc.withValues(alpha: 0.6);
+    final iconColor = selected
+        ? _ic.withValues(alpha: 0.8)
+        : _cc.withValues(alpha: 0.6);
 
     return InkWell(
       onTap: () => _toggle(mood),
       borderRadius: BorderRadius.circular(20),
       child: Container(
-        padding:
-            const EdgeInsets.only(left: 12, right: 8, top: 8, bottom: 8),
+        padding: const EdgeInsets.only(left: 12, right: 8, top: 8, bottom: 8),
         decoration: BoxDecoration(
           color: selected ? _cc : Colors.transparent,
           border: Border.all(color: borderColor),
@@ -511,11 +551,7 @@ class _MoodPickerSheetBodyState extends State<_MoodPickerSheetBody> {
             // removed in mental tracker Batch 2 to avoid scroll collision.
             GestureDetector(
               onTap: () => _showDefinitionDialog(mood),
-              child: Icon(
-                Icons.info_outline,
-                size: 16,
-                color: iconColor,
-              ),
+              child: Icon(Icons.info_outline, size: 16, color: iconColor),
             ),
           ],
         ),
@@ -538,7 +574,8 @@ class MoodSection extends StatelessWidget {
     required MoodQuadrant primaryQuadrant,
     required List<String> states,
     String? notes,
-  }) onLogMood;
+  })
+  onLogMood;
   final void Function(MoodEntry) onDeleteMood;
 
   const MoodSection({
@@ -561,12 +598,15 @@ class MoodSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.moodSectionTitle,
-            style: TextStyle(
-                color: cc,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1)),
+        Text(
+          l10n.moodSectionTitle,
+          style: TextStyle(
+            color: cc,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1,
+          ),
+        ),
         const SizedBox(height: 8),
         InkWell(
           onTap: () async {
@@ -601,9 +641,10 @@ class MoodSection extends StatelessWidget {
                         ? l10n.moodSectionPrompt
                         : l10n.moodSectionRegisterAnother,
                     style: TextStyle(
-                        color: cc,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500),
+                      color: cc,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 Icon(Icons.add, color: cc),
@@ -616,8 +657,9 @@ class MoodSection extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-                border: Border.all(color: cc.withValues(alpha: 0.4)),
-                borderRadius: BorderRadius.circular(6)),
+              border: Border.all(color: cc.withValues(alpha: 0.4)),
+              borderRadius: BorderRadius.circular(6),
+            ),
             child: Column(
               children: todaysMoods.map((entry) {
                 final timeStr = DateFormat('HH:mm').format(entry.timestamp);
@@ -630,34 +672,46 @@ class MoodSection extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 6),
-                        child: Icon(Icons.circle,
-                            color: cc.withValues(alpha: 0.5), size: 8),
+                        child: Icon(
+                          Icons.circle,
+                          color: cc.withValues(alpha: 0.5),
+                          size: 8,
+                        ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text("[$timeStr] $statesStr",
-                                style: TextStyle(
-                                    color: cc,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600)),
+                            Text(
+                              "[$timeStr] $statesStr",
+                              style: TextStyle(
+                                color: cc,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                             if (entry.notes != null &&
                                 entry.notes!.isNotEmpty) ...[
                               const SizedBox(height: 2),
-                              Text(entry.notes!,
-                                  style: TextStyle(
-                                      color: cc.withValues(alpha: 0.7),
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic)),
-                            ]
+                              Text(
+                                entry.notes!,
+                                style: TextStyle(
+                                  color: cc.withValues(alpha: 0.7),
+                                  fontSize: 12,
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close,
-                            color: Colors.red, size: 18),
+                        icon: const Icon(
+                          Icons.close,
+                          color: Colors.red,
+                          size: 18,
+                        ),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         onPressed: () => onDeleteMood(entry),

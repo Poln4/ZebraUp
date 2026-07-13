@@ -2260,4 +2260,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get abdominalIntegrationDontKnow => 'I don\'t know';
+
+  @override
+  String get onboardingStepMedsUnitHint => '1';
+
+  @override
+  String get onboardingStepMedsStrengthHint => 'mg';
 }

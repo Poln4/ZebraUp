@@ -26,31 +26,26 @@ import '../l10n/app_localizations.dart';
 
 extension HrvContextLocalization on HrvContext {
   String label(AppLocalizations l10n) => switch (this) {
-        HrvContext.morning => l10n.hrvContextMorning,
-        HrvContext.afternoon => l10n.hrvContextAfternoon,
-        HrvContext.evening => l10n.hrvContextEvening,
-        HrvContext.postExercise => l10n.hrvContextPostExercise,
-        HrvContext.other => l10n.hrvContextOther,
-      };
+    HrvContext.morning => l10n.hrvContextMorning,
+    HrvContext.afternoon => l10n.hrvContextAfternoon,
+    HrvContext.evening => l10n.hrvContextEvening,
+    HrvContext.postExercise => l10n.hrvContextPostExercise,
+    HrvContext.other => l10n.hrvContextOther,
+  };
 }
 
 /// Known HRV source IDs. Stored as free-form strings on HrvReading.source
 /// to allow future wearable integrations without schema changes.
-const List<String> kHrvSources = [
-  'manual',
-  'apple_watch',
-  'welltory',
-  'other',
-];
+const List<String> kHrvSources = ['manual', 'apple_watch', 'welltory', 'other'];
 
 extension HrvSourceLocalization on String {
   String hrvSourceLabel(AppLocalizations l10n) => switch (this) {
-        'manual' => l10n.hrvSourceManual,
-        'apple_watch' => l10n.hrvSourceAppleWatch,
-        'welltory' => l10n.hrvSourceWelltory,
-        'other' => l10n.hrvSourceOther,
-        _ => this,
-      };
+    'manual' => l10n.hrvSourceManual,
+    'apple_watch' => l10n.hrvSourceAppleWatch,
+    'welltory' => l10n.hrvSourceWelltory,
+    'other' => l10n.hrvSourceOther,
+    _ => this,
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -68,7 +63,8 @@ Future<HrvReading?> showHrvFormSheet({
     context: context,
     backgroundColor: inverseContrastColor,
     shape: RoundedRectangleBorder(
-        side: BorderSide(color: contrastColor, width: 2)),
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     isScrollControlled: true,
     builder: (ctx) => _HrvForm(
       contrastColor: contrastColor,
@@ -161,8 +157,9 @@ class _HrvFormState extends State<_HrvForm> {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(l10n.actionCancel)),
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.actionCancel),
+          ),
           TextButton(
             onPressed: () {
               final parsed = double.tryParse(ctrl.text.trim());
@@ -205,7 +202,8 @@ class _HrvFormState extends State<_HrvForm> {
         decoration: BoxDecoration(
           color: selected ? _cc : Colors.transparent,
           border: Border.all(
-              color: _cc.withValues(alpha: selected ? 1.0 : 0.4)),
+            color: _cc.withValues(alpha: selected ? 1.0 : 0.4),
+          ),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
@@ -228,23 +226,28 @@ class _HrvFormState extends State<_HrvForm> {
         : l10n.hrvModalLogHeader;
 
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: TextStyle(
-                    color: _cc,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: TextStyle(
+                color: _cc,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+              ),
               icon: Icon(Icons.access_time, color: _cc, size: 16),
               label: Text(
                 DateFormat('EEE d MMM, HH:mm').format(_timestamp),
@@ -263,12 +266,15 @@ class _HrvFormState extends State<_HrvForm> {
             const SizedBox(height: 24),
 
             // RMSSD stepper
-            Text(l10n.hrvFieldRmssdLabel,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.7),
-                    fontSize: 11,
-                    letterSpacing: 1,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              l10n.hrvFieldRmssdLabel,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.7),
+                fontSize: 11,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             Center(
               child: Column(
@@ -287,7 +293,9 @@ class _HrvFormState extends State<_HrvForm> {
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
                           child: Text(
                             '${_rmssd.round()} ms',
                             style: TextStyle(
@@ -321,43 +329,53 @@ class _HrvFormState extends State<_HrvForm> {
             const SizedBox(height: 24),
 
             // Context
-            Text(l10n.hrvFieldContextLabel,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.7),
-                    fontSize: 11,
-                    letterSpacing: 1,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              l10n.hrvFieldContextLabel,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.7),
+                fontSize: 11,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: HrvContext.values
-                  .map((c) => _chip(
-                        selected: _context == c,
-                        label: c.label(l10n),
-                        onTap: () => setState(() => _context = c),
-                      ))
+                  .map(
+                    (c) => _chip(
+                      selected: _context == c,
+                      label: c.label(l10n),
+                      onTap: () => setState(() => _context = c),
+                    ),
+                  )
                   .toList(),
             ),
             const SizedBox(height: 20),
 
             // Source
-            Text(l10n.hrvFieldSourceLabel,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.7),
-                    fontSize: 11,
-                    letterSpacing: 1,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              l10n.hrvFieldSourceLabel,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.7),
+                fontSize: 11,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: kHrvSources
-                  .map((s) => _chip(
-                        selected: _source == s,
-                        label: s.hrvSourceLabel(l10n),
-                        onTap: () => setState(() => _source = s),
-                      ))
+                  .map(
+                    (s) => _chip(
+                      selected: _source == s,
+                      label: s.hrvSourceLabel(l10n),
+                      onTap: () => setState(() => _source = s),
+                    ),
+                  )
                   .toList(),
             ),
             const SizedBox(height: 16),
@@ -379,9 +397,10 @@ class _HrvFormState extends State<_HrvForm> {
                 minimumSize: const Size.fromHeight(48),
               ),
               onPressed: _save,
-              child: Text(l10n.symptomsActionSave,
-                  style:
-                      TextStyle(color: _ic, fontWeight: FontWeight.bold)),
+              child: Text(
+                l10n.symptomsActionSave,
+                style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),

@@ -210,10 +210,9 @@ class FeverAnalysis {
   ///
   /// Returns episodes oldest-first.
   static List<FeverEpisode> detectEpisodes(List<FeverReading> readings) {
-    final feverish = readings
-        .where((r) => r.temperatureC >= feverThresholdC)
-        .toList()
-      ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
+    final feverish =
+        readings.where((r) => r.temperatureC >= feverThresholdC).toList()
+          ..sort((a, b) => a.timestamp.compareTo(b.timestamp));
 
     if (feverish.isEmpty) return const [];
 
@@ -222,11 +221,9 @@ class FeverAnalysis {
 
     for (var i = 1; i <= feverish.length; i++) {
       final isLast = i == feverish.length;
-      final gapTooLarge = !isLast &&
-          feverish[i]
-                  .timestamp
-                  .difference(feverish[i - 1].timestamp)
-                  .inHours >
+      final gapTooLarge =
+          !isLast &&
+          feverish[i].timestamp.difference(feverish[i - 1].timestamp).inHours >
               episodeGapHours;
 
       if (isLast || gapTooLarge) {
@@ -252,11 +249,11 @@ class FeverAnalysis {
     // cluster is non-empty and chronologically sorted.
     final start = cluster.first.timestamp;
     final end = cluster.last.timestamp;
-    final peak =
-        cluster.reduce((a, b) => a.temperatureC >= b.temperatureC ? a : b);
+    final peak = cluster.reduce(
+      (a, b) => a.temperatureC >= b.temperatureC ? a : b,
+    );
 
-    final antipyreticDoses =
-        cluster.where((r) => r.antipyreticTaken).toList();
+    final antipyreticDoses = cluster.where((r) => r.antipyreticTaken).toList();
     final names = <String>{};
     for (final r in antipyreticDoses) {
       final n = r.antipyreticName?.trim();

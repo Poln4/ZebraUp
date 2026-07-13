@@ -17,24 +17,31 @@ Future<DateTime?> pickTimestamp({
     context: context,
     backgroundColor: inverseContrastColor,
     isScrollControlled: true,
-    shape: RoundedRectangleBorder(side: BorderSide(color: contrastColor, width: 2)),
+    shape: RoundedRectangleBorder(
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     builder: (ctx) {
       return StatefulBuilder(
         builder: (ctx, setSheetState) {
           return Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom,
+            ),
             child: Container(
               padding: const EdgeInsets.all(20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("CUÁNDO OCURRIÓ",
-                      style: TextStyle(
-                          color: contrastColor,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1)),
+                  Text(
+                    "CUÁNDO OCURRIÓ",
+                    style: TextStyle(
+                      color: contrastColor,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -44,7 +51,10 @@ Future<DateTime?> pickTimestamp({
                             side: BorderSide(color: contrastColor),
                             padding: const EdgeInsets.symmetric(vertical: 16),
                           ),
-                          icon: Icon(Icons.calendar_today, color: contrastColor),
+                          icon: Icon(
+                            Icons.calendar_today,
+                            color: contrastColor,
+                          ),
                           label: Text(
                             DateFormat('EEE, d MMM y').format(working),
                             style: TextStyle(color: contrastColor),
@@ -53,8 +63,9 @@ Future<DateTime?> pickTimestamp({
                             final picked = await showDatePicker(
                               context: ctx,
                               initialDate: working,
-                              firstDate: DateTime.now()
-                                  .subtract(const Duration(days: 365)),
+                              firstDate: DateTime.now().subtract(
+                                const Duration(days: 365),
+                              ),
                               lastDate: DateTime.now(),
                             );
                             if (picked != null) {
@@ -118,22 +129,35 @@ Future<DateTime?> pickTimestamp({
                       _QuickPresetChip(
                         label: 'Hace 1h',
                         contrastColor: contrastColor,
-                        onTap: () => setSheetState(() => working =
-                            DateTime.now().subtract(const Duration(hours: 1))),
+                        onTap: () => setSheetState(
+                          () => working = DateTime.now().subtract(
+                            const Duration(hours: 1),
+                          ),
+                        ),
                       ),
                       _QuickPresetChip(
                         label: 'Hace 3h',
                         contrastColor: contrastColor,
-                        onTap: () => setSheetState(() => working =
-                            DateTime.now().subtract(const Duration(hours: 3))),
+                        onTap: () => setSheetState(
+                          () => working = DateTime.now().subtract(
+                            const Duration(hours: 3),
+                          ),
+                        ),
                       ),
                       _QuickPresetChip(
                         label: 'Anoche (10pm)',
                         contrastColor: contrastColor,
                         onTap: () {
                           final n = DateTime.now();
-                          setSheetState(() => working = DateTime(
-                              n.year, n.month, n.day - 1, 22, 0));
+                          setSheetState(
+                            () => working = DateTime(
+                              n.year,
+                              n.month,
+                              n.day - 1,
+                              22,
+                              0,
+                            ),
+                          );
                         },
                       ),
                       _QuickPresetChip(
@@ -141,8 +165,15 @@ Future<DateTime?> pickTimestamp({
                         contrastColor: contrastColor,
                         onTap: () {
                           final n = DateTime.now();
-                          setSheetState(() => working = DateTime(
-                              n.year, n.month, n.day - 1, n.hour, n.minute));
+                          setSheetState(
+                            () => working = DateTime(
+                              n.year,
+                              n.month,
+                              n.day - 1,
+                              n.hour,
+                              n.minute,
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -157,8 +188,10 @@ Future<DateTime?> pickTimestamp({
                             padding: const EdgeInsets.symmetric(vertical: 14),
                           ),
                           onPressed: () => Navigator.pop(ctx),
-                          child: Text('CANCELAR',
-                              style: TextStyle(color: contrastColor)),
+                          child: Text(
+                            'CANCELAR',
+                            style: TextStyle(color: contrastColor),
+                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -175,10 +208,13 @@ Future<DateTime?> pickTimestamp({
                                 : working;
                             Navigator.pop(ctx, final_);
                           },
-                          child: Text('GUARDAR',
-                              style: TextStyle(
-                                  color: inverseContrastColor,
-                                  fontWeight: FontWeight.bold)),
+                          child: Text(
+                            'GUARDAR',
+                            style: TextStyle(
+                              color: inverseContrastColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ],

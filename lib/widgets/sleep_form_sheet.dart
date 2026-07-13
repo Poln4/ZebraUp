@@ -30,11 +30,11 @@ import '../l10n/app_localizations.dart';
 
 extension SleepQualityLocalization on SleepQuality {
   String label(AppLocalizations l10n) => switch (this) {
-        SleepQuality.bad => l10n.sleepQualityBad,
-        SleepQuality.regular => l10n.sleepQualityRegular,
-        SleepQuality.good => l10n.sleepQualityGood,
-        SleepQuality.veryGood => l10n.sleepQualityVeryGood,
-      };
+    SleepQuality.bad => l10n.sleepQualityBad,
+    SleepQuality.regular => l10n.sleepQualityRegular,
+    SleepQuality.good => l10n.sleepQualityGood,
+    SleepQuality.veryGood => l10n.sleepQualityVeryGood,
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -55,7 +55,8 @@ Future<SleepEntry?> showSleepFormSheet({
     context: context,
     backgroundColor: inverseContrastColor,
     shape: RoundedRectangleBorder(
-        side: BorderSide(color: contrastColor, width: 2)),
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     isScrollControlled: true,
     builder: (ctx) => _SleepForm(
       contrastColor: contrastColor,
@@ -178,7 +179,8 @@ class _SleepFormState extends State<_SleepForm> {
         decoration: BoxDecoration(
           color: selected ? _cc : Colors.transparent,
           border: Border.all(
-              color: _cc.withValues(alpha: selected ? 1.0 : 0.4)),
+            color: _cc.withValues(alpha: selected ? 1.0 : 0.4),
+          ),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
@@ -200,9 +202,9 @@ class _SleepFormState extends State<_SleepForm> {
           onPressed: _wakeCount == null
               ? null
               : () => setState(() {
-                    final next = (_wakeCount ?? 0) - 1;
-                    _wakeCount = next < 0 ? null : next;
-                  }),
+                  final next = (_wakeCount ?? 0) - 1;
+                  _wakeCount = next < 0 ? null : next;
+                }),
           icon: const Icon(Icons.remove_circle_outline, size: 24),
           color: _cc,
           padding: EdgeInsets.zero,
@@ -226,8 +228,8 @@ class _SleepFormState extends State<_SleepForm> {
           onPressed: (_wakeCount ?? -1) >= _maxWakeCount
               ? null
               : () => setState(() {
-                    _wakeCount = (_wakeCount ?? 0) + 1;
-                  }),
+                  _wakeCount = (_wakeCount ?? 0) + 1;
+                }),
           icon: const Icon(Icons.add_circle_outline, size: 24),
           color: _cc,
           padding: EdgeInsets.zero,
@@ -241,12 +243,12 @@ class _SleepFormState extends State<_SleepForm> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final isEdit = widget.existing != null;
-    final title =
-        isEdit ? l10n.sleepModalEditHeader : l10n.sleepModalLogHeader;
+    final title = isEdit ? l10n.sleepModalEditHeader : l10n.sleepModalLogHeader;
 
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -316,8 +318,9 @@ class _SleepFormState extends State<_SleepForm> {
             const SizedBox(height: 4),
             TextField(
               controller: _durationCtrl,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
               ],
@@ -375,33 +378,29 @@ class _SleepFormState extends State<_SleepForm> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 14, vertical: 8),
+                  horizontal: 14,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: _nightmare ? _cc : Colors.transparent,
                   border: Border.all(
-                      color:
-                          _cc.withValues(alpha: _nightmare ? 1.0 : 0.4)),
+                    color: _cc.withValues(alpha: _nightmare ? 1.0 : 0.4),
+                  ),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      _nightmare
-                          ? Icons.check_circle
-                          : Icons.circle_outlined,
-                      color: _nightmare
-                          ? _ic
-                          : _cc.withValues(alpha: 0.6),
+                      _nightmare ? Icons.check_circle : Icons.circle_outlined,
+                      color: _nightmare ? _ic : _cc.withValues(alpha: 0.6),
                       size: 16,
                     ),
                     const SizedBox(width: 6),
                     Text(
                       l10n.sleepFieldNightmareToggle,
                       style: TextStyle(
-                        color: _nightmare
-                            ? _ic
-                            : _cc.withValues(alpha: 0.8),
+                        color: _nightmare ? _ic : _cc.withValues(alpha: 0.8),
                         fontSize: 13,
                         fontWeight: _nightmare
                             ? FontWeight.bold
@@ -433,8 +432,7 @@ class _SleepFormState extends State<_SleepForm> {
               onPressed: _save,
               child: Text(
                 l10n.symptomsActionSave,
-                style:
-                    TextStyle(color: _ic, fontWeight: FontWeight.bold),
+                style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
               ),
             ),
           ],

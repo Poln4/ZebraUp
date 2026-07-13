@@ -24,10 +24,7 @@ import '../models/fatigue_detail.dart';
 /// Severity classification for a fatigue red flag. All current fatigue
 /// flags return `advisory`; `urgent` is reserved for future patterns
 /// that might warrant immediate action (currently none identified).
-enum FatigueRedFlagSeverity {
-  advisory,
-  urgent,
-}
+enum FatigueRedFlagSeverity { advisory, urgent }
 
 /// Concrete red-flag patterns detectable from a FatigueDetail plus the
 /// severity index of the underlying SymptomEvent.

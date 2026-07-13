@@ -19,10 +19,7 @@ import '../models/abdominal_detail.dart';
 /// Severity classification. `urgent` requires an in-sheet emergency
 /// dialog before save (cefalea thunderclap pattern); `advisory`
 /// surfaces via post-save informational dialog.
-enum AbdominalRedFlagSeverity {
-  advisory,
-  urgent,
-}
+enum AbdominalRedFlagSeverity { advisory, urgent }
 
 /// Concrete red-flag patterns detectable from an AbdominalDetail plus
 /// severity index and (optionally) the SymptomEvent.note text.
@@ -82,12 +79,15 @@ List<AbdominalRedFlag> detectAbdominalRedFlags({
   // Compound gate: bleeding + GI distress + high severity. Isolated
   // hemorrhoidal bleeding (bloody_stool alone, no other symptoms) does
   // not fire; that stays in advisory territory or user judgement.
-  final hasBlood = detail.accompaniments
-      .contains(AbdominalAccompaniment.bloodyStool);
-  final hasNausea = detail.accompaniments
-      .contains(AbdominalAccompaniment.nausea);
-  final hasVomiting = detail.accompaniments
-      .contains(AbdominalAccompaniment.vomiting);
+  final hasBlood = detail.accompaniments.contains(
+    AbdominalAccompaniment.bloodyStool,
+  );
+  final hasNausea = detail.accompaniments.contains(
+    AbdominalAccompaniment.nausea,
+  );
+  final hasVomiting = detail.accompaniments.contains(
+    AbdominalAccompaniment.vomiting,
+  );
   if (hasBlood && (hasNausea || hasVomiting) && severityIndex >= 3) {
     flags.add(AbdominalRedFlag.massiveHematochezia);
   }
@@ -111,8 +111,7 @@ List<AbdominalRedFlag> detectAbdominalRedFlags({
   // severity. The pattern itself is specific enough that we use a
   // lower severity gate than for advisories driven by severity alone.
   if (detail.timing == AbdominalTiming.postprandialImmediate &&
-      detail.accompaniments
-          .contains(AbdominalAccompaniment.earlySatiety) &&
+      detail.accompaniments.contains(AbdominalAccompaniment.earlySatiety) &&
       severityIndex >= 2) {
     flags.add(AbdominalRedFlag.gastroparesisPatternAdvisory);
   }

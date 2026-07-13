@@ -24,19 +24,19 @@ import '../l10n/app_localizations.dart';
 
 extension HydrationBeverageLocalization on HydrationBeverage {
   String label(AppLocalizations l10n) => switch (this) {
-        HydrationBeverage.water => l10n.beverageWater,
-        HydrationBeverage.electrolyte => l10n.beverageElectrolyte,
-        HydrationBeverage.coffee => l10n.beverageCoffee,
-        HydrationBeverage.other => l10n.beverageOther,
-      };
+    HydrationBeverage.water => l10n.beverageWater,
+    HydrationBeverage.electrolyte => l10n.beverageElectrolyte,
+    HydrationBeverage.coffee => l10n.beverageCoffee,
+    HydrationBeverage.other => l10n.beverageOther,
+  };
 }
 
 extension SodiumSourceLocalization on SodiumSource {
   String label(AppLocalizations l10n) => switch (this) {
-        SodiumSource.pinch => l10n.sodiumPinch,
-        SodiumSource.sachet => l10n.sodiumSachet,
-        SodiumSource.saltySnack => l10n.sodiumSaltySnack,
-      };
+    SodiumSource.pinch => l10n.sodiumPinch,
+    SodiumSource.sachet => l10n.sodiumSachet,
+    SodiumSource.saltySnack => l10n.sodiumSaltySnack,
+  };
 }
 
 // -----------------------------------------------------------------------------
@@ -54,7 +54,8 @@ Future<HydrationEntry?> showHydrationFormSheet({
     context: context,
     backgroundColor: inverseContrastColor,
     shape: RoundedRectangleBorder(
-        side: BorderSide(color: contrastColor, width: 2)),
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     isScrollControlled: true,
     builder: (ctx) => _HydrationForm(
       contrastColor: contrastColor,
@@ -151,7 +152,8 @@ class _HydrationFormState extends State<_HydrationForm> {
         decoration: BoxDecoration(
           color: selected ? _cc : Colors.transparent,
           border: Border.all(
-              color: _cc.withValues(alpha: selected ? 1.0 : 0.4)),
+            color: _cc.withValues(alpha: selected ? 1.0 : 0.4),
+          ),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(
@@ -174,23 +176,28 @@ class _HydrationFormState extends State<_HydrationForm> {
         : l10n.hydrationModalLogHeader;
 
     return Padding(
-      padding:
-          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title,
-                style: TextStyle(
-                    color: _cc,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              title,
+              style: TextStyle(
+                color: _cc,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             OutlinedButton.icon(
               style: OutlinedButton.styleFrom(
-                  side: BorderSide(color: _cc.withValues(alpha: 0.5))),
+                side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+              ),
               icon: Icon(Icons.access_time, color: _cc, size: 16),
               label: Text(
                 DateFormat('EEE d MMM, HH:mm').format(_timestamp),
@@ -209,12 +216,15 @@ class _HydrationFormState extends State<_HydrationForm> {
             const SizedBox(height: 20),
 
             // Volume
-            Text(l10n.hydrationFieldVolumeLabel,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.7),
-                    fontSize: 11,
-                    letterSpacing: 1,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              l10n.hydrationFieldVolumeLabel,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.7),
+                fontSize: 11,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 4),
             TextField(
               controller: _volumeCtrl,
@@ -230,45 +240,55 @@ class _HydrationFormState extends State<_HydrationForm> {
             const SizedBox(height: 20),
 
             // Beverage
-            Text(l10n.hydrationFieldBeverageLabel,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.7),
-                    fontSize: 11,
-                    letterSpacing: 1,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              l10n.hydrationFieldBeverageLabel,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.7),
+                fontSize: 11,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: HydrationBeverage.values
-                  .map((b) => _chip(
-                        selected: _beverage == b,
-                        label: b.label(l10n),
-                        onTap: () => setState(() => _beverage = b),
-                      ))
+                  .map(
+                    (b) => _chip(
+                      selected: _beverage == b,
+                      label: b.label(l10n),
+                      onTap: () => setState(() => _beverage = b),
+                    ),
+                  )
                   .toList(),
             ),
             const SizedBox(height: 20),
 
             // Sodium (optional)
-            Text(l10n.hydrationFieldSodiumLabel,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.7),
-                    fontSize: 11,
-                    letterSpacing: 1,
-                    fontWeight: FontWeight.bold)),
+            Text(
+              l10n.hydrationFieldSodiumLabel,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.7),
+                fontSize: 11,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: SodiumSource.values
-                  .map((s) => _chip(
-                        selected: _sodium == s,
-                        label: s.label(l10n),
-                        onTap: () => setState(() {
-                          _sodium = (_sodium == s) ? null : s;
-                        }),
-                      ))
+                  .map(
+                    (s) => _chip(
+                      selected: _sodium == s,
+                      label: s.label(l10n),
+                      onTap: () => setState(() {
+                        _sodium = (_sodium == s) ? null : s;
+                      }),
+                    ),
+                  )
                   .toList(),
             ),
             const SizedBox(height: 16),
@@ -290,9 +310,10 @@ class _HydrationFormState extends State<_HydrationForm> {
                 minimumSize: const Size.fromHeight(48),
               ),
               onPressed: _save,
-              child: Text(l10n.symptomsActionSave,
-                  style:
-                      TextStyle(color: _ic, fontWeight: FontWeight.bold)),
+              child: Text(
+                l10n.symptomsActionSave,
+                style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         ),

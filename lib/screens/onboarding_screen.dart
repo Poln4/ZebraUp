@@ -42,6 +42,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final _diagnosisCtrl = TextEditingController();
   final _medNameCtrl = TextEditingController();
   final _medDoseCtrl = TextEditingController();
+  final _medStrengthCtrl = TextEditingController();
+  final _medUnitCtrl = TextEditingController();
 
   int _step = 0;
   final List<String> _conditions = [];
@@ -57,6 +59,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     _diagnosisCtrl.dispose();
     _medNameCtrl.dispose();
     _medDoseCtrl.dispose();
+    _medStrengthCtrl.dispose();
+    _medUnitCtrl.dispose();
     super.dispose();
   }
 
@@ -66,19 +70,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       return;
     }
     setState(() => _step++);
-    _pageCtrl.animateToPage(_step,
-        duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+    _pageCtrl.animateToPage(
+      _step,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
   }
 
   void _back() {
     if (_step == 0) return;
     setState(() => _step--);
-    _pageCtrl.animateToPage(_step,
-        duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+    _pageCtrl.animateToPage(
+      _step,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeOut,
+    );
   }
 
   Future<void> _finish() async {
-    final name = _nameCtrl.text.trim().isEmpty ? "Mi perfil" : _nameCtrl.text.trim();
+    final name = _nameCtrl.text.trim().isEmpty
+        ? "Mi perfil"
+        : _nameCtrl.text.trim();
     final profile = Profile(
       id: '${DateTime.now().millisecondsSinceEpoch}',
       name: name,
@@ -104,17 +116,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void _addMed() {
     final name = _medNameCtrl.text.trim();
     final dose = _medDoseCtrl.text.trim();
+    final strength = double.tryParse(_medStrengthCtrl.text.trim()) ?? 0;
+    final unit = _medUnitCtrl.text.trim();
     if (name.isEmpty) return;
     setState(() {
-      _meds.add(MedicationDef(
-        name: name,
-        // If your MedicationDef constructor needs strength + unit instead,
-        // change the next line to your shape.
-        notes: dose.isEmpty ? null : dose,
-        outcomeCheckHours: null,
-      ));
+      _meds.add(
+        MedicationDef(
+          name: name,
+          // If your MedicationDef constructor needs strength + unit instead,
+          // change the next line to your shape.
+          strength: strength,
+          unit: unit,
+          notes: dose.isEmpty ? null : dose,
+          outcomeCheckHours: null,
+        ),
+      );
       _medNameCtrl.clear();
       _medDoseCtrl.clear();
+      _medStrengthCtrl.clear();
+      _medUnitCtrl.clear();
     });
   }
 
@@ -150,8 +170,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Text("${_step + 1} / 4",
-                      style: TextStyle(color: _cc.withValues(alpha: 0.6), fontSize: 11)),
+                  Text(
+                    "${_step + 1} / 4",
+                    style: TextStyle(
+                      color: _cc.withValues(alpha: 0.6),
+                      fontSize: 11,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -177,25 +202,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   if (_step > 0)
                     TextButton(
                       onPressed: _back,
-                      child: Text(l10n.onboardingActionBack,
-                          style: TextStyle(color: _cc.withValues(alpha: 0.7))),
+                      child: Text(
+                        l10n.onboardingActionBack,
+                        style: TextStyle(color: _cc.withValues(alpha: 0.7)),
+                      ),
                     ),
                   const Spacer(),
                   if (canSkip && !isLastStep)
                     TextButton(
                       onPressed: _next,
-                      child: Text(l10n.onboardingActionSkip,
-                          style: TextStyle(color: _cc.withValues(alpha: 0.7))),
+                      child: Text(
+                        l10n.onboardingActionSkip,
+                        style: TextStyle(color: _cc.withValues(alpha: 0.7)),
+                      ),
                     ),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _cc,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 14,
+                      ),
                     ),
                     onPressed: canGoNext ? _next : null,
                     child: Text(
-                      isLastStep ? l10n.onboardingActionFinish : l10n.onboardingActionNext,
+                      isLastStep
+                          ? l10n.onboardingActionFinish
+                          : l10n.onboardingActionNext,
                       style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -218,20 +252,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (widget.currentLocale != null && widget.onChangeLocale != null) ...[
+          if (widget.currentLocale != null &&
+              widget.onChangeLocale != null) ...[
             _buildLanguagePicker(),
             const SizedBox(height: 20),
           ],
           Icon(Icons.medical_information_outlined, color: _cc, size: 48),
           const SizedBox(height: 24),
-          Text(context.l10n.onboardingStepWelcomeTitle,
-              style: TextStyle(color: _cc, fontSize: 32, fontWeight: FontWeight.bold)),
+          Text(
+            context.l10n.onboardingStepWelcomeTitle,
+            style: TextStyle(
+              color: _cc,
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 12),
-          Text(context.l10n.onboardingStepWelcomeSubtitle,
-              style: TextStyle(
-                  color: _cc.withValues(alpha: 0.8), fontSize: 18, fontWeight: FontWeight.w500)),
+          Text(
+            context.l10n.onboardingStepWelcomeSubtitle,
+            style: TextStyle(
+              color: _cc.withValues(alpha: 0.8),
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           const SizedBox(height: 24),
-          Text(context.l10n.onboardingStepWelcomeBody,
+          Text(
+            context.l10n.onboardingStepWelcomeBody,
             style: TextStyle(color: _cc, fontSize: 15, height: 1.5),
           ),
           const SizedBox(height: 20),
@@ -243,13 +290,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             child: Row(
               children: [
-                Icon(Icons.lock_outline, size: 16, color: _cc.withValues(alpha: 0.7)),
+                Icon(
+                  Icons.lock_outline,
+                  size: 16,
+                  color: _cc.withValues(alpha: 0.7),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     context.l10n.onboardingStepWelcomePrivacyNote,
                     style: TextStyle(
-                        color: _cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
+                      color: _cc.withValues(alpha: 0.7),
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
                   ),
                 ),
               ],
@@ -264,13 +318,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
             child: Row(
               children: [
-                Icon(Icons.info_outline, size: 16, color: _cc.withValues(alpha: 0.7)),
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: _cc.withValues(alpha: 0.7),
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     context.l10n.onboardingStepWelcomeMedicalDisclaimer,
                     style: TextStyle(
-                        color: _cc.withValues(alpha: 0.7), fontSize: 12, height: 1.4),
+                      color: _cc.withValues(alpha: 0.7),
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
                   ),
                 ),
               ],
@@ -289,7 +350,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               },
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: _cc, width: 1.5),
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 16,
+                ),
               ),
               child: Row(
                 children: [
@@ -302,21 +366,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Text(
                           context.l10n.onboardingHaveProfileTitle,
                           style: TextStyle(
-                              color: _cc,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14),
+                            color: _cc,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           context.l10n.onboardingHaveProfileSubtitle,
                           style: TextStyle(
-                              color: _cc.withValues(alpha: 0.7),
-                              fontSize: 12),
+                            color: _cc.withValues(alpha: 0.7),
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Icon(Icons.arrow_forward, color: _cc.withValues(alpha: 0.6), size: 16),
+                  Icon(
+                    Icons.arrow_forward,
+                    color: _cc.withValues(alpha: 0.6),
+                    size: 16,
+                  ),
                 ],
               ),
             ),
@@ -336,14 +406,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.onboardingStepNameTitle,
-              style: TextStyle(color: _cc, fontSize: 28, fontWeight: FontWeight.bold)),
+          Text(
+            context.l10n.onboardingStepNameTitle,
+            style: TextStyle(
+              color: _cc,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 16),
-          Text(context.l10n.onboardingStepNameQuestion,
-              style: TextStyle(color: _cc, fontSize: 16)),
+          Text(
+            context.l10n.onboardingStepNameQuestion,
+            style: TextStyle(color: _cc, fontSize: 16),
+          ),
           const SizedBox(height: 4),
-          Text(context.l10n.onboardingStepNameFootnote,
-              style: TextStyle(color: _cc.withValues(alpha: 0.6), fontSize: 12)),
+          Text(
+            context.l10n.onboardingStepNameFootnote,
+            style: TextStyle(color: _cc.withValues(alpha: 0.6), fontSize: 12),
+          ),
           const SizedBox(height: 24),
           TextField(
             controller: _nameCtrl,
@@ -351,11 +431,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             style: TextStyle(color: _cc, fontSize: 22),
             decoration: InputDecoration(
               hintText: context.l10n.onboardingStepNameHint,
-              hintStyle: TextStyle(color: _cc.withValues(alpha: 0.4), fontSize: 22),
+              hintStyle: TextStyle(
+                color: _cc.withValues(alpha: 0.4),
+                fontSize: 22,
+              ),
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: _cc.withValues(alpha: 0.4)),
               ),
-              focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: _cc, width: 2)),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: _cc, width: 2),
+              ),
             ),
             textInputAction: TextInputAction.done,
             onChanged: (_) => setState(() {}),
@@ -378,12 +463,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.onboardingStepConditionsTitle,
-              style: TextStyle(color: _cc, fontSize: 28, fontWeight: FontWeight.bold)),
+          Text(
+            context.l10n.onboardingStepConditionsTitle,
+            style: TextStyle(
+              color: _cc,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 12),
           Text(
             context.l10n.onboardingStepConditionsBody,
-            style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 14, height: 1.4),
+            style: TextStyle(
+              color: _cc.withValues(alpha: 0.7),
+              fontSize: 14,
+              height: 1.4,
+            ),
           ),
           const SizedBox(height: 24),
           Row(
@@ -400,27 +495,38 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
               ),
-              IconButton(icon: Icon(Icons.add, color: _cc), onPressed: _addCondition),
+              IconButton(
+                icon: Icon(Icons.add, color: _cc),
+                onPressed: _addCondition,
+              ),
             ],
           ),
           const SizedBox(height: 16),
           if (_conditions.isEmpty)
-            Text(context.l10n.onboardingStepConditionsEmpty,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.5),
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic))
+            Text(
+              context.l10n.onboardingStepConditionsEmpty,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.5),
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            )
           else
             Wrap(
               spacing: 8,
               runSpacing: 6,
               children: _conditions
-                  .map((c) => InputChip(
-                        label: Text(c, style: TextStyle(color: _ic, fontSize: 13)),
-                        backgroundColor: _cc,
-                        onDeleted: () => setState(() => _conditions.remove(c)),
-                        deleteIconColor: _ic,
-                      ))
+                  .map(
+                    (c) => InputChip(
+                      label: Text(
+                        c,
+                        style: TextStyle(color: _ic, fontSize: 13),
+                      ),
+                      backgroundColor: _cc,
+                      onDeleted: () => setState(() => _conditions.remove(c)),
+                      deleteIconColor: _ic,
+                    ),
+                  )
                   .toList(),
             ),
         ],
@@ -438,12 +544,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(context.l10n.onboardingStepMedsTitle,
-              style: TextStyle(color: _cc, fontSize: 28, fontWeight: FontWeight.bold)),
+          Text(
+            context.l10n.onboardingStepMedsTitle,
+            style: TextStyle(
+              color: _cc,
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 12),
           Text(
             context.l10n.onboardingStepMedsBody,
-            style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 14, height: 1.4),
+            style: TextStyle(
+              color: _cc.withValues(alpha: 0.7),
+              fontSize: 14,
+              height: 1.4,
+            ),
           ),
           const SizedBox(height: 24),
           Row(
@@ -455,6 +571,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   style: TextStyle(color: _cc),
                   decoration: InputDecoration(
                     hintText: context.l10n.onboardingStepMedsNameHint,
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 1,
+                child: TextField(
+                  controller: _medStrengthCtrl,
+                  style: TextStyle(color: _cc),
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                    hintText: context.l10n.onboardingStepMedsStrengthHint,
+                    hintStyle: TextStyle(color: Colors.grey),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 1,
+                child: TextField(
+                  controller: _medUnitCtrl,
+                  style: TextStyle(color: _cc),
+                  decoration: InputDecoration(
+                    hintText: context.l10n.onboardingStepMedsUnitHint,
                     hintStyle: TextStyle(color: Colors.grey),
                   ),
                 ),
@@ -473,46 +614,61 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ),
                 ),
               ),
-              IconButton(icon: Icon(Icons.add, color: _cc), onPressed: _addMed),
+              IconButton(
+                icon: Icon(Icons.add, color: _cc),
+                onPressed: _addMed,
+              ),
             ],
           ),
           const SizedBox(height: 16),
           if (_meds.isEmpty)
-            Text(context.l10n.onboardingStepMedsEmpty,
-                style: TextStyle(
-                    color: _cc.withValues(alpha: 0.5),
-                    fontSize: 12,
-                    fontStyle: FontStyle.italic))
+            Text(
+              context.l10n.onboardingStepMedsEmpty,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.5),
+                fontSize: 12,
+                fontStyle: FontStyle.italic,
+              ),
+            )
           else
             Column(
               children: _meds
                   .asMap()
                   .entries
-                  .map((e) => Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Row(
-                          children: [
-                            Icon(Icons.medical_services_outlined,
-                                color: _cc, size: 14),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                e.value.notes != null && e.value.notes!.isNotEmpty
-                                    ? "${e.value.name} — ${e.value.notes}"
-                                    : e.value.name,
-                                style: TextStyle(color: _cc, fontSize: 13),
-                              ),
+                  .map(
+                    (e) => Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.medical_services_outlined,
+                            color: _cc,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              e.value.notes != null && e.value.notes!.isNotEmpty
+                                  ? "${e.value.name} — ${e.value.notes}"
+                                  : e.value.name,
+                              style: TextStyle(color: _cc, fontSize: 13),
                             ),
-                            IconButton(
-                              icon: const Icon(Icons.close, color: Colors.red, size: 16),
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                              onPressed: () =>
-                                  setState(() => _meds.removeAt(e.key)),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 16,
                             ),
-                          ],
-                        ),
-                      ))
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () =>
+                                setState(() => _meds.removeAt(e.key)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
                   .toList(),
             ),
         ],
@@ -549,7 +705,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         Icon(Icons.language, color: _cc.withValues(alpha: 0.55), size: 16),
         const SizedBox(width: 8),
         ...options.map((opt) {
-          final selected = loc.languageCode == opt.$1.languageCode &&
+          final selected =
+              loc.languageCode == opt.$1.languageCode &&
               (opt.$1.countryCode == null ||
                   loc.countryCode == opt.$1.countryCode);
           return Padding(
@@ -560,7 +717,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 5),
+                  horizontal: 12,
+                  vertical: 5,
+                ),
                 decoration: BoxDecoration(
                   color: selected ? _cc : Colors.transparent,
                   border: Border.all(
@@ -573,8 +732,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   style: TextStyle(
                     color: selected ? _ic : _cc.withValues(alpha: 0.75),
                     fontSize: 12,
-                    fontWeight:
-                        selected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
               ),

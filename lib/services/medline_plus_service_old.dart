@@ -20,7 +20,9 @@ class MedlinePlusService {
   Future<void> _ensureMappingsLoaded() async {
     if (_mappings != null) return;
     try {
-      final jsonStr = await rootBundle.loadString('assets/condition_codes.json');
+      final jsonStr = await rootBundle.loadString(
+        'assets/condition_codes.json',
+      );
       final data = jsonDecode(jsonStr) as Map<String, dynamic>;
       final list = (data['mappings'] as List?) ?? [];
       _mappings = list
@@ -38,22 +40,23 @@ class MedlinePlusService {
     await _ensureMappingsLoaded();
     if (_mappings == null || _mappings!.isEmpty) return null;
     final norm = userInput.trim().toLowerCase();
-    
+
     // 1. Exact match (Best scenario)
     for (final m in _mappings!) {
       for (final alias in m.aliases) {
         if (alias.toLowerCase() == norm) return m;
       }
     }
-    
+
     // 2. Loose contains-match fallback.
-    // FIX: Added a length guard. Without this, a user typing "do" 
+    // FIX: Added a length guard. Without this, a user typing "do"
     // might accidentally match "Endometriosis" or "Dolor".
     if (norm.length > 3) {
       for (final m in _mappings!) {
         for (final alias in m.aliases) {
           if (norm.contains(alias.toLowerCase()) ||
-              alias.toLowerCase().contains(norm)) return m;
+              alias.toLowerCase().contains(norm))
+            return m;
         }
       }
     }
@@ -66,7 +69,7 @@ class MedlinePlusService {
     final box = Hive.box('zebraBox');
     final cacheKey = 'medlineplus:$icd10';
     final cached = box.get(cacheKey) as String?;
-    
+
     if (cached != null) {
       try {
         final m = jsonDecode(cached) as Map<String, dynamic>;
@@ -115,32 +118,34 @@ class MedlinePlusService {
 
   /// Isolated API call logic to support clean hierarchical fallbacks
   Future<MedlinePlusContent?> _fetchFromApi(String queryIcd) async {
-    final url = Uri.parse('$_base?'
-        'mainSearchCriteria.v.cs=2.16.840.1.113883.6.90' // ICD-10-CM OID
-        '&mainSearchCriteria.v.c=${Uri.encodeComponent(queryIcd)}'
-        '&informationRecipient.languageCode.c=es'
-        '&knowledgeResponseType=application/json');
+    final url = Uri.parse(
+      '$_base?'
+      'mainSearchCriteria.v.cs=2.16.840.1.113883.6.90' // ICD-10-CM OID
+      '&mainSearchCriteria.v.c=${Uri.encodeComponent(queryIcd)}'
+      '&informationRecipient.languageCode.c=es'
+      '&knowledgeResponseType=application/json',
+    );
 
     try {
       final resp = await http.get(url).timeout(const Duration(seconds: 10));
       if (resp.statusCode != 200) return null;
-      
+
       final data = jsonDecode(resp.body) as Map<String, dynamic>;
       final feed = data['feed'] as Map<String, dynamic>?;
       final entries = (feed?['entry'] as List?) ?? [];
-      
+
       if (entries.isEmpty) return null;
 
       final first = entries.first as Map<String, dynamic>;
-      
+
       final title = (first['title'] is Map)
           ? (first['title']['_value'] as String? ?? '')
           : (first['title'] as String? ?? '');
-          
+
       final summary = (first['summary'] is Map)
           ? (first['summary']['_value'] as String? ?? '')
           : (first['summary'] as String? ?? '');
-          
+
       String? link;
       final links = first['link'];
       if (links is List && links.isNotEmpty) {
@@ -184,8 +189,7 @@ class MedlinePlusService {
   Future<void> _ensureDrugMappingsLoaded() async {
     if (_drugMappings != null) return;
     try {
-      final jsonStr =
-          await rootBundle.loadString('assets/drug_codes.json');
+      final jsonStr = await rootBundle.loadString('assets/drug_codes.json');
       final data = jsonDecode(jsonStr) as Map<String, dynamic>;
       final list = (data['mappings'] as List?) ?? [];
       _drugMappings = list
@@ -268,11 +272,13 @@ class MedlinePlusService {
   }
 
   Future<MedlinePlusDrugContent?> _fetchDrugFromApi(String rxcui) async {
-    final url = Uri.parse('$_base?'
-        'mainSearchCriteria.v.cs=2.16.840.1.113883.6.88' // RxNorm OID
-        '&mainSearchCriteria.v.c=${Uri.encodeComponent(rxcui)}'
-        '&informationRecipient.languageCode.c=es'
-        '&knowledgeResponseType=application/json');
+    final url = Uri.parse(
+      '$_base?'
+      'mainSearchCriteria.v.cs=2.16.840.1.113883.6.88' // RxNorm OID
+      '&mainSearchCriteria.v.c=${Uri.encodeComponent(rxcui)}'
+      '&informationRecipient.languageCode.c=es'
+      '&knowledgeResponseType=application/json',
+    );
 
     try {
       final resp = await http.get(url).timeout(const Duration(seconds: 10));
@@ -321,9 +327,14 @@ class _ConditionMapping {
   final String icd10;
   final String label;
 
-  _ConditionMapping({required this.aliases, required this.icd10, required this.label});
+  _ConditionMapping({
+    required this.aliases,
+    required this.icd10,
+    required this.label,
+  });
 
-  factory _ConditionMapping.fromMap(Map<String, dynamic> m) => _ConditionMapping(
+  factory _ConditionMapping.fromMap(Map<String, dynamic> m) =>
+      _ConditionMapping(
         aliases: List<String>.from(m['aliases'] as List? ?? []),
         icd10: m['icd10'] as String,
         label: m['label'] as String,
@@ -346,14 +357,15 @@ class MedlinePlusContent {
   });
 
   Map<String, dynamic> toMap() => {
-        'icd10': icd10,
-        'title': title,
-        'summary': summary,
-        'link': link,
-        'fetchedAt': fetchedAt.toIso8601String(),
-      };
+    'icd10': icd10,
+    'title': title,
+    'summary': summary,
+    'link': link,
+    'fetchedAt': fetchedAt.toIso8601String(),
+  };
 
-  factory MedlinePlusContent.fromMap(Map<String, dynamic> m) => MedlinePlusContent(
+  factory MedlinePlusContent.fromMap(Map<String, dynamic> m) =>
+      MedlinePlusContent(
         icd10: m['icd10'] as String,
         title: m['title'] as String,
         summary: m['summary'] as String,
@@ -387,12 +399,12 @@ class _DrugMapping {
   });
 
   factory _DrugMapping.fromMap(Map<String, dynamic> m) => _DrugMapping(
-        aliases: List<String>.from(m['aliases'] as List? ?? []),
-        rxcui: m['rxcui'] as String,
-        label: m['label'] as String,
-        notes: m['notes'] as String?,
-        confidence: m['confidence'] as String? ?? 'high',
-      );
+    aliases: List<String>.from(m['aliases'] as List? ?? []),
+    rxcui: m['rxcui'] as String,
+    label: m['label'] as String,
+    notes: m['notes'] as String?,
+    confidence: m['confidence'] as String? ?? 'high',
+  );
 }
 
 class MedlinePlusDrugContent {
@@ -411,12 +423,12 @@ class MedlinePlusDrugContent {
   });
 
   Map<String, dynamic> toMap() => {
-        'rxcui': rxcui,
-        'title': title,
-        'summary': summary,
-        'link': link,
-        'fetchedAt': fetchedAt.toIso8601String(),
-      };
+    'rxcui': rxcui,
+    'title': title,
+    'summary': summary,
+    'link': link,
+    'fetchedAt': fetchedAt.toIso8601String(),
+  };
 
   factory MedlinePlusDrugContent.fromMap(Map<String, dynamic> m) =>
       MedlinePlusDrugContent(

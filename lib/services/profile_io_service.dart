@@ -298,7 +298,8 @@ class ProfileIoService {
       // untouched so the user can retry on next launch (or roll back the
       // app version).
       throw StateError(
-          'zebraBox v$currentVersion->v$schemaVersion backup failed; migration aborted: $e');
+        'zebraBox v$currentVersion->v$schemaVersion backup failed; migration aborted: $e',
+      );
     }
 
     // Only stamp the new schemaVersion AFTER the backup is durable.

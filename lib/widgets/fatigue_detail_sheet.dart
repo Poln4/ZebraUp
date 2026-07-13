@@ -81,8 +81,9 @@ class _FatigueDetailSheetContentState
     super.initState();
     _type = widget.existing?.type;
     _temporalPattern = widget.existing?.temporalPattern;
-    _accompaniments =
-        Set<FatigueAccompaniment>.from(widget.existing?.accompaniments ?? {});
+    _accompaniments = Set<FatigueAccompaniment>.from(
+      widget.existing?.accompaniments ?? {},
+    );
     _triggers = Set<FatigueTrigger>.from(widget.existing?.triggers ?? {});
   }
 
@@ -200,8 +201,7 @@ class _FatigueDetailSheetContentState
                         child: OutlinedButton(
                           onPressed: () => Navigator.of(ctx).pop(null),
                           style: OutlinedButton.styleFrom(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             side: BorderSide(color: widget.contrastColor),
                             foregroundColor: widget.contrastColor,
                             shape: RoundedRectangleBorder(
@@ -216,12 +216,11 @@ class _FatigueDetailSheetContentState
                         child: ElevatedButton(
                           onPressed: _canSave() ? _save : null,
                           style: ElevatedButton.styleFrom(
-                            padding:
-                                const EdgeInsets.symmetric(vertical: 14),
+                            padding: const EdgeInsets.symmetric(vertical: 14),
                             backgroundColor: widget.contrastColor,
                             foregroundColor: widget.inverseContrastColor,
-                            disabledBackgroundColor:
-                                widget.contrastColor.withOpacity(0.3),
+                            disabledBackgroundColor: widget.contrastColor
+                                .withOpacity(0.3),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -366,13 +365,15 @@ class _FatigueDetailSheetContentState
             spacing: 6,
             runSpacing: 6,
             children: chipKeys
-                .map((chipKey) => _buildChip(
-                      ctx,
-                      locale,
-                      groupKey: groupKey,
-                      chipKey: chipKey,
-                      isSingleSelect: isSingleSelect,
-                    ))
+                .map(
+                  (chipKey) => _buildChip(
+                    ctx,
+                    locale,
+                    groupKey: groupKey,
+                    chipKey: chipKey,
+                    isSingleSelect: isSingleSelect,
+                  ),
+                )
                 .toList(),
           ),
         ],
@@ -408,10 +409,7 @@ class _FatigueDetailSheetContentState
       side: BorderSide(
         color: widget.contrastColor.withOpacity(selected ? 0.6 : 0.25),
       ),
-      labelStyle: TextStyle(
-        color: widget.contrastColor,
-        fontSize: 13,
-      ),
+      labelStyle: TextStyle(color: widget.contrastColor, fontSize: 13),
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
     );
   }
@@ -442,7 +440,10 @@ class _FatigueDetailSheetContentState
   }
 
   void _showDefinitionDialog(
-      BuildContext ctx, String title, String definition) {
+    BuildContext ctx,
+    String title,
+    String definition,
+  ) {
     showDialog<void>(
       context: ctx,
       builder: (dctx) {

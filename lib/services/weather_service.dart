@@ -14,7 +14,10 @@ class WeatherService {
   /// Returns today's WeatherDay for the given coords. Cached: subsequent calls
   /// within the same calendar day return immediately from Hive without hitting
   /// the network. Returns null if the network call fails AND nothing is cached.
-  Future<WeatherDay?> getToday({required double lat, required double lng}) async {
+  Future<WeatherDay?> getToday({
+    required double lat,
+    required double lng,
+  }) async {
     final today = DateTime.now();
     final key = _dateKey(today);
     final box = Hive.box('zebraBox');
@@ -24,7 +27,9 @@ class WeatherService {
     final cached = box.get(cacheKey);
     if (cached != null) {
       try {
-        return WeatherDay.fromMap(Map<String, dynamic>.from(jsonDecode(cached)));
+        return WeatherDay.fromMap(
+          Map<String, dynamic>.from(jsonDecode(cached)),
+        );
       } catch (_) {
         // Fall through to refetch if cache is corrupted.
       }
@@ -32,12 +37,14 @@ class WeatherService {
 
     // Fetch today + yesterday so we can compute pressure delta.
     final yesterday = today.subtract(const Duration(days: 1));
-    final url = Uri.parse('$_base?'
-        'latitude=$lat&longitude=$lng'
-        '&daily=temperature_2m_mean,relative_humidity_2m_mean,surface_pressure_mean'
-        '&timezone=auto'
-        '&start_date=${_dateKey(yesterday)}'
-        '&end_date=$key');
+    final url = Uri.parse(
+      '$_base?'
+      'latitude=$lat&longitude=$lng'
+      '&daily=temperature_2m_mean,relative_humidity_2m_mean,surface_pressure_mean'
+      '&timezone=auto'
+      '&start_date=${_dateKey(yesterday)}'
+      '&end_date=$key',
+    );
 
     try {
       final resp = await http.get(url).timeout(const Duration(seconds: 8));
@@ -51,8 +58,9 @@ class WeatherService {
       final press = (daily['surface_pressure_mean'] as List?) ?? [];
 
       // Index 1 = today, index 0 = yesterday.
-      double? at(List list, int i) =>
-          (list.length > i && list[i] != null) ? (list[i] as num).toDouble() : null;
+      double? at(List list, int i) => (list.length > i && list[i] != null)
+          ? (list[i] as num).toDouble()
+          : null;
 
       final pressureToday = at(press, 1);
       final pressureYesterday = at(press, 0);

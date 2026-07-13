@@ -41,7 +41,8 @@ Future<BowelEvent?> showBowelFormSheet({
     context: context,
     backgroundColor: inverseContrastColor,
     shape: RoundedRectangleBorder(
-        side: BorderSide(color: contrastColor, width: 2)),
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
     isScrollControlled: true,
     builder: (ctx) => _BowelForm(
       contrastColor: contrastColor,
@@ -138,11 +139,7 @@ class _BowelFormState extends State<_BowelForm> {
   // i18n Batch A.2: card now takes the BowelBucket and resolves its label
   // internally via BowelBucketLocalization. No more hardcoded Spanish
   // `label` string parameter from the caller.
-  Widget _bucketCard(
-    BowelBucket bucket,
-    IconData icon,
-    AppLocalizations l10n,
-  ) {
+  Widget _bucketCard(BowelBucket bucket, IconData icon, AppLocalizations l10n) {
     final selected = _bucket == bucket;
     return Expanded(
       child: InkWell(
@@ -295,7 +292,9 @@ class _BowelFormState extends State<_BowelForm> {
     final title = isEdit ? l10n.bowelFormTitleEdit : l10n.bowelFormTitleNew;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -334,7 +333,10 @@ class _BowelFormState extends State<_BowelForm> {
             Row(
               children: [
                 _bucketCard(
-                    BowelBucket.constipation, Icons.remove_circle_outline, l10n),
+                  BowelBucket.constipation,
+                  Icons.remove_circle_outline,
+                  l10n,
+                ),
                 _bucketCard(BowelBucket.normal, Icons.circle_outlined, l10n),
                 _bucketCard(BowelBucket.diarrhea, Icons.waves, l10n),
               ],
@@ -352,7 +354,10 @@ class _BowelFormState extends State<_BowelForm> {
                   _showBristol
                       ? l10n.bowelFormHideBristolDetail
                       : l10n.bowelFormShowBristolDetail,
-                  style: TextStyle(color: _cc.withValues(alpha: 0.7), fontSize: 12),
+                  style: TextStyle(
+                    color: _cc.withValues(alpha: 0.7),
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),
@@ -391,13 +396,21 @@ class _BowelFormState extends State<_BowelForm> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                _toggleChip(l10n.bowelFormToggleUrgency, _urgency,
-                    (v) => setState(() => _urgency = v)),
-                _toggleChip(l10n.formToggleBleeding, _bloodPresent,
-                    (v) => setState(() => _bloodPresent = v)),
-                _toggleChip(l10n.bowelFormToggleIncompleteEvacuation,
-                    _incompleteEvacuation,
-                    (v) => setState(() => _incompleteEvacuation = v)),
+                _toggleChip(
+                  l10n.bowelFormToggleUrgency,
+                  _urgency,
+                  (v) => setState(() => _urgency = v),
+                ),
+                _toggleChip(
+                  l10n.formToggleBleeding,
+                  _bloodPresent,
+                  (v) => setState(() => _bloodPresent = v),
+                ),
+                _toggleChip(
+                  l10n.bowelFormToggleIncompleteEvacuation,
+                  _incompleteEvacuation,
+                  (v) => setState(() => _incompleteEvacuation = v),
+                ),
               ],
             ),
             const SizedBox(height: 16),

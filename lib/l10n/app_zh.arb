@@ -1330,5 +1330,7 @@
   "abdominalToBowelPromptBody": "你將此疼痛標記為與排便有關。你記錄了 {time} 的一次排便。是同一次嗎?",
   "abdominalIntegrationYes": "是",
   "abdominalIntegrationNo": "否",
-  "abdominalIntegrationDontKnow": "我不知道"
+  "abdominalIntegrationDontKnow": "我不知道",
+  "onboardingStepMedsUnitHint": "1",
+  "onboardingStepMedsStrengthHint": "mg"
 }

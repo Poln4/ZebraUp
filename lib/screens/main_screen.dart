@@ -1021,6 +1021,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
           onNavigate: (idx) => setState(() => _currentNavIndex = idx),
           onCompleteFollowUp: _onCompleteFollowUp,
           onSaveRetroSymptom: _onSaveRetroSymptom,
+          onFlareChange: () {
+            _saveData();
+            setState(() {});
+          },
         );
       case 1:
         return _buildSintomasTab(cc, ic);
@@ -1111,7 +1115,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
           final date = DateTime.now().subtract(Duration(days: index));
           final dateKey = _getDateKey(date);
           final isSelected = dateKey == _getDateKey(_selectedDate);
-          final isPacing = _activeProfile!.pacingDays.contains(dateKey);
+          final isPacing = _activeProfile!.state.pacingDays.contains(dateKey);
           return GestureDetector(
             onTap: () => setState(() => _selectedDate = date),
             child: Container(
@@ -2282,9 +2286,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
               AppLocalizations.of(context)!.settingsModuleSleepDescription,
               style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
-            value: _activeProfile!.optionalTrackers['sleep'] ?? false,
+            value: _activeProfile!.settings.optionalTrackers['sleep'] ?? false,
             onChanged: (v) => setState(() {
-              _activeProfile!.optionalTrackers['sleep'] = v;
+              _activeProfile!.settings.optionalTrackers['sleep'] = v;
               _saveData();
             }),
           ),
@@ -2306,9 +2310,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
               AppLocalizations.of(context)!.settingsModuleHydrationDescription,
               style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
-            value: _activeProfile!.optionalTrackers['hydration'] ?? false,
+            value:
+                _activeProfile!.settings.optionalTrackers['hydration'] ?? false,
             onChanged: (v) => setState(() {
-              _activeProfile!.optionalTrackers['hydration'] = v;
+              _activeProfile!.settings.optionalTrackers['hydration'] = v;
               _saveData();
             }),
           ),
@@ -2330,9 +2335,9 @@ class _MainAppScreenState extends State<MainAppScreen> {
               AppLocalizations.of(context)!.settingsModuleHrvDescription,
               style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
-            value: _activeProfile!.optionalTrackers['hrv'] ?? false,
+            value: _activeProfile!.settings.optionalTrackers['hrv'] ?? false,
             onChanged: (v) => setState(() {
-              _activeProfile!.optionalTrackers['hrv'] = v;
+              _activeProfile!.settings.optionalTrackers['hrv'] = v;
               _saveData();
             }),
           ),
@@ -2362,9 +2367,13 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 ),
               ),
               value:
-                  _activeProfile!.optionalTrackers['headache_detail'] ?? false,
+                  _activeProfile!
+                      .settings
+                      .optionalTrackers['headache_detail'] ??
+                  false,
               onChanged: (v) => setState(() {
-                _activeProfile!.optionalTrackers['headache_detail'] = v;
+                _activeProfile!.settings.optionalTrackers['headache_detail'] =
+                    v;
                 _saveData();
               }),
             ),
@@ -2394,9 +2403,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 ),
               ),
               value:
-                  _activeProfile!.optionalTrackers['fatigue_detail'] ?? false,
+                  _activeProfile!.settings.optionalTrackers['fatigue_detail'] ??
+                  false,
               onChanged: (v) => setState(() {
-                _activeProfile!.optionalTrackers['fatigue_detail'] = v;
+                _activeProfile!.settings.optionalTrackers['fatigue_detail'] = v;
                 _saveData();
               }),
             ),
@@ -2428,13 +2438,47 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 ),
               ),
               value:
-                  _activeProfile!.optionalTrackers['abdominal_detail'] ?? false,
+                  _activeProfile!
+                      .settings
+                      .optionalTrackers['abdominal_detail'] ??
+                  false,
               onChanged: (v) => setState(() {
-                _activeProfile!.optionalTrackers['abdominal_detail'] = v;
+                _activeProfile!.settings.optionalTrackers['abdominal_detail'] =
+                    v;
                 _saveData();
               }),
             ),
 
+          // Sprint E.E — MCAS detail layer toggle.
+          // When off: MCAS sheet doesn't open for reactions like
+          // urticaria, hinchazón, moretones, flushing, etc.
+          // Enable to explore MCAS tracking (Weiler 2019 patterns
+          // + Kumskova 2023 bleeding markers). Default off —
+          // exploratory feature.
+          SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            dense: true,
+            activeColor: cc,
+            title: Text(
+              'Detalle MCAS / alergias',
+              style: TextStyle(
+                color: cc,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            subtitle: Text(
+              'Registra reacciones, gatillos y señales de alerta.',
+              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
+            ),
+            value:
+                _activeProfile!.settings.optionalTrackers['mcas_detail'] ??
+                false,
+            onChanged: (v) => setState(() {
+              _activeProfile!.settings.optionalTrackers['mcas_detail'] = v;
+              _saveData();
+            }),
+          ),
           // Sprint F.F — action capture opt-out toggle.
           // When off: RetroSymptomBanner hides in Hoy; the proactive
           // ActionTakenSheet skips after saving bowel / hem / fever.
@@ -2457,9 +2501,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
               'evento, y cómo funcionó. Activo por defecto.',
               style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
-            value: _activeProfile!.optionalTrackers['action_taken'] ?? true,
+            value:
+                _activeProfile!.settings.optionalTrackers['action_taken'] ??
+                true,
             onChanged: (v) => setState(() {
-              _activeProfile!.optionalTrackers['action_taken'] = v;
+              _activeProfile!.settings.optionalTrackers['action_taken'] = v;
               _saveData();
             }),
           ),
@@ -2490,9 +2536,11 @@ class _MainAppScreenState extends State<MainAppScreen> {
               AppLocalizations.of(context)!.settingsCarefulModeDescription,
               style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
             ),
-            value: _activeProfile!.optionalTrackers['careful_mode'] ?? false,
+            value:
+                _activeProfile!.settings.optionalTrackers['careful_mode'] ??
+                false,
             onChanged: (v) => setState(() {
-              _activeProfile!.optionalTrackers['careful_mode'] = v;
+              _activeProfile!.settings.optionalTrackers['careful_mode'] = v;
               _saveData();
             }),
           ),
@@ -2858,10 +2906,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
   void _togglePacing() {
     final dateKey = _getDateKey(_selectedDate);
     setState(() {
-      if (_activeProfile!.pacingDays.contains(dateKey)) {
-        _activeProfile!.pacingDays.remove(dateKey);
+      if (_activeProfile!.state.pacingDays.contains(dateKey)) {
+        _activeProfile!.state.pacingDays.remove(dateKey);
       } else {
-        _activeProfile!.pacingDays.add(dateKey);
+        _activeProfile!.state.pacingDays.add(dateKey);
       }
       _saveData();
     });

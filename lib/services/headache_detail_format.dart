@@ -19,7 +19,9 @@ import 'symptom_definitions_service.dart';
 /// Returns an empty string when the detail has no marked chips or when
 /// no labels resolve (definitions service not loaded, missing keys).
 String formatHeadacheDetailCompact(
-    HeadacheDetail detail, AppLocalizations l10n) {
+  HeadacheDetail detail,
+  AppLocalizations l10n,
+) {
   final svc = SymptomDefinitionsService.instance;
   final locale = l10n.localeName;
   final parts = <String>[];

@@ -37,8 +37,7 @@ Future<void> showSymptomDefinitionDialog({
   final String body;
   if (groupKey != null && chipKey != null) {
     title = svc.getChipLabel(symptomKey, groupKey, chipKey, locale) ?? chipKey;
-    body =
-        svc.getChipDefinition(symptomKey, groupKey, chipKey, locale) ?? '';
+    body = svc.getChipDefinition(symptomKey, groupKey, chipKey, locale) ?? '';
   } else {
     title = svc.getMasterLabel(symptomKey, locale) ?? symptomKey;
     body = svc.getMasterDefinition(symptomKey, locale) ?? '';

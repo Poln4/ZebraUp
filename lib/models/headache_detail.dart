@@ -24,13 +24,13 @@ enum HeadacheLocation {
   crownDiffuse;
 
   String get serializationKey => switch (this) {
-        HeadacheLocation.unilateral => 'unilateral',
-        HeadacheLocation.bilateral => 'bilateral',
-        HeadacheLocation.behindEyes => 'behind_eyes',
-        HeadacheLocation.neckOccipital => 'neck_occipital',
-        HeadacheLocation.temples => 'temples',
-        HeadacheLocation.crownDiffuse => 'crown_diffuse',
-      };
+    HeadacheLocation.unilateral => 'unilateral',
+    HeadacheLocation.bilateral => 'bilateral',
+    HeadacheLocation.behindEyes => 'behind_eyes',
+    HeadacheLocation.neckOccipital => 'neck_occipital',
+    HeadacheLocation.temples => 'temples',
+    HeadacheLocation.crownDiffuse => 'crown_diffuse',
+  };
 
   static HeadacheLocation? fromKey(String? key) {
     if (key == null) return null;
@@ -48,11 +48,11 @@ enum HeadacheQuality {
   brainZaps;
 
   String get serializationKey => switch (this) {
-        HeadacheQuality.pulsating => 'pulsating',
-        HeadacheQuality.pressing => 'pressing',
-        HeadacheQuality.stabbing => 'stabbing',
-        HeadacheQuality.brainZaps => 'brain_zaps',
-      };
+    HeadacheQuality.pulsating => 'pulsating',
+    HeadacheQuality.pressing => 'pressing',
+    HeadacheQuality.stabbing => 'stabbing',
+    HeadacheQuality.brainZaps => 'brain_zaps',
+  };
 
   static HeadacheQuality? fromKey(String? key) {
     if (key == null) return null;
@@ -73,14 +73,14 @@ enum HeadacheAccompaniment {
   tempDysregulation;
 
   String get serializationKey => switch (this) {
-        HeadacheAccompaniment.nausea => 'nausea',
-        HeadacheAccompaniment.vomiting => 'vomiting',
-        HeadacheAccompaniment.photophobia => 'photophobia',
-        HeadacheAccompaniment.phonophobia => 'phonophobia',
-        HeadacheAccompaniment.visualAura => 'visual_aura',
-        HeadacheAccompaniment.movementIntolerance => 'movement_intolerance',
-        HeadacheAccompaniment.tempDysregulation => 'temp_dysregulation',
-      };
+    HeadacheAccompaniment.nausea => 'nausea',
+    HeadacheAccompaniment.vomiting => 'vomiting',
+    HeadacheAccompaniment.photophobia => 'photophobia',
+    HeadacheAccompaniment.phonophobia => 'phonophobia',
+    HeadacheAccompaniment.visualAura => 'visual_aura',
+    HeadacheAccompaniment.movementIntolerance => 'movement_intolerance',
+    HeadacheAccompaniment.tempDysregulation => 'temp_dysregulation',
+  };
 
   static HeadacheAccompaniment? fromKey(String? key) {
     if (key == null) return null;
@@ -97,10 +97,10 @@ enum HeadachePosturalPattern {
   noPosturalPattern;
 
   String get serializationKey => switch (this) {
-        HeadachePosturalPattern.worseUpright => 'worse_upright',
-        HeadachePosturalPattern.worseRecumbent => 'worse_recumbent',
-        HeadachePosturalPattern.noPosturalPattern => 'no_postural_pattern',
-      };
+    HeadachePosturalPattern.worseUpright => 'worse_upright',
+    HeadachePosturalPattern.worseRecumbent => 'worse_recumbent',
+    HeadachePosturalPattern.noPosturalPattern => 'no_postural_pattern',
+  };
 
   static HeadachePosturalPattern? fromKey(String? key) {
     if (key == null) return null;
@@ -115,8 +115,8 @@ enum HeadacheOnset {
   thunderclap;
 
   String get serializationKey => switch (this) {
-        HeadacheOnset.thunderclap => 'thunderclap',
-      };
+    HeadacheOnset.thunderclap => 'thunderclap',
+  };
 
   static HeadacheOnset? fromKey(String? key) {
     if (key == null) return null;
@@ -176,16 +176,15 @@ class HeadacheDetail {
   }
 
   Map<String, dynamic> toMap() => {
-        if (locations.isNotEmpty)
-          'locations': locations.map((e) => e.serializationKey).toList(),
-        if (quality != null) 'quality': quality!.serializationKey,
-        if (accompaniments.isNotEmpty)
-          'accompaniments':
-              accompaniments.map((e) => e.serializationKey).toList(),
-        if (posturalPattern != null)
-          'postural_pattern': posturalPattern!.serializationKey,
-        if (onset != null) 'onset': onset!.serializationKey,
-      };
+    if (locations.isNotEmpty)
+      'locations': locations.map((e) => e.serializationKey).toList(),
+    if (quality != null) 'quality': quality!.serializationKey,
+    if (accompaniments.isNotEmpty)
+      'accompaniments': accompaniments.map((e) => e.serializationKey).toList(),
+    if (posturalPattern != null)
+      'postural_pattern': posturalPattern!.serializationKey,
+    if (onset != null) 'onset': onset!.serializationKey,
+  };
 
   factory HeadacheDetail.fromMap(Map<String, dynamic> m) {
     final locList = (m['locations'] as List?) ?? const [];
@@ -200,8 +199,9 @@ class HeadacheDetail {
           .map((e) => HeadacheAccompaniment.fromKey(e as String?))
           .whereType<HeadacheAccompaniment>()
           .toSet(),
-      posturalPattern:
-          HeadachePosturalPattern.fromKey(m['postural_pattern'] as String?),
+      posturalPattern: HeadachePosturalPattern.fromKey(
+        m['postural_pattern'] as String?,
+      ),
       onset: HeadacheOnset.fromKey(m['onset'] as String?),
     );
   }

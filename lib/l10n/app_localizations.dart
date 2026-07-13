@@ -1184,7 +1184,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingStepMedsDoseHint.
   ///
   /// In es, this message translates to:
-  /// **'Dosis (ej. 400mg)'**
+  /// **'Notas (ej. tomar con comida)'**
   String get onboardingStepMedsDoseHint;
 
   /// No description provided for @onboardingStepMedsEmpty.
@@ -3948,6 +3948,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No lo sé'**
   String get abdominalIntegrationDontKnow;
+
+  /// No description provided for @onboardingStepMedsUnitHint.
+  ///
+  /// In es, this message translates to:
+  /// **'1'**
+  String get onboardingStepMedsUnitHint;
+
+  /// No description provided for @onboardingStepMedsStrengthHint.
+  ///
+  /// In es, this message translates to:
+  /// **'mg'**
+  String get onboardingStepMedsStrengthHint;
 }
 
 class _AppLocalizationsDelegate

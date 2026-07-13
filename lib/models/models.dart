@@ -27,6 +27,8 @@ import 'fatigue_detail.dart';
 import 'abdominal_detail.dart';
 import 'action_taken.dart';
 import 'mcas.dart';
+import 'profile_settings.dart';
+import 'profile_state.dart';
 
 // -----------------------------------------------------------------------------
 // ID generation
@@ -215,6 +217,7 @@ class SymptomEvent {
     HeadacheDetail? headacheDetail,
     FatigueDetail? fatigueDetail,
     AbdominalDetail? abdominalDetail,
+    MCASDetail? mcasDetail,
   }) {
     return SymptomEvent(
       id: id,
@@ -226,6 +229,7 @@ class SymptomEvent {
       headacheDetail: headacheDetail ?? this.headacheDetail,
       fatigueDetail: fatigueDetail ?? this.fatigueDetail,
       abdominalDetail: abdominalDetail ?? this.abdominalDetail,
+      mcasDetail: mcasDetail ?? this.mcasDetail,
     );
   }
 
@@ -246,6 +250,7 @@ class SymptomEvent {
     final hdRaw = map['headacheDetail'];
     final fdRaw = map['fatigueDetail'];
     final adRaw = map['abdominalDetail'];
+    final mcasRaw = map['mcasDetail'];
     return SymptomEvent(
       id: map['id'],
       timestamp: DateTime.parse(map['timestamp']),
@@ -262,9 +267,8 @@ class SymptomEvent {
       abdominalDetail: adRaw is Map
           ? AbdominalDetail.fromMap(Map<String, dynamic>.from(adRaw))
           : null,
-      mcasDetail: map['mcasDetail'] != null
-          ? MCASDetail.fromMap(
-              Map<String, dynamic>.from(map['mcasDetail'] as Map))
+      mcasDetail: mcasRaw is Map
+          ? MCASDetail.fromMap(Map<String, dynamic>.from(mcasRaw))
           : null,
     );
   }
@@ -1372,18 +1376,32 @@ class Profile {
   // events. Follow-up effectiveness capture is a separate concern (F.D).
   List<ActionTaken> actionsHistory;
 
-  /// Sleep/Hydration/HRV-style optional trackers. Keys are stable IDs
-  /// ('sleep', 'hydration', 'hrv', etc.). All OFF by default; user
-  /// activates per-module in settings. Additive field — empty map for
-  /// pre-F6.a exports. Extensible without schema bumps.
-  Map<String, bool> optionalTrackers;
+  /// Sprint P.B — grouped user preferences. Home for optionalTrackers
+  /// (per-feature enablement flags). Future: theme, language,
+  /// notification preferences. See lib/models/profile_settings.dart.
+  ProfileSettings settings;
 
   // Weather
   double? homeLatitude;
   double? homeLongitude;
 
-  /// ISO date strings (YYYY-MM-DD) the patient marked as a recovery day.
-  Set<String> pacingDays;
+  /// Sprint P.B — grouped transient session state. Home for
+  /// pacingDays (recovery day markers), flare (crisis-mode session),
+  /// future energy budget and multi-observer permission grants. See
+  /// lib/models/profile_state.dart.
+  ProfileState state;
+
+  /// Sprint P.B — backwards-compat proxy for pre-refactor call sites.
+  /// Access profile.state.pacingDays directly in new code.
+  ///@Deprecated('Sprint P.C migration target — use profile.state.pacingDays')
+  Set<String> get pacingDays => state.pacingDays;
+
+  ///@Deprecated(
+  ///  'Sprint P.C migration target — use profile.state.pacingDays = ...',
+  ///)
+  set pacingDays(Set<String> value) {
+    state.pacingDays = value;
+  }
 
   /// PMIDs the user starred from PubMed search.
   Set<String> savedArticlePmids;
@@ -1410,7 +1428,7 @@ class Profile {
     List<MentalEvent>? mental,
     List<ActivityEvent>? activity,
     List<MedicationOutcome>? outcomes,
-    Set<String>? pacing,
+    ProfileState? state,
     Set<String>? saved,
     List<BowelEvent>? bowel,
     List<HemorrhoidalEvent>? hemorrhoidal,
@@ -1420,8 +1438,8 @@ class Profile {
     List<MovementMetric>? movement,
     List<FeverReading>? fever,
     List<ActionTaken>? actions,
-    Map<String, bool>? optionalTrackers,
-  }) : optionalTrackers = optionalTrackers ?? <String, bool>{},
+    ProfileSettings? settings,
+  }) : settings = settings ?? ProfileSettings(),
        medicationGroups = medicationGroups ?? <MedicationGroup>[],
        symptomHistory = symptoms ?? <SymptomEvent>[],
        doseHistory = doses ?? <DoseEvent>[],
@@ -1430,7 +1448,7 @@ class Profile {
        activityHistory = activity ?? <ActivityEvent>[],
        lifeEvents = lifeEvents ?? <LifeEvent>[],
        medicationOutcomes = outcomes ?? <MedicationOutcome>[],
-       pacingDays = pacing ?? <String>{},
+       state = state ?? ProfileState(),
        savedArticlePmids = saved ?? <String>{},
        bowelHistory = bowel ?? <BowelEvent>[],
        hemorrhoidalHistory = hemorrhoidal ?? <HemorrhoidalEvent>[],
@@ -1723,7 +1741,6 @@ class Profile {
     'country': country,
     'symptomVault': symptomVault,
     'customExercises': customExercises,
-    'pacingDays': pacingDays.toList(),
     'savedArticlePmids': savedArticlePmids.toList(),
     'botiquin': botiquin.map((x) => x.toMap()).toList(),
     'medicationGroups': medicationGroups.map((x) => x.toMap()).toList(),
@@ -1748,8 +1765,40 @@ class Profile {
     'movementHistory': movementHistory.map((x) => x.toMap()).toList(),
     'feverHistory': feverHistory.map((x) => x.toMap()).toList(),
     'actionsHistory': actionsHistory.map((x) => x.toMap()).toList(),
-    'optionalTrackers': optionalTrackers,
+    'settings': settings.toMap(),
+    'state': state.toMap(),
   };
+
+  // ---------------------------------------------------------------------------
+  // Sprint P.B — deserialization helpers with legacy flat-field fallback.
+  // Prefer nested `settings` / `state` when present; fall back to
+  // pre-P.B flat `optionalTrackers` / `pacingDays` for backwards compat
+  // with profiles serialized before the P.B refactor.
+  // ---------------------------------------------------------------------------
+  static ProfileSettings _settingsFromMap(Map<String, dynamic> map) {
+    final raw = map['settings'];
+    if (raw is Map) {
+      return ProfileSettings.fromMap(Map<String, dynamic>.from(raw));
+    }
+    final legacyRaw = map['optionalTrackers'];
+    return ProfileSettings(
+      optionalTrackers: legacyRaw is Map
+          ? Map<String, bool>.from(
+              legacyRaw.map((k, v) => MapEntry(k.toString(), v == true)),
+            )
+          : <String, bool>{},
+    );
+  }
+
+  static ProfileState _stateFromMap(Map<String, dynamic> map) {
+    final raw = map['state'];
+    if (raw is Map) {
+      return ProfileState.fromMap(Map<String, dynamic>.from(raw));
+    }
+    return ProfileState(
+      pacingDays: Set<String>.from(map['pacingDays'] ?? const []),
+    );
+  }
 
   factory Profile.fromMap(Map<String, dynamic> map) => Profile(
     id: map['id'],
@@ -1758,7 +1807,7 @@ class Profile {
     country: map['country'] as String?,
     customExercises: List<String>.from(map['customExercises'] ?? []),
     symptomVault: List<String>.from(map['symptomVault'] ?? const []),
-    pacing: Set<String>.from(map['pacingDays'] ?? const []),
+    state: _stateFromMap(map),
     saved: Set<String>.from(map['savedArticlePmids'] ?? const []),
     botiquin: List<MedicationDef>.from(
       (map['botiquin'] ?? const []).map(
@@ -1852,10 +1901,7 @@ class Profile {
         (x) => FeverReading.fromMap(Map<String, dynamic>.from(x as Map)),
       ),
     ),
-    optionalTrackers: Map<String, bool>.from(
-      (map['optionalTrackers'] as Map?) ?? const {},
-    ),
-
+    settings: _settingsFromMap(map),
     actions: List<ActionTaken>.from(
       (map['actionsHistory'] ?? const []).map(
         (x) => ActionTaken.fromMap(Map<String, dynamic>.from(x as Map)),

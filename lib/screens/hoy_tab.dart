@@ -31,12 +31,17 @@ import '../services/structural_taxonomy.dart';
 import '../services/headache_detail_format.dart';
 import '../services/fatigue_detail_format.dart';
 import '../services/abdominal_detail_format.dart';
+import '../services/flare_detection_service.dart';
 import '../models/action_taken.dart';
 import '../widgets/follow_up_banner.dart';
 import '../widgets/action_effectiveness_dialog.dart';
 import '../widgets/retro_symptom_banner.dart';
 import '../widgets/retro_symptom_dialog.dart';
 import '../widgets/weekly_narrative.dart';
+import '../widgets/flare_control.dart';
+import '../models/profile_state.dart';
+import '../widgets/flare_suggestion_banner.dart';
+import '../widgets/feedback_prompt_banner.dart';
 
 // B.2: Date is now formatted via DateFormat using a locale-driven
 // pattern from the ARB (`hoyHeaderDatePattern`). main.dart must call
@@ -90,6 +95,9 @@ class HoyTab extends StatelessWidget {
   // rating inferred). Parent appends to Profile.actionsHistory.
   final void Function(ActionTaken action) onSaveRetroSymptom;
 
+  // Sprint G.B — flare mode change callback.
+  final VoidCallback onFlareChange;
+
   const HoyTab({
     super.key,
     required this.profile,
@@ -109,6 +117,7 @@ class HoyTab extends StatelessWidget {
     required this.onNavigate,
     required this.onCompleteFollowUp,
     required this.onSaveRetroSymptom,
+    required this.onFlareChange,
     this.todayWeather,
   });
 
@@ -129,7 +138,7 @@ class HoyTab extends StatelessWidget {
     // When off, the retro banner disappears entirely. Existing
     // ActionTakens with pending follow-ups are unaffected — they
     // live in FollowUpBanner which doesn't gate on this flag.
-    if (!(p.optionalTrackers['action_taken'] ?? true)) return const [];
+    if (!(p.settings.optionalTrackers['action_taken'] ?? true)) return const [];
     final now = DateTime.now();
     final windowStart = now.subtract(const Duration(hours: 24));
     final windowEnd = now.subtract(const Duration(minutes: 90));
@@ -148,7 +157,7 @@ class HoyTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isPacing = profile.pacingDays.contains(_dateKey(selectedDate));
+    final isPacing = profile.state.pacingDays.contains(_dateKey(selectedDate));
     final dueOutcomes = _isToday()
         ? profile.getDueOutcomes()
         : <MedicationOutcome>[];
@@ -158,19 +167,81 @@ class HoyTab extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
       children: [
-        // 1. Header — date + inline pacing toggle.
+        // Sprint G.B.2 — Flare banner (visible only when in flare mode)
+        FlareBanner(
+          profile: profile,
+          contrastColor: contrastColor,
+          inverseContrastColor: inverseContrastColor,
+          onDeactivate: () {
+            profile.state.flare = null;
+            onFlareChange();
+          },
+        ),
+
+        // Sprint G.E — Flare suggestion + 48h check-in banner (auto).
+        FlareSuggestionBanner(
+          profile: profile,
+          contrastColor: contrastColor,
+          inverseContrastColor: inverseContrastColor,
+          onAcceptSuggestion: () {
+            profile.state.flare = FlareState(startedAt: DateTime.now());
+            final now = DateTime.now();
+            final todayKey =
+                '${now.year}-${now.month.toString().padLeft(2, '0')}-'
+                '${now.day.toString().padLeft(2, '0')}';
+            profile.state.pacingDays.add(todayKey);
+            onFlareChange();
+          },
+          onDismissSuggestion: () {
+            profile.state.flareSuggestionDismissedAt = DateTime.now();
+            onFlareChange();
+          },
+          onCheckInContinue: () {
+            final flare = profile.state.flare;
+            if (flare != null) {
+              flare.promptCount += 1;
+              flare.lastPromptAt = DateTime.now();
+            }
+            onFlareChange();
+          },
+          onCheckInBetter: () {
+            profile.state.flare = null;
+            onFlareChange();
+          },
+        ),
+
+        // 1. Header — date + inline pacing toggle + flare chip
         _HoyHeader(
           date: selectedDate,
           isPacing: isPacing,
           contrastColor: contrastColor,
           inverseContrastColor: inverseContrastColor,
           onTogglePacing: onTogglePacing,
+          profile: profile,
+          onActivateFlare: () {
+            profile.state.flare = FlareState(startedAt: DateTime.now());
+            final now = DateTime.now();
+            final todayKey =
+                '${now.year}-${now.month.toString().padLeft(2, '0')}-'
+                '${now.day.toString().padLeft(2, '0')}';
+            profile.state.pacingDays.add(todayKey);
+            onFlareChange();
+          },
         ),
 
         const SizedBox(height: 20),
 
         // Sprint T0 — weekly narrative summary (rolling 7 days)
-        WeeklyNarrative(profile: profile, contrastColor: contrastColor),
+        // Sprint G.C — hide when in flare mode.
+        if (!profile.state.isInFlare)
+          WeeklyNarrative(profile: profile, contrastColor: contrastColor),
+
+        // Sprint B.C — Feedback prompt banner (weekly cadence).
+        if (!profile.state.isInFlare)
+          FeedbackPromptBanner(
+            contrastColor: contrastColor,
+            inverseContrastColor: inverseContrastColor,
+          ),
 
         // 1.5. FIRST-SESSION HINT
         if (showHint) ...[
@@ -213,49 +284,53 @@ class HoyTab extends StatelessWidget {
 
         // Sprint F.D — follow-up reminder banner
         // (renders SizedBox.shrink when no follow-ups are due)
-        FollowUpBanner(
-          pendingActions: profile.actionsHistory
-              .where((a) => a.followUpIsDue)
-              .toList(),
-          botiquin: profile.botiquin,
-          contrastColor: contrastColor,
-          inverseContrastColor: inverseContrastColor,
-          onTap: (action) {
-            ActionEffectivenessDialog.show(
-              context: context,
-              action: action,
-              botiquin: profile.botiquin,
-              contrastColor: contrastColor,
-              inverseContrastColor: inverseContrastColor,
-            ).then((updated) {
-              if (updated != null) {
-                onCompleteFollowUp(updated);
-              }
-            });
-          },
-        ),
+        // Sprint G.C — hide when in flare mode.
+        if (!profile.state.isInFlare)
+          FollowUpBanner(
+            pendingActions: profile.actionsHistory
+                .where((a) => a.followUpIsDue)
+                .toList(),
+            botiquin: profile.botiquin,
+            contrastColor: contrastColor,
+            inverseContrastColor: inverseContrastColor,
+            onTap: (action) {
+              ActionEffectivenessDialog.show(
+                context: context,
+                action: action,
+                botiquin: profile.botiquin,
+                contrastColor: contrastColor,
+                inverseContrastColor: inverseContrastColor,
+              ).then((updated) {
+                if (updated != null) {
+                  onCompleteFollowUp(updated);
+                }
+              });
+            },
+          ),
 
         // Sprint F.E — retro symptom check-in banner
         // (90 min < age < 24 h, no matching ActionTaken)
-        RetroSymptomBanner(
-          pendingSymptoms: _pendingRetroSymptoms(profile),
-          contrastColor: contrastColor,
-          inverseContrastColor: inverseContrastColor,
-          onTap: (symptom) {
-            RetroSymptomDialog.show(
-              context: context,
-              symptom: symptom,
-              botiquin: profile.botiquin,
-              doseHistory: profile.doseHistory,
-              contrastColor: contrastColor,
-              inverseContrastColor: inverseContrastColor,
-            ).then((action) {
-              if (action != null) {
-                onSaveRetroSymptom(action);
-              }
-            });
-          },
-        ),
+        // Sprint G.C — hide when in flare mode.
+        if (!profile.state.isInFlare)
+          RetroSymptomBanner(
+            pendingSymptoms: _pendingRetroSymptoms(profile),
+            contrastColor: contrastColor,
+            inverseContrastColor: inverseContrastColor,
+            onTap: (symptom) {
+              RetroSymptomDialog.show(
+                context: context,
+                symptom: symptom,
+                botiquin: profile.botiquin,
+                doseHistory: profile.doseHistory,
+                contrastColor: contrastColor,
+                inverseContrastColor: inverseContrastColor,
+              ).then((action) {
+                if (action != null) {
+                  onSaveRetroSymptom(action);
+                }
+              });
+            },
+          ),
 
         // 2. URGENT — pending outcome check-ins.
         if (dueOutcomes.isNotEmpty) ...[
@@ -398,6 +473,9 @@ class _HoyHeader extends StatelessWidget {
   final Color contrastColor;
   final Color inverseContrastColor;
   final VoidCallback onTogglePacing;
+  // Sprint G.B.2 - inline flare chip alongside the potato day chip.
+  final Profile profile;
+  final VoidCallback onActivateFlare;
 
   const _HoyHeader({
     required this.date,
@@ -405,6 +483,8 @@ class _HoyHeader extends StatelessWidget {
     required this.contrastColor,
     required this.inverseContrastColor,
     required this.onTogglePacing,
+    required this.profile,
+    required this.onActivateFlare,
   });
 
   @override
@@ -446,42 +526,63 @@ class _HoyHeader extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 10),
-        InkWell(
-          onTap: onTogglePacing,
-          borderRadius: BorderRadius.circular(20),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: isPacing
-                  ? contrastColor
-                  : contrastColor.withValues(alpha: 0.06),
-              border: Border.all(
-                color: contrastColor.withValues(alpha: isPacing ? 1.0 : 0.4),
-                width: 1,
-              ),
+        // G.B.2 wrap — potato day chip + flare chip inline
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            InkWell(
+              onTap: onTogglePacing,
               borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  isPacing ? Icons.shield : Icons.shield_outlined,
-                  size: 16,
-                  color: isPacing ? inverseContrastColor : contrastColor,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
                 ),
-                const SizedBox(width: 6),
-                Text(
-                  isPacing ? l10n.pacingActiveState : l10n.pacingInactiveState,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: isPacing ? inverseContrastColor : contrastColor,
+                decoration: BoxDecoration(
+                  color: isPacing
+                      ? contrastColor
+                      : contrastColor.withValues(alpha: 0.06),
+                  border: Border.all(
+                    color: contrastColor.withValues(
+                      alpha: isPacing ? 1.0 : 0.4,
+                    ),
+                    width: 1,
                   ),
+                  borderRadius: BorderRadius.circular(20),
                 ),
-              ],
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isPacing ? Icons.shield : Icons.shield_outlined,
+                      size: 16,
+                      color: isPacing ? inverseContrastColor : contrastColor,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isPacing
+                          ? l10n.pacingActiveState
+                          : l10n.pacingInactiveState,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isPacing ? inverseContrastColor : contrastColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+            FlareChip(
+              profile: profile,
+              contrastColor: contrastColor,
+              inverseContrastColor: inverseContrastColor,
+              onActivate: onActivateFlare,
+            ),
+          ],
         ),
       ],
     );
@@ -1356,11 +1457,20 @@ class _WisdomBlock extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '— ${quote.category}',
+              '— ${quote.source}',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: contrastColor.withValues(alpha: 0.5),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '- ${quote.category}',
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+                color: contrastColor.withValues(alpha: 0.4),
               ),
             ),
           ],
