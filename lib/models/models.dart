@@ -1406,6 +1406,20 @@ class Profile {
   /// PMIDs the user starred from PubMed search.
   Set<String> savedArticlePmids;
 
+  /// Sprint Phase4.A — known allergies and MCAS/hypersensitivity triggers,
+  /// free-text. Surfaced prominently in the clinical PDF export and the
+  /// emergency card. No dedicated edit UI yet (Phase4.C).
+  List<String> allergies;
+
+  /// Sprint Phase4.A — emergency contacts as free-form text lines (e.g.
+  /// "Mamá — Ana Pérez — +56 9 1234 5678"). No dedicated edit UI yet
+  /// (Phase4.C).
+  List<String> emergencyContacts;
+
+  /// Sprint Phase4.A — optional date of birth, used to render age in
+  /// the clinical PDF export. No dedicated edit UI yet (Phase4.C).
+  DateTime? dateOfBirth;
+
   Profile({
     required this.id,
     required this.name,
@@ -1417,6 +1431,9 @@ class Profile {
     this.country,
     this.homeLatitude,
     this.homeLongitude,
+    this.allergies = const [],
+    this.emergencyContacts = const [],
+    this.dateOfBirth,
     this.therapyHistory = const [],
     this.customTherapyModalities = const [],
     this.relationship,
@@ -1767,6 +1784,9 @@ class Profile {
     'actionsHistory': actionsHistory.map((x) => x.toMap()).toList(),
     'settings': settings.toMap(),
     'state': state.toMap(),
+    'allergies': allergies,
+    'emergencyContacts': emergencyContacts,
+    'dateOfBirth': dateOfBirth?.toIso8601String(),
   };
 
   // ---------------------------------------------------------------------------
@@ -1866,6 +1886,11 @@ class Profile {
     ),
     homeLatitude: (map['homeLatitude'] as num?)?.toDouble(),
     homeLongitude: (map['homeLongitude'] as num?)?.toDouble(),
+    allergies: List<String>.from(map['allergies'] ?? const []),
+    emergencyContacts: List<String>.from(map['emergencyContacts'] ?? const []),
+    dateOfBirth: map['dateOfBirth'] is String
+        ? DateTime.tryParse(map['dateOfBirth'] as String)
+        : null,
     bowel: List<BowelEvent>.from(
       (map['bowelHistory'] ?? const []).map(
         (x) => BowelEvent.fromMap(Map<String, dynamic>.from(x as Map)),

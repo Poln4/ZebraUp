@@ -46,7 +46,8 @@ dependencies:
 
   file_saver: ^0.2.14
   file_picker: ^8.1.2
-  flutter_localizations:        
+  pdf: ^3.11.1            # Phase4.B — clinical PDF report generation
+  flutter_localizations:
     sdk: flutter
   
 

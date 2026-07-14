@@ -1,146 +1,291 @@
-// Sprint E.C — MCAS red flag advisory dialog.
-//
-// Shown after saving a SymptomEvent with mcasDetail red flags marked.
-// Matches the visual language of the headache thunderclap advisory:
-// red iconography for the alert layer, contrast palette for the body.
-//
-// Response guidance is anaphylaxis-specific per Weiler CR et al. 2019
-// AAAAI consensus: use of epinephrine autoinjector as first-line if
-// available; escalation to emergency services; do-not-drive guidance
-// during vasomotor instability.
-//
-// barrierDismissible=false forces the user to acknowledge before
-// returning to the log — an accidental tap-outside shouldn't dismiss
-// a potential anaphylaxis warning.
-
 import 'package:flutter/material.dart';
-import '../models/mcas.dart';
+import 'package:intl/intl.dart';
+import '../models/models.dart';
 
-Future<void> showMCASAdvisoryDialog(
-  BuildContext context, {
-  required List<MCASRedFlag> flags,
+/// Returns the new/updated LifeEvent, or null if cancelled.
+/// Pass `existing` to open in edit mode.
+Future<LifeEvent?> showLifeEventFormSheet({
+  required BuildContext context,
   required Color contrastColor,
   required Color inverseContrastColor,
+  LifeEvent? existing,
 }) {
-  if (flags.isEmpty) return Future.value();
-
-  return showDialog<void>(
+  return showModalBottomSheet<LifeEvent>(
     context: context,
-    barrierDismissible: false,
-    builder: (ctx) => AlertDialog(
-      backgroundColor: inverseContrastColor,
-      icon: const Icon(
-        Icons.warning_amber_rounded,
-        color: Colors.red,
-        size: 44,
-      ),
-      title: Text(
-        'Señales de alerta',
-        style: TextStyle(
-          color: contrastColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        textAlign: TextAlign.center,
-      ),
-      content: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Marcaste las siguientes señales al registrar la reacción:',
-              style: TextStyle(
-                color: contrastColor.withValues(alpha: 0.85),
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 10),
-            ...flags.map(
-              (f) => Padding(
-                padding: const EdgeInsets.only(left: 4, bottom: 6),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: Icon(
-                        Icons.circle,
-                        size: 6,
-                        color: Colors.red.shade700,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        _flagLabel(f),
-                        style: TextStyle(
-                          color: contrastColor,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.08),
-                border: Border.all(color: Colors.red.withValues(alpha: 0.5)),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Esta combinación puede indicar anafilaxia.',
-                    style: TextStyle(
-                      color: contrastColor,
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '• Si tienes autoinyector de epinefrina (EpiPen, '
-                    'Jext), este es el momento de usarlo.\n'
-                    '• Llama a emergencias si los síntomas no ceden en '
-                    'pocos minutos o si empeoran.\n'
-                    '• No manejes. Pide compañía.',
-                    style: TextStyle(
-                      color: contrastColor,
-                      fontSize: 12,
-                      height: 1.45,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(ctx).pop(),
-          child: Text(
-            'Entendido',
-            style: TextStyle(color: contrastColor, fontWeight: FontWeight.bold),
-          ),
-        ),
-      ],
+    backgroundColor: inverseContrastColor,
+    isScrollControlled: true,
+    shape: RoundedRectangleBorder(
+      side: BorderSide(color: contrastColor, width: 2),
+    ),
+    builder: (_) => _LifeEventFormBody(
+      contrastColor: contrastColor,
+      inverseContrastColor: inverseContrastColor,
+      existing: existing,
     ),
   );
 }
 
-String _flagLabel(MCASRedFlag flag) => switch (flag) {
-  MCASRedFlag.throatTightness => 'Garganta cerrada',
-  MCASRedFlag.breathingDifficulty => 'Dificultad para respirar',
-  MCASRedFlag.tongueSwelling => 'Lengua o glotis hinchada',
-  MCASRedFlag.faintness => 'Desmayo o casi desmayo',
-  MCASRedFlag.drasticBPChange => 'Presión cambió mucho',
-  MCASRedFlag.confusion => 'Confusión o desorientación',
-};
+class _LifeEventFormBody extends StatefulWidget {
+  final Color contrastColor;
+  final Color inverseContrastColor;
+  final LifeEvent? existing;
+
+  const _LifeEventFormBody({
+    required this.contrastColor,
+    required this.inverseContrastColor,
+    this.existing,
+  });
+
+  @override
+  State<_LifeEventFormBody> createState() => _LifeEventFormBodyState();
+}
+
+class _LifeEventFormBodyState extends State<_LifeEventFormBody> {
+  late TextEditingController _titleCtrl;
+  late TextEditingController _categoryCtrl;
+  late TextEditingController _noteCtrl;
+  late DateTime _startDate;
+  DateTime? _endDate;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    _titleCtrl = TextEditingController(text: e?.title ?? '');
+    _categoryCtrl = TextEditingController(text: e?.category ?? '');
+    _noteCtrl = TextEditingController(text: e?.note ?? '');
+    _startDate = e?.startDate ?? DateTime.now();
+    _endDate = e?.endDate;
+  }
+
+  @override
+  void dispose() {
+    _titleCtrl.dispose();
+    _categoryCtrl.dispose();
+    _noteCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickStartDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _startDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() {
+        _startDate = picked;
+        if (_endDate != null && _endDate!.isBefore(picked)) _endDate = picked;
+      });
+    }
+  }
+
+  Future<void> _pickEndDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _endDate ?? _startDate,
+      firstDate: _startDate,
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) setState(() => _endDate = picked);
+  }
+
+  void _save() {
+    final title = _titleCtrl.text.trim();
+    if (title.isEmpty) return;
+    final result = LifeEvent(
+      id: widget.existing?.id,
+      title: title,
+      startDate: _startDate,
+      endDate: _endDate,
+      category: _categoryCtrl.text.trim().isEmpty
+          ? null
+          : _categoryCtrl.text.trim(),
+      note: _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
+    );
+    Navigator.pop(context, result);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = widget.contrastColor;
+    final ic = widget.inverseContrastColor;
+    final isEdit = widget.existing != null;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                isEdit ? "EDITAR EVENTO" : "REGISTRAR EVENTO",
+                style: TextStyle(
+                  color: cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                "Eventos que pueden haber impactado tu cuerpo o tu ánimo: un viaje, un accidente, una mudanza, un duelo, algo bueno.",
+                style: TextStyle(
+                  color: cc.withValues(alpha: 0.6),
+                  fontSize: 11,
+                  height: 1.4,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _titleCtrl,
+                autofocus: !isEdit,
+                style: TextStyle(color: cc),
+                decoration: const InputDecoration(
+                  hintText: "Título (ej. Viaje a Bariloche)",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Date range
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: cc.withValues(alpha: 0.5)),
+                      ),
+                      icon: Icon(Icons.calendar_today, color: cc, size: 14),
+                      label: Text(
+                        "Inicio: ${DateFormat('d MMM yyyy').format(_startDate)}",
+                        style: TextStyle(color: cc, fontSize: 11),
+                      ),
+                      onPressed: _pickStartDate,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: cc.withValues(alpha: 0.5)),
+                      ),
+                      icon: Icon(Icons.calendar_today, color: cc, size: 14),
+                      label: Text(
+                        _endDate == null
+                            ? "+ fin (opcional)"
+                            : "Fin: ${DateFormat('d MMM yyyy').format(_endDate!)}",
+                        style: TextStyle(color: cc, fontSize: 11),
+                      ),
+                      onPressed: _pickEndDate,
+                    ),
+                  ),
+                ],
+              ),
+              if (_endDate != null) ...[
+                const SizedBox(height: 4),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => setState(() => _endDate = null),
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                    ),
+                    child: Text(
+                      "quitar fecha de fin",
+                      style: TextStyle(
+                        color: cc.withValues(alpha: 0.6),
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+              const SizedBox(height: 16),
+
+              // Category
+              TextField(
+                controller: _categoryCtrl,
+                style: TextStyle(color: cc),
+                decoration: const InputDecoration(
+                  hintText: "Categoría (opcional)",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: kLifeEventCategorySuggestions.map((cat) {
+                  final isSelected =
+                      _categoryCtrl.text.trim().toLowerCase() == cat;
+                  return InkWell(
+                    onTap: () => setState(() => _categoryCtrl.text = cat),
+                    borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected ? cc : Colors.transparent,
+                        border: Border.all(color: cc.withValues(alpha: 0.4)),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: Text(
+                        cat,
+                        style: TextStyle(
+                          color: isSelected ? ic : cc.withValues(alpha: 0.8),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 16),
+
+              TextField(
+                controller: _noteCtrl,
+                maxLines: 3,
+                style: TextStyle(color: cc),
+                decoration: const InputDecoration(
+                  hintText: "Nota (opcional)",
+                  hintStyle: TextStyle(color: Colors.grey),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: cc,
+                  minimumSize: const Size.fromHeight(48),
+                ),
+                onPressed: _save,
+                child: Text(
+                  isEdit ? 'GUARDAR CAMBIOS' : 'REGISTRAR EVENTO',
+                  style: TextStyle(color: ic, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Center(
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    "cancelar",
+                    style: TextStyle(color: cc.withValues(alpha: 0.6)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

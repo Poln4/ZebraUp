@@ -13,9 +13,17 @@ import '../services/interaction_engine.dart';
 import '../services/pubmed_service.dart';
 import '../services/weather_service.dart';
 import '../services/vademecum_service.dart';
+import '../services/clinical_export_service.dart';
+import '../models/pdf_export_config.dart';
 import '../widgets/condition_info_sheet.dart';
 import '../widgets/life_event_form_sheet.dart';
 import '../widgets/fever_form_sheet.dart';
+import '../widgets/pdf_export_sheet.dart';
+import 'settings/profile_settings_screen.dart';
+import 'settings/tracking_settings_screen.dart';
+import 'settings/account_data_screen.dart';
+import 'settings/about_screen.dart';
+import 'settings/language_settings_screen.dart';
 import '../services/structural_taxonomy.dart';
 import '../services/clinical_localizations.dart';
 import '../services/condition_labels.dart';
@@ -91,6 +99,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
   final Random _random = Random();
 
   final ProfileIoService _profileIo = ProfileIoService();
+  final ClinicalExportService _clinicalExport = ClinicalExportService();
   final PubMedService _pubmed = PubMedService();
   final MedlinePlusService _medlinePlus = MedlinePlusService();
   final WeatherService _weather = WeatherService();
@@ -119,8 +128,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
   int _reportRangeDays = 1;
   DateTimeRange? _customRange;
 
-  final _profileNameController = TextEditingController();
-  final _newDiagnosisController = TextEditingController();
   final _newSymptomController = TextEditingController();
   final _newMedNameController = TextEditingController();
   final _newMedDoseController = TextEditingController();
@@ -144,8 +151,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   @override
   void dispose() {
-    _profileNameController.dispose();
-    _newDiagnosisController.dispose();
     _newSymptomController.dispose();
     _newMedNameController.dispose();
     _newMedDoseController.dispose();
@@ -301,6 +306,60 @@ class _MainAppScreenState extends State<MainAppScreen> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(t.exportError(e.toString()))));
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Sprint Phase4.C — Clinical PDF export
+  // -------------------------------------------------------------------------
+
+  Future<void> _exportClinicalPdf(Color cc, Color ic) async {
+    if (_activeProfile == null) return;
+    final config = await showPdfExportSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+    );
+    if (config == null || !mounted) return;
+    try {
+      final filename = await _clinicalExport.exportClinicalReport(
+        _activeProfile!,
+        config,
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('PDF exportado: $filename'),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo generar el PDF: $e')),
+      );
+    }
+  }
+
+  Future<void> _exportEmergencyCard() async {
+    if (_activeProfile == null) return;
+    try {
+      final filename = await _clinicalExport.exportClinicalReport(
+        _activeProfile!,
+        PdfExportConfig.emergencyCard(),
+      );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Tarjeta de emergencia exportada: $filename'),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo generar la tarjeta: $e')),
+      );
     }
   }
 
@@ -464,7 +523,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
     setState(() {
       _profiles.add(newProfile);
       _activeProfile = newProfile;
-      _updateControllers();
       _saveData();
     });
     await _fetchTodayWeather();
@@ -848,13 +906,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
     }
     if (_profiles.isNotEmpty) {
       _activeProfile = _profiles.first;
-      _updateControllers();
-    }
-  }
-
-  void _updateControllers() {
-    if (_activeProfile != null) {
-      _profileNameController.text = _activeProfile!.name;
     }
   }
 
@@ -904,7 +955,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
               setState(() {
                 _activeProfile = newProfile;
                 _fetchTodayWeather();
-                _updateControllers();
               });
             }
           },
@@ -1086,7 +1136,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
         setState(() {
           _profiles.add(newProfile);
           _activeProfile = newProfile;
-          _updateControllers();
           _saveData();
         });
         await _fetchTodayWeather();
@@ -1720,6 +1769,32 @@ class _MainAppScreenState extends State<MainAppScreen> {
             );
           },
         ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          style: OutlinedButton.styleFrom(
+            side: BorderSide(color: cc, width: 2),
+            padding: const EdgeInsets.symmetric(vertical: 16),
+          ),
+          icon: Icon(Icons.picture_as_pdf_outlined, color: cc),
+          label: Text(
+            "EXPORTAR PDF PARA ESPECIALISTA",
+            style: TextStyle(
+              color: cc,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
+          ),
+          onPressed: () => _exportClinicalPdf(cc, ic),
+        ),
+        const SizedBox(height: 8),
+        TextButton.icon(
+          icon: Icon(Icons.emergency_outlined, color: cc),
+          label: Text(
+            "Tarjeta de emergencia (PDF compacto)",
+            style: TextStyle(color: cc, fontSize: 13),
+          ),
+          onPressed: _exportEmergencyCard,
+        ),
         const SizedBox(height: 16),
       ],
     );
@@ -1920,10 +1995,37 @@ class _MainAppScreenState extends State<MainAppScreen> {
   }
 
   // -------------------------------------------------------------------------
-  // SETTINGS DRAWER
+  // SETTINGS DRAWER — Sprint P.C: slim navigation menu. Each category used
+  // to be a flat, unbroken section inside this single 800+ line function;
+  // now it's its own screen under lib/screens/settings/, pushed from here.
   // -------------------------------------------------------------------------
 
+  Widget _settingsMenuTile({
+    required Color cc,
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(icon, color: cc),
+      title: Text(
+        label,
+        style: TextStyle(color: cc, fontSize: 15, fontWeight: FontWeight.w600),
+      ),
+      trailing: Icon(Icons.chevron_right, color: cc.withValues(alpha: 0.5)),
+      onTap: onTap,
+    );
+  }
+
   Widget _buildSettingsDrawer(Color cc, Color ic) {
+    final t = AppLocalizations.of(context)!;
+
+    void closeThenPush(Widget screen) {
+      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+    }
+
     return Drawer(
       backgroundColor: ic,
       child: ListView(
@@ -1931,662 +2033,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
         children: [
           const SizedBox(height: 40),
           Text(
-            AppLocalizations.of(context)!.settingsProfileConfigTitle,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              letterSpacing: 1,
-              color: cc,
-            ),
-          ),
-          Divider(color: cc),
-          const SizedBox(height: 16),
-          Text(
-            AppLocalizations.of(context)!.settingsPatientNameLabel,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-          TextField(
-            controller: _profileNameController,
-            style: TextStyle(color: cc, fontSize: 16),
-            onChanged: (val) => setState(() {
-              _activeProfile!.name = val;
-              _saveData();
-            }),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            AppLocalizations.of(context)!.settingsConditionsLabel,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: TextField(
-                  controller: _newDiagnosisController,
-                  style: TextStyle(color: cc, fontSize: 16),
-                ),
-              ),
-              IconButton(
-                icon: Icon(Icons.add, color: cc),
-                onPressed: () {
-                  if (_newDiagnosisController.text.trim().isNotEmpty) {
-                    setState(() {
-                      _activeProfile!.conditions.add(
-                        _newDiagnosisController.text.trim(),
-                      );
-                      _newDiagnosisController.clear();
-                      _saveData();
-                    });
-                  }
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            AppLocalizations.of(context)!.settingsConditionsHelper,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 11,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: _activeProfile!.conditions
-                .map(
-                  (condition) => InputChip(
-                    label: Text(
-                      condition,
-                      style: TextStyle(color: ic, fontSize: 14),
-                    ),
-                    backgroundColor: cc,
-                    onDeleted: () => setState(() {
-                      _activeProfile!.conditions.remove(condition);
-                      _saveData();
-                    }),
-                    deleteIconColor: ic,
-                  ),
-                )
-                .toList(),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            AppLocalizations.of(context)!.settingsRelationshipLabel,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            AppLocalizations.of(context)!.settingsRelationshipHelper,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 11,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Builder(
-            builder: (ctx) {
-              final t = AppLocalizations.of(ctx)!;
-              // (storage value, display label) pairs. Storage values stay in
-              // Spanish so existing profiles keep their relationship intact
-              // across language switches.
-              final relOptions = <(String?, String)>[
-                (null, t.settingsRelationshipNone),
-                ('Yo', t.settingsRelationshipSelf),
-                ('Mi hijo/a', t.settingsRelationshipChild),
-                ('Mi pareja', t.settingsRelationshipPartner),
-                ('Mi madre/padre', t.settingsRelationshipParent),
-                ('Otro', t.settingsRelationshipOther),
-              ];
-              return Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: relOptions.map((opt) {
-                  final rel = opt.$1;
-                  final isSelected =
-                      _activeProfile!.relationship == rel ||
-                      (rel == null && _activeProfile!.relationship == null);
-                  final label = opt.$2;
-                  return InkWell(
-                    onTap: () => setState(() {
-                      _activeProfile!.relationship = rel;
-                      _saveData();
-                    }),
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? cc : Colors.transparent,
-                        border: Border.all(color: cc.withValues(alpha: 0.4)),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Text(
-                        label,
-                        style: TextStyle(
-                          color: isSelected ? ic : cc.withValues(alpha: 0.8),
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              );
-            },
-          ),
-
-          const SizedBox(height: 24),
-          Text(
-            AppLocalizations.of(context)!.settingsLifeEventsLabel,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            AppLocalizations.of(context)!.settingsLifeEventsHelper,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 11,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(height: 8),
-          if (_activeProfile!.lifeEvents.isEmpty)
-            Text(
-              AppLocalizations.of(context)!.settingsLifeEventsEmpty,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-              ),
-            )
-          else
-            Column(
-              children:
-                  (_activeProfile!.lifeEvents.toList()
-                        ..sort((a, b) => b.startDate.compareTo(a.startDate)))
-                      .map((e) {
-                        final dateLabel = e.endDate == null
-                            ? DateFormat('d MMM yyyy').format(e.startDate)
-                            : "${DateFormat('d MMM').format(e.startDate)} → ${DateFormat('d MMM yyyy').format(e.endDate!)}";
-                        return InkWell(
-                          onTap: () => _editLifeEvent(e, cc, ic),
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 6),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: cc.withValues(alpha: 0.3),
-                              ),
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 8,
-                                  height: 8,
-                                  decoration: const BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Color(0xFF9C27B0),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        e.title,
-                                        style: TextStyle(
-                                          color: cc,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                      Text(
-                                        e.category != null
-                                            ? "$dateLabel · ${e.category}"
-                                            : dateLabel,
-                                        style: TextStyle(
-                                          color: cc.withValues(alpha: 0.6),
-                                          fontSize: 11,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.close,
-                                    color: Colors.red,
-                                    size: 18,
-                                  ),
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  onPressed: () => setState(() {
-                                    _activeProfile!.lifeEvents.remove(e);
-                                    _saveData();
-                                  }),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      })
-                      .toList(),
-            ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: cc),
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-            icon: Icon(Icons.add, color: cc),
-            label: Text(
-              AppLocalizations.of(context)!.settingsAddEventButton,
-              style: TextStyle(
-                color: cc,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-            ),
-            onPressed: () => _addLifeEvent(cc, ic),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            AppLocalizations.of(context)!.settingsLocationLabel,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            _activeProfile!.homeLatitude == null
-                ? AppLocalizations.of(context)!.settingsLocationNone
-                : "lat ${_activeProfile!.homeLatitude!.toStringAsFixed(2)}, "
-                      "lng ${_activeProfile!.homeLongitude!.toStringAsFixed(2)}",
-            style: TextStyle(color: cc, fontSize: 13),
-          ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(side: BorderSide(color: cc)),
-            icon: Icon(Icons.place_outlined, color: cc),
-            label: Text(
-              _activeProfile!.homeLatitude == null
-                  ? AppLocalizations.of(context)!.settingsLocationButtonAdd
-                  : AppLocalizations.of(context)!.settingsLocationButtonEdit,
-              style: TextStyle(
-                color: cc,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
-              ),
-            ),
-            onPressed: () => _editLocation(),
-          ),
-
-          // F6.a + Sleep module: optional trackers section
-          const SizedBox(height: 24),
-          Text(
-            AppLocalizations.of(context)!.settingsOptionalModulesTitle,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            AppLocalizations.of(context)!.settingsOptionalModulesBlurb,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 11,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(height: 8),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            activeColor: cc,
-            title: Text(
-              AppLocalizations.of(context)!.settingsModuleSleepLabel,
-              style: TextStyle(
-                color: cc,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              AppLocalizations.of(context)!.settingsModuleSleepDescription,
-              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
-            ),
-            value: _activeProfile!.settings.optionalTrackers['sleep'] ?? false,
-            onChanged: (v) => setState(() {
-              _activeProfile!.settings.optionalTrackers['sleep'] = v;
-              _saveData();
-            }),
-          ),
-
-          // F6.b: Hidratación toggle
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            activeColor: cc,
-            title: Text(
-              AppLocalizations.of(context)!.settingsModuleHydrationLabel,
-              style: TextStyle(
-                color: cc,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              AppLocalizations.of(context)!.settingsModuleHydrationDescription,
-              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
-            ),
-            value:
-                _activeProfile!.settings.optionalTrackers['hydration'] ?? false,
-            onChanged: (v) => setState(() {
-              _activeProfile!.settings.optionalTrackers['hydration'] = v;
-              _saveData();
-            }),
-          ),
-
-          // F6.b: HRV toggle
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            activeColor: cc,
-            title: Text(
-              AppLocalizations.of(context)!.settingsModuleHrvLabel,
-              style: TextStyle(
-                color: cc,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              AppLocalizations.of(context)!.settingsModuleHrvDescription,
-              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
-            ),
-            value: _activeProfile!.settings.optionalTrackers['hrv'] ?? false,
-            onChanged: (v) => setState(() {
-              _activeProfile!.settings.optionalTrackers['hrv'] = v;
-              _saveData();
-            }),
-          ),
-          // C.4: headache detail layer — only visible when the profile
-          // mentions cefalea (in vault or conditions). Same shape as the
-          // other optional-module switches above.
-          if (_hasHeadacheRelevance())
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              dense: true,
-              activeColor: cc,
-              title: Text(
-                AppLocalizations.of(context)!.settingsModuleHeadacheDetailLabel,
-                style: TextStyle(
-                  color: cc,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!.settingsModuleHeadacheDetailDescription,
-                style: TextStyle(
-                  color: cc.withValues(alpha: 0.6),
-                  fontSize: 11,
-                ),
-              ),
-              value:
-                  _activeProfile!
-                      .settings
-                      .optionalTrackers['headache_detail'] ??
-                  false,
-              onChanged: (v) => setState(() {
-                _activeProfile!.settings.optionalTrackers['headache_detail'] =
-                    v;
-                _saveData();
-              }),
-            ),
-          // D.1: fatigue detail layer — only visible when the profile
-          // mentions fatiga (in vault or conditions). Same shape as the
-          // headache_detail switch above.
-          if (_hasFatigueRelevance())
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              dense: true,
-              activeColor: cc,
-              title: Text(
-                AppLocalizations.of(context)!.settingsModuleFatigueDetailLabel,
-                style: TextStyle(
-                  color: cc,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!.settingsModuleFatigueDetailDescription,
-                style: TextStyle(
-                  color: cc.withValues(alpha: 0.6),
-                  fontSize: 11,
-                ),
-              ),
-              value:
-                  _activeProfile!.settings.optionalTrackers['fatigue_detail'] ??
-                  false,
-              onChanged: (v) => setState(() {
-                _activeProfile!.settings.optionalTrackers['fatigue_detail'] = v;
-                _saveData();
-              }),
-            ),
-          // D.2: abdominal detail layer — only visible when the profile
-          // mentions dolor abdominal / hinchazón / gases (in vault or
-          // conditions). Same shape as the headache and fatigue switches.
-          if (_hasAbdominalRelevance())
-            SwitchListTile(
-              contentPadding: EdgeInsets.zero,
-              dense: true,
-              activeColor: cc,
-              title: Text(
-                AppLocalizations.of(
-                  context,
-                )!.settingsModuleAbdominalDetailLabel,
-                style: TextStyle(
-                  color: cc,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                  context,
-                )!.settingsModuleAbdominalDetailDescription,
-                style: TextStyle(
-                  color: cc.withValues(alpha: 0.6),
-                  fontSize: 11,
-                ),
-              ),
-              value:
-                  _activeProfile!
-                      .settings
-                      .optionalTrackers['abdominal_detail'] ??
-                  false,
-              onChanged: (v) => setState(() {
-                _activeProfile!.settings.optionalTrackers['abdominal_detail'] =
-                    v;
-                _saveData();
-              }),
-            ),
-
-          // Sprint E.E — MCAS detail layer toggle.
-          // When off: MCAS sheet doesn't open for reactions like
-          // urticaria, hinchazón, moretones, flushing, etc.
-          // Enable to explore MCAS tracking (Weiler 2019 patterns
-          // + Kumskova 2023 bleeding markers). Default off —
-          // exploratory feature.
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            activeColor: cc,
-            title: Text(
-              'Detalle MCAS / alergias',
-              style: TextStyle(
-                color: cc,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              'Registra reacciones, gatillos y señales de alerta.',
-              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
-            ),
-            value:
-                _activeProfile!.settings.optionalTrackers['mcas_detail'] ??
-                false,
-            onChanged: (v) => setState(() {
-              _activeProfile!.settings.optionalTrackers['mcas_detail'] = v;
-              _saveData();
-            }),
-          ),
-          // Sprint F.F — action capture opt-out toggle.
-          // When off: RetroSymptomBanner hides in Hoy; the proactive
-          // ActionTakenSheet skips after saving bowel / hem / fever.
-          // Existing pending ActionTakens with follow-ups stay
-          // visible in FollowUpBanner (user consented at logging).
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            activeColor: cc,
-            title: Text(
-              'Seguimiento de acciones',
-              style: TextStyle(
-                color: cc,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              'Pregunta qué hiciste después de registrar un síntoma o '
-              'evento, y cómo funcionó. Activo por defecto.',
-              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
-            ),
-            value:
-                _activeProfile!.settings.optionalTrackers['action_taken'] ??
-                true,
-            onChanged: (v) => setState(() {
-              _activeProfile!.settings.optionalTrackers['action_taken'] = v;
-              _saveData();
-            }),
-          ),
-          // F3: Visualización preferences
-          const SizedBox(height: 24),
-          Text(
-            AppLocalizations.of(context)!.settingsViewPreferencesTitle,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 12,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 8),
-          SwitchListTile(
-            contentPadding: EdgeInsets.zero,
-            dense: true,
-            activeColor: cc,
-            title: Text(
-              AppLocalizations.of(context)!.settingsCarefulModeLabel,
-              style: TextStyle(
-                color: cc,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              AppLocalizations.of(context)!.settingsCarefulModeDescription,
-              style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 11),
-            ),
-            value:
-                _activeProfile!.settings.optionalTrackers['careful_mode'] ??
-                false,
-            onChanged: (v) => setState(() {
-              _activeProfile!.settings.optionalTrackers['careful_mode'] = v;
-              _saveData();
-            }),
-          ),
-
-          const SizedBox(height: 40),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: cc, width: 2),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-            icon: Icon(Icons.person_add_alt_1_rounded, color: cc),
-            label: Text(
-              AppLocalizations.of(context)!.settingsAddProfileButton,
-              style: TextStyle(
-                color: cc,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
-            ),
-            onPressed: () {
-              _createNewProfile();
-              Navigator.pop(context);
-            },
-          ),
-          if (_profiles.length > 1) ...[
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: Colors.redAccent, width: 2),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-              label: Text(
-                AppLocalizations.of(context)!.settingsDeleteProfileButton,
-                style: const TextStyle(
-                  color: Colors.redAccent,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-              onPressed: () => _confirmDeleteProfile(),
-            ),
-          ],
-          const SizedBox(height: 32),
-          Text(
-            AppLocalizations.of(context)!.languageSectionTitle,
+            t.settingsProfileConfigTitle,
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -2596,150 +2043,78 @@ class _MainAppScreenState extends State<MainAppScreen> {
           ),
           Divider(color: cc),
           const SizedBox(height: 8),
-          Wrap(
-            spacing: 6,
-            children:
-                [
-                  (const Locale('es'), 'Español'),
-                  (const Locale('en'), 'English'),
-                  (const Locale('zh', 'TW'), '繁體中文'),
-                ].map((opt) {
-                  final isSelected =
-                      widget.locale.languageCode == opt.$1.languageCode;
-                  return InkWell(
-                    onTap: () => widget.onChangeLocale(opt.$1),
-                    borderRadius: BorderRadius.circular(14),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected ? cc : Colors.transparent,
-                        border: Border.all(color: cc.withValues(alpha: 0.4)),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: Text(
-                        opt.$2,
-                        style: TextStyle(
-                          color: isSelected ? ic : cc.withValues(alpha: 0.8),
-                          fontSize: 13,
-                          fontWeight: isSelected
-                              ? FontWeight.bold
-                              : FontWeight.normal,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            AppLocalizations.of(context)!.languageFootnote,
-            style: TextStyle(
-              color: cc.withValues(alpha: 0.5),
-              fontSize: 11,
-              fontStyle: FontStyle.italic,
-            ),
-          ),
-          const SizedBox(height: 32),
-          Text(
-            AppLocalizations.of(context)!.settingsMyDataTitle,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              letterSpacing: 1,
-              color: cc,
-            ),
-          ),
-          Divider(color: cc),
-          const SizedBox(height: 8),
-          Text(
-            AppLocalizations.of(context)!.settingsDataHelper,
-            style: TextStyle(
-              color: cc.withValues(alpha: 0.7),
-              fontSize: 12,
-              height: 1.4,
-            ),
-          ),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: cc, width: 1.5),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-            icon: Icon(Icons.download_outlined, color: cc),
-            label: Text(
-              AppLocalizations.of(context)!.settingsExportDataButton,
-              style: TextStyle(
-                color: cc,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
+          _settingsMenuTile(
+            cc: cc,
+            icon: Icons.person_outline,
+            label: t.settingsProfileConfigTitle,
+            onTap: () => closeThenPush(
+              ProfileSettingsScreen(
+                profile: _activeProfile!,
+                contrastColor: cc,
+                inverseContrastColor: ic,
+                onSave: _saveData,
+                profileCount: _profiles.length,
+                onAddProfile: _createNewProfile,
+                onDeleteProfile: _confirmDeleteProfile,
+                onEditLocation: _editLocation,
+                onAddLifeEvent: () => _addLifeEvent(cc, ic),
+                onEditLifeEvent: (e) => _editLifeEvent(e, cc, ic),
               ),
             ),
-            onPressed: _exportActiveProfile,
           ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: cc, width: 1.5),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-            icon: Icon(Icons.upload_file_outlined, color: cc),
-            label: Text(
-              AppLocalizations.of(context)!.importFileButton,
-              style: TextStyle(
-                color: cc,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
+          _settingsMenuTile(
+            cc: cc,
+            icon: Icons.language,
+            label: t.languageSectionTitle,
+            onTap: () => closeThenPush(
+              LanguageSettingsScreen(
+                contrastColor: cc,
+                inverseContrastColor: ic,
+                currentLocale: widget.locale,
+                onChangeLocale: widget.onChangeLocale,
               ),
             ),
-            onPressed: _importProfileFromFile,
           ),
-          const SizedBox(height: 8),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: cc, width: 1.5),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-            icon: Icon(Icons.content_paste_go_outlined, color: cc),
-            label: Text(
-              AppLocalizations.of(context)!.importPasteButton,
-              style: TextStyle(
-                color: cc,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
+          _settingsMenuTile(
+            cc: cc,
+            icon: Icons.tune,
+            label: 'Tracking opcional',
+            onTap: () => closeThenPush(
+              TrackingSettingsScreen(
+                profile: _activeProfile!,
+                contrastColor: cc,
+                inverseContrastColor: ic,
+                onSave: _saveData,
+                showHeadacheDetail: _hasHeadacheRelevance(),
+                showFatigueDetail: _hasFatigueRelevance(),
+                showAbdominalDetail: _hasAbdominalRelevance(),
               ),
             ),
-            onPressed: _importProfileFromPaste,
           ),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            style: OutlinedButton.styleFrom(
-              side: const BorderSide(color: Colors.redAccent, width: 1.5),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-            ),
-            icon: const Icon(
-              Icons.delete_forever_outlined,
-              color: Colors.redAccent,
-            ),
-            label: Text(
-              AppLocalizations.of(context)!.settingsWipeAllButton,
-              style: const TextStyle(
-                color: Colors.redAccent,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
+          _settingsMenuTile(
+            cc: cc,
+            icon: Icons.folder_outlined,
+            label: t.settingsMyDataTitle,
+            onTap: () => closeThenPush(
+              AccountDataScreen(
+                contrastColor: cc,
+                inverseContrastColor: ic,
+                onExport: _exportActiveProfile,
+                onImportFile: _importProfileFromFile,
+                onImportPaste: _importProfileFromPaste,
+                onWipeAll: _wipeAllData,
               ),
             ),
-            onPressed: _wipeAllData,
           ),
-          const SizedBox(height: 8),
-          Text(
-            AppLocalizations.of(context)!.settingsWipeAllHelper,
-            style: TextStyle(
-              color: cc.withValues(alpha: 0.5),
-              fontSize: 11,
-              fontStyle: FontStyle.italic,
+          _settingsMenuTile(
+            cc: cc,
+            icon: Icons.info_outline,
+            label: 'Acerca de',
+            onTap: () => closeThenPush(
+              AboutScreen(
+                contrastColor: cc,
+                inverseContrastColor: ic,
+              ),
             ),
           ),
         ],
@@ -2762,7 +2137,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
       );
       _profiles.add(newProfile);
       _activeProfile = newProfile;
-      _updateControllers();
       _saveData();
     });
   }
@@ -2795,7 +2169,6 @@ class _MainAppScreenState extends State<MainAppScreen> {
     setState(() {
       _profiles.remove(_activeProfile);
       _activeProfile = _profiles.isNotEmpty ? _profiles.first : null;
-      _updateControllers();
       _saveData();
     });
     if (mounted) Navigator.pop(context);

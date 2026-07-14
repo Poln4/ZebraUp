@@ -16,6 +16,16 @@
 //      the PDF renderer will skip empty sections.
 //   4. Compose with existing services (weeklyDigestFor) where
 //      applicable, but do not depend on them for correctness.
+//
+// 2026-07-13 — every field reference below was re-verified against the
+// real Profile/SymptomEvent/DoseEvent/MedicationOutcome/MedicationDef/
+// StructuralEvent/MentalEvent/ActionTaken/MCASDetail shapes in
+// models.dart, action_taken.dart and mcas.dart. The original draft of
+// this file assumed field names that didn't exist anywhere in the
+// codebase (profile.symptomEvents, ActionTaken.recordedAt,
+// MedicationOutcome.effectivenessRating, StructuralEvent.region, MCAS
+// enum values that don't exist, etc.) — see CLAUDE.md Fase 4 section
+// for the full list of what was wrong and why.
 
 import '../models/models.dart';
 import '../models/action_taken.dart';
@@ -117,7 +127,7 @@ EmergencyCardData aggregateEmergencyCard(
 
   // Recent MCAS red flags
   final redFlags = <MCASRedFlagOccurrence>[];
-  for (final e in profile.symptomEvents) {
+  for (final e in profile.symptomHistory) {
     if (e.mcasDetail == null) continue;
     if (e.timestamp.isBefore(cutoff)) continue;
     final detail = e.mcasDetail!;
@@ -134,7 +144,7 @@ EmergencyCardData aggregateEmergencyCard(
   redFlags.sort((a, b) => b.occurredAt.compareTo(a.occurredAt));
 
   return EmergencyCardData(
-    patientDisplayName: profile.displayName,
+    patientDisplayName: profile.name,
     dateOfBirth: profile.dateOfBirth,
     conditions: _formatConditions(profile),
     activeMedications: _formatActiveMedications(profile),
@@ -151,7 +161,7 @@ EmergencyCardData aggregateEmergencyCard(
 
 PatientProfileSection _aggregateProfile(Profile profile) {
   return PatientProfileSection(
-    displayName: profile.displayName,
+    displayName: profile.name,
     dateOfBirth: profile.dateOfBirth,
     conditions: _formatConditions(profile),
     allergies: _formatAllergiesAndTriggers(profile),
@@ -167,9 +177,9 @@ MedicationSection _aggregateMedications(
   final active = <MedicationEntry>[];
   final inactive = <MedicationEntry>[];
 
-  for (final med in profile.medications) {
+  for (final med in profile.botiquin) {
     // Doses within period for this medication
-    final periodDoses = profile.doseEvents
+    final periodDoses = profile.doseHistory
         .where(
           (d) =>
               d.medicationId == med.id &&
@@ -177,48 +187,48 @@ MedicationSection _aggregateMedications(
               !d.timestamp.isAfter(end),
         )
         .toList();
+    final periodDoseIds = periodDoses.map((d) => d.id).toSet();
 
     // Outcomes for doses in period
     final periodOutcomes = profile.medicationOutcomes
-        .where((o) => periodDoses.any((d) => d.id == o.doseEventId))
+        .where((o) => periodDoseIds.contains(o.doseId))
         .toList();
 
-    final effectivenessScores = periodOutcomes
-        .where((o) => o.effectivenessRating != null)
-        .map((o) => o.effectivenessRating!.toDouble())
+    // MedicationOutcome has no standalone "effectiveness rating" — it
+    // captures severityBefore/severityAfter on the linked symptom.
+    // We derive a 0-4-ish "improvement" score from that delta instead.
+    final outcomesWithFollowUp = periodOutcomes
+        .where((o) => o.severityAfter != null)
         .toList();
-
-    final meanEffectiveness = effectivenessScores.isEmpty
+    final improvementScores = outcomesWithFollowUp
+        .map((o) => (o.severityBefore - o.severityAfter!).toDouble())
+        .toList();
+    final meanEffectiveness = improvementScores.isEmpty
         ? null
-        : effectivenessScores.reduce((a, b) => a + b) /
-              effectivenessScores.length;
+        : improvementScores.reduce((a, b) => a + b) /
+              improvementScores.length;
 
-    final hadAdverse = periodOutcomes.any(
-      (o) =>
-          o.outcomeReason == OutcomeReason.adverseReaction ||
-          o.outcomeReason == OutcomeReason.stoppedDueToSideEffects,
+    // No explicit "adverse reaction" reason exists on OutcomeReason.
+    // Heuristic: symptom got worse after taking the medication.
+    final hadAdverse = outcomesWithFollowUp.any(
+      (o) => o.severityAfter! > o.severityBefore,
     );
-
-    // Adherence: for scheduled meds, ratio of taken vs expected.
-    // Simplified: only compute if med has a schedule; otherwise null.
-    // The exact adherence formula depends on Medication schema
-    // (which we didn't inspect fully here) — placeholder that leaves
-    // this null unless the model exposes schedule data.
-    double? adherence;
-    // If Medication has a `type == basalScheduled` and a dailyDoses
-    // count, we could compute adherence. For Phase4.A, leave null
-    // and let Phase4.F refine once schedule data is confirmed.
 
     final entry = MedicationEntry(
       name: med.name,
-      doseText: med.doseText,
-      adherencePercent: adherence,
+      doseText: _formatDoseText(med),
+      // No schedule/adherence tracking exists on MedicationDef yet;
+      // left null until that data model lands (see profile_settings.dart
+      // note re: Phase4.F).
+      adherencePercent: null,
       meanEffectiveness: meanEffectiveness,
       totalDoses: periodDoses.length,
       hadAdverseOutcomes: hadAdverse,
     );
 
-    if (med.isActive && periodDoses.isNotEmpty) {
+    // MedicationDef has no isActive flag; treat "active" as "used at
+    // least once in the reporting period".
+    if (periodDoses.isNotEmpty) {
       active.add(entry);
     } else {
       inactive.add(entry);
@@ -235,7 +245,7 @@ SymptomSection _aggregateSymptoms(
   required int topN,
   required bool includePatterns,
 }) {
-  final periodEvents = profile.symptomEvents
+  final periodEvents = profile.symptomHistory
       .where((e) => !e.timestamp.isBefore(start) && !e.timestamp.isAfter(end))
       .toList();
 
@@ -243,10 +253,10 @@ SymptomSection _aggregateSymptoms(
     return const SymptomSection();
   }
 
-  // Group by symptomInput (or symptomVaultId if available)
+  // Group by symptom name
   final grouped = <String, List<SymptomEvent>>{};
   for (final e in periodEvents) {
-    final key = _symptomGroupKey(e);
+    final key = e.name.trim().isEmpty ? '(sin nombre)' : e.name.trim();
     grouped.putIfAbsent(key, () => []).add(e);
   }
 
@@ -311,7 +321,7 @@ SymptomSection _aggregateSymptoms(
 }
 
 MCASSection? _aggregateMcas(Profile profile, DateTime start, DateTime end) {
-  final mcasEvents = profile.symptomEvents
+  final mcasEvents = profile.symptomHistory
       .where(
         (e) =>
             e.mcasDetail != null &&
@@ -340,8 +350,10 @@ MCASSection? _aggregateMcas(Profile profile, DateTime start, DateTime end) {
   // Common triggers
   final triggerCounts = <String, int>{};
   for (final e in mcasEvents) {
-    for (final tag in e.mcasDetail!.triggers) {
-      final key = tag.customLabel ?? _triggerKindLabel(tag.kind);
+    for (final tag in e.mcasDetail!.suspectedTriggers) {
+      final key = tag.hasLabel
+          ? tag.label!.trim()
+          : mcasTriggerKindShortLabel(tag.kind);
       triggerCounts[key] = (triggerCounts[key] ?? 0) + 1;
     }
   }
@@ -351,8 +363,8 @@ MCASSection? _aggregateMcas(Profile profile, DateTime start, DateTime end) {
   // Common reactions
   final reactionCounts = <String, int>{};
   for (final e in mcasEvents) {
-    for (final r in e.mcasDetail!.reactions) {
-      final label = _mcasReactionLabel(r);
+    for (final r in e.mcasDetail!.reactionKinds) {
+      final label = mcasReactionKindShortLabel(r);
       reactionCounts[label] = (reactionCounts[label] ?? 0) + 1;
     }
   }
@@ -372,7 +384,7 @@ StructuralSection _aggregateStructural(
   DateTime start,
   DateTime end,
 ) {
-  final periodEvents = profile.structuralEvents
+  final periodEvents = profile.structuralHistory
       .where((e) => !e.timestamp.isBefore(start) && !e.timestamp.isAfter(end))
       .toList();
 
@@ -381,14 +393,15 @@ StructuralSection _aggregateStructural(
   final byKind = <StructuralEventKind, Map<String, int>>{};
   for (final e in periodEvents) {
     byKind.putIfAbsent(e.kind, () => {});
-    final region = _bodyRegionLabel(e.region);
-    byKind[e.kind]![region] = (byKind[e.kind]![region] ?? 0) + 1;
+    final zone = e.zone.trim().isEmpty ? '(sin zona)' : e.zone.trim();
+    byKind[e.kind]![zone] = (byKind[e.kind]![zone] ?? 0) + 1;
   }
 
   final aggregations = byKind.entries.map((entry) {
     final total = entry.value.values.fold<int>(0, (sum, v) => sum + v);
     return StructuralAggregation(
-      kindLabel: _structuralKindLabel(entry.key),
+      // StructuralEventKind carries its own Spanish default label.
+      kindLabel: entry.key.defaultLabel,
       regionCounts: entry.value,
       occurrences: total,
     );
@@ -407,26 +420,24 @@ MentalStateSection? _aggregateMentalState(
   DateTime start,
   DateTime end,
 ) {
-  final periodEntries = profile.mentalEvents
+  final periodEntries = profile.mentalHistory
       .where((e) => !e.timestamp.isBefore(start) && !e.timestamp.isAfter(end))
       .toList();
 
   if (periodEntries.isEmpty) return null;
 
-  // Cognitive state frequencies. Uses MentalState enum labels.
+  // MentalEvent carries a single MentalState (not a set); it already
+  // exposes a Spanish label via MentalState.label.
   final stateFreq = <String, int>{};
   for (final e in periodEntries) {
-    for (final state in e.states) {
-      final label = _mentalStateLabel(state);
-      stateFreq[label] = (stateFreq[label] ?? 0) + 1;
-    }
+    final label = e.state.label;
+    stateFreq[label] = (stateFreq[label] ?? 0) + 1;
   }
 
-  // Valence/arousal aggregates would require valence/arousal fields
-  // on MentalEvent. Model inspection at Phase4.A time doesn't guarantee
-  // these exist. Leave null; the aggregator can be enriched later
-  // when the mental tracker Foxtale-style circumplex ships.
-
+  // Valence/arousal aggregates would require a circumplex-style model
+  // on MentalEvent, which doesn't exist yet (MentalEvent has a single
+  // MentalState + int severity). Leave null; revisit if/when the
+  // Foxtale-style mental tracker circumplex ships.
   return MentalStateSection(
     meanValence: null,
     meanArousal: null,
@@ -442,7 +453,7 @@ ActionsSection _aggregateActions(
   required int topN,
 }) {
   final actions = profile.actionsHistory
-      .where((a) => !a.recordedAt.isBefore(start) && !a.recordedAt.isAfter(end))
+      .where((a) => !a.timestamp.isBefore(start) && !a.timestamp.isAfter(end))
       .toList();
 
   if (actions.isEmpty) return const ActionsSection();
@@ -456,20 +467,21 @@ ActionsSection _aggregateActions(
 
   final entries = <ActionEffectivenessEntry>[];
   for (final e in grouped.entries) {
-    final withRating = e.value.where((a) => a.effectiveness != null).toList();
+    final withRating = e.value
+        .where((a) => a.effectivenessRating != null)
+        .toList();
 
     final meanEff = withRating.isEmpty
         ? 0.0
         : withRating
-                  .map((a) => a.effectiveness!.value.toDouble())
+                  .map((a) => _effectivenessScore(a.effectivenessRating!))
                   .reduce((a, b) => a + b) /
               withRating.length;
 
     // Which linked event types were common
     final linkedCounts = <String, int>{};
     for (final a in e.value) {
-      if (a.linkedEventType == null) continue;
-      final label = _linkedEventTypeLabel(a.linkedEventType!);
+      final label = _linkedEventTypeLabel(a.linkedEventType);
       linkedCounts[label] = (linkedCounts[label] ?? 0) + 1;
     }
     final commonLinked = linkedCounts.entries.toList()
@@ -504,13 +516,6 @@ ActionsSection _aggregateActions(
 // ============================================================
 // Helpers — labeling and formatting
 // ============================================================
-
-String _symptomGroupKey(SymptomEvent e) {
-  // Prefer explicit vault ID; fall back to trimmed free-text input.
-  // (Both fields exist on SymptomEvent per Sprint C.4 / D.1 / D.2.)
-  final input = e.symptomInput.trim();
-  return input.isEmpty ? '(sin nombre)' : input;
-}
 
 Map<String, int> _timeOfDayPattern(List<SymptomEvent> events) {
   final counts = <String, int>{
@@ -573,82 +578,23 @@ List<String> _detectPatterns(
 }
 
 String _mcasRedFlagLabel(MCASRedFlag flag) => switch (flag) {
-  MCASRedFlag.airwayCompromise => 'Compromiso de la vía aérea',
-  MCASRedFlag.hypotension => 'Hipotensión',
-  MCASRedFlag.syncope => 'Síncope',
-  MCASRedFlag.multiSystemInvolvement => 'Compromiso multi-sistémico',
-  MCASRedFlag.severeGastrointestinal => 'Compromiso gastrointestinal severo',
-  MCASRedFlag.throatSwelling => 'Edema faríngeo',
+  MCASRedFlag.throatTightness => 'Opresión en la garganta',
+  MCASRedFlag.breathingDifficulty => 'Dificultad para respirar',
+  MCASRedFlag.tongueSwelling => 'Hinchazón de la lengua',
+  MCASRedFlag.faintness => 'Desvanecimiento / mareo severo',
+  MCASRedFlag.drasticBPChange => 'Cambio drástico de presión arterial',
+  MCASRedFlag.confusion => 'Confusión',
 };
 
-String _mcasReactionLabel(MCASReactionKind kind) => switch (kind) {
-  MCASReactionKind.flushing => 'Rubor / flushing',
-  MCASReactionKind.hives => 'Urticaria',
-  MCASReactionKind.itching => 'Prurito',
-  MCASReactionKind.gi => 'Síntomas GI (dolor, diarrea, náusea)',
-  MCASReactionKind.respiratory => 'Síntomas respiratorios',
-  MCASReactionKind.cardiovascular => 'Taquicardia / palpitaciones',
-  MCASReactionKind.neurological => 'Síntomas neurológicos (cefalea, mareo)',
-  MCASReactionKind.swelling => 'Edema local',
-  MCASReactionKind.fatigueOnset => 'Fatiga súbita post-exposición',
-  MCASReactionKind.other => 'Otra reacción',
-};
-
-String _triggerKindLabel(TriggerKind kind) => switch (kind) {
-  TriggerKind.food => 'Alimento',
-  TriggerKind.medication => 'Medicamento',
-  TriggerKind.environmental => 'Ambiental',
-  TriggerKind.stress => 'Estrés',
-  TriggerKind.temperature => 'Cambio de temperatura',
-  TriggerKind.exercise => 'Ejercicio / esfuerzo',
-  TriggerKind.other => 'Otro desencadenante',
-};
-
-String _structuralKindLabel(StructuralEventKind kind) => switch (kind) {
-  StructuralEventKind.subluxation => 'Subluxación',
-  StructuralEventKind.dislocation => 'Dislocación',
-  StructuralEventKind.sprain => 'Esguince',
-  StructuralEventKind.strain => 'Distensión muscular',
-  StructuralEventKind.instability => 'Inestabilidad articular',
-  StructuralEventKind.other => 'Otro evento estructural',
-};
-
-String _bodyRegionLabel(BodyRegion region) {
-  // Body regions are numerous; map to Spanish clinical labels.
-  // Fall back to region.name if a mapping is missing.
-  const map = {
-    BodyRegion.neck: 'Cuello',
-    BodyRegion.shoulderLeft: 'Hombro izquierdo',
-    BodyRegion.shoulderRight: 'Hombro derecho',
-    BodyRegion.elbowLeft: 'Codo izquierdo',
-    BodyRegion.elbowRight: 'Codo derecho',
-    BodyRegion.wristLeft: 'Muñeca izquierda',
-    BodyRegion.wristRight: 'Muñeca derecha',
-    BodyRegion.fingerLeft: 'Dedos izquierda',
-    BodyRegion.fingerRight: 'Dedos derecha',
-    BodyRegion.hipLeft: 'Cadera izquierda',
-    BodyRegion.hipRight: 'Cadera derecha',
-    BodyRegion.kneeLeft: 'Rodilla izquierda',
-    BodyRegion.kneeRight: 'Rodilla derecha',
-    BodyRegion.ankleLeft: 'Tobillo izquierdo',
-    BodyRegion.ankleRight: 'Tobillo derecho',
-    BodyRegion.jaw: 'Mandíbula',
-    BodyRegion.spineUpper: 'Columna cervical',
-    BodyRegion.spineMid: 'Columna torácica',
-    BodyRegion.spineLower: 'Columna lumbar',
-    BodyRegion.pelvis: 'Pelvis',
-  };
-  return map[region] ?? region.name;
-}
-
-String _mentalStateLabel(MentalState state) => switch (state) {
-  MentalState.brainFog => 'Niebla mental',
-  MentalState.dissociation => 'Disociación',
-  MentalState.anxiety => 'Ansiedad',
-  MentalState.irritability => 'Irritabilidad',
-  MentalState.overwhelm => 'Sobrecarga',
-  MentalState.numbness => 'Embotamiento',
-  MentalState.other => 'Otro estado',
+/// EffectivenessRating is an ordinal enum with no built-in numeric value
+/// (unlike SymptomSeverity). Map it onto the same 0-4 scale the report
+/// schema documents (4 = best outcome).
+double _effectivenessScore(EffectivenessRating r) => switch (r) {
+  EffectivenessRating.muchRelief => 4,
+  EffectivenessRating.someRelief => 3,
+  EffectivenessRating.partialReliefThenReturned => 2,
+  EffectivenessRating.noChange => 1,
+  EffectivenessRating.worse => 0,
 };
 
 String _linkedEventTypeLabel(LinkedEventType t) => switch (t) {
@@ -659,34 +605,45 @@ String _linkedEventTypeLabel(LinkedEventType t) => switch (t) {
 };
 
 String _actionKeyFor(ActionTaken action) {
-  // Prefer detail label, fall back to kind label.
-  if (action.detail != null && action.detail!.trim().isNotEmpty) {
-    return action.detail!.trim();
+  if (action.kind == ActionKind.custom &&
+      action.customLabel != null &&
+      action.customLabel!.trim().isNotEmpty) {
+    return action.customLabel!.trim();
   }
   return switch (action.kind) {
-    ActionKind.medicationBasal => 'Medicación basal',
-    ActionKind.medicationRescue => 'Medicación de rescate',
+    ActionKind.medication => 'Medicación',
     ActionKind.rest => 'Descanso',
-    ActionKind.pacing => 'Pacing (día tranquilo)',
-    ActionKind.movement => 'Movimiento / actividad',
     ActionKind.hydration => 'Hidratación',
-    ActionKind.nutrition => 'Ajuste nutricional',
-    ActionKind.thermal => 'Aplicación térmica',
-    ActionKind.compression => 'Compresión / vendaje',
-    ActionKind.breathwork => 'Respiración / regulación',
-    ActionKind.medicalCare => 'Atención médica',
+    ActionKind.breathing => 'Respiración / regulación',
+    ActionKind.heat => 'Aplicación de calor',
+    ActionKind.cold => 'Aplicación de frío',
+    ActionKind.elevation => 'Elevación',
+    ActionKind.sensoryReduction => 'Reducción sensorial',
+    ActionKind.socialWithdrawal => 'Retiro social',
+    ActionKind.food => 'Alimentación',
+    ActionKind.movement => 'Movimiento / actividad',
     ActionKind.nothing => 'No se tomó acción',
+    ActionKind.custom => 'Acción personalizada',
   };
+}
+
+/// Formats a MedicationDef's strength/unit/form into a short display
+/// string (e.g. "500 mg — comprimido"). MedicationDef has no separate
+/// "doseText" field — this is derived from its numeric fields.
+String _formatDoseText(MedicationDef med) {
+  final strength = med.strength == med.strength.roundToDouble()
+      ? med.strength.round().toString()
+      : med.strength.toString();
+  final buf = StringBuffer('$strength ${med.unit}'.trim());
+  if (med.form.isNotEmpty) {
+    buf.write(' — ${med.form}');
+  }
+  return buf.toString();
 }
 
 // ============================================================
 // Profile field extractors
 // ============================================================
-//
-// These return best-effort Spanish clinical labels. If Profile
-// exposes a different field structure than assumed here, they degrade
-// gracefully. Phase4.C UI iteration will confirm each extractor
-// against the real Profile schema.
 
 List<String> _formatConditions(Profile profile) {
   return List<String>.from(profile.conditions);
@@ -701,16 +658,12 @@ List<String> _formatEmergencyContacts(Profile profile) {
 }
 
 List<String> _formatActiveMedications(Profile profile) {
-  final out = <String>[];
-  for (final m in profile.medications) {
-    if (!m.isActive) continue;
-    final buf = StringBuffer(m.name);
-    if (m.doseText != null && m.doseText!.isNotEmpty) {
-      buf.write(' — ${m.doseText}');
-    }
-    out.add(buf.toString());
-  }
-  return out;
+  // No isActive flag on MedicationDef; the emergency card shows the
+  // whole Botiquín (medications the patient keeps on hand), since
+  // "currently active" isn't a modeled concept yet.
+  return profile.botiquin
+      .map((m) => '${m.name} — ${_formatDoseText(m)}')
+      .toList();
 }
 
 List<String> _formatCriticalNotes(Profile profile) {
