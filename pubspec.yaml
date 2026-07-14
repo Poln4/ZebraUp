@@ -1,5 +1,5 @@
 name: zebraup
-description: "A new Flutter project."
+description: "ZebraUp project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -47,6 +47,11 @@ dependencies:
   file_saver: ^0.2.14
   file_picker: ^8.1.2
   pdf: ^3.11.1            # Phase4.B — clinical PDF report generation
+  # Report charts (2026-07-15). Version not verified against pub.dev —
+  # no local Flutter toolchain this session. Run `flutter pub get` (or
+  # `flutter pub add fl_chart` to let pub pick the correct current
+  # version) before trusting this constraint.
+  fl_chart: ^0.69.0
   flutter_localizations:
     sdk: flutter
   

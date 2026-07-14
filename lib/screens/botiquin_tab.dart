@@ -99,30 +99,14 @@ class BotiquinTab extends StatelessWidget {
         const SizedBox(height: 24),
 
         // 3. Med list
-        _SectionHeader(
-          title: l10n.botiquinTabTitle,
-          badge: profile.botiquin.isEmpty ? null : '${profile.botiquin.length}',
+        _MedListSection(
+          profile: profile,
+          selectedDate: selectedDate,
           contrastColor: contrastColor,
+          inverseContrastColor: inverseContrastColor,
+          medlineService: medlineService,
+          onProfileChanged: onProfileChanged,
         ),
-        const SizedBox(height: 12),
-
-        if (profile.botiquin.isEmpty)
-          _EmptyMedsCard(contrastColor: contrastColor)
-        else
-          ...profile.botiquin.map(
-            (med) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: _MedRow(
-                med: med,
-                profile: profile,
-                selectedDate: selectedDate,
-                contrastColor: contrastColor,
-                inverseContrastColor: inverseContrastColor,
-                medlineService: medlineService,
-                onProfileChanged: onProfileChanged,
-              ),
-            ),
-          ),
 
         const SizedBox(height: 12),
 
@@ -815,6 +799,246 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
 }
 
 // =============================================================================
+// Med list section — header + search filter + A-Z sort toggle + rows.
+// Filtering/sorting are view-only (not persisted); the underlying
+// profile.botiquin order is never mutated.
+// =============================================================================
+
+class _MedListSection extends StatefulWidget {
+  final Profile profile;
+  final DateTime selectedDate;
+  final Color contrastColor;
+  final Color inverseContrastColor;
+  final MedlinePlusService medlineService;
+  final VoidCallback onProfileChanged;
+
+  const _MedListSection({
+    required this.profile,
+    required this.selectedDate,
+    required this.contrastColor,
+    required this.inverseContrastColor,
+    required this.medlineService,
+    required this.onProfileChanged,
+  });
+
+  @override
+  State<_MedListSection> createState() => _MedListSectionState();
+}
+
+class _MedListSectionState extends State<_MedListSection> {
+  final _searchCtrl = TextEditingController();
+  String _query = '';
+  bool _sortAlpha = false;
+
+  @override
+  void dispose() {
+    _searchCtrl.dispose();
+    super.dispose();
+  }
+
+  bool _matches(MedicationDef med, String q) {
+    if (q.isEmpty) return true;
+    return med.name.toLowerCase().contains(q) ||
+        (med.notes?.toLowerCase().contains(q) ?? false) ||
+        (med.activeIngredient?.toLowerCase().contains(q) ?? false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = widget.contrastColor;
+    final l10n = context.l10n;
+    final all = widget.profile.botiquin;
+    final q = _query.trim().toLowerCase();
+    final filtered = all.where((m) => _matches(m, q)).toList();
+    if (_sortAlpha) {
+      filtered.sort(
+        (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _SectionHeader(
+                title: l10n.botiquinTabTitle,
+                badge: all.isEmpty ? null : '${all.length}',
+                contrastColor: cc,
+              ),
+            ),
+            if (all.length > 1)
+              _SortToggleButton(
+                active: _sortAlpha,
+                contrastColor: cc,
+                onTap: () => setState(() => _sortAlpha = !_sortAlpha),
+              ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (all.isEmpty)
+          _EmptyMedsCard(contrastColor: cc)
+        else ...[
+          if (all.length > 1) ...[
+            _SearchField(
+              controller: _searchCtrl,
+              contrastColor: cc,
+              hintText: l10n.botiquinSearchHint,
+              onChanged: (v) => setState(() => _query = v),
+              onClear: () => setState(() {
+                _searchCtrl.clear();
+                _query = '';
+              }),
+            ),
+            const SizedBox(height: 10),
+          ],
+          if (filtered.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Text(
+                l10n.botiquinSearchNoResults,
+                style: TextStyle(
+                  color: cc.withValues(alpha: 0.55),
+                  fontSize: 13,
+                ),
+              ),
+            )
+          else
+            ...filtered.map(
+              (med) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: _MedRow(
+                  med: med,
+                  profile: widget.profile,
+                  selectedDate: widget.selectedDate,
+                  contrastColor: cc,
+                  inverseContrastColor: widget.inverseContrastColor,
+                  medlineService: widget.medlineService,
+                  onProfileChanged: widget.onProfileChanged,
+                ),
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  final TextEditingController controller;
+  final Color contrastColor;
+  final String hintText;
+  final ValueChanged<String> onChanged;
+  final VoidCallback onClear;
+
+  const _SearchField({
+    required this.controller,
+    required this.contrastColor,
+    required this.hintText,
+    required this.onChanged,
+    required this.onClear,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = contrastColor;
+    final border = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: cc.withValues(alpha: 0.15)),
+    );
+    return TextField(
+      controller: controller,
+      style: TextStyle(color: cc, fontSize: 14),
+      onChanged: onChanged,
+      decoration: InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(color: cc.withValues(alpha: 0.4), fontSize: 13),
+        prefixIcon: Icon(
+          Icons.search,
+          size: 18,
+          color: cc.withValues(alpha: 0.5),
+        ),
+        suffixIcon: controller.text.isEmpty
+            ? null
+            : IconButton(
+                icon: Icon(
+                  Icons.close,
+                  size: 16,
+                  color: cc.withValues(alpha: 0.5),
+                ),
+                onPressed: onClear,
+                visualDensity: VisualDensity.compact,
+              ),
+        filled: true,
+        fillColor: cc.withValues(alpha: 0.04),
+        contentPadding: const EdgeInsets.symmetric(vertical: 10),
+        isDense: true,
+        border: border,
+        enabledBorder: border,
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: cc, width: 1.5),
+        ),
+      ),
+    );
+  }
+}
+
+class _SortToggleButton extends StatelessWidget {
+  final bool active;
+  final Color contrastColor;
+  final VoidCallback onTap;
+
+  const _SortToggleButton({
+    required this.active,
+    required this.contrastColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = contrastColor;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+          decoration: BoxDecoration(
+            color: active ? cc.withValues(alpha: 0.15) : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: cc.withValues(alpha: active ? 0.4 : 0.2),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.sort_by_alpha,
+                size: 14,
+                color: cc.withValues(alpha: active ? 1.0 : 0.6),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                'A-Z',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: active ? FontWeight.bold : FontWeight.normal,
+                  color: cc.withValues(alpha: active ? 1.0 : 0.6),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// =============================================================================
 // Empty meds card
 // =============================================================================
 
@@ -1279,6 +1503,50 @@ class _DoseLogSheetState extends State<_DoseLogSheet> {
                       color: cc.withValues(alpha: 0.6),
                       fontSize: 12,
                     ),
+                  ),
+                ),
+              ],
+              if (med.components.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: cc.withValues(alpha: 0.04),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: cc.withValues(alpha: 0.12)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: med.components.map((c) {
+                      final amount = _formatQty(_quantity * c.strength);
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 2),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                c.name,
+                                style: TextStyle(
+                                  color: cc.withValues(alpha: 0.85),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              '$amount ${c.unit}',
+                              style: TextStyle(
+                                color: cc.withValues(alpha: 0.6),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ],

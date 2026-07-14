@@ -307,27 +307,47 @@ class StructuralAggregation {
 // ============================================================
 
 class MentalStateSection {
-  /// Mean valence (positive/negative) score across all mental entries
-  /// in the period, if the app captures this. Scale depends on the
-  /// mental tracker implementation; may be null if not applicable.
+  /// Mean valence (positive/negative) score across all mood entries in
+  /// the period, derived from MoodEntry.primaryQuadrant (pleasant=+1,
+  /// unpleasant=-1, averaged). Range [-1, 1]. Null when there's no mood
+  /// data for the period.
   final double? meanValence;
 
-  /// Mean arousal (activation/deactivation) score, similar caveats.
+  /// Mean arousal (activation/deactivation) score, same derivation
+  /// (activated=+1, calm=-1, averaged). Range [-1, 1].
   final double? meanArousal;
 
   /// Cognitive state frequencies: e.g., "niebla mental": 12,
-  /// "disociación": 3. Labels in Spanish.
+  /// "disociación": 3. Labels in Spanish. Sourced from MentalEvent/
+  /// MentalState — a separate, simpler tracker from the mood quadrant
+  /// data above.
   final Map<String, int> cognitiveStateFrequency;
+
+  /// Mood quadrant frequencies (e.g. "activación · bienestar": 8),
+  /// using MoodQuadrantLabels.label. Aggregate only.
+  final Map<String, int> moodQuadrantFrequency;
+
+  /// Most frequently selected mood words (e.g. "Frustración": 5),
+  /// from MoodEntry.states. Aggregate only — MoodEntry.notes free text
+  /// is never surfaced here.
+  final Map<String, int> moodWordFrequency;
 
   /// Number of mental entries logged. For context only — no
   /// individual entries are exposed to the specialist.
   final int totalEntries;
 
+  /// Number of mood entries logged in the period. Separate counter
+  /// from totalEntries since mood and mental-state are different logs.
+  final int totalMoodEntries;
+
   const MentalStateSection({
     this.meanValence,
     this.meanArousal,
     this.cognitiveStateFrequency = const {},
+    this.moodQuadrantFrequency = const {},
+    this.moodWordFrequency = const {},
     this.totalEntries = 0,
+    this.totalMoodEntries = 0,
   });
 }
 

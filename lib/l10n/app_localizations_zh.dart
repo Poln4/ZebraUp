@@ -437,6 +437,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get botiquinActionCreate => '新增藥物';
 
   @override
+  String get botiquinSearchHint => '搜尋藥物...';
+
+  @override
+  String get botiquinSearchNoResults => '找不到藥物';
+
+  @override
   String get botiquinInteractionsTitle => '偵測到藥物交互作用';
 
   @override
@@ -1424,6 +1430,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get drugLoadError => '無法載入資訊。';
+
+  @override
+  String get conditionSourceLocalCurated => '來源：ZebraUp 針對此病症的在地資訊。不能取代醫療建議。';
+
+  @override
+  String get conditionContentUnverifiedWarning =>
+      '此摘要是根據一般醫學知識草擬，尚未經過臨床審查確認。如果內容與您的醫療團隊所說有出入，請以醫療團隊的說法為準。';
+
+  @override
+  String get conditionNoContentUnmapped =>
+      '我們尚未收錄此病症。您可以手動在 medlineplus.gov 上搜尋。';
+
+  @override
+  String get conditionNoContentNoIcd10 =>
+      '此病症沒有 ICD-10 代碼，因此無法查詢 MedlinePlus，我們也尚未提供在地摘要。';
+
+  @override
+  String get conditionNoContentMedlineEmpty =>
+      'MedlinePlus 未能提供此病症的資訊。可能是暫時性問題，或此代碼缺乏內容。';
 
   @override
   String get moodQuadrantActivatedUnpleasant => '活躍 · 不快';
@@ -2599,6 +2624,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get botiquinActionCreate => '新增藥物';
 
   @override
+  String get botiquinSearchHint => '搜尋藥物...';
+
+  @override
+  String get botiquinSearchNoResults => '找不到藥物';
+
+  @override
   String get botiquinInteractionsTitle => '偵測到藥物交互作用';
 
   @override
@@ -3586,6 +3617,25 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get drugLoadError => '無法載入資訊。';
+
+  @override
+  String get conditionSourceLocalCurated => '來源：ZebraUp 針對此病症的在地資訊。不能取代醫療建議。';
+
+  @override
+  String get conditionContentUnverifiedWarning =>
+      '此摘要是根據一般醫學知識草擬，尚未經過臨床審查確認。如果內容與您的醫療團隊所說有出入，請以醫療團隊的說法為準。';
+
+  @override
+  String get conditionNoContentUnmapped =>
+      '我們尚未收錄此病症。您可以手動在 medlineplus.gov 上搜尋。';
+
+  @override
+  String get conditionNoContentNoIcd10 =>
+      '此病症沒有 ICD-10 代碼，因此無法查詢 MedlinePlus，我們也尚未提供在地摘要。';
+
+  @override
+  String get conditionNoContentMedlineEmpty =>
+      'MedlinePlus 未能提供此病症的資訊。可能是暫時性問題，或此代碼缺乏內容。';
 
   @override
   String get moodQuadrantActivatedUnpleasant => '活躍 · 不快';

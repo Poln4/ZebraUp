@@ -453,6 +453,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get botiquinActionCreate => 'Create medication';
 
   @override
+  String get botiquinSearchHint => 'Search medication...';
+
+  @override
+  String get botiquinSearchNoResults => 'No medications found';
+
+  @override
   String get botiquinInteractionsTitle => 'Interactions detected';
 
   @override
@@ -1503,6 +1509,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get drugLoadError => 'Information could not be loaded.';
+
+  @override
+  String get conditionSourceLocalCurated =>
+      'Source: local ZebraUp information about this condition. Does not replace medical advice.';
+
+  @override
+  String get conditionContentUnverifiedWarning =>
+      'This summary was drafted from general medical knowledge, not a confirmed clinical review. If anything doesn\'t match what your healthcare team has told you, trust your healthcare team.';
+
+  @override
+  String get conditionNoContentUnmapped =>
+      'We don\'t have this condition mapped yet. You can search for it manually on medlineplus.gov.';
+
+  @override
+  String get conditionNoContentNoIcd10 =>
+      'This condition has no ICD-10 code, so we can\'t query MedlinePlus, and we don\'t have a local summary for it yet.';
+
+  @override
+  String get conditionNoContentMedlineEmpty =>
+      'MedlinePlus didn\'t return information for this condition. This could be a temporary issue or a lack of content for this code.';
 
   @override
   String get moodQuadrantActivatedUnpleasant => 'activated · unpleasant';

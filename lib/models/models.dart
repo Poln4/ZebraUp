@@ -27,6 +27,7 @@ import 'fatigue_detail.dart';
 import 'abdominal_detail.dart';
 import 'action_taken.dart';
 import 'mcas.dart';
+import 'medication_type.dart';
 import 'profile_settings.dart';
 import 'profile_state.dart';
 
@@ -1032,6 +1033,17 @@ class MedicationDef {
   /// CIMA registration code (Spain) once matched.
   String? cimaCode;
 
+  /// Optional sub-ingredients for multi-component supplements (e.g. a
+  /// B-Complex made of B1, B6, B12... each with its own strength/unit).
+  /// Empty for ordinary single-ingredient medications.
+  List<MedicationComponent> components;
+
+  /// Sprint F.F — basal/scheduled vs PRN/rescue classification.
+  /// Defaults to [MedicationType.undefined] for records created before
+  /// this field existed; the user reclassifies at their own pace via
+  /// this form.
+  MedicationType medicationType;
+
   MedicationDef({
     String? id,
     required this.name,
@@ -1043,17 +1055,23 @@ class MedicationDef {
     this.notes,
     this.activeIngredient,
     this.cimaCode,
-  }) : id = id ?? _newId();
+    List<MedicationComponent>? components,
+    this.medicationType = MedicationType.undefined,
+  }) : id = id ?? _newId(),
+       components = components ?? <MedicationComponent>[];
 
   /// Human-readable dose summary for UI rows: "1 pill × 500mg".
   String get displayDose {
     final qty = _formatQuantity(defaultQuantity);
     final formLabel = _pluralizeForm(form, defaultQuantity);
-    if (strength > 0 && unit.isNotEmpty) {
-      final str = _formatQuantity(strength);
-      return '$qty $formLabel × $str$unit';
+    final base = (strength > 0 && unit.isNotEmpty)
+        ? '$qty $formLabel × ${_formatQuantity(strength)}$unit'
+        : '$qty $formLabel';
+    if (components.isNotEmpty) {
+      final label = components.length == 1 ? 'componente' : 'componentes';
+      return '$base · ${components.length} $label';
     }
-    return '$qty $formLabel';
+    return base;
   }
 
   Map<String, dynamic> toMap() => {
@@ -1067,6 +1085,8 @@ class MedicationDef {
     'notes': notes,
     'activeIngredient': activeIngredient,
     'cimaCode': cimaCode,
+    'components': components.map((c) => c.toMap()).toList(),
+    'medicationType': medicationType.serializationKey,
   };
 
   factory MedicationDef.fromMap(Map<String, dynamic> map) => MedicationDef(
@@ -1080,7 +1100,40 @@ class MedicationDef {
     notes: map['notes'] as String?,
     activeIngredient: map['activeIngredient'] as String?,
     cimaCode: map['cimaCode'] as String?,
+    components: List<MedicationComponent>.from(
+      (map['components'] as List? ?? const []).map(
+        (c) => MedicationComponent.fromMap(Map<String, dynamic>.from(c as Map)),
+      ),
+    ),
+    medicationType:
+        MedicationType.fromKey(map['medicationType'] as String?) ??
+        MedicationType.undefined,
   );
+}
+
+/// A single sub-ingredient within a multi-component supplement, e.g. one
+/// vitamin inside a B-Complex. `unit` is free text, same as
+/// [MedicationDef.unit], so it can hold values like "billones" for
+/// probiotic CFU counts.
+class MedicationComponent {
+  String name;
+  double strength;
+  String unit;
+
+  MedicationComponent({required this.name, this.strength = 0, this.unit = ''});
+
+  Map<String, dynamic> toMap() => {
+    'name': name,
+    'strength': strength,
+    'unit': unit,
+  };
+
+  factory MedicationComponent.fromMap(Map<String, dynamic> map) =>
+      MedicationComponent(
+        name: map['name'] as String? ?? '',
+        strength: (map['strength'] as num?)?.toDouble() ?? 0,
+        unit: map['unit'] as String? ?? '',
+      );
 }
 
 String _formatQuantity(double q) {
@@ -1967,6 +2020,26 @@ extension MoodQuadrantLabels on MoodQuadrant {
     MoodQuadrant.activatedPleasant => 'energía, alegría',
     MoodQuadrant.calmUnpleasant => 'agotamiento, tristeza',
     MoodQuadrant.calmPleasant => 'tranquilidad, paz',
+  };
+
+  /// Valence sign for aggregation (pleasant=+1, unpleasant=-1). Shared
+  /// single source of truth — used by both the PDF report's period
+  /// mean (pdf_report_aggregator.dart) and the in-app report's daily
+  /// time series (report_time_series.dart).
+  double get valenceSign => switch (this) {
+    MoodQuadrant.activatedPleasant => 1.0,
+    MoodQuadrant.calmPleasant => 1.0,
+    MoodQuadrant.activatedUnpleasant => -1.0,
+    MoodQuadrant.calmUnpleasant => -1.0,
+  };
+
+  /// Arousal sign for aggregation (activated=+1, calm=-1). Same sharing
+  /// rationale as [valenceSign].
+  double get arousalSign => switch (this) {
+    MoodQuadrant.activatedPleasant => 1.0,
+    MoodQuadrant.activatedUnpleasant => 1.0,
+    MoodQuadrant.calmPleasant => -1.0,
+    MoodQuadrant.calmUnpleasant => -1.0,
   };
 
   /// Mapea las claves de categorías del archivo JSON con los enums nativos de Dart

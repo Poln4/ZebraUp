@@ -188,6 +188,34 @@ class _TrackingSettingsScreenState extends State<TrackingSettingsScreen> {
                       subtitle: t.settingsCarefulModeDescription,
                       key: 'careful_mode',
                     ),
+                    _toggle(
+                      cc: cc,
+                      title: 'Ánimo en el reporte',
+                      subtitle:
+                          'Muestra tus registros de ánimo (EMA) en la '
+                          'pestaña Reporte. Activo por defecto.',
+                      key: 'report_show_mood',
+                      defaultValue: true,
+                    ),
+                    _toggle(
+                      cc: cc,
+                      title: 'Estado mental en el reporte',
+                      subtitle:
+                          'Muestra niebla mental, disociación y otros '
+                          'estados en el reporte. Activo por defecto.',
+                      key: 'report_show_mental',
+                      defaultValue: true,
+                    ),
+                    _toggle(
+                      cc: cc,
+                      title: 'Eventos estructurales en el reporte',
+                      subtitle:
+                          'Muestra luxaciones, subluxaciones y otros '
+                          'eventos por zona en el reporte. Activo por '
+                          'defecto.',
+                      key: 'report_show_structural',
+                      defaultValue: true,
+                    ),
                   ],
                 ),
               ),

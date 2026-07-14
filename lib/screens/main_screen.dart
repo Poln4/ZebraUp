@@ -19,6 +19,7 @@ import '../widgets/condition_info_sheet.dart';
 import '../widgets/life_event_form_sheet.dart';
 import '../widgets/fever_form_sheet.dart';
 import '../widgets/pdf_export_sheet.dart';
+import '../widgets/report_view.dart';
 import 'settings/profile_settings_screen.dart';
 import 'settings/tracking_settings_screen.dart';
 import 'settings/account_data_screen.dart';
@@ -1703,6 +1704,31 @@ class _MainAppScreenState extends State<MainAppScreen> {
           );
         }
       }
+
+      if (trends.totalMoodEntries > 0) {
+        buf.writeln(" Ánimo (${trends.totalMoodEntries} registros):");
+        final sortedQuadrants = trends.moodQuadrantCounts.entries.toList()
+          ..sort((a, b) => b.value.compareTo(a.value));
+        for (final entry in sortedQuadrants) {
+          buf.writeln("  • ${entry.key}: ${entry.value}");
+        }
+        if (trends.topMoodWords.isNotEmpty) {
+          final sortedWords = trends.topMoodWords.entries.toList()
+            ..sort((a, b) => b.value.compareTo(a.value));
+          final topWords = sortedWords
+              .take(6)
+              .map((e) => "${e.key} (${e.value})")
+              .join(', ');
+          buf.writeln("  • Estados más frecuentes: $topWords");
+        }
+      }
+
+      if (trends.detectedPatterns.isNotEmpty) {
+        buf.writeln(" Patrones detectados:");
+        for (final pattern in trends.detectedPatterns) {
+          buf.writeln("  • $pattern");
+        }
+      }
     }
 
     final effPairs = <String>{};
@@ -1728,20 +1754,26 @@ class _MainAppScreenState extends State<MainAppScreen> {
   }
 
   Widget _buildReportContent(Color cc, Color ic) {
+    // reportText still powers "Copiar al portapapeles" below — the
+    // on-screen view (ReportView) is a separate, structured presentation
+    // of the same underlying data, not a replacement for the text export.
     final reportText = _buildReportPlainText();
+    final rangeEnd = _customRange?.end ?? _selectedDate;
+    final rangeStart =
+        _customRange?.start ??
+        _selectedDate.subtract(Duration(days: _reportRangeDays - 1));
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
         const SizedBox(height: 8),
         _buildReportRangeSelector(cc, ic),
         const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(border: Border.all(color: cc)),
-          child: SelectableText(
-            reportText,
-            style: TextStyle(fontFamily: 'Courier', fontSize: 14, color: cc),
-          ),
+        ReportView(
+          profile: _activeProfile!,
+          selectedDate: _selectedDate,
+          rangeStart: rangeStart,
+          rangeEnd: rangeEnd,
+          contrastColor: cc,
         ),
         const SizedBox(height: 16),
         OutlinedButton.icon(

@@ -875,6 +875,18 @@ abstract class AppLocalizations {
   /// **'Crear medicamento'**
   String get botiquinActionCreate;
 
+  /// No description provided for @botiquinSearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar medicamento...'**
+  String get botiquinSearchHint;
+
+  /// No description provided for @botiquinSearchNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron medicamentos'**
+  String get botiquinSearchNoResults;
+
   /// No description provided for @botiquinInteractionsTitle.
   ///
   /// In es, this message translates to:
@@ -2668,6 +2680,36 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'No se pudo cargar la información.'**
   String get drugLoadError;
+
+  /// No description provided for @conditionSourceLocalCurated.
+  ///
+  /// In es, this message translates to:
+  /// **'Fuente: información local de ZebraUp sobre esta condición. No reemplaza consejo médico.'**
+  String get conditionSourceLocalCurated;
+
+  /// No description provided for @conditionContentUnverifiedWarning.
+  ///
+  /// In es, this message translates to:
+  /// **'Este resumen fue redactado a partir de conocimiento médico general, no de una revisión clínica confirmada. Si algo no coincide con lo que te ha dicho tu equipo médico, confía en tu equipo médico.'**
+  String get conditionContentUnverifiedWarning;
+
+  /// No description provided for @conditionNoContentUnmapped.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no tenemos esta condición en nuestro mapa. Puedes buscarla manualmente en medlineplus.gov/spanish.'**
+  String get conditionNoContentUnmapped;
+
+  /// No description provided for @conditionNoContentNoIcd10.
+  ///
+  /// In es, this message translates to:
+  /// **'Esta condición no tiene código ICD-10, así que no podemos consultar MedlinePlus, y todavía no tenemos un resumen local para ella.'**
+  String get conditionNoContentNoIcd10;
+
+  /// No description provided for @conditionNoContentMedlineEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'MedlinePlus no devolvió información para esta condición. Puede ser un problema temporal o falta de contenido para este código.'**
+  String get conditionNoContentMedlineEmpty;
 
   /// No description provided for @moodQuadrantActivatedUnpleasant.
   ///

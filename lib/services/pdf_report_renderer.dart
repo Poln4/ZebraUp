@@ -76,7 +76,7 @@ Future<Uint8List> buildEmergencyCardPdf(EmergencyCardData data) async {
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.Text(
-            'ZebraUp — Tarjeta de emergencia',
+            'ZebraUp - Tarjeta de emergencia',
             style: pw.TextStyle(
               fontSize: 18,
               fontWeight: pw.FontWeight.bold,
@@ -85,7 +85,7 @@ Future<Uint8List> buildEmergencyCardPdf(EmergencyCardData data) async {
           ),
           pw.SizedBox(height: 4),
           pw.Text(
-            'Generada ${_fmtDate(DateTime.now())} — datos autoreportados, no validados clínicamente',
+            'Generada ${_fmtDate(DateTime.now())} - datos autoreportados, no validados clínicamente',
             style: pw.TextStyle(fontSize: 8, color: _kMutedColor),
           ),
           pw.Divider(),
@@ -118,7 +118,7 @@ Future<Uint8List> buildEmergencyCardPdf(EmergencyCardData data) async {
             ),
             ...data.recentRedFlags.map(
               (f) => pw.Text(
-                '${_fmtDate(f.occurredAt)} — ${f.label}',
+                '${_fmtDate(f.occurredAt)} - ${_pdfSafe(f.label)}',
                 style: pw.TextStyle(fontSize: _kBodyFontSize, color: _kUrgentColor),
               ),
             ),
@@ -139,7 +139,7 @@ pw.Widget _buildTitleBlock(ReportMetadata metadata) => pw.Column(
   crossAxisAlignment: pw.CrossAxisAlignment.start,
   children: [
     pw.Text(
-      'ZebraUp — Reporte clínico',
+      'ZebraUp - Reporte clínico',
       style: pw.TextStyle(
         fontSize: 20,
         fontWeight: pw.FontWeight.bold,
@@ -234,10 +234,10 @@ pw.Widget _buildMedicationsSection(MedicationSection s) {
               pw.TableRow(
                 children: [
                   _cell(
-                    m.name + (m.hadAdverseOutcomes ? ' ⚠' : ''),
+                    m.name + (m.hadAdverseOutcomes ? ' (!)' : ''),
                     color: m.hadAdverseOutcomes ? _kUrgentColor : null,
                   ),
-                  _cell(m.doseText ?? '—'),
+                  _cell(m.doseText ?? '-'),
                   _cell('${m.totalDoses}'),
                   _cell(_fmtImprovement(m.meanEffectiveness)),
                 ],
@@ -257,7 +257,7 @@ pw.Widget _buildMedicationsSection(MedicationSection s) {
       table('En Botiquín, sin uso registrado en el período', s.inactive),
       pw.Text(
         'Cambio de severidad = severidad reportada antes menos después de la '
-        'dosis (positivo = mejora). ⚠ = al menos una toma con empeoramiento '
+        'dosis (positivo = mejora). (!) = al menos una toma con empeoramiento '
         'reportado tras la dosis.',
         style: pw.TextStyle(fontSize: 7, color: _kMutedColor),
       ),
@@ -271,7 +271,7 @@ pw.Widget _buildSymptomsSection(SymptomSection s) {
     children: [
       _sectionHeading('Síntomas'),
       _kv('Total de eventos', '${s.totalEvents}'),
-      _kv('Días con síntomas severos (≥ intensa)', '${s.severeSymptomDays}'),
+      _kv('Días con síntomas severos (intensa o más)', '${s.severeSymptomDays}'),
       pw.SizedBox(height: 4),
       pw.Table(
         border: pw.TableBorder.all(color: PdfColors.grey300, width: 0.5),
@@ -304,7 +304,10 @@ pw.Widget _buildSymptomsSection(SymptomSection s) {
           style: pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold),
         ),
         for (final p in s.detectedPatterns)
-          pw.Text('• $p', style: const pw.TextStyle(fontSize: _kBodyFontSize)),
+          pw.Text(
+            '- ${_pdfSafe(p)}',
+            style: const pw.TextStyle(fontSize: _kBodyFontSize),
+          ),
       ],
     ],
   );
@@ -332,7 +335,7 @@ pw.Widget _buildMcasSection(MCASSection s) {
         ),
         for (final f in s.redFlags)
           pw.Text(
-            '${_fmtDate(f.occurredAt)} — ${f.label}',
+            '${_fmtDate(f.occurredAt)} - ${_pdfSafe(f.label)}',
             style: pw.TextStyle(fontSize: _kBodyFontSize, color: _kUrgentColor),
           ),
       ],
@@ -348,8 +351,8 @@ pw.Widget _buildStructuralSection(StructuralSection s) {
       _kv('Total de eventos', '${s.totalEvents}'),
       for (final agg in s.byKind)
         pw.Text(
-          '${agg.kindLabel}: ${agg.occurrences} '
-          '(${agg.regionCounts.entries.map((e) => '${e.key}: ${e.value}').join(', ')})',
+          '${_pdfSafe(agg.kindLabel)}: ${agg.occurrences} '
+          '(${agg.regionCounts.entries.map((e) => '${_pdfSafe(e.key)}: ${e.value}').join(', ')})',
           style: const pw.TextStyle(fontSize: _kBodyFontSize),
         ),
     ],
@@ -360,8 +363,8 @@ pw.Widget _buildMentalStateSection(MentalStateSection s) {
   return pw.Column(
     crossAxisAlignment: pw.CrossAxisAlignment.start,
     children: [
-      _sectionHeading('Estado mental (agregado)'),
-      _kv('Entradas registradas', '${s.totalEntries}'),
+      _sectionHeading('Estado mental y ánimo (agregado)'),
+      _kv('Entradas registradas (niebla/fatiga, etc.)', '${s.totalEntries}'),
       if (s.cognitiveStateFrequency.isNotEmpty)
         _kv(
           'Estados más frecuentes',
@@ -369,8 +372,46 @@ pw.Widget _buildMentalStateSection(MentalStateSection s) {
               .map((e) => '${e.key} (${e.value})')
               .join(', '),
         ),
+      if (s.totalMoodEntries > 0) ...[
+        pw.SizedBox(height: 4),
+        _kv('Registros de ánimo (EMA)', '${s.totalMoodEntries}'),
+        if (s.meanValence != null && s.meanArousal != null)
+          _kv(
+            'Tendencia general',
+            _moodTendencyLabel(s.meanValence!, s.meanArousal!),
+          ),
+        if (s.moodQuadrantFrequency.isNotEmpty)
+          _kv(
+            'Distribución por cuadrante',
+            s.moodQuadrantFrequency.entries
+                .map((e) => '${e.key} (${e.value})')
+                .join(', '),
+          ),
+        if (s.moodWordFrequency.isNotEmpty)
+          _kv(
+            'Estados de ánimo más frecuentes',
+            (s.moodWordFrequency.entries.toList()
+                  ..sort((a, b) => b.value.compareTo(a.value)))
+                .take(6)
+                .map((e) => '${e.key} (${e.value})')
+                .join(', '),
+          ),
+      ],
     ],
   );
+}
+
+/// Mirrors MoodQuadrantLabels.label (models.dart) using the aggregated
+/// valence/arousal signs — kept as plain strings here so the renderer
+/// stays decoupled from the mood model, per this file's presentational-
+/// only design.
+String _moodTendencyLabel(double valence, double arousal) {
+  final pleasant = valence >= 0;
+  final activated = arousal >= 0;
+  if (activated && !pleasant) return 'activación · malestar';
+  if (activated && pleasant) return 'activación · bienestar';
+  if (!activated && !pleasant) return 'calma · malestar';
+  return 'calma · bienestar';
 }
 
 pw.Widget _buildActionsSection(ActionsSection s) {
@@ -424,7 +465,7 @@ pw.Widget _buildPatientNotesSection(PatientNotesSection s) => pw.Column(
   crossAxisAlignment: pw.CrossAxisAlignment.start,
   children: [
     _sectionHeading('Para tu especialista'),
-    pw.Text(s.text, style: const pw.TextStyle(fontSize: _kBodyFontSize)),
+    pw.Text(_pdfSafe(s.text), style: const pw.TextStyle(fontSize: _kBodyFontSize)),
   ],
 );
 
@@ -450,14 +491,14 @@ pw.Widget _kv(String label, String value) => pw.Padding(
     text: pw.TextSpan(
       children: [
         pw.TextSpan(
-          text: '$label: ',
+          text: '${_pdfSafe(label)}: ',
           style: pw.TextStyle(
             fontSize: _kBodyFontSize,
             fontWeight: pw.FontWeight.bold,
           ),
         ),
         pw.TextSpan(
-          text: value,
+          text: _pdfSafe(value),
           style: const pw.TextStyle(fontSize: _kBodyFontSize),
         ),
       ],
@@ -482,8 +523,44 @@ pw.TableRow _tableHeaderRow(List<String> labels) => pw.TableRow(
 
 pw.Widget _cell(String text, {PdfColor? color}) => pw.Padding(
   padding: const pw.EdgeInsets.all(4),
-  child: pw.Text(text, style: pw.TextStyle(fontSize: 9, color: color)),
+  child: pw.Text(_pdfSafe(text), style: pw.TextStyle(fontSize: 9, color: color)),
 );
+
+/// CORRECTED 2026-07-16: an earlier version of this function assumed the
+/// `pdf` package's base14 Helvetica supported the full WinAnsi (cp1252)
+/// range, including the 0x80-0x9F typography extras (em/en dash, smart
+/// quotes, bullet, ellipsis, trademark) — it doesn't. In practice it only
+/// renders plain Latin-1 (ASCII + the accented Latin letters ZebraUp's
+/// Spanish needs: á é í ó ú ñ ¿ ¡). Anything else — emoji, math symbols
+/// (⚠, ≥), CJK, *and* those typography extras (confirmed broken: an em
+/// dash rendered as a missing-glyph block) — shows as a broken glyph.
+///
+/// So this now does two passes: translate the handful of known-common
+/// typography characters to plain ASCII equivalents (dashes → "-",
+/// smart quotes → straight quotes, bullet → "-", ellipsis → "...",
+/// trademark → "(TM)"), then drop anything still outside plain Latin-1.
+/// Every dynamic string bound for the PDF passes through here — medication
+/// names, symptom names, and free-text notes are user-entered and can
+/// contain anything.
+String _pdfSafe(String text) {
+  final translated = text
+      .replaceAll('–', '-') // en dash
+      .replaceAll('—', '-') // em dash
+      .replaceAll('‘', "'") // left single quote
+      .replaceAll('’', "'") // right single quote
+      .replaceAll('“', '"') // left double quote
+      .replaceAll('”', '"') // right double quote
+      .replaceAll('•', '-') // bullet
+      .replaceAll('…', '...') // ellipsis
+      .replaceAll('™', '(TM)'); // trademark
+  final buf = StringBuffer();
+  for (final rune in translated.runes) {
+    if (rune <= 0x7F || (rune >= 0xA0 && rune <= 0xFF)) {
+      buf.writeCharCode(rune);
+    }
+  }
+  return buf.toString();
+}
 
 String _fmtImprovement(double? v) {
   if (v == null) return 'sin datos';

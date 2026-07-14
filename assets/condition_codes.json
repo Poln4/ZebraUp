@@ -1,10 +1,23 @@
 {
   "metadata": {
-    "version": "2",
-    "last_updated": "2026-06-16",
+    "version": "4",
+    "last_updated": "2026-07-14",
     "icd11_source": "WHO ICD-11 MMS 2024 release — https://icd.who.int/browse11/l-m/en",
     "verification_note": "Entries with `verify: true` should be confirmed in the ICD-11 browser before clinical reliance. Dual coding lets the app fall back to MedlinePlus (US, ICD-10-based) when ICD-11 has no patient-education resource, while exposing diagnoses like c-PTSD that ICD-10 / DSM-5 do not recognize.",
+    "content_verification_note": "Entries with `content_verify: true` have a `summary_es` (and sometimes `notes_es`) that hasn't been read/confirmed by Paulina or her care team. Same polarity as `verify`: true = needs your clinical read-through, not 'already confirmed'. This is independent of `content_source`: a summary can be grounded in a real cited source AND still be content_verify: true, because grounding in a source is not the same as clinical review.",
+    "content_source_note_explainer": "Where present, `content_source` and `content_source_note` record what the summary was actually checked against in the v4 research pass (July 2026): a real fetched/searched page (Orphanet mirrors, PMC, NIH GARD, Wikipedia) with the specific citation, vs. absent = still general medical knowledge, unchanged since v3. Orphanet's own orpha.net pages returned a bot-check wall to automated fetches during this pass — where noted, only the ORPHA code/short definition was recoverable via search-index snippets, not the full page.",
     "changelog": {
+      "v4 (2026-07-14)": [
+        "Research pass against real sources (WebSearch + WebFetch) for ~13 of the highest-stakes rare-disease entries (EDS subtypes, POTS, craniocervical instability, Chiari, tethered cord, MCAS, lipedema, EDS platelet/bleeding phenotype)",
+        "orpha.net itself blocked automated fetches (bot-check page) for every direct attempt; grounded content instead came from an Orphanet mirror (chorobyrzadkie.gov.pl), PMC/PubMed, NIH GARD, and Wikipedia — see per-entry content_source_note",
+        "Added content_source / content_source_note fields on grounded entries only; content_verify stays true everywhere regardless — grounding is not the same as Paulina's clinical review",
+        "Common/non-rare entries (migraine, GERD, anxiety, myopia, etc.) intentionally left as v3 general-knowledge content — Orphanet doesn't cover them and that was never the gap this pass was closing"
+      ],
+      "v3 (2026-07-14)": [
+        "Added summary_es (and notes_es where useful) to all 56 entries — local-first content for the condition info sheet, replacing MedlinePlus as the default source",
+        "Every new summary/notes field flagged content_verify: true (unreviewed, drafted from general medical knowledge)",
+        "MedlinePlus kept as fallback for locales without local content (en/zh) and as a last resort if a future entry ships without a summary_es"
+      ],
       "v2 (2026-06-16)": [
         "Dual coding (icd10 + icd11) on every entry",
         "EDS subtype codes CORRECTED: hEDS Q79.62, vEDS Q79.63, clEDS Q79.69 (was incorrectly assigned in v1)",
@@ -28,7 +41,12 @@
       "icd10": "Q79.62",
       "icd11": "LD28.0",
       "label": "Síndrome de Ehlers-Danlos, hipermóvil (hEDS)",
-      "verify": true
+      "verify": true,
+      "summary_es": "Trastorno hereditario del tejido conectivo que causa hipermovilidad articular generalizada, piel elástica y fragilidad de tejidos blandos — la forma más frecuente de EDS. Es el único subtipo sin una mutación genética conocida en la mayoría de los casos, por lo que el diagnóstico sigue siendo clínico (criterios internacionales de 2017). Con frecuencia se presenta junto con POTS, MCAS y dolor crónico, formando el llamado 'trío' que muchas pacientes zebra conocen bien.",
+      "notes_es": "El diagnóstico clínico no lo hace 'menos real': la ausencia de un gen identificado refleja los límites actuales de la genética, no la ausencia de la condición.",
+      "content_verify": true,
+      "content_source": "orphanet",
+      "content_source_note": "ORPHA:285 / OMIM:130020, definition confirmed via chorobyrzadkie.gov.pl (Orphanet mirror, fetched). Prevalence/inheritance not recoverable from that page — not restated here."
     },
     {
       "aliases": [
@@ -42,7 +60,12 @@
       "icd11": "LD28.2",
       "label": "Síndrome de Ehlers-Danlos, clásico-like (TNXB)",
       "verify": true,
-      "note": "clEDS (TNXB-related) is genetically and clinically distinct from classical EDS (COL5A1/A2). ICD-10 has no dedicated code, hence Q79.69 'other'."
+      "note": "clEDS (TNXB-related) is genetically and clinically distinct from classical EDS (COL5A1/A2). ICD-10 has no dedicated code, hence Q79.69 'other'.",
+      "summary_es": "Subtipo de EDS causado por deficiencia de tenascina-X (gen TNXB), una proteína de la matriz extracelular clave para la arquitectura del tejido fascial. Es autosómico recesivo (a diferencia de la mayoría de los subtipos de EDS) y ultra-raro — la literatura médica reciente documenta apenas alrededor de 50 personas de 43 familias identificadas en todo el mundo. Además de la hiperlaxitud articular y la piel suave sin cicatrices atróficas, incluye hallazgos menos conocidos: pápulas piezogénicas y pies planos, edema en piernas sin causa cardíaca, debilidad muscular y polineuropatía axonal, y fatiga severa. La densificación fascial asociada a la deficiencia de tenascina-X puede hacer que el estiramiento convencional empeore el dolor en lugar de aliviarlo.",
+      "notes_es": "Si el estiramiento habitual empeora tus síntomas en vez de ayudarte, no es solo percepción: la fisioterapia estándar está diseñada para tejido estructuralmente típico y puede no aplicar igual aquí.",
+      "content_verify": true,
+      "content_source": "pubmed",
+      "content_source_note": "ORPHA:230839 'Classical-like EDS type 1'; clinical detail (piezogenic papules, edema, polyneuropathy, ~50 patients/43 families) from GeneReviews 'TNXB-Related Classical-Like Ehlers-Danlos Syndrome' (NCBI Bookshelf NBK584019), surfaced via search — not a direct full-page fetch."
     },
     {
       "aliases": [
@@ -56,7 +79,11 @@
       "icd10": "Q79.61",
       "icd11": "LD28.1",
       "label": "Síndrome de Ehlers-Danlos, clásico (COL5A1/A2)",
-      "verify": true
+      "verify": true,
+      "summary_es": "Subtipo de EDS causado por mutaciones en los genes del colágeno tipo V (COL5A1/COL5A2), con herencia autosómica dominante. Se caracteriza por piel hiperelástica y frágil que cicatriza dejando marcas atróficas ('piel de papel de cigarrillo'), hipermovilidad articular y facilidad para los moretones. A diferencia del clEDS (TNXB), aquí sí existe una prueba genética confirmatoria disponible.",
+      "content_verify": true,
+      "content_source": "orphanet",
+      "content_source_note": "ORPHA:287 confirmed via search index (orpha.net full-page fetch blocked by bot-check); summary text itself is unchanged general-knowledge content, not rewritten against a fetched page."
     },
     {
       "aliases": [
@@ -67,7 +94,12 @@
       "icd10": "Q79.63",
       "icd11": "LD28.4",
       "label": "Síndrome de Ehlers-Danlos, vascular",
-      "verify": true
+      "verify": true,
+      "summary_es": "El subtipo de EDS con mayor riesgo médico: mutaciones en el colágeno tipo III (COL3A1) causan fragilidad inesperada de arterias, intestino y útero grávido, con riesgo de ruptura espontánea. La piel suele ser delgada y translúcida, con venas visibles, moretones fáciles y rasgos 'acrogéricos' (envejecimiento prematuro de la piel de manos y pies); los rasgos faciales también pueden ser característicos (cara delgada, ojos prominentes). Requiere seguimiento médico activo, no solo manejo de síntomas.",
+      "notes_es": "Dolor abdominal o torácico súbito e intenso en vEDS es una urgencia médica hasta que se demuestre lo contrario — no es 'otro día de dolor crónico más'.",
+      "content_verify": true,
+      "content_source": "orphanet",
+      "content_source_note": "ORPHA:286 / OMIM:130050, definition confirmed via chorobyrzadkie.gov.pl (Orphanet mirror, fetched) — 'unexpected organ fragility... acrogeric traits' phrasing is theirs."
     },
     {
       "aliases": [
@@ -78,7 +110,11 @@
       "icd10": "Q79.6",
       "icd11": "LD28",
       "label": "Síndrome de Ehlers-Danlos",
-      "verify": false
+      "verify": false,
+      "summary_es": "Nombre general para un grupo de trastornos hereditarios del tejido conectivo que afectan la producción o estructura del colágeno, causando hipermovilidad articular, fragilidad de piel y tejidos, y con frecuencia dolor crónico. La clasificación internacional de 2017 reconoce 13 subtipos con causas genéticas y pronósticos distintos (clásico, clásico-like, cardíaco-valvular, vascular, hipermóvil, artrocalasia, dermatosparaxis, cifoescoliótico, espondilodisplásico, musculocontractural, miopático, periodontal y de córnea frágil); si conoces tu subtipo específico, búscalo por su nombre para información más precisa.",
+      "content_verify": true,
+      "content_source": "pubmed",
+      "content_source_note": "13-subtype list per the 2017 international EDS classification (Malfait et al., American Journal of Medical Genetics Part C), confirmed via search; also cross-checked against NIH GARD's EDS overview page (fetched)."
     },
     {
       "aliases": [
@@ -89,7 +125,9 @@
       "icd10": "M35.7",
       "icd11": "FB91.1Y",
       "label": "Síndrome de hipermovilidad",
-      "verify": true
+      "verify": true,
+      "summary_es": "Trastorno del espectro de la hipermovilidad (HSD) que causa articulaciones con rango de movimiento mayor al típico, dolor articular y, con frecuencia, inestabilidad y subluxaciones. Comparte manejo clínico con el hEDS y hoy se considera que la distinción entre ambos diagnósticos tiene poco impacto en el tratamiento — no necesitas 'calificar' para uno u otro para que tus síntomas sean válidos.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -100,7 +138,12 @@
       "icd10": "G90.A",
       "icd11": "8D89.2",
       "label": "Síndrome de taquicardia ortostática postural",
-      "verify": false
+      "verify": false,
+      "summary_es": "Forma de disautonomía en la que el ritmo cardíaco se acelera de forma excesiva al ponerse de pie: el criterio diagnóstico estándar es un aumento sostenido de al menos 30 latidos/min dentro de los primeros 10 minutos de pie (o superar 120 lpm), y de al menos 40 latidos/min en adolescentes. Causa mareo, palpitaciones, fatiga, niebla mental y, en cerca de un tercio de los casos, desmayos. Entre el 18% y el 25% de las personas con POTS también tienen EDS, un patrón documentado en la literatura y no una coincidencia — de ahí el 'trío' POTS + EDS + MCAS. El manejo suele combinar hidratación, sal, medias de compresión y ejercicio recostado o reclinado antes de progresar a vertical.",
+      "notes_es": "El reacondicionamiento tiene que ser gradual: el ejercicio vertical agresivo puede empeorar los síntomas de POTS en lugar de mejorarlos.",
+      "content_verify": true,
+      "content_source": "pubmed",
+      "content_source_note": "Diagnostic thresholds and 18-25% EDS-comorbidity figure from Wikipedia's 'Postural orthostatic tachycardia syndrome' article (fetched, itself citing clinical literature) — a tertiary source, not a primary paper; worth spot-checking the exact percentage against a primary POTS/EDS comorbidity study before quoting it elsewhere."
     },
     {
       "aliases": [
@@ -110,7 +153,9 @@
       "icd10": "G90.9",
       "icd11": "8D89.Z",
       "label": "Disautonomía",
-      "verify": false
+      "verify": false,
+      "summary_es": "Término general para el mal funcionamiento del sistema nervioso autónomo, que regula funciones automáticas como la frecuencia cardíaca, la presión arterial, la digestión y la temperatura corporal. En el contexto de EDS/HSD suele presentarse como POTS o hipotensión ortostática, pero también puede afectar la motilidad intestinal, la sudoración y la regulación térmica de forma más amplia.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -121,7 +166,9 @@
       "icd10": "I95.1",
       "icd11": "8D89.0",
       "label": "Hipotensión ortostática",
-      "verify": false
+      "verify": false,
+      "summary_es": "Caída de la presión arterial al ponerse de pie (típicamente ≥20 mmHg sistólica o ≥10 mmHg diastólica), que causa mareo, visión borrosa o desmayo. A diferencia de POTS, aquí el problema central es la presión, no solo la frecuencia cardíaca, aunque ambas pueden coexistir en la misma persona.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -132,7 +179,9 @@
       "icd10": "I34.1",
       "icd11": "BC81.0",
       "label": "Prolapso de la válvula mitral (no reumático)",
-      "verify": true
+      "verify": true,
+      "summary_es": "Las valvas de la válvula mitral del corazón se abomban hacia la aurícula izquierda al cerrarse, a veces permitiendo un pequeño reflujo de sangre. En personas con EDS/hipermovilidad es más frecuente por la laxitud del tejido conectivo que sostiene la válvula. La mayoría de los casos son leves y no requieren tratamiento más allá de seguimiento periódico con ecocardiograma.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -143,7 +192,9 @@
       "icd10": "I73.0",
       "icd11": "BD42.0",
       "label": "Síndrome de Raynaud",
-      "verify": false
+      "verify": false,
+      "summary_es": "Los vasos sanguíneos pequeños de dedos de manos y pies (a veces nariz u orejas) se contraen de forma exagerada ante el frío o el estrés, causando cambios de color (blanco, azulado, luego rojo) y entumecimiento o dolor. Es frecuente como comorbilidad disautonómica en EDS/HSD. Mantener las extremidades abrigadas y evitar cambios bruscos de temperatura suele ser la primera línea de manejo.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -155,7 +206,9 @@
       "icd10": "I83.9",
       "icd11": "BD74.Z",
       "label": "Varices de las extremidades inferiores",
-      "verify": true
+      "verify": true,
+      "summary_es": "Venas superficiales dilatadas y tortuosas, típicamente en las piernas, causadas por válvulas venosas que no cierran bien y permiten que la sangre se acumule. En EDS/HSD son más frecuentes por la laxitud del tejido conectivo que sostiene las paredes venosas. Las medias de compresión y elevar las piernas suelen aliviar la pesadez e hinchazón asociadas.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -166,7 +219,10 @@
       "icd10": "I77.81",
       "icd11": "BD50.5",
       "label": "Dilatación aórtica leve",
-      "verify": true
+      "verify": true,
+      "summary_es": "Ensanchamiento del diámetro de la aorta en su punto de salida del corazón, por encima del rango típico pero sin llegar a ser un aneurisma. En hEDS/HSD puede aparecer de forma leve y estable; el manejo estándar es monitoreo periódico con ecocardiograma para confirmar que no progresa, más que una intervención inmediata.",
+      "notes_es": "Una dilatación leve y estable no es lo mismo que el riesgo vascular de vEDS — vale la pena que tu cardiólogo aclare cuál es tu situación específica.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -178,7 +234,12 @@
       "icd10": "M53.2",
       "icd11": "FA20.0",
       "label": "Inestabilidad espinal (craneocervical)",
-      "verify": true
+      "verify": true,
+      "summary_es": "Laxitud de los ligamentos que estabilizan la unión entre el cráneo y la columna cervical superior, permitiendo un movimiento excesivo que puede comprimir el tronco encefálico o la médula espinal alta. Es una complicación reconocida en EDS por la fragilidad ligamentaria generalizada. El cuadro característico ('síndrome cervico-medular') incluye desregulación autonómica, mareo, apnea del sueño, debilidad motora, alteraciones sensoriales, problemas de equilibrio o vértigo, y dificultad para tragar. El diagnóstico requiere imágenes dinámicas (radiografías en flexión/extensión, TC o RM de pie), porque las imágenes estáticas pueden no detectar la inestabilidad ligamentaria.",
+      "notes_es": "Síntomas neurológicos nuevos o que empeoran (debilidad, cambios en reflejos, dificultad para tragar o respirar) requieren evaluación médica pronta, no solo manejo del dolor. La cirugía solo se considera cuando hay evidencia clara en imágenes Y síntomas que correlacionan con ella — ni el dolor solo ni la hipermovilidad radiográfica sola son, por separado, indicación quirúrgica.",
+      "content_verify": true,
+      "content_source": "pubmed",
+      "content_source_note": "PMC9609512 / PubMed 35195459, 'Craniocervical Instability in Ehlers-Danlos Syndrome — A Systematic Review of Diagnostic and Surgical Treatment Criteria' (fetched, full text read)."
     },
     {
       "aliases": [
@@ -190,7 +251,11 @@
       "icd10": "Q07.0",
       "icd11": "LA05",
       "label": "Síndrome de Arnold-Chiari",
-      "verify": false
+      "verify": false,
+      "summary_es": "Las amígdalas cerebelosas descienden por debajo del agujero magno (la abertura en la base del cráneo), lo que puede alterar el flujo normal del líquido cefalorraquídeo. En el contexto de EDS puede relacionarse con la laxitud de tejidos que sostienen la base craneal. Los síntomas típicos incluyen dolor de cabeza occipital que empeora con la tos o el esfuerzo, mareo y alteraciones del equilibrio.",
+      "content_verify": true,
+      "content_source": "orphanet",
+      "content_source_note": "ORPHA:268882 ('Arnold-Chiari malformation type I') confirmed via search index — orpha.net full-page fetch blocked by bot-check, so only the code was verified; summary text itself is unchanged general-knowledge content."
     },
     {
       "aliases": [
@@ -202,7 +267,11 @@
       "icd10": "Q06.8",
       "icd11": "LA02.Y",
       "label": "Síndrome de médula anclada",
-      "verify": true
+      "verify": true,
+      "summary_es": "La médula espinal queda fijada de forma anómala en su extremo inferior en lugar de moverse libremente, generando tensión sobre el tejido nervioso con el crecimiento o el movimiento. El cuadro típico incluye dolor, alteraciones de la marcha, cambios de tono o reflejos, deformidades o asimetría en los pies, atrofia muscular, escoliosis y disfunción vesical/intestinal. Se asocia con EDS por la laxitud de los tejidos conectivos que normalmente permiten el desplazamiento libre de la médula.",
+      "content_verify": true,
+      "content_source": "orphanet",
+      "content_source_note": "ORPHA:268861 'Primary tethered cord syndrome' — definition and symptom list per Orphanet, surfaced via search index (orpha.net full-page fetch blocked by bot-check)."
     },
     {
       "aliases": [
@@ -212,7 +281,9 @@
       "icd10": "G43.9",
       "icd11": "8A80",
       "label": "Migraña",
-      "verify": false
+      "verify": false,
+      "summary_es": "Dolor de cabeza recurrente, típicamente pulsátil y de un solo lado, que puede acompañarse de náuseas, sensibilidad a la luz y al sonido, y a veces aura visual previa. Es una de las comorbilidades más frecuentes reportadas en la población hEDS/HSD, posiblemente vinculada a la disautonomía y a la sensibilización central compartidas.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -224,7 +295,9 @@
       "icd10": "G25.81",
       "icd11": "7A80",
       "label": "Síndrome de las piernas inquietas",
-      "verify": false
+      "verify": false,
+      "summary_es": "Necesidad urgente de mover las piernas, generalmente acompañada de sensaciones incómodas (hormigueo, tirantez), que aparece en reposo y empeora por la noche, aliviándose con el movimiento. Puede fragmentar el sueño de forma importante. Conviene revisar niveles de hierro/ferritina, ya que la deficiencia es una causa tratable frecuente.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -235,7 +308,9 @@
       "icd10": "G24.9",
       "icd11": "8A02",
       "label": "Distonía",
-      "verify": true
+      "verify": true,
+      "summary_es": "Trastorno del movimiento caracterizado por contracciones musculares sostenidas o intermitentes que causan posturas anormales o movimientos repetitivos, a veces dolorosos. Puede ser focal (una zona del cuerpo) o más generalizada. En el contexto de dolor crónico y sensibilización central su manejo suele requerir evaluación neurológica específica.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -246,7 +321,9 @@
       "icd10": "G47.33",
       "icd11": "7A41",
       "label": "Apnea obstructiva del sueño",
-      "verify": false
+      "verify": false,
+      "summary_es": "Pausas repetidas de la respiración durante el sueño por colapso de las vías respiratorias superiores, que fragmentan el descanso y pueden causar fatiga diurna intensa, ronquidos fuertes y dolores de cabeza matutinos. En EDS puede relacionarse con la laxitud de los tejidos blandos de la vía aérea. El estudio de sueño (polisomnografía) es el método diagnóstico estándar.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -256,7 +333,9 @@
       "icd10": "K58.9",
       "icd11": "DD91.Z",
       "label": "Síndrome de colon irritable",
-      "verify": false
+      "verify": false,
+      "summary_es": "Trastorno funcional del intestino que causa dolor abdominal recurrente asociado a cambios en el hábito intestinal (diarrea, estreñimiento o ambos alternados), sin una causa estructural identificable en estudios. Es muy frecuente como comorbilidad digestiva en EDS/HSD, donde la disautonomía puede afectar directamente la motilidad intestinal.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -268,7 +347,9 @@
       "icd10": "K21.9",
       "icd11": "DA22",
       "label": "Enfermedad por reflujo gastroesofágico sin esofagitis",
-      "verify": false
+      "verify": false,
+      "summary_es": "El contenido del estómago regresa hacia el esófago con frecuencia, causando ardor retroesternal, regurgitación y a veces tos o molestia al tragar. En EDS puede relacionarse con laxitud del esfínter esofágico inferior y con la dismotilidad digestiva propia de la disautonomía.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -278,7 +359,10 @@
       "icd10": "K31.84",
       "icd11": "DA42",
       "label": "Gastroparesia",
-      "verify": true
+      "verify": true,
+      "summary_es": "El estómago se vacía más lento de lo normal sin obstrucción mecánica, causando saciedad temprana, náuseas, hinchazón y en ocasiones vómitos de alimento no digerido horas después de comer. En el contexto de EDS/POTS se atribuye a la disautonomía que afecta los nervios que controlan la motilidad gástrica. Comidas más pequeñas y frecuentes, bajas en grasa y fibra, suelen ayudar a manejar los síntomas.",
+      "notes_es": "Pérdida de peso involuntaria significativa o intolerancia a líquidos amerita evaluación médica, no solo ajuste dietético.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -289,7 +373,9 @@
       "icd10": "K90.89",
       "icd11": "DA92",
       "label": "Sobrecrecimiento bacteriano intestinal (SIBO)",
-      "verify": true
+      "verify": true,
+      "summary_es": "Crecimiento excesivo de bacterias en el intestino delgado, donde normalmente hay muy pocas, causando hinchazón, gases, dolor abdominal y a veces diarrea o malabsorción. La dismotilidad intestinal asociada a EDS/disautonomía es un factor de riesgo reconocido, porque el tránsito lento favorece la proliferación bacteriana. Se diagnostica típicamente con un test de aliento (hidrógeno/metano).",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -299,7 +385,9 @@
       "icd10": "K44.9",
       "icd11": "DC11",
       "label": "Hernia diafragmática sin obstrucción ni gangrena",
-      "verify": true
+      "verify": true,
+      "summary_es": "Parte del estómago se desliza hacia el tórax a través de una abertura del diafragma (el hiato esofágico). En EDS puede relacionarse con la debilidad del tejido conectivo que normalmente mantiene esa abertura firme. Con frecuencia contribuye o empeora el reflujo gastroesofágico.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -310,7 +398,9 @@
       "icd10": "K30",
       "icd11": "DD90.30",
       "label": "Dispepsia funcional",
-      "verify": true
+      "verify": true,
+      "summary_es": "Molestia o dolor persistente en la parte alta del abdomen (ardor, saciedad temprana, sensación de plenitud) sin una causa estructural identificable en la endoscopía. Comparte mecanismos con otros trastornos digestivos funcionales frecuentes en EDS/disautonomía, como la gastroparesia y el SIBO.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -321,7 +411,10 @@
       "icd10": "R13.10",
       "icd11": "MD93.0",
       "label": "Disfagia",
-      "verify": true
+      "verify": true,
+      "summary_es": "Dificultad o sensación de que la comida o los líquidos no pasan con normalidad al tragar. En EDS puede deberse a laxitud de los tejidos de la faringe/esófago o a dismotilidad esofágica asociada a la disautonomía. Vale la pena distinguir si el problema es con sólidos, líquidos, o ambos, porque eso orienta el estudio.",
+      "notes_es": "Atragantamiento frecuente, tos al tragar o sensación de que la comida 'se detiene' ameritan evaluación para descartar riesgo de aspiración.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -332,7 +425,9 @@
       "icd10": "K62.3",
       "icd11": "DB37.0",
       "label": "Prolapso rectal",
-      "verify": true
+      "verify": true,
+      "summary_es": "El recto se desliza fuera de su posición habitual, a veces protruyendo a través del ano, por debilidad del tejido conectivo y los músculos de soporte pélvico. En EDS es una manifestación más de la fragilidad de tejido conectivo que también puede afectar otros órganos pélvicos (ver prolapso genital).",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -341,7 +436,10 @@
       "icd10": "D64.9",
       "icd11": "3A9Z",
       "label": "Anemia, sin especificar",
-      "verify": true
+      "verify": true,
+      "summary_es": "Cantidad de glóbulos rojos o hemoglobina por debajo del rango típico, lo que reduce el transporte de oxígeno y causa fatiga, palidez y falta de aire con el esfuerzo. En EDS conviene descartar causas ginecológicas (sangrado menstrual abundante, frecuente en esta población) y digestivas antes de asumir que la fatiga es 'solo' parte del cuadro de base.",
+      "notes_es": "La fatiga de la anemia se superpone fácilmente con la fatiga de EDS/POTS/ME-CFS — vale la pena pedir un hemograma si la fatiga cambia de intensidad o patrón.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -351,7 +449,12 @@
       "icd10": "D89.40",
       "icd11": "4A85.2",
       "label": "Síndrome de activación de mastocitos",
-      "verify": false
+      "verify": false,
+      "summary_es": "Los mastocitos (células del sistema inmune) liberan mediadores químicos (histamina y otros) de forma excesiva o inapropiada ante disparadores que normalmente no causarían reacción, generando síntomas variados: enrojecimiento, urticaria, dolor abdominal, diarrea, congestión, mareo, y en casos severos anafilaxia. Forma parte, junto con hEDS y POTS, del trío de comorbilidades más reportado en la comunidad EDS/HSD. El manejo suele incluir identificar y evitar disparadores individuales (alimentos, temperatura, estrés, ciertos medicamentos) y antihistamínicos H1/H2. El diagnóstico suele tardar años — en promedio más de 6 desde el inicio de los síntomas — porque muchos equipos médicos aún no están familiarizados con esta condición.",
+      "notes_es": "Dificultad para respirar, hinchazón de labios/garganta o mareo severo tras un disparador conocido son señales de posible anafilaxia — requieren atención de urgencia y, si tienes autoinyector de epinefrina prescrito, usarlo sin esperar a que empeore.",
+      "content_verify": true,
+      "content_source": "gard",
+      "content_source_note": "NIH GARD 'Mast cell activation syndrome' page (fetched): symptom systems, ~6-year average diagnostic delay, 'cause unknown' framing. Separately confirmed via search: only 'Monoclonal MCAS' (KIT D816V+) has its own ORPHA code (529468) — idiopathic/general MCAS, the form usually diagnosed in this population, has no distinct Orphanet entry, consistent with icd10 D89.40 already being flagged verify:false here."
     },
     {
       "aliases": [
@@ -364,7 +467,12 @@
       "icd11": "3B64",
       "label": "Trastorno funcional de plaquetas",
       "verify": true,
-      "note": "EDS-specific bleeding pattern: reduced GPVI / impaired integrin signaling. ASH 2023."
+      "note": "EDS-specific bleeding pattern: reduced GPVI / impaired integrin signaling. ASH 2023.",
+      "summary_es": "Las plaquetas no se agregan ni forman coágulos con la eficiencia habitual, aunque su número en el hemograma sea normal. En EDS se ha vinculado a niveles reducidos de los receptores GPVI y PAR1 en la superficie plaquetaria y a señalización alterada por integrinas, lo que puede explicar moretones fáciles y sangrado menstrual abundante que no siempre correlaciona con la magnitud visible de la lesión.",
+      "notes_es": "La severidad del sangrado no siempre se ve reflejada en el tamaño del moretón — vale la pena registrar sangrado menstrual abundante y moretones frecuentes aunque parezcan 'menores'.",
+      "content_verify": true,
+      "content_source": "pubmed",
+      "content_source_note": "Kumskova et al., 'Platelet defects in patients and mice with Ehlers-Danlos syndrome', Blood (ASH) — PMID 41284637; cross-checked against related 2023-2025 ASH abstracts on GPVI/PAR1 (all surfaced via search, not directly fetched). Updates/confirms the existing dev `note` field's 'ASH 2023' citation with the now-published PMID and the added PAR1 finding."
     },
     {
       "aliases": [
@@ -376,7 +484,9 @@
       "icd10": "E06.3",
       "icd11": "5A03.1",
       "label": "Tiroiditis autoinmune (Hashimoto)",
-      "verify": false
+      "verify": false,
+      "summary_es": "Enfermedad autoinmune en la que el sistema inmune ataca la glándula tiroides de forma progresiva, causando con el tiempo hipotiroidismo (fatiga, aumento de peso, intolerancia al frío, piel seca). Se diagnostica con anticuerpos antitiroideos (anti-TPO) y pruebas de función tiroidea. Vale la pena descartarla cuando la fatiga o el aumento de peso no encajan del todo con el resto del cuadro.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -386,7 +496,10 @@
       "icd10": "F41.9",
       "icd11": "6B0Z",
       "label": "Trastorno de ansiedad",
-      "verify": false
+      "verify": false,
+      "summary_es": "Preocupación o miedo persistente y desproporcionado que interfiere con la vida diaria, con frecuencia acompañado de síntomas físicos (palpitaciones, tensión muscular, falta de aire). En la población EDS/POTS es importante diferenciar la ansiedad de los síntomas físicos de la disautonomía (palpitaciones, mareo), ya que se superponen y a veces se confunden entre sí en la consulta médica.",
+      "notes_es": "Si tus síntomas 'de ansiedad' aparecen sobre todo al ponerte de pie o cambiar de postura, vale la pena descartar POTS antes de asumir que el origen es solo psicológico.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -397,7 +510,9 @@
       "icd10": "F41.0",
       "icd11": "6B01",
       "label": "Trastorno de pánico",
-      "verify": false
+      "verify": false,
+      "summary_es": "Episodios súbitos e intensos de miedo con síntomas físicos marcados (palpitaciones, sudoración, temblor, sensación de falta de aire o de muerte inminente), que alcanzan su pico en minutos. Igual que con la ansiedad generalizada, conviene diferenciarlos de episodios de taquicardia postural o de reacciones de MCAS, que pueden sentirse de forma muy similar.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -407,7 +522,9 @@
       "icd10": "F32.9",
       "icd11": "6A70.Z",
       "label": "Trastorno depresivo",
-      "verify": false
+      "verify": false,
+      "summary_es": "Tristeza persistente, pérdida de interés o placer en actividades habituales, y cambios en energía, sueño o concentración que duran semanas y afectan el funcionamiento diario. Vivir con una enfermedad crónica compleja y con un retraso diagnóstico prolongado (frecuente en EDS/HSD) es en sí mismo un factor de riesgo reconocido para la depresión — no es un signo de debilidad, es una respuesta comprensible a una carga real.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -421,7 +538,9 @@
       "icd11": "6B41",
       "label": "Trastorno por estrés postraumático complejo (TEPT-C)",
       "verify": false,
-      "note": "c-PTSD exists ONLY in ICD-11 (6B41), not in ICD-10 or DSM-5. Canonical case for dual coding: when icd10 is null, the app must fall back to ICD-11 sources."
+      "note": "c-PTSD exists ONLY in ICD-11 (6B41), not in ICD-10 or DSM-5. Canonical case for dual coding: when icd10 is null, the app must fall back to ICD-11 sources.",
+      "summary_es": "Reconocido en ICD-11 (pero no en ICD-10 ni en DSM-5) como una respuesta a trauma prolongado o repetido, que suma a los síntomas clásicos de TEPT (recuerdos intrusivos, evitación, hiperalerta) dificultades más persistentes en la regulación emocional, la autoimagen y las relaciones. En pacientes con enfermedad crónica compleja, la experiencia repetida de no ser creídas por el sistema médico durante años puede contribuir a este patrón — es una respuesta reconocida al trauma médico, no una falla personal.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -431,7 +550,9 @@
       "icd10": "F90.9",
       "icd11": "6A05",
       "label": "Trastorno por déficit de atención e hiperactividad",
-      "verify": false
+      "verify": false,
+      "summary_es": "Patrón persistente de inatención y/o hiperactividad-impulsividad que interfiere con el funcionamiento diario, con inicio en la infancia aunque el diagnóstico en adultos es cada vez más frecuente. Hay evidencia creciente de mayor coocurrencia entre TDAH y EDS/hipermovilidad, aunque el mecanismo exacto todavía no está claro.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -442,7 +563,9 @@
       "icd10": "F84.0",
       "icd11": "6A02",
       "label": "Trastorno del espectro autista",
-      "verify": false
+      "verify": false,
+      "summary_es": "Condición del neurodesarrollo que afecta la comunicación social y se asocia a patrones de comportamiento, intereses o sensibilidad sensorial particulares, con una expresión muy variable de persona a persona. Al igual que con TDAH, se ha reportado mayor coocurrencia con EDS/hipermovilidad en estudios recientes, un área de investigación todavía activa.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -452,7 +575,9 @@
       "icd10": "M79.7",
       "icd11": "MG30.01",
       "label": "Fibromialgia",
-      "verify": false
+      "verify": false,
+      "summary_es": "Dolor crónico generalizado acompañado típicamente de fatiga, sueño no reparador y dificultades cognitivas ('niebla mental'), atribuido a un procesamiento alterado del dolor por el sistema nervioso central (sensibilización central) más que a daño en músculos o articulaciones. Coexiste con frecuencia con hEDS/HSD, y ambas condiciones comparten el fenómeno de sensibilización central como mecanismo subyacente.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -464,7 +589,9 @@
       "icd10": "M79.1",
       "icd11": "ME82.Y",
       "label": "Mialgia / Síndrome de dolor miofascial",
-      "verify": true
+      "verify": true,
+      "summary_es": "Dolor muscular localizado alrededor de 'puntos gatillo' — zonas hipersensibles dentro de una banda tensa del músculo que pueden causar dolor referido a otras áreas del cuerpo. En EDS/HSD es frecuente que los músculos trabajen de más para compensar la inestabilidad articular, lo que favorece la formación de estos puntos.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -475,7 +602,9 @@
       "icd10": "G89.4",
       "icd11": "MG30.50",
       "label": "Sensibilización central / dolor crónico primario",
-      "verify": true
+      "verify": true,
+      "summary_es": "El sistema nervioso central amplifica las señales de dolor, de forma que estímulos normalmente no dolorosos se perciben como dolorosos, y los dolorosos se sienten más intensos de lo esperado. Es un mecanismo subyacente compartido por fibromialgia, dolor miofascial y buena parte del dolor crónico en EDS/HSD — entender que el dolor es real aunque no siempre haya daño tisular activo es clave para el manejo.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -487,7 +616,11 @@
       "icd10": "G93.3",
       "icd11": "8E49",
       "label": "Síndrome de fatiga posviral / encefalomielitis miálgica",
-      "verify": false
+      "verify": false,
+      "summary_es": "Fatiga profunda y persistente que no mejora con el descanso, con un rasgo distintivo llamado malestar post-esfuerzo (PEM): un empeoramiento marcado de todos los síntomas, típicamente 24-72 horas después de un esfuerzo físico, cognitivo o emocional que antes se toleraba bien. La pausa (pacing) — dosificar la actividad para evitar el PEM — es una intervención clínicamente válida, no una forma de 'rendirse'.",
+      "notes_es": "Si notas que empeoras uno o dos días después de un esfuerzo, no el mismo día, es la señal característica de PEM — vale la pena registrar esa demora al evaluar qué actividades toleras.",
+      "content_verify": true,
+      "content_source_note": "FYI, not acted on here (out of scope for a content-only pass, not touching icd10/verify): search turned up ICD-10-CM G93.32 as the code specifically for ME/CFS, more precise than the parent category G93.3 currently used above. Also, ME/CFS itself is 'non rare in Europe' per Orphanet (delisted from their rare-disease nomenclature), same situation as lipedema. Worth folding into a future codes-review pass."
     },
     {
       "aliases": [
@@ -500,7 +633,9 @@
       "icd10": "K07.6",
       "icd11": "DA0E.3",
       "label": "Trastornos de la articulación temporomandibular",
-      "verify": true
+      "verify": true,
+      "summary_es": "Dolor o disfunción en la articulación que conecta la mandíbula con el cráneo, que puede causar chasquidos, dificultad para abrir bien la boca, y dolor que se irradia a oído o cabeza. En EDS es frecuente por la misma laxitud ligamentaria que afecta otras articulaciones, con el agravante de que es difícil 'descansar' una articulación que se usa para hablar y comer.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -512,7 +647,9 @@
       "icd10": "M24.4",
       "icd11": "FB73",
       "label": "Luxación y subluxación recidivante de la articulación",
-      "verify": true
+      "verify": true,
+      "summary_es": "Una articulación se sale de su posición normal (luxación completa) o se desplaza parcialmente y regresa sola (subluxación) de forma repetida, por laxitud de los ligamentos que normalmente la estabilizan. Es una de las manifestaciones más directas de la hipermovilidad en EDS/HSD, y fortalecer la musculatura alrededor de la articulación (sin sobrecargarla) suele ser parte central del manejo.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -523,7 +660,9 @@
       "icd10": "M19.9",
       "icd11": "FA05",
       "label": "Artrosis, no especificada",
-      "verify": false
+      "verify": false,
+      "summary_es": "Desgaste progresivo del cartílago articular que causa dolor, rigidez y pérdida de rango de movimiento, típicamente asociado al envejecimiento pero que en EDS/HSD puede aparecer de forma más temprana por el desgaste acumulado de años de inestabilidad articular y subluxaciones repetidas.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -534,7 +673,10 @@
       "icd10": "M94.0",
       "icd11": "FB54",
       "label": "Síndrome de la articulación condrocostal (Tietze)",
-      "verify": true
+      "verify": true,
+      "summary_es": "Inflamación o irritación del cartílago que conecta las costillas con el esternón, causando dolor en el pecho que empeora con la presión, el movimiento o la respiración profunda. Puede ser alarmante por su parecido al dolor cardíaco, pero suele ser benigno; en EDS es frecuente por la laxitud de las articulaciones costocondrales.",
+      "notes_es": "Dolor torácico nuevo siempre merece descartar causas cardíacas primero, especialmente si hay antecedentes de dilatación aórtica u otra afectación vascular — no asumas que 'es solo Tietze' sin evaluación.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -544,7 +686,9 @@
       "icd10": "N80.0",
       "icd11": "GA13",
       "label": "Adenomiosis",
-      "verify": true
+      "verify": true,
+      "summary_es": "Tejido similar al endometrio crece dentro de la pared muscular del útero, causando periodos menstruales abundantes y dolorosos, y a veces dolor pélvico crónico. Puede coexistir con endometriosis, y en el contexto de EDS el sangrado abundante también puede verse agravado por la disfunción plaquetaria asociada.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -553,7 +697,9 @@
       "icd10": "N80.9",
       "icd11": "GA10",
       "label": "Endometriosis",
-      "verify": false
+      "verify": false,
+      "summary_es": "Tejido similar al endometrio crece fuera del útero (ovarios, trompas, peritoneo pélvico), causando dolor menstrual severo, dolor pélvico crónico, y a veces dificultad para concebir. Es una de las comorbilidades más reportadas en la población hEDS/HSD, y su diagnóstico definitivo suele requerir laparoscopía, lo que contribuye a que el diagnóstico se demore años en muchos casos.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -564,7 +710,9 @@
       "icd10": "E28.2",
       "icd11": "5A80.1",
       "label": "Síndrome de ovario poliquístico",
-      "verify": false
+      "verify": false,
+      "summary_es": "Trastorno hormonal frecuente que puede causar ciclos menstruales irregulares, exceso de andrógenos (acné, crecimiento de vello) y ovarios con múltiples folículos pequeños en la ecografía. El diagnóstico requiere al menos 2 de 3 criterios (irregularidad ovulatoria, hiperandrogenismo, hallazgos ecográficos), no solo la presencia de quistes ováricos.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -576,7 +724,9 @@
       "icd10": "N81.9",
       "icd11": "GC40.Z",
       "label": "Prolapso genital femenino, no especificado",
-      "verify": true
+      "verify": true,
+      "summary_es": "Los órganos pélvicos (vejiga, útero, recto) descienden de su posición habitual por debilidad del tejido conectivo y los músculos del suelo pélvico que normalmente los sostienen, causando sensación de peso o bulto vaginal, y a veces problemas urinarios o intestinales asociados. En EDS es una manifestación más de la fragilidad de tejido conectivo, igual que el prolapso rectal.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -587,7 +737,9 @@
       "icd10": "N94.4",
       "icd11": "GA34.3",
       "label": "Dismenorrea primaria",
-      "verify": true
+      "verify": true,
+      "summary_es": "Dolor menstrual (cólicos) sin una enfermedad pélvica subyacente identificable, causado por contracciones uterinas mediadas por prostaglandinas. Cuando el dolor es severo o no responde a analgésicos habituales, vale la pena descartar endometriosis o adenomiosis, que pueden presentarse de forma similar pero requieren manejo distinto.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -598,7 +750,9 @@
       "icd10": "N94.81",
       "icd11": "GA34.0Y",
       "label": "Vulvodinia",
-      "verify": true
+      "verify": true,
+      "summary_es": "Dolor vulvar crónico, ardor o irritación sin una causa identificable en el examen físico, que puede ser constante o desencadenarse con el contacto (por ejemplo, al sentarse o durante la actividad sexual). Comparte con la fibromialgia y el dolor miofascial el mecanismo de sensibilización central, y su manejo suele requerir un enfoque multidisciplinario.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -609,7 +763,12 @@
       "icd11": "EF02",
       "label": "Lipedema",
       "verify": true,
-      "note": "Lipedema lacks a dedicated ICD-10 code globally; E88.2 (lipomatosis NOS) or R60.9 (oedema NOS) are imperfect approximations. ICD-11 EF02 is dedicated."
+      "note": "Lipedema lacks a dedicated ICD-10 code globally; E88.2 (lipomatosis NOS) or R60.9 (oedema NOS) are imperfect approximations. ICD-11 EF02 is dedicated.",
+      "summary_es": "Trastorno de distribución anormal de grasa, casi siempre en mujeres, que afecta piernas (y a veces brazos) de forma simétrica, respetando pies y manos, con tejido doloroso al tacto y tendencia a moretones fáciles. No mejora con dieta ni ejercicio en la misma proporción que otras zonas del cuerpo, y con frecuencia se confunde con obesidad simple o linfedema, retrasando el diagnóstico correcto.",
+      "notes_es": "El lipedema fue retirado de la lista de enfermedades raras de Orphanet en 2021 (se reclasificó como 'no rara en Europa'), lo cual ayuda a explicar por qué todavía no existe un código ICD-10 dedicado en muchos sistemas de salud — no es que la condición sea menos real, es un problema de clasificación administrativa.",
+      "content_verify": true,
+      "content_source": "orphanet",
+      "content_source_note": "ORPHA:77243, delisted from Orphanet's rare-disease nomenclature in 2021 ('non rare in Europe') — confirmed via search index (mousephenotype.org mirror snippet); orpha.net full-page fetch blocked by bot-check."
     },
     {
       "aliases": [
@@ -621,7 +780,9 @@
       "icd10": "L90.5",
       "icd11": "EE60.0Y",
       "label": "Cicatrices atróficas (piel papel cigarrillo)",
-      "verify": true
+      "verify": true,
+      "summary_es": "Cicatrices delgadas, arrugadas y de aspecto translúcido ('papel de cigarrillo'), características de la piel frágil del EDS clásico y de algunos otros subtipos, que se forman incluso con heridas menores. Reflejan una cicatrización anómala del colágeno, no una falta de cuidado de la herida.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -631,7 +792,9 @@
       "icd10": "H52.20",
       "icd11": "9D00.2",
       "label": "Astigmatismo",
-      "verify": false
+      "verify": false,
+      "summary_es": "La córnea o el cristalino tienen una curvatura irregular en lugar de esférica, lo que causa visión borrosa o distorsionada a cualquier distancia. Se corrige habitualmente con lentes (anteojos o de contacto) o cirugía refractiva. En EDS puede relacionarse con la misma laxitud del colágeno que afecta la estructura corneal.",
+      "content_verify": true
     },
     {
       "aliases": [
@@ -642,7 +805,9 @@
       "icd10": "H52.10",
       "icd11": "9D00.0",
       "label": "Miopía",
-      "verify": false
+      "verify": false,
+      "summary_es": "Los objetos lejanos se ven borrosos mientras que los cercanos se ven con claridad, porque el ojo enfoca la imagen delante de la retina en lugar de sobre ella. Es una condición ocular común y se corrige con lentes o cirugía refractiva; no tiene una relación causal fuerte establecida con EDS más allá de la variabilidad general de la forma ocular.",
+      "content_verify": true
     }
   ]
 }

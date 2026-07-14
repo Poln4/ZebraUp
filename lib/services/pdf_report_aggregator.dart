@@ -32,6 +32,7 @@ import '../models/action_taken.dart';
 import '../models/mcas.dart';
 import '../models/clinical_report_data.dart';
 import '../models/pdf_export_config.dart';
+import 'symptom_pattern_detector.dart';
 
 /// App version string. Update at each release. Read from pubspec at
 /// runtime in future iteration.
@@ -308,7 +309,7 @@ SymptomSection _aggregateSymptoms(
 
   // Patterns (only if enabled and enough data)
   final patterns = includePatterns
-      ? _detectPatterns(periodEvents, aggregations)
+      ? detectSymptomPatterns(periodEvents)
       : <String>[];
 
   return SymptomSection(
@@ -423,8 +424,11 @@ MentalStateSection? _aggregateMentalState(
   final periodEntries = profile.mentalHistory
       .where((e) => !e.timestamp.isBefore(start) && !e.timestamp.isAfter(end))
       .toList();
+  final periodMoods = profile.moodHistory
+      .where((m) => !m.timestamp.isBefore(start) && !m.timestamp.isAfter(end))
+      .toList();
 
-  if (periodEntries.isEmpty) return null;
+  if (periodEntries.isEmpty && periodMoods.isEmpty) return null;
 
   // MentalEvent carries a single MentalState (not a set); it already
   // exposes a Spanish label via MentalState.label.
@@ -434,17 +438,53 @@ MentalStateSection? _aggregateMentalState(
     stateFreq[label] = (stateFreq[label] ?? 0) + 1;
   }
 
-  // Valence/arousal aggregates would require a circumplex-style model
-  // on MentalEvent, which doesn't exist yet (MentalEvent has a single
-  // MentalState + int severity). Leave null; revisit if/when the
-  // Foxtale-style mental tracker circumplex ships.
+  // Valence/arousal derived from MoodEntry.primaryQuadrant — the mood
+  // tracker's circumplex model. Separate, richer log from the
+  // MentalEvent/MentalState frequencies above.
+  double? meanValence;
+  double? meanArousal;
+  final quadrantFreq = <String, int>{};
+  final wordFreq = <String, int>{};
+  if (periodMoods.isNotEmpty) {
+    var valenceSum = 0.0;
+    var arousalSum = 0.0;
+    for (final m in periodMoods) {
+      valenceSum += _valenceSign(m.primaryQuadrant);
+      arousalSum += _arousalSign(m.primaryQuadrant);
+      final qLabel = m.primaryQuadrant.label;
+      quadrantFreq[qLabel] = (quadrantFreq[qLabel] ?? 0) + 1;
+      for (final word in m.states) {
+        wordFreq[word] = (wordFreq[word] ?? 0) + 1;
+      }
+    }
+    meanValence = valenceSum / periodMoods.length;
+    meanArousal = arousalSum / periodMoods.length;
+  }
+
   return MentalStateSection(
-    meanValence: null,
-    meanArousal: null,
+    meanValence: meanValence,
+    meanArousal: meanArousal,
     cognitiveStateFrequency: stateFreq,
+    moodQuadrantFrequency: quadrantFreq,
+    moodWordFrequency: wordFreq,
     totalEntries: periodEntries.length,
+    totalMoodEntries: periodMoods.length,
   );
 }
+
+double _valenceSign(MoodQuadrant q) => switch (q) {
+  MoodQuadrant.activatedPleasant => 1.0,
+  MoodQuadrant.calmPleasant => 1.0,
+  MoodQuadrant.activatedUnpleasant => -1.0,
+  MoodQuadrant.calmUnpleasant => -1.0,
+};
+
+double _arousalSign(MoodQuadrant q) => switch (q) {
+  MoodQuadrant.activatedPleasant => 1.0,
+  MoodQuadrant.activatedUnpleasant => 1.0,
+  MoodQuadrant.calmPleasant => -1.0,
+  MoodQuadrant.calmUnpleasant => -1.0,
+};
 
 ActionsSection _aggregateActions(
   Profile profile,
@@ -541,41 +581,6 @@ Map<String, int> _timeOfDayPattern(List<SymptomEvent> events) {
 
 String _dateKey(DateTime dt) =>
     '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
-
-/// Pattern detection over aggregated data.
-/// Heuristic — produces natural-language Spanish observations.
-/// Returns empty list if data is insufficient for confident patterns.
-List<String> _detectPatterns(
-  List<SymptomEvent> events,
-  List<SymptomAggregation> aggregations,
-) {
-  final patterns = <String>[];
-  if (events.length < 10) return patterns;
-
-  // Time-of-day dominance for top symptoms
-  for (final agg in aggregations.take(3)) {
-    if (agg.occurrences < 5) continue;
-    final tod = agg.timeOfDayPattern;
-    if (tod.isEmpty) continue;
-    final maxEntry = tod.entries.reduce((a, b) => a.value > b.value ? a : b);
-    final ratio = maxEntry.value / agg.occurrences;
-    if (ratio >= 0.5) {
-      final windowLabel = switch (maxEntry.key) {
-        'morning' => 'por las mañanas',
-        'afternoon' => 'por las tardes',
-        'evening' => 'al anochecer',
-        'night' => 'durante la noche',
-        _ => '',
-      };
-      patterns.add(
-        '${agg.name} ocurre principalmente $windowLabel '
-        '(${(ratio * 100).round()}% de los episodios).',
-      );
-    }
-  }
-
-  return patterns;
-}
 
 String _mcasRedFlagLabel(MCASRedFlag flag) => switch (flag) {
   MCASRedFlag.throatTightness => 'Opresión en la garganta',

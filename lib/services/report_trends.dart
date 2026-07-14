@@ -16,6 +16,11 @@
 //     (clipped to the range).
 //   - Average mental severity per MentalState.
 //   - Structural event counts by zone.
+//   - Mood quadrant frequencies + top mood words (MoodEntry), aggregate
+//     only — notes free text is never included.
+//   - Detected symptom patterns (single-symptom time-of-day dominance +
+//     co-occurrence), shared with the PDF report via
+//     symptom_pattern_detector.dart so both surfaces agree.
 //
 // Notes:
 //   - "Day" boundaries use local midnight (start-of-day).
@@ -27,6 +32,7 @@
 
 import '../models/models.dart';
 import 'fever_analysis.dart';
+import 'symptom_pattern_detector.dart';
 
 /// One symptom row in the trends section.
 class SymptomTrend {
@@ -59,6 +65,21 @@ class ReportTrends {
   final Map<String, int> structuralCountsByZone;
   final int dayCount;
 
+  /// Mood quadrant frequencies over the period (label from
+  /// MoodQuadrantLabels.label, e.g. "activación · bienestar": 5).
+  final Map<String, int> moodQuadrantCounts;
+
+  /// Most frequently selected mood words (MoodEntry.states) over the
+  /// period. Notes free text is never aggregated here.
+  final Map<String, int> topMoodWords;
+  final int totalMoodEntries;
+
+  /// Descriptive patterns detected across the period's symptoms (single-
+  /// symptom time-of-day dominance + co-occurrence). See
+  /// symptom_pattern_detector.dart — same heuristic the PDF report uses,
+  /// shared so both surfaces agree.
+  final List<String> detectedPatterns;
+
   const ReportTrends({
     required this.symptoms,
     required this.doseCountsByMed,
@@ -67,6 +88,10 @@ class ReportTrends {
     required this.mentalAvgByState,
     required this.structuralCountsByZone,
     required this.dayCount,
+    this.moodQuadrantCounts = const {},
+    this.topMoodWords = const {},
+    this.totalMoodEntries = 0,
+    this.detectedPatterns = const [],
   });
 
   /// True when every sub-bucket is empty. Caller uses this to suppress
@@ -76,7 +101,9 @@ class ReportTrends {
       doseCountsByMed.isEmpty &&
       feverEpisodes.isEmpty &&
       mentalAvgByState.isEmpty &&
-      structuralCountsByZone.isEmpty;
+      structuralCountsByZone.isEmpty &&
+      moodQuadrantCounts.isEmpty &&
+      detectedPatterns.isEmpty;
 }
 
 class ReportTrendsService {
@@ -91,15 +118,20 @@ class ReportTrendsService {
 
     // Per-day accumulation buckets
     final symptomsByName = <String, List<SymptomEvent>>{};
+    final allSymptomEvents = <SymptomEvent>[];
     final doseCountsByMed = <String, int>{};
     final structuralCountsByZone = <String, int>{};
     final mentalByState = <MentalState, List<int>>{};
+    final moodQuadrantCounts = <String, int>{};
+    final topMoodWords = <String, int>{};
+    var totalMoodEntries = 0;
 
     for (int i = 0; i < dayCount; i++) {
       final day = s.add(Duration(days: i));
 
       for (final sym in profile.getSymptomsForDay(day)) {
         symptomsByName.putIfAbsent(sym.name, () => []).add(sym);
+        allSymptomEvents.add(sym);
       }
       for (final dose in profile.getDosesForDay(day)) {
         doseCountsByMed[dose.medicationName] =
@@ -112,7 +144,17 @@ class ReportTrendsService {
       for (final m in profile.getMentalForDay(day)) {
         mentalByState.putIfAbsent(m.state, () => []).add(m.severity);
       }
+      for (final mood in profile.getMoodForDay(day)) {
+        totalMoodEntries++;
+        final qLabel = mood.primaryQuadrant.label;
+        moodQuadrantCounts[qLabel] = (moodQuadrantCounts[qLabel] ?? 0) + 1;
+        for (final word in mood.states) {
+          topMoodWords[word] = (topMoodWords[word] ?? 0) + 1;
+        }
+      }
     }
+
+    final detectedPatterns = detectSymptomPatterns(allSymptomEvents);
 
     // Reduce symptoms: distinct days + worst severity (ignoring unrated
     // entries when computing the worst).
@@ -194,6 +236,10 @@ class ReportTrendsService {
       mentalAvgByState: mentalAvg,
       structuralCountsByZone: structuralCountsByZone,
       dayCount: dayCount,
+      moodQuadrantCounts: moodQuadrantCounts,
+      topMoodWords: topMoodWords,
+      totalMoodEntries: totalMoodEntries,
+      detectedPatterns: detectedPatterns,
     );
   }
 }

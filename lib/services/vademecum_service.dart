@@ -229,6 +229,41 @@ class VademecumDrugContent {
   bool get isMediumConfidence => confidence == 'medium';
 }
 
+/// Result of resolving a user-entered condition string against the
+/// vademecum. Mirrors [VademecumDrugContent]'s local-first shape.
+///
+/// `source` indicates where the body content came from:
+///   - "local"       → summary_es/notes_es from condition_codes.json
+///   - "medlineplus" → summary from MedlinePlus Connect API (used when
+///                     there's no local content yet, or the requested
+///                     locale isn't Spanish)
+///   - "none"        → no content available; UI should show the
+///                     "no info" state with the reason in `noContentReason`
+class VademecumConditionContent {
+  final String resolvedLabel;
+  final String? summary;
+  final String? notes;
+  final String? externalLink;
+  final String source;
+
+  /// True when `source == 'local'` and that content hasn't been
+  /// clinically reviewed yet (drafted from general medical knowledge).
+  final bool contentUnverified;
+  final String? noContentReason;
+
+  VademecumConditionContent({
+    required this.resolvedLabel,
+    this.summary,
+    this.notes,
+    this.externalLink,
+    required this.source,
+    this.contentUnverified = false,
+    this.noContentReason,
+  });
+
+  bool get hasContent => summary != null && summary!.isNotEmpty;
+}
+
 /// Interaction surfaced between a target med and another med in the
 /// active botiquín.
 class DetectedInteraction {
@@ -405,6 +440,69 @@ class VademecumService {
       .replaceAll('&amp;', '&')
       .replaceAll('&lt;', '<')
       .replaceAll('&gt;', '>');
+
+  /// Local-first cascade for a user-entered condition string. Mirrors
+  /// [getDrugContent]'s shape:
+  ///   1. Resolve the string against condition_codes.json (unchanged
+  ///      matching in [resolveCondition]).
+  ///   2. If Spanish was requested and the entry has local summary_es
+  ///      content → return it without touching the network. This is
+  ///      the whole point: MedlinePlus is weak on exactly the rare/
+  ///      connective-tissue/dysautonomia conditions this app is for.
+  ///   3. If there's no icd10 (e.g. c-PTSD, ICD-11-only) → no content.
+  ///   4. Otherwise fall back to the existing MedlinePlus cascade
+  ///      (also used as-is for en/zh requests, since local content is
+  ///      Spanish-only for now).
+  Future<VademecumConditionContent> getConditionContent(
+    String userInput,
+    VademecumLocale locale,
+  ) async {
+    final mapping = await resolveCondition(userInput);
+    if (mapping == null) {
+      return VademecumConditionContent(
+        resolvedLabel: userInput,
+        source: 'none',
+        noContentReason: 'unmapped',
+      );
+    }
+
+    final summaryEs = mapping.summaryEs?.trim();
+    if (locale == VademecumLocale.es &&
+        summaryEs != null &&
+        summaryEs.isNotEmpty) {
+      final notesEs = mapping.notesEs?.trim();
+      return VademecumConditionContent(
+        resolvedLabel: mapping.label,
+        summary: summaryEs,
+        notes: (notesEs == null || notesEs.isEmpty) ? null : notesEs,
+        source: 'local',
+        contentUnverified: mapping.contentVerify,
+      );
+    }
+
+    if (mapping.icd10 == null) {
+      return VademecumConditionContent(
+        resolvedLabel: mapping.label,
+        source: 'none',
+        noContentReason: 'no_icd10',
+      );
+    }
+
+    final mpContent = await getContent(mapping.icd10!);
+    if (mpContent == null) {
+      return VademecumConditionContent(
+        resolvedLabel: mapping.label,
+        source: 'none',
+        noContentReason: 'medlineplus_empty',
+      );
+    }
+    return VademecumConditionContent(
+      resolvedLabel: mapping.label,
+      summary: mpContent.summary,
+      externalLink: mpContent.link,
+      source: 'medlineplus',
+    );
+  }
 
   // ---------------------------------------------------------------------------
   // DRUG SIDE — local-first cascade with MedlinePlus fallback
@@ -749,10 +847,24 @@ class _ConditionMapping {
   final String? icd10;
   final String label;
 
+  /// Local-first content — Spanish only for now. Null/empty when this
+  /// entry hasn't been authored yet (falls back to MedlinePlus).
+  final String? summaryEs;
+  final String? notesEs;
+
+  /// True = this summary/notes was drafted from general medical
+  /// knowledge, not a live Orphadata/Orphanet/SNOMED lookup, and hasn't
+  /// been clinically reviewed yet. Same polarity as the `verify` field
+  /// on the ICD codes themselves.
+  final bool contentVerify;
+
   _ConditionMapping({
     required this.aliases,
     required this.icd10,
     required this.label,
+    this.summaryEs,
+    this.notesEs,
+    this.contentVerify = false,
   });
 
   factory _ConditionMapping.fromMap(Map<String, dynamic> m) =>
@@ -760,6 +872,9 @@ class _ConditionMapping {
         aliases: List<String>.from(m['aliases'] as List? ?? []),
         icd10: m['icd10'] as String?,
         label: m['label'] as String,
+        summaryEs: m['summary_es'] as String?,
+        notesEs: m['notes_es'] as String?,
+        contentVerify: m['content_verify'] as bool? ?? false,
       );
 }
 
