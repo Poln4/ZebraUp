@@ -4,6 +4,7 @@ import '../models/models.dart';
 import '../models/headache_detail.dart';
 import '../models/fatigue_detail.dart';
 import '../models/abdominal_detail.dart';
+import '../models/structural_detail.dart';
 import 'timestamp_picker.dart';
 import '../widgets/bowel_form_sheet.dart';
 import '../widgets/hemorrhoidal_form_sheet.dart';
@@ -14,15 +15,22 @@ import '../widgets/hrv_form_sheet.dart';
 import '../widgets/headache_detail_sheet.dart';
 import '../widgets/fatigue_detail_sheet.dart';
 import '../widgets/abdominal_detail_sheet.dart';
+import '../widgets/structural_detail_sheet.dart';
+import '../widgets/structural_quick_log_sheet.dart';
+import '../widgets/structural_zone_history_form_sheet.dart';
+import '../widgets/body_zone_picker_grid.dart';
+import '../services/structural_text_detector.dart';
 import '../services/clinical_localizations.dart';
 import '../services/structural_taxonomy.dart';
 import '../services/symptom_definitions_service.dart';
+import '../models/red_flag_severity.dart';
 import '../services/headache_red_flags.dart';
 import '../services/headache_detail_format.dart';
 import '../services/fatigue_red_flags.dart';
 import '../services/fatigue_detail_format.dart';
 import '../services/abdominal_red_flags.dart';
 import '../services/abdominal_detail_format.dart';
+import '../services/structural_detail_format.dart';
 import '../widgets/collapsible_section.dart';
 import '../widgets/severity_picker.dart';
 import '../extensions/context_ext.dart';
@@ -344,59 +352,9 @@ class _SintomasTabState extends State<SintomasTab> {
           hint: structState.hint,
           initiallyExpanded: structState.expanded,
           contrastColor: _cc,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: BodyRegion.values.map((region) {
-              final zones = kBodyRegionZones[region]!;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 14),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Text(
-                        region.label(l10n).toUpperCase(),
-                        style: TextStyle(
-                          color: _cc.withValues(alpha: 0.55),
-                          fontSize: 10,
-                          letterSpacing: 1.2,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: zones
-                          .map(
-                            (zone) => ActionChip(
-                              backgroundColor: Colors.transparent,
-                              side: BorderSide(
-                                color: _cc.withValues(alpha: 0.6),
-                              ),
-                              label: Text(
-                                zone.bodyZoneLabel(l10n),
-                                style: TextStyle(color: _cc, fontSize: 11),
-                              ),
-                              onPressed: () => _openStructuralMenu(zone),
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.shrinkWrap,
-                              labelPadding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  ],
-                ),
-              );
-            }).toList(),
+          child: BodyZonePickerGrid(
+            contrastColor: _cc,
+            onZoneTap: (zone) => _openStructuralEntry(zone),
           ),
         ),
 
@@ -591,19 +549,28 @@ class _SintomasTabState extends State<SintomasTab> {
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Row(
                         children: [
-                          Icon(
-                            Icons.warning_amber_rounded,
-                            color: _cc,
-                            size: 16,
-                          ),
+                          Icon(_iconForKind(e.kind), color: _cc, size: 16),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text(
-                              "[${DateFormat('HH:mm').format(e.timestamp)}] "
-                              "${e.zone.bodyZoneLabel(l10n)}: "
-                              "${e.type.structuralTypeLabel(l10n)}"
-                              "${e.isResolved ? ' ✓' : ''}",
-                              style: TextStyle(color: _cc, fontSize: 13),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "[${DateFormat('HH:mm').format(e.timestamp)}] "
+                                  "${e.zone.bodyZoneLabel(l10n)}: "
+                                  "${e.type.structuralTypeLabel(l10n)}"
+                                  "${e.isResolved ? ' ✓' : ''}",
+                                  style: TextStyle(color: _cc, fontSize: 13),
+                                ),
+                                if (_structuralCompactSummary(e).isNotEmpty)
+                                  Text(
+                                    _structuralCompactSummary(e),
+                                    style: TextStyle(
+                                      color: _cc.withValues(alpha: 0.6),
+                                      fontSize: 11,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                           IconButton(
@@ -1144,7 +1111,7 @@ class _SintomasTabState extends State<SintomasTab> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    onPressed: () => _openSeverityMenu(s),
+                    onPressed: () => _dispatchSymptomInput(s),
                   ),
                 )
                 .toList(),
@@ -1179,7 +1146,7 @@ class _SintomasTabState extends State<SintomasTab> {
                     s,
                     style: const TextStyle(color: Colors.grey, fontSize: 14),
                   ),
-                  onPressed: () => _openSeverityMenu(s),
+                  onPressed: () => _dispatchSymptomInput(s),
                 ),
               )
               .toList(),
@@ -1207,20 +1174,242 @@ class _SintomasTabState extends State<SintomasTab> {
   void _addSymptomToVault() {
     final txt = _newSymptomCtrl.text.trim();
     if (txt.isEmpty) return;
-    if (_p.symptomVault.contains(txt)) {
-      _newSymptomCtrl.clear();
-      return;
+    if (!_p.symptomVault.contains(txt)) {
+      setState(() => _p.symptomVault.insert(0, txt));
+      widget.onProfileChanged();
     }
-    setState(() {
-      _p.symptomVault.insert(0, txt);
-      _newSymptomCtrl.clear();
-    });
-    widget.onProfileChanged();
+    _newSymptomCtrl.clear();
+    _dispatchSymptomInput(txt);
   }
 
   // ---------------------------------------------------------------------------
   // STRUCTURAL MODALS
   // ---------------------------------------------------------------------------
+
+  /// §12 — compact summary line for the "Registros de hoy" timeline.
+  /// Renders whichever of the two new capture paths produced data:
+  /// the 4-group funnel (structuralDetail) or the zone-history
+  /// quick-log (severity + comparedToUsual). Empty string when the
+  /// event predates this sprint or came from the classic picker with
+  /// neither attached.
+  String _structuralCompactSummary(StructuralEvent e) {
+    final detail = e.structuralDetail;
+    if (detail != null) {
+      return formatStructuralDetailCompact(detail, context.l10n.localeName);
+    }
+    if (e.severity != null || e.comparedToUsual != null) {
+      return formatStructuralQuickLogCompact(e, context.l10n);
+    }
+    return '';
+  }
+
+  /// §12 — entry point for tapping a zone chip (or for the vault
+  /// free-text detector once it has resolved a zone). Routes to the
+  /// quick-log sheet when the zone has a saved
+  /// StructuralZoneHistoryEntry (quick-log has no kind step —
+  /// [initialKind] is ignored there, untouched by the 18-jul rework),
+  /// otherwise to the combined sheet.
+  void _openStructuralEntry(String zone, {StructuralEventKind? initialKind}) {
+    final known = _p.structuralZoneHistory.where((h) => h.zone == zone);
+    if (known.isNotEmpty) {
+      _openStructuralQuickLog(zone, known.first);
+    } else {
+      _openStructuralFunnel(zone, initialKind: initialKind);
+    }
+  }
+
+  /// §12.6 — zones with a known antecedent skip straight to severity +
+  /// "¿distinto a lo usual?", no picker, no funnel.
+  Future<void> _openStructuralQuickLog(
+    String zone,
+    StructuralZoneHistoryEntry history,
+  ) async {
+    final result = await showStructuralQuickLogSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+    );
+    if (result == null) return;
+    if (!mounted) return;
+    setState(
+      () => _p.structuralHistory.add(
+        StructuralEvent(
+          timestamp: _timestampForLog(),
+          zone: zone,
+          kind: history.kind,
+          type: 'known_condition_flare',
+          severity: result.severity,
+          comparedToUsual: result.comparedToUsual,
+        ),
+      ),
+    );
+    widget.onProfileChanged();
+  }
+
+  /// 18-jul-2026 rework — default path for zones with no saved
+  /// history: the combined sheet, asking for whatever of zone/kind
+  /// isn't already known plus the 4 detail groups. "Ya sé qué es"
+  /// defers to the unchanged classic picker instead.
+  Future<void> _openStructuralFunnel(
+    String zone, {
+    StructuralEventKind? initialKind,
+  }) async {
+    final result = await showStructuralDetailSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      initialZone: zone,
+      initialKind: initialKind,
+    );
+    if (result == null || !mounted) return;
+    await _handleStructuralSheetResult(
+      result,
+      fallbackZoneForClassicPicker: zone,
+    );
+  }
+
+  /// Shared save/dispatch logic for the combined sheet, used by both
+  /// the zone-tap path ([_openStructuralFunnel]) and the vault
+  /// free-text path ([_openCombinedSheetForVault]).
+  Future<void> _handleStructuralSheetResult(
+    StructuralDetailSheetResult result, {
+    required String? fallbackZoneForClassicPicker,
+  }) async {
+    if (result.useClassicPicker) {
+      final zone = result.zone ?? fallbackZoneForClassicPicker;
+      if (zone == null) return;
+      _openStructuralMenu(zone);
+      return;
+    }
+    final zone = result.zone;
+    final kind = result.kind;
+    if (zone == null || kind == null) return; // skip outcome
+
+    setState(
+      () => _p.structuralHistory.add(
+        StructuralEvent(
+          timestamp: _timestampForLog(),
+          zone: zone,
+          kind: kind,
+          type: kGenericStructuralTypeForKind[kind]!,
+          structuralDetail: result.detail,
+        ),
+      ),
+    );
+    widget.onProfileChanged();
+
+    final noHistoryYet = _p.structuralZoneHistory.every((h) => h.zone != zone);
+    if (result.detail?.antecedent == StructuralAntecedent.knownCondition &&
+        noHistoryYet) {
+      await _offerSaveZoneHistory(zone);
+    }
+  }
+
+  /// 18-jul-2026 rework — entry point for the vault free-text path
+  /// when the detector resolved a kind but not a zone (e.g. "dolor
+  /// muscular"). Zone-resolved matches instead reuse
+  /// [_openStructuralEntry] verbatim (see [_dispatchSymptomInput]) so
+  /// they also benefit from zone-history quick-log routing.
+  Future<void> _openCombinedSheetForVault({
+    StructuralEventKind? initialKind,
+  }) async {
+    final result = await showStructuralDetailSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      initialKind: initialKind,
+    );
+    if (result == null || !mounted) return;
+    await _handleStructuralSheetResult(
+      result,
+      fallbackZoneForClassicPicker: null,
+    );
+  }
+
+  /// 18-jul-2026 rework — central dispatcher for any free-text symptom
+  /// name (vault chip tap/add, trending chip tap). Checked BEFORE the
+  /// structural detector, in this exact order, so existing flows keep
+  /// working unchanged: headache/fatigue/abdominal_pain (JSON alias
+  /// match) and MCAS (keyword heuristic) always win over structural
+  /// detection — e.g. "dolor de cabeza" and "dolor de guata" must never
+  /// be intercepted here. Only when none of those match does the
+  /// structural zone/kind detector get a chance; if it finds nothing
+  /// either, falls through to the original generic severity menu.
+  void _dispatchSymptomInput(String symptom) {
+    final svc = SymptomDefinitionsService.instance;
+    final isKnownNonStructural =
+        svc.matchesSymptomKey(symptom, 'headache') ||
+        svc.matchesSymptomKey(symptom, 'fatigue') ||
+        svc.matchesSymptomKey(symptom, 'abdominal_pain') ||
+        _isMCASSymptom(symptom);
+    if (!isKnownNonStructural) {
+      final match = detectStructuralTextMatch(symptom);
+      if (!match.isEmpty) {
+        if (match.zone != null) {
+          _openStructuralEntry(match.zone!, initialKind: match.kind);
+        } else {
+          _openCombinedSheetForVault(initialKind: match.kind);
+        }
+        return;
+      }
+    }
+    _openSeverityMenu(symptom);
+  }
+
+  /// §12.6.3 — post-funnel offer to save a known antecedent, shown
+  /// only the first time "Condición conocida/antigua" is marked for a
+  /// zone that doesn't have a history entry yet.
+  Future<void> _offerSaveZoneHistory(String zone) async {
+    if (!mounted) return;
+    final l10n = context.l10n;
+    final accept = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(side: BorderSide(color: _cc, width: 2)),
+        title: Text(
+          l10n.structuralZoneHistoryOfferTitle,
+          style: TextStyle(
+            color: _cc,
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        content: Text(
+          l10n.structuralZoneHistoryOfferBody,
+          style: TextStyle(color: _cc, fontSize: 13),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx, false),
+            child: Text(
+              l10n.structuralZoneHistoryOfferDecline,
+              style: TextStyle(color: _cc.withValues(alpha: 0.6)),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: _cc),
+            onPressed: () => Navigator.pop(dialogCtx, true),
+            child: Text(
+              l10n.structuralZoneHistoryOfferAccept,
+              style: TextStyle(color: _ic, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (accept != true) return;
+    if (!mounted) return;
+    final entry = await showStructuralZoneHistoryFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      initialZone: zone,
+    );
+    if (entry == null) return;
+    setState(() => _p.structuralZoneHistory.add(entry));
+    widget.onProfileChanged();
+  }
 
   void _openStructuralMenu(String zone) {
     DateTime ts = _timestampForLog();
@@ -1530,6 +1719,7 @@ class _SintomasTabState extends State<SintomasTab> {
     StructuralEventKind.ligament => Icons.link,
     StructuralEventKind.softTissue => Icons.healing,
     StructuralEventKind.nerve => Icons.flash_on,
+    StructuralEventKind.painWithoutClearCause => Icons.help_outline,
   };
 
   // ---------------------------------------------------------------------------
@@ -1639,7 +1829,7 @@ class _SintomasTabState extends State<SintomasTab> {
           detail: headacheDetail,
           severityIndex: sev.value,
         );
-        await _showAdvisoryFlags(flags);
+        await _showHeadacheAdvisoryFlags(flags);
       }
       if (fatigueDetail != null) {
         final flags = detectFatigueRedFlags(
@@ -1978,7 +2168,7 @@ class _SintomasTabState extends State<SintomasTab> {
                           detail: headacheDetail,
                           severityIndex: sev.value,
                         );
-                        await _showAdvisoryFlags(flags);
+                        await _showHeadacheAdvisoryFlags(flags);
                       }
                       if (fatigueDetail != null) {
                         final flags = detectFatigueRedFlags(
@@ -2020,9 +2210,9 @@ class _SintomasTabState extends State<SintomasTab> {
   /// headache log. URGENT flags (thunderclap) are handled inside the
   /// sheet with their own emergency-confirmation dialog, so this
   /// method silently skips them.
-  Future<void> _showAdvisoryFlags(List<HeadacheRedFlag> flags) async {
+  Future<void> _showHeadacheAdvisoryFlags(List<HeadacheRedFlag> flags) async {
     final advisories = flags
-        .where((f) => f.severity == HeadacheRedFlagSeverity.advisory)
+        .where((f) => f.severity == RedFlagSeverity.advisory)
         .toList();
     if (advisories.isEmpty) return;
     if (!mounted) return;
@@ -2103,10 +2293,10 @@ class _SintomasTabState extends State<SintomasTab> {
   /// Shows a dialog summarising advisory red flags after saving a
   /// fatigue log. Fatigue has no URGENT flags at this stage, so all
   /// detected patterns surface as advisories only. Mirrors the shape
-  /// of _showAdvisoryFlags (headache).
+  /// of _showHeadacheAdvisoryFlags.
   Future<void> _showFatigueAdvisoryFlags(List<FatigueRedFlag> flags) async {
     final advisories = flags
-        .where((f) => f.severity == FatigueRedFlagSeverity.advisory)
+        .where((f) => f.severity == RedFlagSeverity.advisory)
         .toList();
     if (advisories.isEmpty) return;
     if (!mounted) return;
@@ -2192,7 +2382,7 @@ class _SintomasTabState extends State<SintomasTab> {
   /// just acknowledged the in-sheet warning.
   Future<void> _showAbdominalUrgentFlags(List<AbdominalRedFlag> flags) async {
     final urgents = flags
-        .where((f) => f.severity == AbdominalRedFlagSeverity.urgent)
+        .where((f) => f.severity == RedFlagSeverity.urgent)
         .where((f) => f != AbdominalRedFlag.tearingPainSedv)
         .toList();
     if (urgents.isEmpty) return;
@@ -2273,7 +2463,7 @@ class _SintomasTabState extends State<SintomasTab> {
   /// _showAbdominalUrgentFlags (and tearingPainSedv by the sheet).
   Future<void> _showAbdominalAdvisoryFlags(List<AbdominalRedFlag> flags) async {
     final advisories = flags
-        .where((f) => f.severity == AbdominalRedFlagSeverity.advisory)
+        .where((f) => f.severity == RedFlagSeverity.advisory)
         .toList();
     if (advisories.isEmpty) return;
     if (!mounted) return;

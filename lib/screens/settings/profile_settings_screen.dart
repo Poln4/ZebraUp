@@ -21,6 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/models.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/structural_taxonomy.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   final Profile profile;
@@ -34,6 +35,14 @@ class ProfileSettingsScreen extends StatefulWidget {
   final Future<void> Function() onAddLifeEvent;
   final Future<void> Function(LifeEvent existing) onEditLifeEvent;
 
+  /// §12.6 — historial estructural por zona. Mismo patrón que
+  /// onAddLifeEvent/onEditLifeEvent: la pantalla de settings no
+  /// conoce el sheet, solo expone callbacks inyectados desde
+  /// main_screen.dart.
+  final Future<void> Function() onAddStructuralZoneHistory;
+  final Future<void> Function(StructuralZoneHistoryEntry existing)
+  onEditStructuralZoneHistory;
+
   const ProfileSettingsScreen({
     super.key,
     required this.profile,
@@ -46,6 +55,8 @@ class ProfileSettingsScreen extends StatefulWidget {
     required this.onEditLocation,
     required this.onAddLifeEvent,
     required this.onEditLifeEvent,
+    required this.onAddStructuralZoneHistory,
+    required this.onEditStructuralZoneHistory,
   });
 
   @override
@@ -470,6 +481,105 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       ),
                       onPressed: () async {
                         await widget.onAddLifeEvent();
+                        if (mounted) setState(() {});
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+                    _label(cc, t.structuralZoneHistorySectionTitle),
+                    const SizedBox(height: 8),
+                    if (profile.structuralZoneHistory.isEmpty)
+                      Text(
+                        t.structuralZoneHistoryEmptyState,
+                        style: const TextStyle(
+                          color: Colors.grey,
+                          fontSize: 12,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      )
+                    else
+                      Column(
+                        children: profile.structuralZoneHistory.map((h) {
+                          return InkWell(
+                            onTap: () async {
+                              await widget.onEditStructuralZoneHistory(h);
+                              if (mounted) setState(() {});
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: cc.withValues(alpha: 0.3)),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${h.zone.bodyZoneLabel(t)}: "
+                                          "${h.kind.label(t)}",
+                                          style: TextStyle(
+                                            color: cc,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          h.description,
+                                          style: TextStyle(
+                                            color: cc.withValues(alpha: 0.6),
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.close,
+                                      color: Colors.red,
+                                      size: 18,
+                                    ),
+                                    padding: EdgeInsets.zero,
+                                    constraints: const BoxConstraints(),
+                                    onPressed: () {
+                                      setState(
+                                        () => profile.structuralZoneHistory
+                                            .remove(h),
+                                      );
+                                      widget.onSave();
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: cc),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      icon: Icon(Icons.add, color: cc),
+                      label: Text(
+                        t.structuralZoneHistoryAddAction,
+                        style: TextStyle(
+                          color: cc,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      onPressed: () async {
+                        await widget.onAddStructuralZoneHistory();
                         if (mounted) setState(() {});
                       },
                     ),

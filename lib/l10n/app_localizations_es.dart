@@ -1135,6 +1135,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get structKindNerve => 'Nervio';
 
   @override
+  String get structKindPainWithoutClearCause =>
+      'Dolor sin causa estructural clara';
+
+  @override
   String get structTypeMuscleStrain => 'Tirón muscular';
 
   @override
@@ -1196,6 +1200,114 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get structTypeParesthesia => 'Parestesia';
+
+  @override
+  String get structTypeUnclearCause => 'Dolor sin causa estructural clara';
+
+  @override
+  String get structTypeKnownConditionFlare => 'Episodio de condición conocida';
+
+  @override
+  String get structTypeMuscleGeneral => 'Dolor muscular';
+
+  @override
+  String get structTypeTendonGeneral => 'Dolor de tendón';
+
+  @override
+  String get structTypeLigamentGeneral => 'Dolor de ligamento';
+
+  @override
+  String get structTypeSoftTissueGeneral => 'Dolor de tejido blando';
+
+  @override
+  String get structTypeNerveGeneral => 'Dolor nervioso';
+
+  @override
+  String get structuralZonePickTitle => '¿En qué zona?';
+
+  @override
+  String get structuralZonePickSubtitle =>
+      'Toca la zona donde sientes el dolor.';
+
+  @override
+  String get structuralKindPickTitle => '¿Qué tipo de dolor es?';
+
+  @override
+  String get structuralKindPickSubtitle =>
+      'Elige la opción que más se acerque. Si no sabes, puedes elegir \"sin causa clara\".';
+
+  @override
+  String get structuralSheetTitle => 'Detalle del dolor';
+
+  @override
+  String get structuralSheetSubtitle =>
+      'Cuéntanos más sobre este dolor, con tus propias palabras.';
+
+  @override
+  String get structuralKnownTermShortcut => 'Ya sé qué es';
+
+  @override
+  String get structuralQuickLogTitle => '¿Qué tan intenso está hoy?';
+
+  @override
+  String get structuralQuickLogSubtitle =>
+      'Ya tienes un antecedente guardado para esta zona.';
+
+  @override
+  String get structuralComparedToUsualWorse => 'Peor que de costumbre';
+
+  @override
+  String get structuralComparedToUsualNormal => 'Normal para mí';
+
+  @override
+  String get structuralComparedToUsualBetter => 'Mejor que de costumbre';
+
+  @override
+  String get structuralZoneHistoryFormTitle => 'Registrar antecedente de zona';
+
+  @override
+  String get structuralZoneHistoryFormEditTitle => 'Editar antecedente de zona';
+
+  @override
+  String get structuralZoneHistoryZoneLabel => 'Zona';
+
+  @override
+  String get structuralZoneHistoryKindLabel => 'Categoría';
+
+  @override
+  String get structuralZoneHistoryDescriptionHint =>
+      'Descripción (ej. post-quirúrgica, 2 cirugías)';
+
+  @override
+  String get structuralZoneHistoryDateLabel => 'Fecha aproximada (opcional)';
+
+  @override
+  String get structuralZoneHistorySaveAction => 'Guardar antecedente';
+
+  @override
+  String get structuralZoneHistoryOfferTitle =>
+      '¿Guardar esto como algo que ya conoces?';
+
+  @override
+  String get structuralZoneHistoryOfferBody =>
+      'La próxima vez que registres dolor en esta zona, puedes saltar directo a la severidad.';
+
+  @override
+  String get structuralZoneHistoryOfferAccept => 'Guardar';
+
+  @override
+  String get structuralZoneHistoryOfferDecline => 'Ahora no';
+
+  @override
+  String get structuralZoneHistorySectionTitle =>
+      'Historial estructural por zona';
+
+  @override
+  String get structuralZoneHistoryAddAction => 'Agregar antecedente';
+
+  @override
+  String get structuralZoneHistoryEmptyState =>
+      'Sin antecedentes guardados todavía.';
 
   @override
   String get sleepSectionTitle => 'SUEÑO';

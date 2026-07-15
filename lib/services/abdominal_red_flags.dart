@@ -15,14 +15,13 @@
 //     DOI: 10.1371/journal.pone.0080321
 
 import '../models/abdominal_detail.dart';
-
-/// Severity classification. `urgent` requires an in-sheet emergency
-/// dialog before save (cefalea thunderclap pattern); `advisory`
-/// surfaces via post-save informational dialog.
-enum AbdominalRedFlagSeverity { advisory, urgent }
+import '../models/red_flag_severity.dart';
 
 /// Concrete red-flag patterns detectable from an AbdominalDetail plus
 /// severity index and (optionally) the SymptomEvent.note text.
+/// `urgent` requires an in-sheet emergency dialog before save (cefalea
+/// thunderclap pattern); `advisory` surfaces via post-save informational
+/// dialog.
 enum AbdominalRedFlag {
   tearingPainSedv,
   massiveHematochezia,
@@ -30,15 +29,15 @@ enum AbdominalRedFlag {
   nocturnalPainAdvisory,
   gastroparesisPatternAdvisory;
 
-  AbdominalRedFlagSeverity get severity {
+  RedFlagSeverity get severity {
     switch (this) {
       case AbdominalRedFlag.tearingPainSedv:
       case AbdominalRedFlag.massiveHematochezia:
       case AbdominalRedFlag.hematemesis:
-        return AbdominalRedFlagSeverity.urgent;
+        return RedFlagSeverity.urgent;
       case AbdominalRedFlag.nocturnalPainAdvisory:
       case AbdominalRedFlag.gastroparesisPatternAdvisory:
-        return AbdominalRedFlagSeverity.advisory;
+        return RedFlagSeverity.advisory;
     }
   }
 }

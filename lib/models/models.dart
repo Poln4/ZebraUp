@@ -25,6 +25,7 @@ import 'dart:math';
 import 'headache_detail.dart';
 import 'fatigue_detail.dart';
 import 'abdominal_detail.dart';
+import 'structural_detail.dart';
 import 'action_taken.dart';
 import 'mcas.dart';
 import 'medication_type.dart';
@@ -394,7 +395,14 @@ enum StructuralEventKind {
   tendon('Tendón'),
   ligament('Ligamento'),
   softTissue('Tejido blando'),
-  nerve('Nervio');
+  nerve('Nervio'),
+
+  /// §12.5 — 7º kind, agregado por el rediseño de dolor estructural.
+  /// Se llega a este kind SIEMPRE que el usuario completa el embudo de
+  /// 4 grupos (StructuralDetail) en vez de usar "Ya sé qué es" — no es
+  /// una opción más del picker clásico de kind→tipo, es el resultado
+  /// del camino por defecto para dolor sin un término clínico claro.
+  painWithoutClearCause('Dolor sin causa estructural clara');
 
   /// Spanish fallback label (LatAm neutral). For user-facing localized
   /// labels, use the StructuralEventKindLocalization.label(l10n) extension
@@ -433,6 +441,7 @@ const Map<StructuralEventKind, List<String>> kStructuralTaxonomy = {
     'contracture',
     'muscle_spasm',
     'myofascial_pain',
+    'muscle_pain_general',
   ],
   StructuralEventKind.tendon: [
     'tendinitis',
@@ -440,11 +449,13 @@ const Map<StructuralEventKind, List<String>> kStructuralTaxonomy = {
     'bursitis',
     'enthesitis',
     'tendon_fissure',
+    'tendon_pain_general',
   ],
   StructuralEventKind.ligament: [
     'mild_sprain',
     'severe_sprain',
     'ligament_tear',
+    'ligament_pain_general',
   ],
   StructuralEventKind.softTissue: [
     'superficial_cut',
@@ -454,8 +465,36 @@ const Map<StructuralEventKind, List<String>> kStructuralTaxonomy = {
     'contusion',
     'burn',
     'abrasion',
+    'soft_tissue_pain_general',
   ],
-  StructuralEventKind.nerve: ['neuropathic_pain', 'paresthesia'],
+  StructuralEventKind.nerve: [
+    'neuropathic_pain',
+    'paresthesia',
+    'nerve_pain_general',
+  ],
+
+  /// §12.5 — único tipo bajo el 7º kind. No es un término clínico
+  /// específico, es el placeholder que recibe todo evento creado vía
+  /// el embudo de 4 grupos (o elegido directamente en el picker clásico
+  /// por alguien que ya sabe que no hay causa estructural clara).
+  StructuralEventKind.painWithoutClearCause: ['unclear_structural_cause'],
+};
+
+/// Combined zone+kind entry flow (18-jul-2026 rework): the generic
+/// "just this kind, no specific clinical type" placeholder used when
+/// the user picks a kind in the new kind-pick step without going
+/// through the classic kind→tipo picker ("Ya sé qué es"). One entry
+/// per StructuralEventKind, mirroring the pre-existing 'joint_pain'
+/// pattern for the other 5 kinds + reusing 'unclear_structural_cause'
+/// for painWithoutClearCause.
+const Map<StructuralEventKind, String> kGenericStructuralTypeForKind = {
+  StructuralEventKind.joint: 'joint_pain',
+  StructuralEventKind.muscle: 'muscle_pain_general',
+  StructuralEventKind.tendon: 'tendon_pain_general',
+  StructuralEventKind.ligament: 'ligament_pain_general',
+  StructuralEventKind.softTissue: 'soft_tissue_pain_general',
+  StructuralEventKind.nerve: 'nerve_pain_general',
+  StructuralEventKind.painWithoutClearCause: 'unclear_structural_cause',
 };
 
 /// F6.a + F6.b: Stable IDs for body zones.
@@ -678,6 +717,23 @@ class StructuralEvent {
   /// closed but the pain stayed".
   final bool stillPainful;
 
+  /// §12 — rich detail from the 4-group funnel (laterality/pain
+  /// character/antecedent/mechanics). Null when the event was created
+  /// via "Ya sé qué es" (classic kind→type picker) or predates this
+  /// sprint. See lib/models/structural_detail.dart.
+  final StructuralDetail? structuralDetail;
+
+  /// §12.6 — 0-4 intensity, only populated by the zone-history quick-log
+  /// path (zones with a saved StructuralZoneHistoryEntry). Reuses the
+  /// existing SymptomSeverity scale rather than inventing a new one.
+  /// Null for events created via the funnel or the classic picker —
+  /// neither of those captures intensity today.
+  final SymptomSeverity? severity;
+
+  /// §12.6 — "¿distinto a lo usual?" answer, only populated by the
+  /// zone-history quick-log path. Null otherwise.
+  final StructuralComparisonToUsual? comparedToUsual;
+
   StructuralEvent({
     String? id,
     required this.timestamp,
@@ -687,6 +743,9 @@ class StructuralEvent {
     this.note,
     this.resolvedAt,
     this.stillPainful = false,
+    this.structuralDetail,
+    this.severity,
+    this.comparedToUsual,
   }) : id = id ?? _newId(),
        kind = kind ?? inferKindFromType(type);
 
@@ -700,6 +759,9 @@ class StructuralEvent {
     DateTime? resolvedAt,
     bool clearResolvedAt = false,
     bool? stillPainful,
+    StructuralDetail? structuralDetail,
+    SymptomSeverity? severity,
+    StructuralComparisonToUsual? comparedToUsual,
   }) {
     return StructuralEvent(
       id: id,
@@ -710,6 +772,9 @@ class StructuralEvent {
       note: note ?? this.note,
       resolvedAt: clearResolvedAt ? null : (resolvedAt ?? this.resolvedAt),
       stillPainful: stillPainful ?? this.stillPainful,
+      structuralDetail: structuralDetail ?? this.structuralDetail,
+      severity: severity ?? this.severity,
+      comparedToUsual: comparedToUsual ?? this.comparedToUsual,
     );
   }
 
@@ -722,23 +787,84 @@ class StructuralEvent {
     'note': note,
     'resolvedAt': resolvedAt?.toIso8601String(),
     'stillPainful': stillPainful,
+    if (structuralDetail != null)
+      'structuralDetail': structuralDetail!.toMap(),
+    if (severity != null) 'severity': severity!.value,
+    if (comparedToUsual != null)
+      'comparedToUsual': comparedToUsual!.serializationKey,
   };
 
   /// F6.a: applies silent migrations for both `zone` and `type` strings.
   /// Legacy Spanish events ("Cervicales", "Subluxación", etc.) are converted
   /// to stable IDs on read; unknown values pass through unchanged.
-  factory StructuralEvent.fromMap(Map<String, dynamic> map) => StructuralEvent(
-    id: map['id'],
-    timestamp: DateTime.parse(map['timestamp']),
-    zone: _migrateZoneId(map['zone'] as String),
-    kind: StructuralEventKind.parse(map['kind'] as String?),
-    type: _migrateStructuralTypeId(map['type'] as String),
-    note: map['note'] as String?,
-    resolvedAt: map['resolvedAt'] != null
-        ? DateTime.parse(map['resolvedAt'] as String)
-        : null,
-    stillPainful: map['stillPainful'] as bool? ?? false,
-  );
+  factory StructuralEvent.fromMap(Map<String, dynamic> map) {
+    final sdRaw = map['structuralDetail'];
+    final severityRaw = map['severity'];
+    return StructuralEvent(
+      id: map['id'],
+      timestamp: DateTime.parse(map['timestamp']),
+      zone: _migrateZoneId(map['zone'] as String),
+      kind: StructuralEventKind.parse(map['kind'] as String?),
+      type: _migrateStructuralTypeId(map['type'] as String),
+      note: map['note'] as String?,
+      resolvedAt: map['resolvedAt'] != null
+          ? DateTime.parse(map['resolvedAt'] as String)
+          : null,
+      stillPainful: map['stillPainful'] as bool? ?? false,
+      structuralDetail: sdRaw is Map
+          ? StructuralDetail.fromMap(Map<String, dynamic>.from(sdRaw))
+          : null,
+      severity: severityRaw is num
+          ? SymptomSeverity.fromValue(severityRaw.toInt())
+          : null,
+      comparedToUsual: StructuralComparisonToUsual.fromKey(
+        map['comparedToUsual'] as String?,
+      ),
+    );
+  }
+}
+
+/// §12.6 — Profile-level "antecedente estructural conocido" per zone.
+/// Entered once (via the post-funnel "guardar esto como algo que ya
+/// conozco" offer, or from Ajustes → Perfil), reused as a shortcut so
+/// the user doesn't have to re-describe a known chronic/post-surgical
+/// condition every time it flares. `kind` is restricted to the 6
+/// classic StructuralEventKind values in the form UI — if the cause
+/// isn't known, there's no "known antecedent" to save.
+class StructuralZoneHistoryEntry {
+  final String id;
+  final String zone;
+  final StructuralEventKind kind;
+  final String description;
+  final DateTime? approximateDate;
+
+  StructuralZoneHistoryEntry({
+    String? id,
+    required this.zone,
+    required this.kind,
+    required this.description,
+    this.approximateDate,
+  }) : id = id ?? _newId();
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'zone': zone,
+    'kind': kind.name,
+    'description': description,
+    'approximateDate': approximateDate?.toIso8601String(),
+  };
+
+  factory StructuralZoneHistoryEntry.fromMap(Map<String, dynamic> map) =>
+      StructuralZoneHistoryEntry(
+        id: map['id'] as String?,
+        zone: map['zone'] as String,
+        kind: StructuralEventKind.parse(map['kind'] as String?) ??
+            StructuralEventKind.joint,
+        description: map['description'] as String,
+        approximateDate: map['approximateDate'] != null
+            ? DateTime.parse(map['approximateDate'] as String)
+            : null,
+      );
 }
 
 class MentalEvent {
@@ -1473,6 +1599,11 @@ class Profile {
   /// the clinical PDF export. No dedicated edit UI yet (Phase4.C).
   DateTime? dateOfBirth;
 
+  /// §12.6 — antecedente estructural conocido por zona (post-quirúrgico
+  /// o crónico). Edit UI en ProfileSettingsScreen; también se puede
+  /// crear desde la oferta post-funnel en sintomas_tab.
+  List<StructuralZoneHistoryEntry> structuralZoneHistory;
+
   Profile({
     required this.id,
     required this.name,
@@ -1487,6 +1618,7 @@ class Profile {
     this.allergies = const [],
     this.emergencyContacts = const [],
     this.dateOfBirth,
+    this.structuralZoneHistory = const [],
     this.therapyHistory = const [],
     this.customTherapyModalities = const [],
     this.relationship,
@@ -1840,6 +1972,9 @@ class Profile {
     'allergies': allergies,
     'emergencyContacts': emergencyContacts,
     'dateOfBirth': dateOfBirth?.toIso8601String(),
+    'structuralZoneHistory': structuralZoneHistory
+        .map((x) => x.toMap())
+        .toList(),
   };
 
   // ---------------------------------------------------------------------------
@@ -1944,6 +2079,13 @@ class Profile {
     dateOfBirth: map['dateOfBirth'] is String
         ? DateTime.tryParse(map['dateOfBirth'] as String)
         : null,
+    structuralZoneHistory: List<StructuralZoneHistoryEntry>.from(
+      (map['structuralZoneHistory'] ?? const []).map(
+        (x) => StructuralZoneHistoryEntry.fromMap(
+          Map<String, dynamic>.from(x as Map),
+        ),
+      ),
+    ),
     bowel: List<BowelEvent>.from(
       (map['bowelHistory'] ?? const []).map(
         (x) => BowelEvent.fromMap(Map<String, dynamic>.from(x as Map)),

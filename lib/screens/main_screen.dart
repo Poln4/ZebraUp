@@ -17,6 +17,7 @@ import '../services/clinical_export_service.dart';
 import '../models/pdf_export_config.dart';
 import '../widgets/condition_info_sheet.dart';
 import '../widgets/life_event_form_sheet.dart';
+import '../widgets/structural_zone_history_form_sheet.dart';
 import '../widgets/fever_form_sheet.dart';
 import '../widgets/pdf_export_sheet.dart';
 import '../widgets/report_view.dart';
@@ -2091,6 +2092,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 onEditLocation: _editLocation,
                 onAddLifeEvent: () => _addLifeEvent(cc, ic),
                 onEditLifeEvent: (e) => _editLifeEvent(e, cc, ic),
+                onAddStructuralZoneHistory: () =>
+                    _addStructuralZoneHistory(cc, ic),
+                onEditStructuralZoneHistory: (e) =>
+                    _editStructuralZoneHistory(e, cc, ic),
               ),
             ),
           ),
@@ -2299,6 +2304,40 @@ class _MainAppScreenState extends State<MainAppScreen> {
     if (idx >= 0) {
       setState(() {
         _activeProfile!.lifeEvents[idx] = result;
+        _saveData();
+      });
+    }
+  }
+
+  Future<void> _addStructuralZoneHistory(Color cc, Color ic) async {
+    final result = await showStructuralZoneHistoryFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+    );
+    if (result == null) return;
+    setState(() {
+      _activeProfile!.structuralZoneHistory.add(result);
+      _saveData();
+    });
+  }
+
+  Future<void> _editStructuralZoneHistory(
+    StructuralZoneHistoryEntry existing,
+    Color cc,
+    Color ic,
+  ) async {
+    final result = await showStructuralZoneHistoryFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+      existing: existing,
+    );
+    if (result == null) return;
+    final idx = _activeProfile!.structuralZoneHistory.indexOf(existing);
+    if (idx >= 0) {
+      setState(() {
+        _activeProfile!.structuralZoneHistory[idx] = result;
         _saveData();
       });
     }

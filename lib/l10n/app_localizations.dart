@@ -1979,6 +1979,12 @@ abstract class AppLocalizations {
   /// **'Nervio'**
   String get structKindNerve;
 
+  /// No description provided for @structKindPainWithoutClearCause.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor sin causa estructural clara'**
+  String get structKindPainWithoutClearCause;
+
   /// No description provided for @structTypeMuscleStrain.
   ///
   /// In es, this message translates to:
@@ -2104,6 +2110,204 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Parestesia'**
   String get structTypeParesthesia;
+
+  /// No description provided for @structTypeUnclearCause.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor sin causa estructural clara'**
+  String get structTypeUnclearCause;
+
+  /// No description provided for @structTypeKnownConditionFlare.
+  ///
+  /// In es, this message translates to:
+  /// **'Episodio de condición conocida'**
+  String get structTypeKnownConditionFlare;
+
+  /// No description provided for @structTypeMuscleGeneral.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor muscular'**
+  String get structTypeMuscleGeneral;
+
+  /// No description provided for @structTypeTendonGeneral.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor de tendón'**
+  String get structTypeTendonGeneral;
+
+  /// No description provided for @structTypeLigamentGeneral.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor de ligamento'**
+  String get structTypeLigamentGeneral;
+
+  /// No description provided for @structTypeSoftTissueGeneral.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor de tejido blando'**
+  String get structTypeSoftTissueGeneral;
+
+  /// No description provided for @structTypeNerveGeneral.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor nervioso'**
+  String get structTypeNerveGeneral;
+
+  /// No description provided for @structuralZonePickTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿En qué zona?'**
+  String get structuralZonePickTitle;
+
+  /// No description provided for @structuralZonePickSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Toca la zona donde sientes el dolor.'**
+  String get structuralZonePickSubtitle;
+
+  /// No description provided for @structuralKindPickTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué tipo de dolor es?'**
+  String get structuralKindPickTitle;
+
+  /// No description provided for @structuralKindPickSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Elige la opción que más se acerque. Si no sabes, puedes elegir \"sin causa clara\".'**
+  String get structuralKindPickSubtitle;
+
+  /// No description provided for @structuralSheetTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle del dolor'**
+  String get structuralSheetTitle;
+
+  /// No description provided for @structuralSheetSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuéntanos más sobre este dolor, con tus propias palabras.'**
+  String get structuralSheetSubtitle;
+
+  /// No description provided for @structuralKnownTermShortcut.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya sé qué es'**
+  String get structuralKnownTermShortcut;
+
+  /// No description provided for @structuralQuickLogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Qué tan intenso está hoy?'**
+  String get structuralQuickLogTitle;
+
+  /// No description provided for @structuralQuickLogSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya tienes un antecedente guardado para esta zona.'**
+  String get structuralQuickLogSubtitle;
+
+  /// No description provided for @structuralComparedToUsualWorse.
+  ///
+  /// In es, this message translates to:
+  /// **'Peor que de costumbre'**
+  String get structuralComparedToUsualWorse;
+
+  /// No description provided for @structuralComparedToUsualNormal.
+  ///
+  /// In es, this message translates to:
+  /// **'Normal para mí'**
+  String get structuralComparedToUsualNormal;
+
+  /// No description provided for @structuralComparedToUsualBetter.
+  ///
+  /// In es, this message translates to:
+  /// **'Mejor que de costumbre'**
+  String get structuralComparedToUsualBetter;
+
+  /// No description provided for @structuralZoneHistoryFormTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar antecedente de zona'**
+  String get structuralZoneHistoryFormTitle;
+
+  /// No description provided for @structuralZoneHistoryFormEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar antecedente de zona'**
+  String get structuralZoneHistoryFormEditTitle;
+
+  /// No description provided for @structuralZoneHistoryZoneLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Zona'**
+  String get structuralZoneHistoryZoneLabel;
+
+  /// No description provided for @structuralZoneHistoryKindLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Categoría'**
+  String get structuralZoneHistoryKindLabel;
+
+  /// No description provided for @structuralZoneHistoryDescriptionHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Descripción (ej. post-quirúrgica, 2 cirugías)'**
+  String get structuralZoneHistoryDescriptionHint;
+
+  /// No description provided for @structuralZoneHistoryDateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha aproximada (opcional)'**
+  String get structuralZoneHistoryDateLabel;
+
+  /// No description provided for @structuralZoneHistorySaveAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar antecedente'**
+  String get structuralZoneHistorySaveAction;
+
+  /// No description provided for @structuralZoneHistoryOfferTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Guardar esto como algo que ya conoces?'**
+  String get structuralZoneHistoryOfferTitle;
+
+  /// No description provided for @structuralZoneHistoryOfferBody.
+  ///
+  /// In es, this message translates to:
+  /// **'La próxima vez que registres dolor en esta zona, puedes saltar directo a la severidad.'**
+  String get structuralZoneHistoryOfferBody;
+
+  /// No description provided for @structuralZoneHistoryOfferAccept.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar'**
+  String get structuralZoneHistoryOfferAccept;
+
+  /// No description provided for @structuralZoneHistoryOfferDecline.
+  ///
+  /// In es, this message translates to:
+  /// **'Ahora no'**
+  String get structuralZoneHistoryOfferDecline;
+
+  /// No description provided for @structuralZoneHistorySectionTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Historial estructural por zona'**
+  String get structuralZoneHistorySectionTitle;
+
+  /// No description provided for @structuralZoneHistoryAddAction.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar antecedente'**
+  String get structuralZoneHistoryAddAction;
+
+  /// No description provided for @structuralZoneHistoryEmptyState.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin antecedentes guardados todavía.'**
+  String get structuralZoneHistoryEmptyState;
 
   /// No description provided for @sleepSectionTitle.
   ///

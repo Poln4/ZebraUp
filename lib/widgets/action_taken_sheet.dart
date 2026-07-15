@@ -24,6 +24,7 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../models/action_taken.dart';
+import '../models/medication_type.dart';
 
 class ActionTakenSheet extends StatefulWidget {
   final Color contrastColor;
@@ -181,6 +182,11 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
     final ic = widget.inverseContrastColor;
     final isMovement = _kind == ActionKind.movement;
     final showExtras = _kind != null && !isMovement;
+    // Post-event action prompt: exclude basal/scheduled meds, irrelevant
+    // right after a symptom. Shows prnRescue | both | undefined (unclassified).
+    final pickerMeds = widget.botiquin
+        .where((m) => m.medicationType != MedicationType.basalScheduled)
+        .toList();
 
     return SafeArea(
       child: Padding(
@@ -282,7 +288,7 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                   ),
                 ),
                 const SizedBox(height: 4),
-                if (widget.botiquin.isEmpty)
+                if (pickerMeds.isEmpty)
                   Text(
                     'Sin medicamentos en el botiquín todavía.',
                     style: TextStyle(color: cc, fontSize: 12),
@@ -302,7 +308,7 @@ class _ActionTakenSheetState extends State<ActionTakenSheet> {
                       underline: const SizedBox.shrink(),
                       style: TextStyle(color: cc, fontSize: 13),
                       iconEnabledColor: cc,
-                      items: widget.botiquin.map((m) {
+                      items: pickerMeds.map((m) {
                         return DropdownMenuItem<String>(
                           value: m.id,
                           child: Text(m.name, style: TextStyle(color: cc)),

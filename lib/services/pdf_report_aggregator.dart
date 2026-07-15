@@ -449,8 +449,8 @@ MentalStateSection? _aggregateMentalState(
     var valenceSum = 0.0;
     var arousalSum = 0.0;
     for (final m in periodMoods) {
-      valenceSum += _valenceSign(m.primaryQuadrant);
-      arousalSum += _arousalSign(m.primaryQuadrant);
+      valenceSum += m.primaryQuadrant.valenceSign;
+      arousalSum += m.primaryQuadrant.arousalSign;
       final qLabel = m.primaryQuadrant.label;
       quadrantFreq[qLabel] = (quadrantFreq[qLabel] ?? 0) + 1;
       for (final word in m.states) {
@@ -471,20 +471,6 @@ MentalStateSection? _aggregateMentalState(
     totalMoodEntries: periodMoods.length,
   );
 }
-
-double _valenceSign(MoodQuadrant q) => switch (q) {
-  MoodQuadrant.activatedPleasant => 1.0,
-  MoodQuadrant.calmPleasant => 1.0,
-  MoodQuadrant.activatedUnpleasant => -1.0,
-  MoodQuadrant.calmUnpleasant => -1.0,
-};
-
-double _arousalSign(MoodQuadrant q) => switch (q) {
-  MoodQuadrant.activatedPleasant => 1.0,
-  MoodQuadrant.activatedUnpleasant => 1.0,
-  MoodQuadrant.calmPleasant => -1.0,
-  MoodQuadrant.calmUnpleasant => -1.0,
-};
 
 ActionsSection _aggregateActions(
   Profile profile,

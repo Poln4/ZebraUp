@@ -737,5 +737,194 @@
         }
       }
     }
+  },
+  "structural": {
+    "aliases": [],
+    "master": {
+      "label_es": "Dolor estructural",
+      "label_en": "Structural pain",
+      "label_zh": "結構性疼痛",
+      "definition_es": "Dolor musculoesquelético — articulaciones, músculos, tendones, ligamentos o nervios. Estas preguntas te ayudan a describirlo en tus propias palabras cuando no sabes (o no hace falta que sepas) el término clínico exacto.",
+      "definition_en": "Musculoskeletal pain — joints, muscles, tendons, ligaments, or nerves. These questions help you describe it in your own words when you don't know (or don't need to know) the exact clinical term.",
+      "definition_zh": "肌肉骨骼疼痛——關節、肌肉、肌腱、韌帶或神經。當你不知道(或不需要知道)確切的臨床術語時,這些問題能幫助你用自己的話描述它。"
+    },
+    "groups": {
+      "laterality": {
+        "kind": "single_select",
+        "header_es": "LATERALIDAD",
+        "header_en": "LATERALITY",
+        "header_zh": "側邊",
+        "chips": {
+          "left": {
+            "label_es": "Izquierda",
+            "label_en": "Left",
+            "label_zh": "左側",
+            "def_es": "El dolor está del lado izquierdo del cuerpo.",
+            "def_en": "The pain is on the left side of the body.",
+            "def_zh": "疼痛位於身體左側。"
+          },
+          "right": {
+            "label_es": "Derecha",
+            "label_en": "Right",
+            "label_zh": "右側",
+            "def_es": "El dolor está del lado derecho del cuerpo.",
+            "def_en": "The pain is on the right side of the body.",
+            "def_zh": "疼痛位於身體右側。"
+          },
+          "both": {
+            "label_es": "Ambas",
+            "label_en": "Both",
+            "label_zh": "兩側",
+            "def_es": "El dolor está presente en ambos lados a la vez.",
+            "def_en": "The pain is present on both sides at once.",
+            "def_zh": "疼痛同時出現在兩側。"
+          },
+          "diffuse_central": {
+            "label_es": "Difuso / central",
+            "label_en": "Diffuse / central",
+            "label_zh": "瀰漫性 / 中央",
+            "def_es": "El dolor no tiene un lado claro, o está centrado en el medio del cuerpo.",
+            "def_en": "The pain has no clear side, or is centered in the middle of the body.",
+            "def_zh": "疼痛沒有明確的側邊,或位於身體中央。"
+          }
+        }
+      },
+      "pain_character": {
+        "kind": "single_select",
+        "header_es": "CARÁCTER DEL DOLOR",
+        "header_en": "PAIN CHARACTER",
+        "header_zh": "疼痛性質",
+        "chips": {
+          "sharp_stabbing": {
+            "label_es": "Agudo / punzante",
+            "label_en": "Sharp / stabbing",
+            "label_zh": "尖銳 / 刺痛",
+            "def_es": "Un dolor intenso y localizado, como una puntada.",
+            "def_en": "An intense, localized pain, like a stab.",
+            "def_zh": "劇烈且局部的疼痛,像被刺一樣。"
+          },
+          "cutting_sensation": {
+            "label_es": "Sensación de corte",
+            "label_en": "Cutting sensation",
+            "label_zh": "切割感",
+            "def_es": "Una sensación como si algo cortara por dentro, distinta de una puntada.",
+            "def_en": "A sensation as if something is cutting inside, distinct from a stabbing pain.",
+            "def_zh": "感覺內部像是被切割,與尖銳刺痛不同。"
+          },
+          "electric_shocks": {
+            "label_es": "Punzadas / eléctrico",
+            "label_en": "Electric shocks",
+            "label_zh": "電擊感",
+            "def_es": "Descargas breves y súbitas, como una corriente eléctrica.",
+            "def_en": "Brief, sudden discharges, like an electric current.",
+            "def_zh": "短暫而突然的放電感,像電流一樣。"
+          },
+          "tingling": {
+            "label_es": "Hormigueo",
+            "label_en": "Tingling",
+            "label_zh": "刺痛感",
+            "def_es": "Sensación de hormigueo, adormecimiento u 'agujas'.",
+            "def_en": "A tingling, numbness, or 'pins and needles' sensation.",
+            "def_zh": "刺痛、麻木或「針刺」感。"
+          },
+          "dull_diffuse": {
+            "label_es": "Sordo / difuso",
+            "label_en": "Dull / diffuse",
+            "label_zh": "鈍痛 / 瀰漫性",
+            "def_es": "Un dolor de fondo, sin un punto exacto, que no es agudo.",
+            "def_en": "A background pain, without an exact point, that isn't sharp.",
+            "def_zh": "背景性疼痛,沒有確切的位置,不尖銳。"
+          },
+          "burning": {
+            "label_es": "Ardor",
+            "label_en": "Burning",
+            "label_zh": "灼熱感",
+            "def_es": "Una sensación de quemazón o ardor en la zona.",
+            "def_en": "A burning sensation in the area.",
+            "def_zh": "該部位有灼燒感。"
+          }
+        }
+      },
+      "antecedent": {
+        "kind": "single_select",
+        "header_es": "ANTECEDENTE",
+        "header_en": "ANTECEDENT",
+        "header_zh": "誘因",
+        "chips": {
+          "recent_exertion": {
+            "label_es": "Post-ejercicio reciente",
+            "label_en": "Recent exertion",
+            "label_zh": "近期運動後",
+            "def_es": "Apareció durante o justo después de moverte o hacer ejercicio.",
+            "def_en": "It appeared during or right after moving or exercising.",
+            "def_zh": "在活動或運動期間或之後立即出現。"
+          },
+          "delayed_exertion": {
+            "label_es": "Post-esfuerzo diferido (1-3 días)",
+            "label_en": "Delayed exertion (1-3 days)",
+            "label_zh": "延遲性運動後(1-3天)",
+            "def_es": "Apareció 1 a 3 días después de un esfuerzo — el dolor muscular normal (DOMS) suele seguir este patrón, especialmente en hipermovilidad.",
+            "def_en": "It appeared 1 to 3 days after exertion — normal muscle soreness (DOMS) usually follows this pattern, especially with hypermobility.",
+            "def_zh": "在運動後1到3天出現——正常的肌肉痠痛(DOMS)通常遵循這個模式,尤其是在關節過動的情況下。"
+          },
+          "trauma": {
+            "label_es": "Por golpe / trauma",
+            "label_en": "Trauma / impact",
+            "label_zh": "撞擊 / 外傷",
+            "def_es": "Apareció después de un golpe, caída u otro trauma identificable.",
+            "def_en": "It appeared after a blow, fall, or other identifiable trauma.",
+            "def_zh": "在撞擊、跌倒或其他可識別的外傷後出現。"
+          },
+          "known_condition": {
+            "label_es": "Condición conocida / antigua",
+            "label_en": "Known / longstanding condition",
+            "label_zh": "已知 / 舊有狀況",
+            "def_es": "Es una molestia que ya conoces — por ejemplo, post-quirúrgica o crónica en esa zona.",
+            "def_en": "It's a discomfort you already know about — for example, post-surgical or chronic in that area.",
+            "def_zh": "這是你已經知道的不適——例如,該部位的術後或慢性狀況。"
+          },
+          "no_specific_antecedent": {
+            "label_es": "Sin antecedente específico",
+            "label_en": "No specific antecedent",
+            "label_zh": "無特定誘因",
+            "def_es": "No identificas nada en particular que lo haya provocado.",
+            "def_en": "You don't identify anything in particular that triggered it.",
+            "def_zh": "你沒有識別出任何特別引發它的原因。"
+          }
+        }
+      },
+      "mechanics": {
+        "kind": "single_select",
+        "header_es": "MECÁNICA",
+        "header_en": "MECHANICS",
+        "header_zh": "力學特徵",
+        "chips": {
+          "worse_with_movement": {
+            "label_es": "Empeora con movimiento",
+            "label_en": "Worse with movement",
+            "label_zh": "活動時加劇",
+            "def_es": "Duele más al mover la zona o cargar peso sobre ella.",
+            "def_en": "It hurts more when moving the area or bearing weight on it.",
+            "def_zh": "移動該部位或承重時疼痛加劇。"
+          },
+          "present_at_rest": {
+            "label_es": "Presente en reposo también",
+            "label_en": "Present at rest too",
+            "label_zh": "休息時也存在",
+            "def_es": "Duele incluso sin mover la zona ni cargar peso.",
+            "def_en": "It hurts even without moving the area or bearing weight.",
+            "def_zh": "即使不移動該部位或不承重也會疼痛。"
+          },
+          "both_movement_rest": {
+            "label_es": "Ambas",
+            "label_en": "Both",
+            "label_zh": "兩者皆是",
+            "def_es": "Duele en reposo y empeora aún más con el movimiento.",
+            "def_en": "It hurts at rest and worsens further with movement.",
+            "def_zh": "休息時會痛,活動時更加劇。"
+          }
+        }
+      }
+    }
   }
 }

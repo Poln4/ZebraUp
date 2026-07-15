@@ -1126,6 +1126,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get structKindNerve => 'Nerve';
 
   @override
+  String get structKindPainWithoutClearCause =>
+      'Pain without a clear structural cause';
+
+  @override
   String get structTypeMuscleStrain => 'Muscle strain';
 
   @override
@@ -1187,6 +1191,112 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get structTypeParesthesia => 'Paresthesia';
+
+  @override
+  String get structTypeUnclearCause => 'Pain without a clear structural cause';
+
+  @override
+  String get structTypeKnownConditionFlare => 'Known condition flare-up';
+
+  @override
+  String get structTypeMuscleGeneral => 'Muscle pain';
+
+  @override
+  String get structTypeTendonGeneral => 'Tendon pain';
+
+  @override
+  String get structTypeLigamentGeneral => 'Ligament pain';
+
+  @override
+  String get structTypeSoftTissueGeneral => 'Soft tissue pain';
+
+  @override
+  String get structTypeNerveGeneral => 'Nerve pain';
+
+  @override
+  String get structuralZonePickTitle => 'Which area?';
+
+  @override
+  String get structuralZonePickSubtitle =>
+      'Tap the area where you feel the pain.';
+
+  @override
+  String get structuralKindPickTitle => 'What kind of pain is it?';
+
+  @override
+  String get structuralKindPickSubtitle =>
+      'Pick whichever is closest. If you\'re not sure, you can pick \"no clear cause\".';
+
+  @override
+  String get structuralSheetTitle => 'Pain detail';
+
+  @override
+  String get structuralSheetSubtitle =>
+      'Tell us more about this pain, in your own words.';
+
+  @override
+  String get structuralKnownTermShortcut => 'I already know what this is';
+
+  @override
+  String get structuralQuickLogTitle => 'How intense is it today?';
+
+  @override
+  String get structuralQuickLogSubtitle =>
+      'You already have a saved history for this zone.';
+
+  @override
+  String get structuralComparedToUsualWorse => 'Worse than usual';
+
+  @override
+  String get structuralComparedToUsualNormal => 'Normal for me';
+
+  @override
+  String get structuralComparedToUsualBetter => 'Better than usual';
+
+  @override
+  String get structuralZoneHistoryFormTitle => 'Record zone history';
+
+  @override
+  String get structuralZoneHistoryFormEditTitle => 'Edit zone history';
+
+  @override
+  String get structuralZoneHistoryZoneLabel => 'Zone';
+
+  @override
+  String get structuralZoneHistoryKindLabel => 'Category';
+
+  @override
+  String get structuralZoneHistoryDescriptionHint =>
+      'Description (e.g. post-surgical, 2 surgeries)';
+
+  @override
+  String get structuralZoneHistoryDateLabel => 'Approximate date (optional)';
+
+  @override
+  String get structuralZoneHistorySaveAction => 'Save history';
+
+  @override
+  String get structuralZoneHistoryOfferTitle =>
+      'Save this as something you already know?';
+
+  @override
+  String get structuralZoneHistoryOfferBody =>
+      'Next time you log pain in this zone, you can skip straight to severity.';
+
+  @override
+  String get structuralZoneHistoryOfferAccept => 'Save';
+
+  @override
+  String get structuralZoneHistoryOfferDecline => 'Not now';
+
+  @override
+  String get structuralZoneHistorySectionTitle => 'Structural history by zone';
+
+  @override
+  String get structuralZoneHistoryAddAction => 'Add history';
+
+  @override
+  String get structuralZoneHistoryEmptyState => 'No saved history yet.';
 
   @override
   String get sleepSectionTitle => 'SLEEP';

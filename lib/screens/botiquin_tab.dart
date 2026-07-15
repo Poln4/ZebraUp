@@ -800,8 +800,10 @@ class _GroupBatchLogSheetState extends State<_GroupBatchLogSheet> {
 
 // =============================================================================
 // Med list section — header + search filter + A-Z sort toggle + rows.
-// Filtering/sorting are view-only (not persisted); the underlying
-// profile.botiquin order is never mutated.
+// The search filter is view-only, transient session state. The A-Z sort
+// toggle persists per-profile via settings.optionalTrackers['botiquin_sort_alpha']
+// so it survives tab switches and app restarts. Neither one mutates the
+// underlying profile.botiquin order.
 // =============================================================================
 
 class _MedListSection extends StatefulWidget {
@@ -828,7 +830,6 @@ class _MedListSection extends StatefulWidget {
 class _MedListSectionState extends State<_MedListSection> {
   final _searchCtrl = TextEditingController();
   String _query = '';
-  bool _sortAlpha = false;
 
   @override
   void dispose() {
@@ -849,8 +850,11 @@ class _MedListSectionState extends State<_MedListSection> {
     final l10n = context.l10n;
     final all = widget.profile.botiquin;
     final q = _query.trim().toLowerCase();
+    final sortAlpha =
+        widget.profile.settings.optionalTrackers['botiquin_sort_alpha'] ??
+        false;
     final filtered = all.where((m) => _matches(m, q)).toList();
-    if (_sortAlpha) {
+    if (sortAlpha) {
       filtered.sort(
         (a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()),
       );
@@ -870,9 +874,13 @@ class _MedListSectionState extends State<_MedListSection> {
             ),
             if (all.length > 1)
               _SortToggleButton(
-                active: _sortAlpha,
+                active: sortAlpha,
                 contrastColor: cc,
-                onTap: () => setState(() => _sortAlpha = !_sortAlpha),
+                onTap: () {
+                  widget.profile.settings.optionalTrackers['botiquin_sort_alpha'] =
+                      !sortAlpha;
+                  widget.onProfileChanged();
+                },
               ),
           ],
         ),

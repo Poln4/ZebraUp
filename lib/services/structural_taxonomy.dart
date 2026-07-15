@@ -32,6 +32,8 @@ extension StructuralEventKindLocalization on StructuralEventKind {
     StructuralEventKind.ligament => l10n.structKindLigament,
     StructuralEventKind.softTissue => l10n.structKindSoftTissue,
     StructuralEventKind.nerve => l10n.structKindNerve,
+    StructuralEventKind.painWithoutClearCause =>
+      l10n.structKindPainWithoutClearCause,
   };
 }
 
@@ -83,6 +85,20 @@ extension StructuralEventTypeLocalization on String {
     // nerve
     'neuropathic_pain' => l10n.structTypeNeuropathic,
     'paresthesia' => l10n.structTypeParesthesia,
+    // §12 — rediseño de dolor estructural: dos placeholders sintéticos,
+    // nunca ofrecidos como chip individual en el picker clásico salvo
+    // el primero (vive en kStructuralTaxonomy bajo painWithoutClearCause).
+    'unclear_structural_cause' => l10n.structTypeUnclearCause,
+    'known_condition_flare' => l10n.structTypeKnownConditionFlare,
+    // Combined zone+kind entry flow (18-jul-2026): generic "just this
+    // kind" placeholders, one per kind (see kGenericStructuralTypeForKind
+    // in models.dart), used when the kind-pick step is completed without
+    // going through the classic kind→tipo picker.
+    'muscle_pain_general' => l10n.structTypeMuscleGeneral,
+    'tendon_pain_general' => l10n.structTypeTendonGeneral,
+    'ligament_pain_general' => l10n.structTypeLigamentGeneral,
+    'soft_tissue_pain_general' => l10n.structTypeSoftTissueGeneral,
+    'nerve_pain_general' => l10n.structTypeNerveGeneral,
     // Unknown ID — log in debug builds, return raw for the UI.
     _ => _unknownIdFallback(this, 'structuralType'),
   };

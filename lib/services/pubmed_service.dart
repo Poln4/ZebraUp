@@ -11,8 +11,8 @@ import '../models/models.dart';
 /// Cache: results stored in Hive box 'pubmed_cache' keyed by PMID.
 class PubMedService {
   static const _baseUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils';
-  static const _tool = 'zebraupp';
-  static const _email = 'beta@zebraupp.app'; // NCBI prefers an email
+  static const _tool = 'zebraup';
+  static const _email = 'beta@zebraup.app'; // NCBI prefers an email
   static const _cacheBoxName = 'pubmed_cache';
   static const _cacheStalenessHours = 24; // refresh after 24h
 

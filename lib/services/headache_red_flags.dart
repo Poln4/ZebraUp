@@ -24,6 +24,7 @@
 //   - prolonged aura (needs aura duration capture)
 
 import '../models/headache_detail.dart';
+import '../models/red_flag_severity.dart';
 
 enum HeadacheRedFlag {
   /// Severity tag for UI treatment. `urgent` should render a strong
@@ -34,21 +35,11 @@ enum HeadacheRedFlag {
   intracranialHypertension,
   thunderclap;
 
-  HeadacheRedFlagSeverity get severity => switch (this) {
-    HeadacheRedFlag.thunderclap => HeadacheRedFlagSeverity.urgent,
-    HeadacheRedFlag.csfLeakPattern => HeadacheRedFlagSeverity.advisory,
-    HeadacheRedFlag.intracranialHypertension =>
-      HeadacheRedFlagSeverity.advisory,
+  RedFlagSeverity get severity => switch (this) {
+    HeadacheRedFlag.thunderclap => RedFlagSeverity.urgent,
+    HeadacheRedFlag.csfLeakPattern => RedFlagSeverity.advisory,
+    HeadacheRedFlag.intracranialHypertension => RedFlagSeverity.advisory,
   };
-}
-
-enum HeadacheRedFlagSeverity {
-  /// Informational. Suggests medical follow-up if pattern repeats.
-  advisory,
-
-  /// Possible emergency. UI should make it visually distinct and
-  /// include explicit "seek emergency care" guidance.
-  urgent,
 }
 
 /// Pure function: given a saved HeadacheDetail and the symptom's

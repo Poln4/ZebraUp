@@ -20,14 +20,12 @@
 //     DOI: 10.1093/rheumatology/kew032
 
 import '../models/fatigue_detail.dart';
-
-/// Severity classification for a fatigue red flag. All current fatigue
-/// flags return `advisory`; `urgent` is reserved for future patterns
-/// that might warrant immediate action (currently none identified).
-enum FatigueRedFlagSeverity { advisory, urgent }
+import '../models/red_flag_severity.dart';
 
 /// Concrete red-flag patterns detectable from a FatigueDetail plus the
-/// severity index of the underlying SymptomEvent.
+/// severity index of the underlying SymptomEvent. All current fatigue
+/// flags return `advisory`; `urgent` is reserved for future patterns
+/// that might warrant immediate action (currently none identified).
 enum FatigueRedFlag {
   pemPattern,
   orthostaticPattern,
@@ -36,12 +34,12 @@ enum FatigueRedFlag {
   /// Classification for gating UI presentation. Advisories go through
   /// a non-blocking informational dialog; urgents (none today) would
   /// receive stronger UI treatment.
-  FatigueRedFlagSeverity get severity {
+  RedFlagSeverity get severity {
     switch (this) {
       case FatigueRedFlag.pemPattern:
       case FatigueRedFlag.orthostaticPattern:
       case FatigueRedFlag.hpaPattern:
-        return FatigueRedFlagSeverity.advisory;
+        return RedFlagSeverity.advisory;
     }
   }
 }

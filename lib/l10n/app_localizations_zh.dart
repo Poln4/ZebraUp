@@ -1059,6 +1059,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get structKindNerve => '神經';
 
   @override
+  String get structKindPainWithoutClearCause => '沒有明確結構性原因的疼痛';
+
+  @override
   String get structTypeMuscleStrain => '肌肉拉傷';
 
   @override
@@ -1120,6 +1123,105 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get structTypeParesthesia => '感覺異常（發麻）';
+
+  @override
+  String get structTypeUnclearCause => '沒有明確結構性原因的疼痛';
+
+  @override
+  String get structTypeKnownConditionFlare => '已知狀況發作';
+
+  @override
+  String get structTypeMuscleGeneral => '肌肉疼痛';
+
+  @override
+  String get structTypeTendonGeneral => '肌腱疼痛';
+
+  @override
+  String get structTypeLigamentGeneral => '韌帶疼痛';
+
+  @override
+  String get structTypeSoftTissueGeneral => '軟組織疼痛';
+
+  @override
+  String get structTypeNerveGeneral => '神經疼痛';
+
+  @override
+  String get structuralZonePickTitle => '是哪個部位？';
+
+  @override
+  String get structuralZonePickSubtitle => '點選你感到疼痛的部位。';
+
+  @override
+  String get structuralKindPickTitle => '是哪種疼痛？';
+
+  @override
+  String get structuralKindPickSubtitle => '選擇最接近的選項。如果不確定,可以選擇「沒有明確原因」。';
+
+  @override
+  String get structuralSheetTitle => '疼痛細節';
+
+  @override
+  String get structuralSheetSubtitle => '用你自己的話,告訴我們更多關於這個疼痛的資訊。';
+
+  @override
+  String get structuralKnownTermShortcut => '我已經知道是什麼';
+
+  @override
+  String get structuralQuickLogTitle => '今天有多嚴重？';
+
+  @override
+  String get structuralQuickLogSubtitle => '這個部位已經有儲存的病史紀錄。';
+
+  @override
+  String get structuralComparedToUsualWorse => '比平常更嚴重';
+
+  @override
+  String get structuralComparedToUsualNormal => '跟平常差不多';
+
+  @override
+  String get structuralComparedToUsualBetter => '比平常好';
+
+  @override
+  String get structuralZoneHistoryFormTitle => '記錄部位病史';
+
+  @override
+  String get structuralZoneHistoryFormEditTitle => '編輯部位病史';
+
+  @override
+  String get structuralZoneHistoryZoneLabel => '部位';
+
+  @override
+  String get structuralZoneHistoryKindLabel => '類別';
+
+  @override
+  String get structuralZoneHistoryDescriptionHint => '描述（例如：術後，兩次手術）';
+
+  @override
+  String get structuralZoneHistoryDateLabel => '大約日期（選填）';
+
+  @override
+  String get structuralZoneHistorySaveAction => '儲存病史';
+
+  @override
+  String get structuralZoneHistoryOfferTitle => '要把這個存為你已經知道的狀況嗎？';
+
+  @override
+  String get structuralZoneHistoryOfferBody => '下次在這個部位記錄疼痛時，可以直接跳到嚴重程度。';
+
+  @override
+  String get structuralZoneHistoryOfferAccept => '儲存';
+
+  @override
+  String get structuralZoneHistoryOfferDecline => '現在不要';
+
+  @override
+  String get structuralZoneHistorySectionTitle => '各部位結構性病史';
+
+  @override
+  String get structuralZoneHistoryAddAction => '新增病史';
+
+  @override
+  String get structuralZoneHistoryEmptyState => '尚未儲存任何病史。';
 
   @override
   String get sleepSectionTitle => '睡眠紀錄';
@@ -3246,6 +3348,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get structKindNerve => '神經';
 
   @override
+  String get structKindPainWithoutClearCause => '沒有明確結構性原因的疼痛';
+
+  @override
   String get structTypeMuscleStrain => '肌肉拉傷';
 
   @override
@@ -3307,6 +3412,78 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get structTypeParesthesia => '感覺異常（發麻）';
+
+  @override
+  String get structTypeUnclearCause => '沒有明確結構性原因的疼痛';
+
+  @override
+  String get structTypeKnownConditionFlare => '已知狀況發作';
+
+  @override
+  String get structuralSheetTitle => '疼痛細節';
+
+  @override
+  String get structuralSheetSubtitle => '用你自己的話,告訴我們更多關於這個疼痛的資訊。';
+
+  @override
+  String get structuralKnownTermShortcut => '我已經知道是什麼';
+
+  @override
+  String get structuralQuickLogTitle => '今天有多嚴重？';
+
+  @override
+  String get structuralQuickLogSubtitle => '這個部位已經有儲存的病史紀錄。';
+
+  @override
+  String get structuralComparedToUsualWorse => '比平常更嚴重';
+
+  @override
+  String get structuralComparedToUsualNormal => '跟平常差不多';
+
+  @override
+  String get structuralComparedToUsualBetter => '比平常好';
+
+  @override
+  String get structuralZoneHistoryFormTitle => '記錄部位病史';
+
+  @override
+  String get structuralZoneHistoryFormEditTitle => '編輯部位病史';
+
+  @override
+  String get structuralZoneHistoryZoneLabel => '部位';
+
+  @override
+  String get structuralZoneHistoryKindLabel => '類別';
+
+  @override
+  String get structuralZoneHistoryDescriptionHint => '描述（例如：術後，兩次手術）';
+
+  @override
+  String get structuralZoneHistoryDateLabel => '大約日期（選填）';
+
+  @override
+  String get structuralZoneHistorySaveAction => '儲存病史';
+
+  @override
+  String get structuralZoneHistoryOfferTitle => '要把這個存為你已經知道的狀況嗎？';
+
+  @override
+  String get structuralZoneHistoryOfferBody => '下次在這個部位記錄疼痛時，可以直接跳到嚴重程度。';
+
+  @override
+  String get structuralZoneHistoryOfferAccept => '儲存';
+
+  @override
+  String get structuralZoneHistoryOfferDecline => '現在不要';
+
+  @override
+  String get structuralZoneHistorySectionTitle => '各部位結構性病史';
+
+  @override
+  String get structuralZoneHistoryAddAction => '新增病史';
+
+  @override
+  String get structuralZoneHistoryEmptyState => '尚未儲存任何病史。';
 
   @override
   String get sleepSectionTitle => '睡眠紀錄';
