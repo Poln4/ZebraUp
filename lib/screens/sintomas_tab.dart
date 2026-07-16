@@ -15,6 +15,7 @@ import '../widgets/hrv_form_sheet.dart';
 import '../widgets/headache_detail_sheet.dart';
 import '../widgets/fatigue_detail_sheet.dart';
 import '../widgets/abdominal_detail_sheet.dart';
+import '../widgets/structural_bleeding_sheet.dart';
 import '../widgets/structural_detail_sheet.dart';
 import '../widgets/structural_quick_log_sheet.dart';
 import '../widgets/structural_zone_history_form_sheet.dart';
@@ -1186,13 +1187,21 @@ class _SintomasTabState extends State<SintomasTab> {
   // STRUCTURAL MODALS
   // ---------------------------------------------------------------------------
 
-  /// §12 — compact summary line for the "Registros de hoy" timeline.
-  /// Renders whichever of the two new capture paths produced data:
-  /// the 4-group funnel (structuralDetail) or the zone-history
-  /// quick-log (severity + comparedToUsual). Empty string when the
-  /// event predates this sprint or came from the classic picker with
-  /// neither attached.
+  /// §12/§12.6b — compact summary line for the "Registros de hoy"
+  /// timeline. Renders whichever of the three capture paths produced
+  /// data: the 4-group pain funnel (structuralDetail), the bleeding
+  /// detail (bleedingDetail, softTissue-kind events), or the
+  /// zone-history quick-log (severity + comparedToUsual). Empty string
+  /// when the event predates this sprint or came from the classic
+  /// picker with nothing attached.
   String _structuralCompactSummary(StructuralEvent e) {
+    final bleedingDetail = e.bleedingDetail;
+    if (bleedingDetail != null) {
+      return formatStructuralBleedingDetailCompact(
+        bleedingDetail,
+        context.l10n.localeName,
+      );
+    }
     final detail = e.structuralDetail;
     if (detail != null) {
       return formatStructuralDetailCompact(detail, context.l10n.localeName);
@@ -1219,7 +1228,10 @@ class _SintomasTabState extends State<SintomasTab> {
   }
 
   /// §12.6 — zones with a known antecedent skip straight to severity +
-  /// "¿distinto a lo usual?", no picker, no funnel.
+  /// "¿distinto a lo usual?", no picker, no funnel — unless the user
+  /// flags the episode as a new/different issue (isNewIssue), in which
+  /// case it's handed off to the full funnel instead of being bucketed
+  /// under the saved history's kind.
   Future<void> _openStructuralQuickLog(
     String zone,
     StructuralZoneHistoryEntry history,
@@ -1231,6 +1243,11 @@ class _SintomasTabState extends State<SintomasTab> {
     );
     if (result == null) return;
     if (!mounted) return;
+    if (result.isNewIssue) {
+      await _openStructuralFunnel(zone);
+      return;
+    }
+    if (result.severity == null) return;
     setState(
       () => _p.structuralHistory.add(
         StructuralEvent(
@@ -1293,6 +1310,7 @@ class _SintomasTabState extends State<SintomasTab> {
           kind: kind,
           type: kGenericStructuralTypeForKind[kind]!,
           structuralDetail: result.detail,
+          bleedingDetail: result.bleedingDetail,
         ),
       ),
     );
@@ -1488,7 +1506,26 @@ class _SintomasTabState extends State<SintomasTab> {
                             type.structuralTypeLabel(context.l10n),
                             style: TextStyle(color: _cc, fontSize: 13),
                           ),
-                          onTap: () {
+                          onTap: () async {
+                            // §12.6b — softTissue types (except 'burn', not
+                            // a bleeding phenomenon) ask for
+                            // origin+severity (ISTH-BAT adaptado) before
+                            // saving. Pop this picker first, then await the
+                            // standalone sheet — same "caller owns
+                            // sequencing" pattern as the "Ya sé qué es"
+                            // shortcut (see structural_detail_sheet.dart).
+                            Navigator.pop(ctx);
+                            StructuralBleedingDetail? bleedingDetail;
+                            if (entry.key == StructuralEventKind.softTissue &&
+                                type != 'burn') {
+                              bleedingDetail =
+                                  await showStructuralBleedingDetailSheet(
+                                    context: context,
+                                    contrastColor: _cc,
+                                    inverseContrastColor: _ic,
+                                  );
+                              if (!mounted) return;
+                            }
                             setState(
                               () => _p.structuralHistory.add(
                                 StructuralEvent(
@@ -1496,11 +1533,11 @@ class _SintomasTabState extends State<SintomasTab> {
                                   zone: zone,
                                   kind: entry.key,
                                   type: type,
+                                  bleedingDetail: bleedingDetail,
                                 ),
                               ),
                             );
                             widget.onProfileChanged();
-                            Navigator.pop(ctx);
                           },
                         ),
                       ),

@@ -1167,10 +1167,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get structuralKnownTermShortcut => '我已經知道是什麼';
 
   @override
+  String get structuralBleedingSheetTitle => '出血或瘀傷詳情';
+
+  @override
+  String get structuralBleedingSheetSubtitle => '告訴我們起因以及嚴重程度。';
+
+  @override
+  String get structuralBleedingLogTitle => '這次情況如何？';
+
+  @override
+  String get structuralBleedingLogSubtitle => '這次發作的起因和嚴重程度。';
+
+  @override
   String get structuralQuickLogTitle => '今天有多嚴重？';
 
   @override
   String get structuralQuickLogSubtitle => '這個部位已經有儲存的病史紀錄。';
+
+  @override
+  String get structuralQuickLogNewIssueLink => '這是一個新的或不同的問題嗎？另外描述';
 
   @override
   String get structuralComparedToUsualWorse => '比平常更嚴重';
@@ -1967,6 +1982,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsPatientNameLabel => '患者姓名';
+
+  @override
+  String get settingsPatientNameHelper => '完整法定姓名。用於提供給專科醫師的PDF報告。';
+
+  @override
+  String get settingsPreferredNameLabel => '偏好稱呼（選填）';
+
+  @override
+  String get settingsPreferredNameHelper => '希望應用程式如何稱呼你。留空則使用患者姓名。';
 
   @override
   String get settingsConditionsLabel => '共病/診斷';

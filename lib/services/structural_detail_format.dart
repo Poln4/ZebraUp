@@ -70,6 +70,43 @@ String formatStructuralDetailCompact(StructuralDetail detail, String locale) {
   return parts.join(' · ');
 }
 
+/// §12.6b — Compact summary for a bleeding-detail event (origin +
+/// ISTH-BAT-adapted severity), captured for softTissue-kind events
+/// instead of the 4-group funnel. Mirrors formatStructuralDetailCompact.
+String formatStructuralBleedingDetailCompact(
+  StructuralBleedingDetail detail,
+  String locale,
+) {
+  if (detail.isEmpty) return '';
+
+  final svc = SymptomDefinitionsService.instance;
+  final parts = <String>[];
+
+  final onset = detail.onset;
+  if (onset != null) {
+    final label = svc.getChipLabel(
+      'structural',
+      'bleeding_onset',
+      onset.serializationKey,
+      locale,
+    );
+    if (label != null) parts.add(label.toLowerCase());
+  }
+
+  final severity = detail.severity;
+  if (severity != null) {
+    final label = svc.getChipLabel(
+      'structural',
+      'bleeding_severity',
+      severity.serializationKey,
+      locale,
+    );
+    if (label != null) parts.add(label.toLowerCase());
+  }
+
+  return parts.join(' · ');
+}
+
 /// Compact summary for the zone-history quick-log path — severity +
 /// "¿distinto a lo usual?", the two fields that path captures instead
 /// of the 4-group funnel.

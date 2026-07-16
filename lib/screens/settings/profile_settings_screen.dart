@@ -65,6 +65,7 @@ class ProfileSettingsScreen extends StatefulWidget {
 
 class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   late final TextEditingController _nameCtrl;
+  late final TextEditingController _preferredNameCtrl;
   late final TextEditingController _diagnosisCtrl;
   late final TextEditingController _allergyCtrl;
 
@@ -72,6 +73,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   void initState() {
     super.initState();
     _nameCtrl = TextEditingController(text: widget.profile.name);
+    _preferredNameCtrl = TextEditingController(
+      text: widget.profile.preferredName,
+    );
     _diagnosisCtrl = TextEditingController();
     _allergyCtrl = TextEditingController();
   }
@@ -79,6 +83,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   @override
   void dispose() {
     _nameCtrl.dispose();
+    _preferredNameCtrl.dispose();
     _diagnosisCtrl.dispose();
     _allergyCtrl.dispose();
     super.dispose();
@@ -168,11 +173,28 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _label(cc, t.settingsPatientNameLabel),
+                    const SizedBox(height: 2),
+                    _helper(t.settingsPatientNameHelper),
+                    const SizedBox(height: 4),
                     TextField(
                       controller: _nameCtrl,
                       style: TextStyle(color: cc, fontSize: 16),
                       onChanged: (val) {
                         profile.name = val;
+                        widget.onSave();
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    _label(cc, t.settingsPreferredNameLabel),
+                    const SizedBox(height: 2),
+                    _helper(t.settingsPreferredNameHelper),
+                    const SizedBox(height: 4),
+                    TextField(
+                      controller: _preferredNameCtrl,
+                      style: TextStyle(color: cc, fontSize: 16),
+                      onChanged: (val) {
+                        profile.preferredName = val;
                         widget.onSave();
                       },
                     ),

@@ -471,7 +471,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              t.importDialogName(preview.profile.name),
+              t.importDialogName(preview.profile.displayName),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             if (preview.exportedAt != null) ...[
@@ -652,7 +652,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              t.importDialogName(p.profile.name),
+              t.importDialogName(p.profile.displayName),
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             if (p.exportedAt != null) ...[
@@ -964,7 +964,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
               .map(
                 (p) => DropdownMenuItem(
                   value: p,
-                  child: Text(p.name.toUpperCase()),
+                  child: Text(p.displayName.toUpperCase()),
                 ),
               )
               .toList(),
@@ -2185,7 +2185,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
       builder: (ctx) => AlertDialog(
         title: Text(t.dialogDeleteProfileTitle),
         content: Text(
-          t.dialogDeleteProfileContentTemplate(_activeProfile!.name),
+          t.dialogDeleteProfileContentTemplate(_activeProfile!.displayName),
         ),
         actions: [
           TextButton(

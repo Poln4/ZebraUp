@@ -734,6 +734,15 @@ class StructuralEvent {
   /// zone-history quick-log path. Null otherwise.
   final StructuralComparisonToUsual? comparedToUsual;
 
+  /// §12.6b — Origen + gravedad tipo ISTH-BAT, solo para
+  /// `kind == StructuralEventKind.softTissue` con `type != 'burn'`
+  /// (quemaduras no son un fenómeno de sangrado). Mutuamente excluyente
+  /// con `structuralDetail` en la práctica — cada camino de captura puebla
+  /// un campo distinto, igual que `severity`/`comparedToUsual` ya son
+  /// específicos del camino de quick-log. Ver
+  /// docs/design_decisions/symptom_detail_layers.md §12.6b.
+  final StructuralBleedingDetail? bleedingDetail;
+
   StructuralEvent({
     String? id,
     required this.timestamp,
@@ -746,6 +755,7 @@ class StructuralEvent {
     this.structuralDetail,
     this.severity,
     this.comparedToUsual,
+    this.bleedingDetail,
   }) : id = id ?? _newId(),
        kind = kind ?? inferKindFromType(type);
 
@@ -762,6 +772,7 @@ class StructuralEvent {
     StructuralDetail? structuralDetail,
     SymptomSeverity? severity,
     StructuralComparisonToUsual? comparedToUsual,
+    StructuralBleedingDetail? bleedingDetail,
   }) {
     return StructuralEvent(
       id: id,
@@ -775,6 +786,7 @@ class StructuralEvent {
       structuralDetail: structuralDetail ?? this.structuralDetail,
       severity: severity ?? this.severity,
       comparedToUsual: comparedToUsual ?? this.comparedToUsual,
+      bleedingDetail: bleedingDetail ?? this.bleedingDetail,
     );
   }
 
@@ -792,6 +804,7 @@ class StructuralEvent {
     if (severity != null) 'severity': severity!.value,
     if (comparedToUsual != null)
       'comparedToUsual': comparedToUsual!.serializationKey,
+    if (bleedingDetail != null) 'bleedingDetail': bleedingDetail!.toMap(),
   };
 
   /// F6.a: applies silent migrations for both `zone` and `type` strings.
@@ -800,6 +813,7 @@ class StructuralEvent {
   factory StructuralEvent.fromMap(Map<String, dynamic> map) {
     final sdRaw = map['structuralDetail'];
     final severityRaw = map['severity'];
+    final bdRaw = map['bleedingDetail'];
     return StructuralEvent(
       id: map['id'],
       timestamp: DateTime.parse(map['timestamp']),
@@ -820,6 +834,9 @@ class StructuralEvent {
       comparedToUsual: StructuralComparisonToUsual.fromKey(
         map['comparedToUsual'] as String?,
       ),
+      bleedingDetail: bdRaw is Map
+          ? StructuralBleedingDetail.fromMap(Map<String, dynamic>.from(bdRaw))
+          : null,
     );
   }
 }
@@ -1512,6 +1529,18 @@ class PubMedArticle {
 class Profile {
   final String id;
   String name;
+
+  /// Additive (Sprint P.D). What the app shows in-app (greetings, profile
+  /// switcher, dialogs) when non-empty — [name] stays the full/legal name
+  /// used in clinician-facing exports (PDF report, emergency card) so the
+  /// two audiences (patient's own UI vs. specialist reading a printout)
+  /// can differ without losing the legal name anywhere.
+  String preferredName;
+
+  /// UI-facing name: [preferredName] if set, otherwise falls back to
+  /// [name]. Clinical exports should keep reading [name] directly.
+  String get displayName => preferredName.isNotEmpty ? preferredName : name;
+
   String? relationship;
   List<String> conditions;
   String? country;
@@ -1607,6 +1636,7 @@ class Profile {
   Profile({
     required this.id,
     required this.name,
+    this.preferredName = '',
     required this.conditions,
     required this.symptomVault,
     required this.botiquin,
@@ -1939,6 +1969,7 @@ class Profile {
   Map<String, dynamic> toMap() => {
     'id': id,
     'name': name,
+    'preferredName': preferredName,
     'conditions': conditions,
     'country': country,
     'symptomVault': symptomVault,
@@ -2011,6 +2042,7 @@ class Profile {
   factory Profile.fromMap(Map<String, dynamic> map) => Profile(
     id: map['id'],
     name: map['name'],
+    preferredName: map['preferredName'] as String? ?? '',
     conditions: List<String>.from(map['conditions'] ?? const []),
     country: map['country'] as String?,
     customExercises: List<String>.from(map['customExercises'] ?? []),

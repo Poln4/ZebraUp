@@ -1238,11 +1238,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get structuralKnownTermShortcut => 'I already know what this is';
 
   @override
+  String get structuralBleedingSheetTitle => 'Bleeding or bruise detail';
+
+  @override
+  String get structuralBleedingSheetSubtitle =>
+      'Tell us the origin and how severe it was.';
+
+  @override
+  String get structuralBleedingLogTitle => 'How was it this time?';
+
+  @override
+  String get structuralBleedingLogSubtitle =>
+      'Origin and severity of this episode.';
+
+  @override
   String get structuralQuickLogTitle => 'How intense is it today?';
 
   @override
   String get structuralQuickLogSubtitle =>
       'You already have a saved history for this zone.';
+
+  @override
+  String get structuralQuickLogNewIssueLink =>
+      'Is this a new or different problem? Describe it separately';
 
   @override
   String get structuralComparedToUsualWorse => 'Worse than usual';
@@ -2065,6 +2083,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsPatientNameLabel => 'PATIENT NAME';
+
+  @override
+  String get settingsPatientNameHelper =>
+      'Full legal name. Used in the PDF for the specialist.';
+
+  @override
+  String get settingsPreferredNameLabel => 'PREFERRED NAME (OPTIONAL)';
+
+  @override
+  String get settingsPreferredNameHelper =>
+      'How you want the app to show your name. If left empty, the patient name is used.';
 
   @override
   String get settingsConditionsLabel => 'COMORBIDITIES / DIAGNOSES';

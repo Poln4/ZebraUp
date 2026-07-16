@@ -43,29 +43,36 @@ import '../models/structural_detail.dart';
 import '../services/structural_taxonomy.dart';
 import '../services/symptom_definitions_service.dart';
 import 'body_zone_picker_grid.dart';
+import 'structural_chip.dart';
 import 'symptom_definition_dialog.dart';
 
 class StructuralDetailSheetResult {
   final String? zone;
   final StructuralEventKind? kind;
   final StructuralDetail? detail;
+
+  /// §12.6b — populated instead of [detail] when `kind == softTissue`.
+  final StructuralBleedingDetail? bleedingDetail;
   final bool useClassicPicker;
 
   const StructuralDetailSheetResult.skip()
     : zone = null,
       kind = null,
       detail = null,
+      bleedingDetail = null,
       useClassicPicker = false;
 
   const StructuralDetailSheetResult.save({
     required this.zone,
     required this.kind,
     this.detail,
+    this.bleedingDetail,
   }) : useClassicPicker = false;
 
   const StructuralDetailSheetResult.classicPicker({required this.zone})
     : kind = null,
       detail = null,
+      bleedingDetail = null,
       useClassicPicker = true;
 }
 
@@ -126,6 +133,11 @@ class _StructuralDetailSheetBodyState
   StructuralAntecedent? _antecedent;
   StructuralMechanics? _mechanics;
 
+  // §12.6b — bleeding-detail state, used instead of the 4 fields above
+  // when `_kind == StructuralEventKind.softTissue`.
+  BleedingOnset? _bleedingOnset;
+  BleedingSeverity? _bleedingSeverity;
+
   @override
   void initState() {
     super.initState();
@@ -147,6 +159,11 @@ class _StructuralDetailSheetBodyState
     mechanics: _mechanics,
   );
 
+  StructuralBleedingDetail _buildBleedingDetail() => StructuralBleedingDetail(
+    onset: _bleedingOnset,
+    severity: _bleedingSeverity,
+  );
+
   bool _isChipSelected(String groupKey, String chipKey) {
     switch (groupKey) {
       case 'laterality':
@@ -161,6 +178,12 @@ class _StructuralDetailSheetBodyState
       case 'mechanics':
         final v = StructuralMechanics.fromKey(chipKey);
         return v != null && _mechanics == v;
+      case 'bleeding_onset':
+        final v = BleedingOnset.fromKey(chipKey);
+        return v != null && _bleedingOnset == v;
+      case 'bleeding_severity':
+        final v = BleedingSeverity.fromKey(chipKey);
+        return v != null && _bleedingSeverity == v;
     }
     return false;
   }
@@ -186,6 +209,16 @@ class _StructuralDetailSheetBodyState
         final v = StructuralMechanics.fromKey(chipKey);
         if (v == null) return;
         setState(() => _mechanics = _mechanics == v ? null : v);
+        break;
+      case 'bleeding_onset':
+        final v = BleedingOnset.fromKey(chipKey);
+        if (v == null) return;
+        setState(() => _bleedingOnset = _bleedingOnset == v ? null : v);
+        break;
+      case 'bleeding_severity':
+        final v = BleedingSeverity.fromKey(chipKey);
+        if (v == null) return;
+        setState(() => _bleedingSeverity = _bleedingSeverity == v ? null : v);
         break;
     }
   }
@@ -303,6 +336,14 @@ class _StructuralDetailSheetBodyState
     final svc = SymptomDefinitionsService.instance;
     final zone = _zone!;
     final kind = _kind!;
+    // §12.6b — tejido blando no encaja en los 4 grupos de dolor
+    // (lateralidad/carácter/antecedente/mecánica no describen bien un
+    // hematoma o un corte); usa Origen + Gravedad (ISTH-BAT adaptado)
+    // en su lugar. Ver docs/design_decisions/symptom_detail_layers.md §12.6b.
+    final isBleeding = kind == StructuralEventKind.softTissue;
+    final groupKeys = isBleeding
+        ? const ['bleeding_onset', 'bleeding_severity']
+        : const ['laterality', 'pain_character', 'antecedent', 'mechanics'];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,7 +353,9 @@ class _StructuralDetailSheetBodyState
           children: [
             Expanded(
               child: Text(
-                l10n.structuralSheetTitle,
+                isBleeding
+                    ? l10n.structuralBleedingSheetTitle
+                    : l10n.structuralSheetTitle,
                 style: TextStyle(
                   color: cc,
                   fontSize: 18,
@@ -340,7 +383,9 @@ class _StructuralDetailSheetBodyState
         ),
         const SizedBox(height: 4),
         Text(
-          l10n.structuralSheetSubtitle,
+          isBleeding
+              ? l10n.structuralBleedingSheetSubtitle
+              : l10n.structuralSheetSubtitle,
           style: TextStyle(color: cc.withValues(alpha: 0.6), fontSize: 12, height: 1.4),
         ),
         const SizedBox(height: 8),
@@ -375,8 +420,9 @@ class _StructuralDetailSheetBodyState
         ),
         const SizedBox(height: 20),
 
-        // 4 groups in JSON insertion order
-        ...svc.getGroupKeysInOrder('structural').map((groupKey) {
+        // Groups for this kind (4 pain groups, or Origen+Gravedad for
+        // tejido blando) — subset of svc.getGroupKeysInOrder('structural').
+        ...groupKeys.map((groupKey) {
           final header =
               svc.getGroupHeader('structural', groupKey, locale) ?? groupKey;
           final chipKeys = svc.getChipKeysInOrder('structural', groupKey);
@@ -405,7 +451,7 @@ class _StructuralDetailSheetBodyState
                         svc.getChipLabel('structural', groupKey, chipKey, locale) ??
                         chipKey;
                     final isSelected = _isChipSelected(groupKey, chipKey);
-                    return _StructuralChip(
+                    return StructuralChip(
                       label: chipLabel,
                       selected: isSelected,
                       cc: cc,
@@ -457,6 +503,20 @@ class _StructuralDetailSheetBodyState
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () {
+                  if (isBleeding) {
+                    final bleedingDetail = _buildBleedingDetail();
+                    Navigator.pop(
+                      context,
+                      StructuralDetailSheetResult.save(
+                        zone: zone,
+                        kind: kind,
+                        bleedingDetail: bleedingDetail.isEmpty
+                            ? null
+                            : bleedingDetail,
+                      ),
+                    );
+                    return;
+                  }
                   final detail = _buildDetail();
                   Navigator.pop(
                     context,
@@ -480,66 +540,3 @@ class _StructuralDetailSheetBodyState
   }
 }
 
-/// Custom chip rendering label + info-icon. Same shape as
-/// _HeadacheChip (headache_detail_sheet.dart) — duplicated rather than
-/// shared because the two live in different files with no existing
-/// shared-widget module for this pattern; extracting one is a fair
-/// follow-up if a 5th symptom needs the same chip.
-class _StructuralChip extends StatelessWidget {
-  final String label;
-  final bool selected;
-  final Color cc;
-  final Color ic;
-  final VoidCallback onToggle;
-  final VoidCallback onInfo;
-
-  const _StructuralChip({
-    required this.label,
-    required this.selected,
-    required this.cc,
-    required this.ic,
-    required this.onToggle,
-    required this.onInfo,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final labelColor = selected ? ic : cc;
-    final iconColor = selected
-        ? ic.withValues(alpha: 0.7)
-        : cc.withValues(alpha: 0.55);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onToggle,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(12, 6, 4, 6),
-          decoration: BoxDecoration(
-            color: selected ? cc : Colors.transparent,
-            border: Border.all(color: cc),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(label, style: TextStyle(color: labelColor, fontSize: 13)),
-              const SizedBox(width: 2),
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: onInfo,
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Icon(Icons.info_outline, size: 14, color: iconColor),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}

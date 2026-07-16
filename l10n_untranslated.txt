@@ -8,6 +8,14 @@
     "structuralZonePickTitle",
     "structuralZonePickSubtitle",
     "structuralKindPickTitle",
-    "structuralKindPickSubtitle"
+    "structuralKindPickSubtitle",
+    "structuralBleedingSheetTitle",
+    "structuralBleedingSheetSubtitle",
+    "structuralBleedingLogTitle",
+    "structuralBleedingLogSubtitle",
+    "structuralQuickLogNewIssueLink",
+    "settingsPatientNameHelper",
+    "settingsPreferredNameLabel",
+    "settingsPreferredNameHelper"
   ]
 }

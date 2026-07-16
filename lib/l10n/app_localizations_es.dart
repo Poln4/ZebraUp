@@ -1247,11 +1247,29 @@ class AppLocalizationsEs extends AppLocalizations {
   String get structuralKnownTermShortcut => 'Ya sé qué es';
 
   @override
+  String get structuralBleedingSheetTitle => 'Detalle del sangrado o moretón';
+
+  @override
+  String get structuralBleedingSheetSubtitle =>
+      'Cuéntanos el origen y qué tan grave fue.';
+
+  @override
+  String get structuralBleedingLogTitle => '¿Cómo fue esta vez?';
+
+  @override
+  String get structuralBleedingLogSubtitle =>
+      'Origen y gravedad de este episodio.';
+
+  @override
   String get structuralQuickLogTitle => '¿Qué tan intenso está hoy?';
 
   @override
   String get structuralQuickLogSubtitle =>
       'Ya tienes un antecedente guardado para esta zona.';
+
+  @override
+  String get structuralQuickLogNewIssueLink =>
+      '¿Es un problema nuevo o distinto? Descríbelo aparte';
 
   @override
   String get structuralComparedToUsualWorse => 'Peor que de costumbre';
@@ -2077,6 +2095,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsPatientNameLabel => 'NOMBRE DEL PACIENTE';
+
+  @override
+  String get settingsPatientNameHelper =>
+      'Nombre legal completo. Se usa en el PDF para el especialista.';
+
+  @override
+  String get settingsPreferredNameLabel => 'NOMBRE PREFERIDO (OPCIONAL)';
+
+  @override
+  String get settingsPreferredNameHelper =>
+      'Cómo quieres que te muestre la app. Si lo dejas vacío, se usa el nombre del paciente.';
 
   @override
   String get settingsConditionsLabel => 'COMORBILIDADES / DIAGNÓSTICOS';

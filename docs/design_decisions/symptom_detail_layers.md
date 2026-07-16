@@ -947,3 +947,115 @@ Modified files:
 
 Zero migrations required. All changes additive per the
 `optionalTrackers` extension pattern.
+
+---
+
+## 12. Estructural — Dolor musculoesquelético (diseño en curso, sin sprint asignado)
+
+**Estado:** En discusión con la usuaria (2026-07-15 a 2026-07-16). Sin implementar — este documento congela las decisiones tomadas hasta ahora en la conversación. La lista final de chips por grupo queda explícitamente pendiente (ver §12.6); no usar este documento todavía como spec de implementación.
+
+### 12.1 Motivación
+
+Paulina identificó dos problemas encadenados en el picker actual de "ZONAS ESTRUCTURALES":
+
+1. El dolor muscular post-ejercicio normal (DOMS) se registraba bajo el mismo ícono de alerta (⚠️) que subluxaciones/dislocaciones, pese a ser una respuesta esperada y benigna a la actividad — más intensa en hipermovilidad (ver `assets/zebra_wisdom.json`, hallazgo Ostuni et al., confirmado real en auditoría de código).
+2. Pacientes con poca experiencia clínica pueden no reconocer o no saber nombrar lo que les pasa ("subluxación", "entesitis") cuando sí saben describirlo en lenguaje llano (lateralidad, si duele al moverse, si es punzante u hormigueo, si hay antecedente de esfuerzo o "duele porque sí").
+
+### 12.2 Estado del código verificado antes de diseñar
+
+Auditoría directa de `lib/models/models.dart` y `lib/screens/sintomas_tab.dart` (no se asumió nada de una propuesta externa sin verificar, siguiendo el preflight del proyecto):
+
+- 27 valores en `kStructuralTaxonomy` bajo 6 `StructuralEventKind`: joint (4), muscle (6), tendon (5), ligament (3), softTissue (7), nerve (2).
+- El ⚠️ uniforme solo existe en el timeline "Registros de hoy" (aplica a todo evento sin mirar `kind`); el picker de selección ya varía ícono por kind. El problema real está en la visualización posterior, no en el picker de entrada.
+- `StructuralEvent` solo tiene `zone`, `kind`, `type`, `note`, `resolvedAt`, `stillPainful` — sin lateralidad, carácter del dolor, ni mecánica. Un comentario preexistente en el código (línea ~475) ya anticipaba "`BodySide` enum support in a future sprint" — nunca se construyó.
+- No existe `structural_red_flags.dart` — es la única categoría mayor de síntomas sin servicio de red flags (cefalea, fatiga, abdomen y MCAS sí tienen el suyo).
+- Nota de proceso: la primera propuesta de este rediseño vino de una instancia externa de Claude (Claude web) sin acceso al código. Acertó el diagnóstico del problema (mezcla DOMS/red-flags) pero se equivocó en detalles verificables (afirmó un ⚠️ uniforme en el picker que no existe ahí, y sugirió mapear directo a Orphanet cuando en realidad el vocabulario controlado relevante es HPO). Se corrigió contra el código real antes de avanzar — mismo principio que ya aplica el proyecto a sus propios parches.
+
+### 12.3 Decisiones de alcance
+
+| # | Decisión | Estado |
+|---|----------|--------|
+| 1 | Patrón UX: ícono ⓘ reactivo por opción (no embudo guiado de preguntas, no solo definiciones inline pasivas) | Confirmado por Paulina |
+| 2 | Alcance: auditoría completa de las 27 opciones, no solo articulación/tendón/ligamento | Confirmado por Paulina |
+| 3 | El origen de datos del ⓘ reusa el patrón `label_es`/`def_es` ya existente en `assets/symptom_definitions.json` (usado hoy por cefalea) en vez de construir un mecanismo nuevo | Propuesto, no contradicho |
+| 4 | Red flags estructurales (ej. subluxación que no reduce, pérdida de sensibilidad/pulso distal) | Diferido a sprint aparte — no se cierra el schema dos veces |
+| 5 | Mapeo HPO | Diferido — ver §12.6 |
+
+### 12.4 Estructura de grupos — CERRADA (2026-07-16)
+
+18 chips totales en 4 grupos, bajo el techo de 20 (Morren 2009, §2.7). Aplica a las 6 categorías de dolor: articulación, músculo, tendón, ligamento, nervio, y el nuevo "dolor sin causa estructural clara" (§12.5). **No aplica a tejido blando** — ver §12.6b, deferido a su propia ronda de diseño.
+
+1. **Lateralidad** (4, single-select): Izquierda, Derecha, Ambas, Difuso/central — implementa el `BodySide` ya anticipado en el código.
+2. **Carácter del dolor** (6, single-select): Agudo/punzante, Sensación de corte, Punzadas/eléctrico, Hormigueo, Sordo/difuso, Ardor. Confirmado por Paulina que "agudo/punzante" y "sensación de corte" son suficientemente distintos como para no fusionarse.
+3. **Antecedente** (5, single-select): Post-ejercicio reciente, Post-esfuerzo diferido (ventana 24-72h, mismo patrón que PEM en Fatiga/Flare Mode), Por golpe/trauma, **Condición conocida/antigua** (post-quirúrgica o crónica — seleccionar esto dispara el flujo de guardar historial de zona de §12.6), Sin antecedente específico.
+4. **Mecánica** (3, single-select): Empeora con movimiento, Presente en reposo también, Ambas — misma forma que el grupo "Patrón postural" ya usado en cefalea (§4.1.4).
+
+**Atajo ("Ya sé qué es")**: no es un chip, reusa el mismo patrón de botón "Saltar" ya establecido como decisión transversal (§3, ítem 6) — salta directo al picker de los 20 términos de dolor existentes + el nuevo. No cuenta contra el techo de chips.
+
+### 12.5 Nuevo `StructuralEventKind`: "dolor sin causa estructural clara"
+
+Paulina describe un tipo de dolor recurrente sin antecedente identificable ("duele porque duele"), que no encaja en articulación/músculo/tendón/ligamento/nervio en el sentido clásico. Se decidió modelarlo como un 7º `StructuralEventKind` propio, no como un valor dentro del grupo "Antecedente" — reconoce que es clínicamente distinto (dolor central/difuso vs. lesión estructural localizada), no solo una variante de timing.
+
+Nombre elegido: **"dolor sin causa estructural clara"** — se descartó el término informal de la usuaria ("dolor del síndrome") para evitar que el copy suene a que la app está confirmando un mecanismo diagnóstico no establecido. Aplica la misma regla de humildad epistémica ya codificada en este proyecto para advisories (§8.4, §10.6): describir el rasgo observable, no la interpretación clínica.
+
+### 12.6 Antecedente estructural conocido (post-quirúrgico/crónico)
+
+**Confirmado por Paulina (2026-07-16)**, motivado por un caso propio: dos cirugías de rodilla, con molestia crónica esperada cuya intensidad fluctúa día a día. Este caso es distinto de los tres ya cubiertos por la capa (lesión aguda nueva, DOMS, dolor sin causa estructural clara) — es una **cuarta categoría**: causa ya conocida y documentada, no algo que redescribir desde cero cada vez que duele.
+
+Diseño:
+
+1. **Historial estructural por zona** (nuevo, a nivel `Profile`, no por evento): entrada tipo "Rodilla derecha: post-quirúrgica (2 cirugías)" — zona + descripción libre + fecha aproximada opcional. Se registra una vez.
+2. **Atajo de registro rápido para zonas con historial conocido**: si la zona ya tiene antecedente guardado, el registro salta lateralidad/carácter/antecedente/mecánica y va directo a severidad (0-4, escala ya existente) + un chip opcional "¿distinto a lo usual?" (peor que de costumbre / normal para mí / mejor).
+3. **Opt-in en el momento, no solo desde ajustes**: al completar la funnel completa por primera vez en una zona, ofrecer un botón "guardar esto como algo que ya conozco" que crea la entrada de historial para la próxima vez.
+4. **Implicación diferida para red flags** (cuando se retome §12.6-red-flags en sprint aparte): distinguir fluctuación normal de una condición conocida vs. un cambio agudo nuevo sobre esa misma zona (ej. hinchazón repentina fuera de patrón) es clínicamente más útil que tratar toda lectura igual — anotado aquí para no perderlo, sin diseñar todavía.
+
+### 12.6b Tejido blando (heridas, quemaduras, hematomas) — hilo de diseño propio, deferido
+
+**Decisión (2026-07-16):** tejido blando NO entra en el cierre de §12.4. Explícitamente no es "queda como está porque es autoevidente" — Paulina señaló que merece su propia ronda de diseño porque la piel cicatriza distinto, los hematomas duran más y duelen más que otras lesiones, y hay una conexión clínica real entre hematomas frecuentes/extensos y anemia que muchos médicos no reconocen.
+
+**Verificación de citas (2026-07-16), corrigiendo una primera pasada demasiado conservadora:** Paulina compartió un reporte de Perplexity con 20 referencias; solo 2 son literatura primaria real, el resto son sitios de consumo/blogs/un post de Facebook, descartados por el mismo estándar de citas que ya aplica este proyecto (evitar hallucinations tipo NotebookLM — Perplexity corre el mismo riesgo).
+
+- **De Paepe & Malfait 2004**, *British Journal of Haematology* 127(5):491-500, DOI 10.1111/j.1365-2141.2004.05220.x — hematoma fácil presente "en grado variable en todos los subtipos de EDS" por fragilidad capilar y del tejido conectivo perivascular.
+- **Kumskova et al. 2023**, *J Thromb Haemost* 21(7):1824-1830, DOI 10.1016/j.jtha.2023.04.004 — ya citado en CLAUDE.md para MCAS (bruising/heavyBleeding, Sprint E). Paulina aportó el paper completo (no solo el abstract), lo que corrigió una primera lectura mía que subestimaba la severidad. Datos reales de la Tabla 2, cohorte n=52 EDS vs. 52 controles sanos:
+  - 62% de pacientes EDS con score ISTH-BAT anormal (0% en controles sanos, p<.0001).
+  - Sangrado cutáneo: 77% de pacientes lo reportan; de ellos, 16% "severo: extenso".
+  - Hematomas musculares: 69% lo reportan; 13% de todos los EDS los tuvo "espontáneos, sin trauma" (la categoría más grave que mide el estudio).
+  - Epistaxis: 50% lo reportan; 19% severa (taponamiento/cauterización), 4% con transfusión de sangre.
+  - Menorragia: 62% (de pacientes mujeres); 14% "life-threatening" (requirió dilatación y curetaje, ablación endometrial, o histerectomía).
+  - El paper concluye recomendando agregar síntomas de sangrado como criterio diagnóstico dado lo serio que puede llegar a ser — no es un síntoma menor/cosmético.
+  - Dato específico relevante a la conexión con anemia: en el grupo de menorragia moderada, **32% de todas las pacientes EDS "requirió terapia hormonal o de hierro"** — tratamiento con hierro documentado en la cohorte, aunque ligado a menorragia, no a hematomas directamente, y el paper no mide hemoglobina/ferritina como resultado.
+
+**Sobre la conexión hematomas→anemia específicamente:** ninguno de los dos papers reales mide anemia como resultado, y una búsqueda directa en PubMed de "Ehlers-Danlos + iron deficiency anemia + menorrhagia" no arrojó resultados indexados. La restricción original de CLAUDE.md (anemia/RDW-CV%, sin cita completa) se mantiene — Perplexity no la resuelve.
+
+**Segunda ronda de research (2026-07-16), documento propio de Paulina, 12 referencias — calidad muy superior al reporte de Perplejidad (todo revistas peer-reviewed reales, sin blogs).** Verifiqué 2 de las 12 directamente:
+
+- **Artoni et al. 2018**, *J Thromb Haemost* 16(12):2425-2431, DOI 10.1111/jth.14310, PMID 30312027 — confirmado: 41.7% de 141 pacientes EDS con score de sangrado (BSS) anormal, y de esos, **90% tenía al menos una anormalidad de función plaquetaria** (vía ADP), con relación dosis-respuesta (>3 anormalidades → OR 5.19). Coagulación estándar (PT/aPTT/factor von Willebrand) generalmente normal — el mecanismo dominante medible es plaquetario, no solo fragilidad vascular.
+- **Gooijer et al. 2024**, *Orphanet J Rare Dis* 19(1):61, DOI 10.1186/s13023-024-03054-8, PMID 38347577 — confirmado: 42% de 195 adultos con osteogénesis imperfecta (OI) con Self-BAT anormal, sin diferencia significativa entre subtipos de OI. Prevalencia casi idéntica a la de EDS (41.7%).
+- Las otras 10 (De Paepe & Malfait 2009 *Blood Reviews*, Jesudas 2019 *Haemophilia*, Velo-García 2016 *J Autoimmun*, Giannouli 2006 *Ann Rheum Dis*, Bertoli 2007 *Rheumatology*, Wielosz 2020 *Rheumatology*, Gooijer 2019 *BJH*, Wilson 2004 *Am J Med*, De Paepe & Malfait 2004 *BJH* — ya verificada, ver arriba — y Abdulla 2016 *Reumatismo*) no se verificaron una por una en esta sesión, pero el formato de cita es consistente y las dos verificadas coincidieron exactamente con lo reportado — confianza razonable, no verificación exhaustiva.
+
+**Esto cambia el framing del advisory.** El mensaje principal ya no debería ser "posible anemia" — la evidencia real y EDS-específica apunta a **disfunción plaquetaria** como mecanismo medible (Artoni 2018), con anemia como una posibilidad secundaria razonable de mencionar (un hemograma es parte estándar de cualquier estudio de sangrado, así que no está de más nombrarlo, pero no es el hallazgo principal). Candidato de copy revisado: *"esto puede valer la pena conversarlo con tu médico — podría incluir evaluación de tendencia de sangrado (función plaquetaria, entre otras cosas que suelen revisarse)"*, nunca afirmando causa. Sigue la misma regla de humildad epistémica de §8.4/§10.6.
+
+**El ISTH-BAT/Self-BAT generaliza más allá de EDS** — OI muestra prevalencia casi idéntica (42% vs 41.7%). Refuerza la idea de Paulina de adaptarlo (§ arriba), y sugiere que el diseño de esta capa no debería asumir EDS como única condición subyacente — las 56 condiciones de `condition_codes.json` incluyen otros trastornos del tejido conectivo a los que el mismo instrumento podría aplicar igual de bien.
+
+**⚠️ Nota de alta prioridad, sin diseñar, para cuando se retomen red flags de tejido blando:** en EDS vascular (vEDS), el moretón excesivo es descrito en la literatura como frecuentemente "la primera señal presente" antes de ruptura arterial espontánea — potencialmente fatal, riesgo distinto en orden de magnitud a cualquier otro red flag ya diseñado en esta app. Cuando se diseñe la fase de red flags de tejido blando, vEDS (identificable vía `Profile.conditions`) necesita su propio tier de severidad, no puede tratarse con la misma vara que un hematoma post-quirúrgico común. Anotado aquí explícitamente para que no se pierda — no se diseña ahora porque red flags de tejido blando ya está diferido como decisión previa.
+
+**Nota sensible, sin acción por ahora:** la literatura también menciona que en EDS pediátrico el moretón excesivo puede generar sospecha clínica de malignidad hematológica o maltrato infantil. Relevante para el futuro trabajo de Multi-Observer Profiles (ej. el caso de la ahijada de Paulina), donde datos longitudinales objetivos podrían en teoría ayudar a contextualizar el patrón — pero es territorio delicado que no se diseña sin que Paulina lo traiga explícitamente como prioridad.
+
+**Candidato de diseño para cuando le toque turno a tejido blando:** advisory de "tendencia de hematomas" — si la frecuencia/extensión reciente supera el patrón habitual de la paciente, sugerir mencionarlo al médico con el copy revisado arriba (plaquetas primero, hemograma/anemia como mención secundaria), nunca afirmando causa. Requiere que tejido blando tenga primero su propio tracking de frecuencia/severidad por zona, idealmente usando las categorías/severidad del ISTH-BAT/Self-BAT en vez de inventar una escala 0-4 genérica. Todavía sin diseñar en detalle.
+
+### 12.7 Grounding cualitativo adicional: encuesta general SED (no específica de ZebraUp)
+
+Paulina compartió respuestas de una encuesta propia sobre comunicación médica en SED (2 respuestas al momento de esta conversación, Chile, ambas con hipermovilidad/hEDS sospechado o confirmado). No es una encuesta de uso de ZebraUp ni es representativa por tamaño de muestra — se usa aquí como grounding cualitativo, no como dato estadístico. Referenciadas de forma anónima (encuestada A/B), sin correos ni datos de contacto que sí aparecían en el archivo original.
+
+- **Encuestada B (25, sin diagnóstico formal, barrera económica)**: reporta que médicos atribuyen su dolor a "falta de ejercicio". Refuerza directamente la motivación original de esta sección (§12.1) — separar dolor estructural genuino de DOMS no es solo higiene de datos interna, es munición real contra el descarte clínico de "solo necesitas moverte más". El historial estructural conocido (§12.6) apunta al mismo problema desde otro ángulo: evidencia longitudinal y específica por zona es más difícil de descartar que un reporte verbal aislado en consulta.
+- **Encuestada B** también describe escribir manualmente "cartas" con ayuda de IA antes de sus consultas porque olvida todo en el momento — validación directa, independiente, del caso de uso de Fase 4 (exportación PDF clínica).
+- **Encuestada A (39, hEDS confirmado genéticamente, 16 patologías)**: "Unir cabos, no verme por separado cada síntoma, eso hizo perder años" — valida la apuesta original de correlación cruzada entre síntomas (Sprint G, `symptom_pattern_detector.dart`). También señala un riesgo a vigilar: con muchas condiciones raras documentadas, condiciones comunes (en su caso, insuficiencia renal) pueden quedar de lado — no es una decisión de diseño todavía, queda como nota de vigilancia para cualquier feature futura de priorización o resumen automático.
+
+### 12.8 Decisiones diferidas / abiertas
+
+| Ítem | Razón de diferir |
+|------|-------------------|
+| Tejido blando (heridas/hematomas) | Hilo de diseño propio — ver §12.6b. No confundir con "no importa": Kumskova 2023 (paper completo) confirma severidad real (hematomas espontáneos, sangrado severo, menorragia life-threatening en subconjuntos de la cohorte). La conexión específica hematomas→anemia sigue sin cita EDS-directa, pero el advisory de "tendencia de hematomas" (§12.6b) no depende de esa cita, solo de principio médico general. |
+| Red flags estructurales | Se decidió expresamente no incluirlos en esta ronda — cerrar primero el modelo de captura (lateralidad/carácter/mecánica), evitar migrar el schema dos veces. Incluye la distinción de §12.6.4 (cambio agudo sobre condición conocida). |
+| Mapeo HPO | Se agrupará con el mapeo de Dolor Pélvico (D.4) y probablemente Dolor Torácico (D.5), porque comparten vocabulario de "carácter del dolor". Pendiente confirmar si Presíncope (D.3) entra en ese lote — no comparte ese vocabulario por ser de otra naturaleza clínica. Mientras tanto, Paulina puede avanzar el mapeo de los 20 valores de dolor de `kStructuralTaxonomy` (excluyendo tejido blando, ver arriba) que ya son estables independientemente de esta capa nueva. |
+| Relación exacta con `StructuralEvent` existente | Mayormente resuelta: la capa nueva convive con `StructuralEvent`, no lo reemplaza — el atajo ("Ya sé qué es") y el historial de zona (§12.6) son las dos vías de entrada rápida al mismo picker de 20 términos + el nuevo. Falta solo decidir el mecanismo de persistencia exacto (¿nuevo campo en `StructuralEvent` o modelo aparte vinculado?) al momento de implementar. |

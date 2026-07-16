@@ -924,6 +924,78 @@
             "def_zh": "休息時會痛,活動時更加劇。"
           }
         }
+      },
+      "bleeding_onset": {
+        "kind": "single_select",
+        "header_es": "ORIGEN",
+        "header_en": "ORIGIN",
+        "header_zh": "起因",
+        "chips": {
+          "spontaneous": {
+            "label_es": "Espontáneo, sin golpe",
+            "label_en": "Spontaneous, no impact",
+            "label_zh": "自發性,無撞擊",
+            "def_es": "Apareció sin un golpe, caída u otro trauma identificable.",
+            "def_en": "It appeared without a blow, fall, or other identifiable trauma.",
+            "def_zh": "在沒有撞擊、跌倒或其他可識別外傷的情況下出現。"
+          },
+          "trauma": {
+            "label_es": "Después de un golpe o trauma",
+            "label_en": "After a blow or trauma",
+            "label_zh": "撞擊或外傷之後",
+            "def_es": "Apareció después de un golpe, caída u otro trauma identificable.",
+            "def_en": "It appeared after a blow, fall, or other identifiable trauma.",
+            "def_zh": "在撞擊、跌倒或其他可識別的外傷後出現。"
+          }
+        }
+      },
+      "bleeding_severity": {
+        "kind": "single_select",
+        "header_es": "GRAVEDAD",
+        "header_en": "SEVERITY",
+        "header_zh": "嚴重程度",
+        "chips": {
+          "none": {
+            "label_es": "No fue nada, no necesité hacer nada",
+            "label_en": "It was nothing, I didn't need to do anything",
+            "label_zh": "沒什麼大不了,不需要處理",
+            "def_es": "Trivial — no requirió ninguna acción.",
+            "def_en": "Trivial — it didn't require any action.",
+            "def_zh": "輕微——不需要採取任何行動。"
+          },
+          "noted": {
+            "label_es": "Lo noté, pero no consulté a nadie",
+            "label_en": "I noticed it, but didn't consult anyone",
+            "label_zh": "有注意到,但沒有諮詢任何人",
+            "def_es": "Presente, sin buscar ninguna opinión médica.",
+            "def_en": "Present, without seeking any medical opinion.",
+            "def_zh": "存在,但沒有尋求任何醫療意見。"
+          },
+          "consulted_only": {
+            "label_es": "Consulté a alguien, pero no recibí tratamiento",
+            "label_en": "I consulted someone, but received no treatment",
+            "label_zh": "諮詢過,但沒有接受治療",
+            "def_es": "Hubo una consulta médica o de enfermería, sin tratamiento indicado.",
+            "def_en": "There was a medical or nursing consultation, with no treatment indicated.",
+            "def_zh": "有醫療或護理諮詢,但未給予治療。"
+          },
+          "treated": {
+            "label_es": "Recibí tratamiento (compresión, hielo, sutura, apósito, etc.)",
+            "label_en": "I received treatment (pressure, ice, stitches, dressing, etc.)",
+            "label_zh": "接受了治療(加壓、冰敷、縫合、敷料等)",
+            "def_es": "Se aplicó una medida de tratamiento local, médica o no.",
+            "def_en": "A local treatment measure was applied, medical or otherwise.",
+            "def_zh": "採取了局部治療措施,無論是否為醫療性質。"
+          },
+          "severe": {
+            "label_es": "Fue grave: necesité atención de urgencia, transfusión o cirugía",
+            "label_en": "It was severe: I needed urgent care, a transfusion, or surgery",
+            "label_zh": "嚴重:需要緊急就醫、輸血或手術",
+            "def_es": "Requirió atención de urgencia, transfusión de sangre o intervención quirúrgica.",
+            "def_en": "It required urgent care, a blood transfusion, or surgical intervention.",
+            "def_zh": "需要緊急就醫、輸血或外科手術介入。"
+          }
+        }
       }
     }
   }

@@ -2195,6 +2195,30 @@ abstract class AppLocalizations {
   /// **'Ya sé qué es'**
   String get structuralKnownTermShortcut;
 
+  /// No description provided for @structuralBleedingSheetTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle del sangrado o moretón'**
+  String get structuralBleedingSheetTitle;
+
+  /// No description provided for @structuralBleedingSheetSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuéntanos el origen y qué tan grave fue.'**
+  String get structuralBleedingSheetSubtitle;
+
+  /// No description provided for @structuralBleedingLogTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo fue esta vez?'**
+  String get structuralBleedingLogTitle;
+
+  /// No description provided for @structuralBleedingLogSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Origen y gravedad de este episodio.'**
+  String get structuralBleedingLogSubtitle;
+
   /// No description provided for @structuralQuickLogTitle.
   ///
   /// In es, this message translates to:
@@ -2206,6 +2230,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Ya tienes un antecedente guardado para esta zona.'**
   String get structuralQuickLogSubtitle;
+
+  /// No description provided for @structuralQuickLogNewIssueLink.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Es un problema nuevo o distinto? Descríbelo aparte'**
+  String get structuralQuickLogNewIssueLink;
 
   /// No description provided for @structuralComparedToUsualWorse.
   ///
@@ -3630,6 +3660,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'NOMBRE DEL PACIENTE'**
   String get settingsPatientNameLabel;
+
+  /// No description provided for @settingsPatientNameHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Nombre legal completo. Se usa en el PDF para el especialista.'**
+  String get settingsPatientNameHelper;
+
+  /// No description provided for @settingsPreferredNameLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'NOMBRE PREFERIDO (OPCIONAL)'**
+  String get settingsPreferredNameLabel;
+
+  /// No description provided for @settingsPreferredNameHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Cómo quieres que te muestre la app. Si lo dejas vacío, se usa el nombre del paciente.'**
+  String get settingsPreferredNameHelper;
 
   /// No description provided for @settingsConditionsLabel.
   ///

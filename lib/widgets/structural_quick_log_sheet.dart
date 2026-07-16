@@ -3,8 +3,13 @@
 // Shown instead of the 4-group funnel when the zone being logged
 // already has a saved StructuralZoneHistoryEntry — the whole point of
 // saving a known antecedent is to skip re-describing it every time.
-// Captures only severity (0-4, reusing SymptomSeverity/SeverityDotPicker)
-// plus an optional "¿distinto a lo usual?" comparison.
+// Captures severity (0-4, reusing SymptomSeverity/SeverityDotPicker) plus
+// an optional "¿distinto a lo usual?" comparison. Also offers an escape
+// hatch — "¿es un problema nuevo o distinto?" — for when the current
+// episode isn't the known antecedent at all (e.g. a new knee issue after
+// a prior knee surgery); that returns isNewIssue instead of a severity,
+// so the caller can route to the full funnel rather than bucketing it
+// under the saved history's kind.
 
 import 'package:flutter/material.dart';
 import '../extensions/context_ext.dart';
@@ -13,8 +18,9 @@ import '../models/structural_detail.dart';
 import 'severity_picker.dart';
 
 typedef StructuralQuickLogResult = ({
-  SymptomSeverity severity,
+  SymptomSeverity? severity,
   StructuralComparisonToUsual? comparedToUsual,
+  bool isNewIssue,
 });
 
 Future<StructuralQuickLogResult?> showStructuralQuickLogSheet({
@@ -99,6 +105,22 @@ class _StructuralQuickLogBodyState extends State<_StructuralQuickLogBody> {
                   height: 1.4,
                 ),
               ),
+              const SizedBox(height: 8),
+              InkWell(
+                onTap: () => Navigator.pop(context, (
+                  severity: null,
+                  comparedToUsual: null,
+                  isNewIssue: true,
+                )),
+                child: Text(
+                  l10n.structuralQuickLogNewIssueLink,
+                  style: TextStyle(
+                    color: cc,
+                    fontSize: 12,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               Center(
                 child: SeverityDotPicker(
@@ -160,6 +182,7 @@ class _StructuralQuickLogBodyState extends State<_StructuralQuickLogBody> {
                     : () => Navigator.pop(context, (
                         severity: _severity!,
                         comparedToUsual: _comparedToUsual,
+                        isNewIssue: false,
                       )),
                 child: Text(
                   l10n.actionSave,

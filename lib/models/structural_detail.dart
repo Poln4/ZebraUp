@@ -119,6 +119,89 @@ enum StructuralComparisonToUsual {
   }
 }
 
+/// §12.6b — Origen del sangrado/moretón. Eje que Kumskova et al. 2023
+/// marca como clínicamente notable para hematomas musculares: 13% de
+/// pacientes EDS tuvo hematomas musculares "espontáneos, sin trauma" —
+/// el subgrupo más severo que mide el estudio.
+enum BleedingOnset {
+  spontaneous('spontaneous'),
+  trauma('trauma');
+
+  final String serializationKey;
+  const BleedingOnset(this.serializationKey);
+
+  static BleedingOnset? fromKey(String? raw) {
+    if (raw == null) return null;
+    for (final v in values) {
+      if (v.serializationKey == raw) return v;
+    }
+    return null;
+  }
+}
+
+/// §12.6b — Gravedad adaptada del ISTH-BAT (0-4), en vez de reusar
+/// SymptomSeverity genérico. Reemplaza la escala 0-4 genérica que el
+/// propio diseño (docs/design_decisions/symptom_detail_layers.md
+/// §12.6b) señala como insuficiente para tejido blando — validado más
+/// allá de EDS (Gooijer et al. 2024 en osteogénesis imperfecta).
+enum BleedingSeverity {
+  none('none'),
+  noted('noted'),
+  consultedOnly('consulted_only'),
+  treated('treated'),
+  severe('severe');
+
+  final String serializationKey;
+  const BleedingSeverity(this.serializationKey);
+
+  static BleedingSeverity? fromKey(String? raw) {
+    if (raw == null) return null;
+    for (final v in values) {
+      if (v.serializationKey == raw) return v;
+    }
+    return null;
+  }
+}
+
+/// §12.6b — Detalle estructurado para eventos `StructuralEventKind.softTissue`
+/// (excepto `type == 'burn'`, que no es un fenómeno de sangrado). Reemplaza
+/// el embudo de 4 grupos de dolor (`StructuralDetail`) para este kind — ver
+/// docs/design_decisions/symptom_detail_layers.md §12.6b.
+class StructuralBleedingDetail {
+  final BleedingOnset? onset;
+  final BleedingSeverity? severity;
+
+  const StructuralBleedingDetail({this.onset, this.severity});
+
+  bool get isEmpty => onset == null && severity == null;
+
+  StructuralBleedingDetail copyWith({
+    BleedingOnset? onset,
+    BleedingSeverity? severity,
+    bool clearOnset = false,
+    bool clearSeverity = false,
+  }) {
+    return StructuralBleedingDetail(
+      onset: clearOnset ? null : (onset ?? this.onset),
+      severity: clearSeverity ? null : (severity ?? this.severity),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    final map = <String, dynamic>{};
+    if (onset != null) map['onset'] = onset!.serializationKey;
+    if (severity != null) map['severity'] = severity!.serializationKey;
+    return map;
+  }
+
+  factory StructuralBleedingDetail.fromMap(Map<String, dynamic> map) {
+    return StructuralBleedingDetail(
+      onset: BleedingOnset.fromKey(map['onset'] as String?),
+      severity: BleedingSeverity.fromKey(map['severity'] as String?),
+    );
+  }
+}
+
 /// Structured detail attached to a StructuralEvent when the user
 /// completes the 4-group funnel (as opposed to "Ya sé qué es").
 ///
