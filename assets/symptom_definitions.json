@@ -998,5 +998,482 @@
         }
       }
     }
+  },
+  "presyncope": {
+    "aliases": [
+      "presíncope",
+      "presincope",
+      "pre-síncope",
+      "casi me desmayo",
+      "casi me desmayé",
+      "estuve a punto de desmayarme",
+      "vahído",
+      "vahídos",
+      "se me fue la vista",
+      "casi pierdo el conocimiento",
+      "pots",
+      "disautonomía",
+      "disautonomia",
+      "near fainting",
+      "near syncope",
+      "presyncope",
+      "almost fainted",
+      "about to faint",
+      "昏厥前兆",
+      "差點暈倒",
+      "眼前發黑"
+    ],
+    "master": {
+      "label_es": "Presíncope",
+      "label_en": "Presyncope",
+      "label_zh": "昏厥前兆",
+      "definition_es": "Sensación intensa de mareo, al borde del desmayo, sin llegar a perder completamente el conocimiento — o perdiéndolo solo por un instante muy breve. Puede aparecer al pararte, al estar de pie mucho rato, o en otras situaciones. Es un síntoma frecuente en personas con disautonomía o inestabilidad de la presión arterial al cambiar de postura.\n\nLa app no mide tu presión arterial ni tu frecuencia cardíaca durante el episodio — solo registra lo que sentiste. Si los episodios son frecuentes o severos, esto puede ser información útil para conversar con tu médico sobre evaluación adicional.",
+      "definition_en": "An intense feeling of dizziness, on the edge of fainting, without fully losing consciousness — or losing it only for a very brief instant. It can appear when standing up, after standing for a long time, or in other situations. It's a frequent symptom in people with dysautonomia or blood pressure instability with position changes.\n\nThe app does not measure your blood pressure or heart rate during the episode — it only records what you felt. If episodes are frequent or severe, this can be useful information to discuss with your doctor about further evaluation.",
+      "definition_zh": "強烈的暈眩感,瀕臨暈厥邊緣,但沒有完全失去意識 — 或僅有極短暫的失去意識。可能發生在站起來時、長時間站立後,或其他情境中。這是自主神經功能障礙或姿勢改變時血壓不穩定患者常見的症狀。\n\n應用程式不會在發作期間測量你的血壓或心率 — 只記錄你當時的感受。如果發作頻繁或嚴重,這可能是與醫生討論進一步評估的有用資訊。"
+    },
+    "groups": {
+      "mechanism": {
+        "kind": "single_select",
+        "header_es": "DESENCADENANTE",
+        "header_en": "TRIGGER",
+        "header_zh": "誘因",
+        "chips": {
+          "on_standing": {
+            "label_es": "Al pararme",
+            "label_en": "On standing up",
+            "label_zh": "站起來時",
+            "def_es": "Ocurrió justo al pasar de estar sentada/o o acostada/o a estar de pie. Es el patrón más típico de intolerancia ortostática.",
+            "def_en": "Occurred right when going from sitting or lying down to standing up. It's the most typical pattern of orthostatic intolerance.",
+            "def_zh": "發生在從坐姿或臥姿轉為站立的瞬間。這是姿勢性不耐受最典型的模式。"
+          },
+          "prolonged_standing": {
+            "label_es": "De pie prolongado",
+            "label_en": "After standing for a while",
+            "label_zh": "長時間站立後",
+            "def_es": "Ocurrió después de llevar un rato de pie, no inmediatamente al pararte.",
+            "def_en": "Occurred after being on your feet for a while, not immediately upon standing.",
+            "def_zh": "發生在站立一段時間之後,而非站起來的瞬間。"
+          },
+          "situational": {
+            "label_es": "En una situación específica (toser, orinar, evacuar, dolor intenso)",
+            "label_en": "During a specific situation (coughing, urinating, having a bowel movement, intense pain)",
+            "label_zh": "特定情境中(咳嗽、排尿、排便、劇烈疼痛)",
+            "def_es": "Desencadenado por una acción puntual que activa una respuesta refleja del sistema nervioso — un patrón reconocido y distinto del ortostático.",
+            "def_en": "Triggered by a specific action that activates a reflex response of the nervous system — a recognized pattern, distinct from the orthostatic one.",
+            "def_zh": "由特定動作觸發神經系統的反射反應 — 這是已知且不同於姿勢性誘因的模式。"
+          },
+          "post_exertion": {
+            "label_es": "Después de esfuerzo físico",
+            "label_en": "After physical exertion",
+            "label_zh": "體力消耗之後",
+            "def_es": "Apareció después de un esfuerzo físico, no en reposo ni al solo cambiar de postura. Vale la pena mencionárselo a tu médico, especialmente si se repite.",
+            "def_en": "Appeared after physical exertion, not at rest or from a simple position change. Worth mentioning to your doctor, especially if it repeats.",
+            "def_zh": "發生在體力消耗之後,而非休息時或單純姿勢改變時。值得告訴你的醫生,特別是如果重複發生。"
+          },
+          "strong_emotion_or_pain": {
+            "label_es": "Emoción fuerte o dolor",
+            "label_en": "Strong emotion or pain",
+            "label_zh": "強烈情緒或疼痛",
+            "def_es": "Desencadenado por miedo, angustia, ver sangre, o un dolor agudo — un mecanismo reflejo reconocido, distinto de la intolerancia ortostática.",
+            "def_en": "Triggered by fear, distress, seeing blood, or acute pain — a recognized reflex mechanism, distinct from orthostatic intolerance.",
+            "def_zh": "由恐懼、痛苦、見血或劇痛所觸發 — 這是一種已知的反射機制,不同於姿勢性不耐受。"
+          },
+          "no_position_change": {
+            "label_es": "Sin cambio de postura",
+            "label_en": "Without any change in position",
+            "label_zh": "沒有姿勢改變",
+            "def_es": "Ocurrió estando ya sentada/o, acostada/o, o sin haber cambiado de posición. Esto es menos típico de un origen ortostático y puede valer la pena conversarlo con tu médico.",
+            "def_en": "Occurred while already sitting, lying down, or without any position change. This is less typical of an orthostatic origin and may be worth discussing with your doctor.",
+            "def_zh": "發生在已經坐著、躺著或沒有姿勢改變的情況下。這較不符合典型的姿勢性起因,可能值得與醫生討論。"
+          },
+          "unidentified": {
+            "label_es": "No identifiqué la causa",
+            "label_en": "I couldn't identify the cause",
+            "label_zh": "沒能確定原因",
+            "def_es": "No hay un desencadenante claro asociado a este episodio. Es información igualmente válida — no siempre hay un patrón evidente.",
+            "def_en": "There's no clear trigger associated with this episode. This is equally valid information — there isn't always an obvious pattern.",
+            "def_zh": "此次發作沒有明確的誘因。這同樣是有效的資訊 — 並非總是有明顯的模式。"
+          }
+        }
+      },
+      "prodrome": {
+        "kind": "multi_select",
+        "header_es": "SÍNTOMAS PREVIOS",
+        "header_en": "PRECEDING SYMPTOMS",
+        "header_zh": "先兆症狀",
+        "chips": {
+          "tunnel_vision": {
+            "label_es": "Visión en túnel u oscurecida",
+            "label_en": "Tunnel vision or darkening vision",
+            "label_zh": "視野變窄或變暗",
+            "def_es": "El campo visual se estrecha o se oscurece progresivamente antes del episodio. Refleja una caída transitoria del flujo sanguíneo hacia la retina.",
+            "def_en": "The visual field progressively narrows or darkens before the episode. Reflects a transient drop in blood flow to the retina.",
+            "def_zh": "發作前視野逐漸變窄或變暗。反映視網膜血流暫時性下降。"
+          },
+          "ringing_ears": {
+            "label_es": "Zumbido en los oídos",
+            "label_en": "Ringing in the ears",
+            "label_zh": "耳鳴",
+            "def_es": "Sonido de zumbido o pitido que aparece justo antes del episodio, otro signo frecuente de hipoperfusión transitoria.",
+            "def_en": "A ringing or buzzing sound that appears right before the episode, another frequent sign of transient hypoperfusion.",
+            "def_zh": "發作前出現的耳鳴或嗡嗡聲,是暫時性血流灌注不足的另一個常見徵兆。"
+          },
+          "cold_sweat": {
+            "label_es": "Sudor frío",
+            "label_en": "Cold sweat",
+            "label_zh": "冒冷汗",
+            "def_es": "Sudoración fría y repentina, típica de la respuesta autonómica que acompaña a estos episodios.",
+            "def_en": "Sudden, cold sweating, typical of the autonomic response that accompanies these episodes.",
+            "def_zh": "突然出現的冷汗,是伴隨這類發作的自主神經反應的典型表現。"
+          },
+          "nausea": {
+            "label_es": "Náusea",
+            "label_en": "Nausea",
+            "label_zh": "噁心",
+            "def_es": "Sensación de náusea justo antes o durante el episodio.",
+            "def_en": "A feeling of nausea right before or during the episode.",
+            "def_zh": "發作前或發作期間感到噁心。"
+          },
+          "paleness_noted": {
+            "label_es": "Palidez notada por alguien más",
+            "label_en": "Paleness noticed by someone else",
+            "label_zh": "被他人注意到臉色蒼白",
+            "def_es": "Otra persona notó que te pusiste pálida/o durante el episodio — un dato objetivo útil que tú misma/o no puedes observar.",
+            "def_en": "Someone else noticed you turned pale during the episode — a useful objective detail you can't observe yourself.",
+            "def_zh": "他人注意到你在發作期間臉色變得蒼白 — 這是你自己無法觀察到的有用客觀資訊。"
+          },
+          "palpitations": {
+            "label_es": "Palpitaciones",
+            "label_en": "Palpitations",
+            "label_zh": "心悸",
+            "def_es": "Sensación de latidos rápidos, fuertes o irregulares antes o durante el episodio.",
+            "def_en": "A sensation of fast, strong, or irregular heartbeats before or during the episode.",
+            "def_zh": "發作前或發作期間感到心跳快速、強烈或不規律。"
+          }
+        }
+      },
+      "outcome": {
+        "kind": "single_select",
+        "header_es": "CÓMO TERMINÓ",
+        "header_en": "HOW IT ENDED",
+        "header_zh": "結果",
+        "chips": {
+          "sat_or_lay_down": {
+            "label_es": "Me alcancé a sentar o acostar",
+            "label_en": "I managed to sit or lie down in time",
+            "label_zh": "來得及坐下或躺下",
+            "def_es": "Pudiste reaccionar a tiempo y cambiar de posición antes de que el episodio avanzara más.",
+            "def_en": "You were able to react in time and change position before the episode progressed further.",
+            "def_zh": "你能及時反應並改變姿勢,避免發作進一步惡化。"
+          },
+          "near_fall_no_loc": {
+            "label_es": "Casi me caigo pero no perdí el conocimiento",
+            "label_en": "I nearly fell but didn't lose consciousness",
+            "label_zh": "差點跌倒但沒有失去意識",
+            "def_es": "Hubo riesgo de caída, pero te mantuviste consciente en todo momento.",
+            "def_en": "There was a risk of falling, but you remained conscious throughout.",
+            "def_zh": "有跌倒的風險,但你全程保持清醒。"
+          },
+          "brief_loc": {
+            "label_es": "Perdí el conocimiento, aunque breve",
+            "label_en": "I lost consciousness, even if briefly",
+            "label_zh": "短暫失去了意識",
+            "def_es": "Perder el conocimiento, aunque sea por unos segundos, es distinto de solo sentir mareo intenso. Vale la pena mencionárselo a tu médico pronto, especialmente para descartar causas cardíacas.",
+            "def_en": "Losing consciousness, even for a few seconds, is different from just feeling intense dizziness. It's worth mentioning to your doctor soon, especially to rule out cardiac causes.",
+            "def_zh": "即使只是幾秒鐘的失去意識,也與單純的強烈暈眩不同。值得儘快告訴你的醫生,特別是為了排除心臟方面的原因。"
+          }
+        }
+      },
+      "recovery": {
+        "kind": "single_select",
+        "header_es": "RECUPERACIÓN",
+        "header_en": "RECOVERY",
+        "header_zh": "恢復",
+        "chips": {
+          "fast": {
+            "label_es": "Rápida (menos de un minuto)",
+            "label_en": "Fast (less than a minute)",
+            "label_zh": "很快(不到一分鐘)",
+            "def_es": "El malestar pasó en menos de un minuto tras cambiar de posición o descansar.",
+            "def_en": "The discomfort passed in less than a minute after changing position or resting.",
+            "def_zh": "改變姿勢或休息後,不適感在一分鐘內就消失了。"
+          },
+          "slow": {
+            "label_es": "Lenta",
+            "label_en": "Slow",
+            "label_zh": "緩慢",
+            "def_es": "El malestar tardó varios minutos o más en pasar completamente.",
+            "def_en": "The discomfort took several minutes or longer to fully pass.",
+            "def_zh": "不適感需要好幾分鐘或更久才完全消失。"
+          },
+          "tired_after": {
+            "label_es": "Con cansancio después aunque el mareo pasó rápido",
+            "label_en": "Tired afterward even though the dizziness passed quickly",
+            "label_zh": "頭暈很快過去但之後感到疲憊",
+            "def_es": "El mareo en sí pasó rápido, pero quedó una sensación de cansancio o agotamiento después — un patrón distinto de la recuperación lenta del mareo mismo.",
+            "def_en": "The dizziness itself passed quickly, but a feeling of tiredness or exhaustion remained afterward — a pattern distinct from a slow recovery of the dizziness itself.",
+            "def_zh": "暈眩本身很快過去,但之後留下疲憊或精疲力竭的感覺 — 這與暈眩本身恢復緩慢是不同的模式。"
+          }
+        }
+      }
+    }
+  },
+  "pelvic_pain": {
+    "aliases": [
+      "dolor pélvico",
+      "dolor pelviano",
+      "dolor de pelvis",
+      "dolor pélvico crónico",
+      "dolor vulvar",
+      "vulvodinia",
+      "dispareunia",
+      "dolor perineal",
+      "endometriosis",
+      "adenomiosis",
+      "pelvic pain",
+      "pelvic ache",
+      "chronic pelvic pain",
+      "vulvodynia",
+      "dyspareunia",
+      "vulvar pain",
+      "骨盆疼痛",
+      "骨盆痛",
+      "外陰痛",
+      "子宮內膜異位症"
+    ],
+    "master": {
+      "label_es": "Dolor pélvico",
+      "label_en": "Pelvic pain",
+      "label_zh": "骨盆疼痛",
+      "definition_es": "Dolor sentido en la zona pélvica — más profundo o más bajo que el dolor abdominal general, y que puede incluir la zona genital externa, la espalda baja, o irradiarse a las piernas. Es distinto del dolor abdominal (que tiene su propia capa de detalle en esta app) y frecuente en personas con hipermovilidad, junto a condiciones como endometriosis, adenomiosis, vulvodinia o disfunción del piso pélvico.\n\nCada pregunta de este formulario es opcional — puedes responder solo lo que te haga sentido y omitir el resto sin ningún problema.",
+      "definition_en": "Pain felt in the pelvic area — deeper or lower than general abdominal pain, and which can include the external genital area, the low back, or radiate to the legs. It's distinct from abdominal pain (which has its own detail layer in this app) and common in people with hypermobility, alongside conditions like endometriosis, adenomyosis, vulvodynia, or pelvic floor dysfunction.\n\nEvery question in this form is optional — you can answer only what makes sense to you and skip the rest without any issue.",
+      "definition_zh": "感覺在骨盆區域的疼痛 — 比一般腹痛更深或更低,可能包括外陰部位、下背部,或延伸到腿部。這與腹痛不同(腹痛在本應用程式中有自己的細節層),在過動性關節患者中常見,並常伴隨子宮內膜異位症、腺肌症、外陰痛或骨盆底功能障礙等病症。\n\n此表單中的每個問題都是選填的 — 你可以只回答對你有意義的部分,其餘的可以放心跳過。"
+    },
+    "groups": {
+      "location": {
+        "kind": "single_select",
+        "header_es": "UBICACIÓN",
+        "header_en": "LOCATION",
+        "header_zh": "位置",
+        "chips": {
+          "lower_abdomen": {
+            "label_es": "Bajo el ombligo",
+            "label_en": "Below the belly button",
+            "label_zh": "肚臍下方",
+            "def_es": "El dolor se siente en la parte baja del vientre, cerca del hueso púbico.",
+            "def_en": "The pain is felt in the lower belly, near the pubic bone.",
+            "def_zh": "疼痛感覺在下腹部,靠近恥骨附近。"
+          },
+          "deep_central": {
+            "label_es": "Bien profundo, en el centro",
+            "label_en": "Deep inside, in the center",
+            "label_zh": "深處、在中間",
+            "def_es": "El dolor se siente profundo, como en el centro de la pelvis, no en la superficie.",
+            "def_en": "The pain feels deep, as if in the center of the pelvis, not on the surface.",
+            "def_zh": "疼痛感覺很深,像是在骨盆中央,而不是表面。"
+          },
+          "external_intimate": {
+            "label_es": "Por fuera, en la zona íntima",
+            "label_en": "On the outside, in the intimate area",
+            "label_zh": "外部、私密部位",
+            "def_es": "El dolor se siente por fuera, en la zona genital externa. Puedes describirlo con tus propias palabras en la nota si prefieres — esta opción es solo una guía.",
+            "def_en": "The pain is felt on the outside, in the external genital area. You can describe it in your own words in the note if you prefer — this option is just a guide.",
+            "def_zh": "疼痛感覺在外部,外陰部位。如果你願意,也可以在備註中用自己的話描述 — 這個選項只是一個參考。"
+          },
+          "low_back_tailbone": {
+            "label_es": "Espalda baja o rabadilla",
+            "label_en": "Low back or tailbone",
+            "label_zh": "下背部或尾骨",
+            "def_es": "El dolor se siente en la espalda baja o en el cóccix (rabadilla), no en el vientre.",
+            "def_en": "The pain is felt in the low back or tailbone, not in the belly.",
+            "def_zh": "疼痛感覺在下背部或尾骨,而不是腹部。"
+          },
+          "radiating_legs_groin": {
+            "label_es": "Baja hacia las piernas o la ingle",
+            "label_en": "Radiates down to the legs or groin",
+            "label_zh": "延伸到腿部或腹股溝",
+            "def_es": "El dolor se irradia o baja hacia las piernas o la ingle.",
+            "def_en": "The pain radiates or travels down to the legs or groin.",
+            "def_zh": "疼痛向下延伸到腿部或腹股溝。"
+          }
+        }
+      },
+      "character": {
+        "kind": "single_select",
+        "header_es": "CARÁCTER DEL DOLOR",
+        "header_en": "CHARACTER OF THE PAIN",
+        "header_zh": "疼痛性質",
+        "chips": {
+          "cramping": {
+            "label_es": "Cólico o tipo calambre",
+            "label_en": "Cramping",
+            "label_zh": "絞痛或痙攣感",
+            "def_es": "Un dolor que va y viene en oleadas, parecido a un calambre.",
+            "def_en": "A pain that comes and goes in waves, similar to a cramp.",
+            "def_zh": "疼痛陣陣發作,類似痙攣。"
+          },
+          "burning": {
+            "label_es": "Ardor",
+            "label_en": "Burning",
+            "label_zh": "灼熱感",
+            "def_es": "Una sensación de ardor o quemazón.",
+            "def_en": "A burning or searing sensation.",
+            "def_zh": "灼熱或燒灼的感覺。"
+          },
+          "pressure_heaviness": {
+            "label_es": "Presión o peso",
+            "label_en": "Pressure or heaviness",
+            "label_zh": "壓迫感或沉重感",
+            "def_es": "Una sensación de presión o peso, como algo que empuja hacia abajo.",
+            "def_en": "A sensation of pressure or heaviness, like something pushing downward.",
+            "def_zh": "壓迫或沉重的感覺,像是有東西向下推。"
+          },
+          "sharp_stabbing": {
+            "label_es": "Punzante",
+            "label_en": "Sharp or stabbing",
+            "label_zh": "刺痛",
+            "def_es": "Un dolor agudo y puntual, como una punzada.",
+            "def_en": "A sharp, pinpoint pain, like a stab.",
+            "def_zh": "尖銳、局部的疼痛,像被刺到一樣。"
+          },
+          "sudden_severe_onset": {
+            "label_es": "Empezó de golpe y muy fuerte, distinto a lo usual",
+            "label_en": "Started suddenly and very intensely, unlike usual",
+            "label_zh": "突然發作且非常劇烈,與平常不同",
+            "def_es": "Un dolor que empezó de un momento a otro, muy intenso, y es distinto a tu dolor pélvico habitual. Vale la pena que vayas a urgencias para descartar una emergencia, como la torsión de un ovario o la rotura de un embarazo ectópico. Si el dolor mejoró significativamente y ya no lo describirías así, puedes cambiar el carácter y guardar el registro normalmente.",
+            "def_en": "A pain that started suddenly, very intense, and different from your usual pelvic pain. It's worth going to urgent care to rule out an emergency, such as ovarian torsion or a ruptured ectopic pregnancy. If the pain improved significantly and you would no longer describe it this way, you can change the character and save the entry normally.",
+            "def_zh": "突然發生的劇烈疼痛,與你平常的骨盆疼痛不同。值得去急診排除緊急狀況,例如卵巢扭轉或子宮外孕破裂。如果疼痛已明顯改善,不再符合這個描述,你可以更改疼痛性質後正常儲存記錄。"
+          }
+        }
+      },
+      "timing": {
+        "kind": "single_select",
+        "header_es": "RELACIÓN CON EL CICLO",
+        "header_en": "RELATION TO YOUR CYCLE",
+        "header_zh": "與週期的關係",
+        "chips": {
+          "with_period": {
+            "label_es": "Con la menstruación",
+            "label_en": "With my period",
+            "label_zh": "與月經有關",
+            "def_es": "El dolor aparece o empeora durante la menstruación.",
+            "def_en": "The pain appears or worsens during your period.",
+            "def_zh": "疼痛在月經期間出現或加重。"
+          },
+          "mid_cycle": {
+            "label_es": "A mitad de ciclo (ovulación aprox.)",
+            "label_en": "Mid-cycle (around ovulation)",
+            "label_zh": "週期中間(約排卵期)",
+            "def_es": "El dolor aparece aproximadamente a mitad del ciclo menstrual, cerca de la ovulación.",
+            "def_en": "The pain appears roughly in the middle of the menstrual cycle, around ovulation.",
+            "def_zh": "疼痛大約出現在月經週期中間,接近排卵期。"
+          },
+          "no_cycle_pattern": {
+            "label_es": "Sin relación clara con el ciclo, o no aplica",
+            "label_en": "No clear relation to the cycle, or not applicable",
+            "label_zh": "與週期無明顯關係,或不適用",
+            "def_es": "El dolor no tiene un patrón claro con el ciclo menstrual, es constante, o esta pregunta simplemente no aplica para ti.",
+            "def_en": "The pain has no clear pattern with the menstrual cycle, is constant, or this question simply doesn't apply to you.",
+            "def_zh": "疼痛與月經週期沒有明顯規律、持續存在,或這個問題不適用於你。"
+          }
+        }
+      },
+      "triggers": {
+        "kind": "multi_select",
+        "header_es": "CONTEXTO",
+        "header_en": "CONTEXT",
+        "header_zh": "情境",
+        "chips": {
+          "with_bowel_movement": {
+            "label_es": "Con la evacuación intestinal",
+            "label_en": "With a bowel movement",
+            "label_zh": "與排便有關",
+            "def_es": "El dolor aparece o empeora al evacuar.",
+            "def_en": "The pain appears or worsens with a bowel movement.",
+            "def_zh": "疼痛在排便時出現或加重。"
+          },
+          "with_bladder_fullness": {
+            "label_es": "Con la vejiga llena o al orinar",
+            "label_en": "With a full bladder or when urinating",
+            "label_zh": "膀胱脹滿或排尿時",
+            "def_es": "El dolor aparece cuando la vejiga está llena, o al orinar.",
+            "def_en": "The pain appears when the bladder is full, or when urinating.",
+            "def_zh": "疼痛在膀胱脹滿或排尿時出現。"
+          },
+          "prolonged_sitting": {
+            "label_es": "Con estar mucho tiempo sentada/o",
+            "label_en": "With prolonged sitting",
+            "label_zh": "久坐時",
+            "def_es": "El dolor empeora después de estar sentada/o por un rato largo.",
+            "def_en": "The pain worsens after sitting for a long while.",
+            "def_zh": "久坐一段時間後疼痛加重。"
+          },
+          "physical_activity": {
+            "label_es": "Con actividad física",
+            "label_en": "With physical activity",
+            "label_zh": "與體力活動有關",
+            "def_es": "El dolor aparece o empeora con el ejercicio o el esfuerzo físico.",
+            "def_en": "The pain appears or worsens with exercise or physical exertion.",
+            "def_zh": "疼痛在運動或體力消耗時出現或加重。"
+          },
+          "sexual_activity": {
+            "label_es": "Con la actividad sexual",
+            "label_en": "With sexual activity",
+            "label_zh": "與性行為有關",
+            "def_es": "El dolor aparece durante o después de la actividad sexual. Esta pregunta es completamente opcional — puedes omitirla sin ningún problema.",
+            "def_en": "The pain appears during or after sexual activity. This question is entirely optional — you can skip it without any issue.",
+            "def_zh": "疼痛在性行為期間或之後出現。這個問題完全是選填的 — 你可以放心跳過。"
+          }
+        }
+      },
+      "accompaniments": {
+        "kind": "multi_select",
+        "header_es": "SÍNTOMAS ACOMPAÑANTES",
+        "header_en": "ACCOMPANYING SYMPTOMS",
+        "header_zh": "伴隨症狀",
+        "chips": {
+          "bloating": {
+            "label_es": "Hinchazón o distensión",
+            "label_en": "Bloating",
+            "label_zh": "腹脹",
+            "def_es": "Sensación de hinchazón o distensión en el vientre bajo.",
+            "def_en": "A feeling of bloating or distension in the lower belly.",
+            "def_zh": "下腹部有腫脹或脹氣的感覺。"
+          },
+          "urinary_urgency_frequency": {
+            "label_es": "Urgencia o frecuencia urinaria",
+            "label_en": "Urinary urgency or frequency",
+            "label_zh": "尿急或頻尿",
+            "def_es": "Necesidad urgente o muy frecuente de orinar.",
+            "def_en": "An urgent or very frequent need to urinate.",
+            "def_zh": "有急迫或非常頻繁的排尿需求。"
+          },
+          "bowel_changes": {
+            "label_es": "Cambios en el tránsito intestinal",
+            "label_en": "Changes in bowel habits",
+            "label_zh": "腸道習慣改變",
+            "def_es": "Estreñimiento, diarrea, u otro cambio en tus evacuaciones habituales.",
+            "def_en": "Constipation, diarrhea, or another change in your usual bowel movements.",
+            "def_zh": "便秘、腹瀉或其他排便習慣的改變。"
+          },
+          "pelvic_floor_tension": {
+            "label_es": "Tensión o espasmo muscular en la zona pélvica",
+            "label_en": "Muscle tension or spasm in the pelvic area",
+            "label_zh": "骨盆區域肌肉緊繃或痙攣",
+            "def_es": "Sensación de tensión, espasmo, o dificultad para relajar los músculos de la zona pélvica. Es un patrón conocido en personas con hipermovilidad y disautonomía.",
+            "def_en": "A feeling of tension, spasm, or difficulty relaxing the muscles in the pelvic area. This is a recognized pattern in people with hypermobility and dysautonomia.",
+            "def_zh": "骨盆區域肌肉緊繃、痙攣,或難以放鬆的感覺。這是過動性關節和自主神經功能障礙患者常見的模式。"
+          },
+          "abnormal_bleeding": {
+            "label_es": "Sangrado fuera de lo usual",
+            "label_en": "Bleeding outside of what's usual for you",
+            "label_zh": "異常出血",
+            "def_es": "Sangrado más abundante, más prolongado, o en un momento distinto al que es habitual para ti.",
+            "def_en": "Bleeding that is heavier, longer, or at a different time than what's usual for you.",
+            "def_zh": "出血比平常更多、更久,或發生在不同尋常的時間。"
+          }
+        }
+      }
+    }
   }
 }

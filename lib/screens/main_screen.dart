@@ -18,6 +18,7 @@ import '../models/pdf_export_config.dart';
 import '../widgets/condition_info_sheet.dart';
 import '../widgets/life_event_form_sheet.dart';
 import '../widgets/structural_zone_history_form_sheet.dart';
+import '../widgets/weight_entry_form_sheet.dart';
 import '../widgets/fever_form_sheet.dart';
 import '../widgets/pdf_export_sheet.dart';
 import '../widgets/report_view.dart';
@@ -856,6 +857,43 @@ class _MainAppScreenState extends State<MainAppScreen> {
     }
     for (final c in p.conditions) {
       if (svc.matchesSymptomKey(c, 'abdominal_pain')) return true;
+    }
+    return false;
+  }
+
+  /// D.3: True iff the active profile mentions presíncope anywhere —
+  /// in the symptom vault or in the listed conditions. Aliases include
+  /// presíncope, casi me desmayo, vahído, POTS, disautonomía, and
+  /// their en / zh equivalents. Mirrors _hasHeadacheRelevance,
+  /// _hasFatigueRelevance and _hasAbdominalRelevance.
+  bool _hasPresyncopeRelevance() {
+    final svc = SymptomDefinitionsService.instance;
+    final p = _activeProfile;
+    if (p == null) return false;
+    for (final s in p.symptomVault) {
+      if (svc.matchesSymptomKey(s, 'presyncope')) return true;
+    }
+    for (final c in p.conditions) {
+      if (svc.matchesSymptomKey(c, 'presyncope')) return true;
+    }
+    return false;
+  }
+
+  /// D.4: True iff the active profile mentions dolor pélvico anywhere —
+  /// in the symptom vault or in the listed conditions. Aliases include
+  /// dolor pélvico, vulvodinia, dispareunia, endometriosis, adenomiosis,
+  /// and their en / zh equivalents. Mirrors _hasHeadacheRelevance,
+  /// _hasFatigueRelevance, _hasAbdominalRelevance and
+  /// _hasPresyncopeRelevance.
+  bool _hasPelvicPainRelevance() {
+    final svc = SymptomDefinitionsService.instance;
+    final p = _activeProfile;
+    if (p == null) return false;
+    for (final s in p.symptomVault) {
+      if (svc.matchesSymptomKey(s, 'pelvic_pain')) return true;
+    }
+    for (final c in p.conditions) {
+      if (svc.matchesSymptomKey(c, 'pelvic_pain')) return true;
     }
     return false;
   }
@@ -2096,6 +2134,8 @@ class _MainAppScreenState extends State<MainAppScreen> {
                     _addStructuralZoneHistory(cc, ic),
                 onEditStructuralZoneHistory: (e) =>
                     _editStructuralZoneHistory(e, cc, ic),
+                onAddWeightEntry: () => _addWeightEntry(cc, ic),
+                onEditWeightEntry: (e) => _editWeightEntry(e, cc, ic),
               ),
             ),
           ),
@@ -2125,6 +2165,8 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 showHeadacheDetail: _hasHeadacheRelevance(),
                 showFatigueDetail: _hasFatigueRelevance(),
                 showAbdominalDetail: _hasAbdominalRelevance(),
+                showPresyncopeDetail: _hasPresyncopeRelevance(),
+                showPelvicPainDetail: _hasPelvicPainRelevance(),
               ),
             ),
           ),
@@ -2338,6 +2380,40 @@ class _MainAppScreenState extends State<MainAppScreen> {
     if (idx >= 0) {
       setState(() {
         _activeProfile!.structuralZoneHistory[idx] = result;
+        _saveData();
+      });
+    }
+  }
+
+  Future<void> _addWeightEntry(Color cc, Color ic) async {
+    final result = await showWeightEntryFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+    );
+    if (result == null) return;
+    setState(() {
+      _activeProfile!.weightEntries.add(result);
+      _saveData();
+    });
+  }
+
+  Future<void> _editWeightEntry(
+    WeightEntry existing,
+    Color cc,
+    Color ic,
+  ) async {
+    final result = await showWeightEntryFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+      existing: existing,
+    );
+    if (result == null) return;
+    final idx = _activeProfile!.weightEntries.indexOf(existing);
+    if (idx >= 0) {
+      setState(() {
+        _activeProfile!.weightEntries[idx] = result;
         _saveData();
       });
     }

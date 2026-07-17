@@ -4,6 +4,8 @@ import '../models/models.dart';
 import '../models/headache_detail.dart';
 import '../models/fatigue_detail.dart';
 import '../models/abdominal_detail.dart';
+import '../models/presyncope_detail.dart';
+import '../models/pelvic_pain_detail.dart';
 import '../models/structural_detail.dart';
 import 'timestamp_picker.dart';
 import '../widgets/bowel_form_sheet.dart';
@@ -15,7 +17,10 @@ import '../widgets/hrv_form_sheet.dart';
 import '../widgets/headache_detail_sheet.dart';
 import '../widgets/fatigue_detail_sheet.dart';
 import '../widgets/abdominal_detail_sheet.dart';
+import '../widgets/presyncope_detail_sheet.dart';
+import '../widgets/pelvic_pain_detail_sheet.dart';
 import '../widgets/structural_bleeding_sheet.dart';
+import '../widgets/structural_checkin_sheet.dart';
 import '../widgets/structural_detail_sheet.dart';
 import '../widgets/structural_quick_log_sheet.dart';
 import '../widgets/structural_zone_history_form_sheet.dart';
@@ -31,6 +36,10 @@ import '../services/fatigue_red_flags.dart';
 import '../services/fatigue_detail_format.dart';
 import '../services/abdominal_red_flags.dart';
 import '../services/abdominal_detail_format.dart';
+import '../services/presyncope_red_flags.dart';
+import '../services/presyncope_detail_format.dart';
+import '../services/pelvic_pain_red_flags.dart';
+import '../services/pelvic_pain_detail_format.dart';
 import '../services/structural_detail_format.dart';
 import '../widgets/collapsible_section.dart';
 import '../widgets/severity_picker.dart';
@@ -291,7 +300,7 @@ class _SintomasTabState extends State<SintomasTab> {
 
   @override
   Widget build(BuildContext context) {
-    final todaysStructs = _p.getStructuralForDay(widget.selectedDate);
+    final todaysStructs = _p.getStructuralActiveForDay(widget.selectedDate);
     final todaysSymptoms = _p.getSymptomsForDay(widget.selectedDate);
     final todaysBowel = _p.getBowelForDay(widget.selectedDate);
     final todaysHemorrhoidal = _p.getHemorrhoidalForDay(widget.selectedDate);
@@ -543,8 +552,20 @@ class _SintomasTabState extends State<SintomasTab> {
             decoration: BoxDecoration(border: Border.all(color: _cc)),
             child: Column(
               children: [
-                ...todaysStructs.map(
-                  (e) => InkWell(
+                ...todaysStructs.map((e) {
+                  // 2026-07-18 — carried-over entries are unresolved
+                  // pain logged on an earlier day, surfaced today by
+                  // getStructuralActiveForDay so persistent pain
+                  // doesn't need re-logging. Tagged distinctly and
+                  // without the destructive delete: removing it here
+                  // would erase the original log entry, which is
+                  // surprising from a view that's just showing it's
+                  // still ongoing.
+                  final isCarriedOver = !DateUtils.isSameDay(
+                    e.timestamp,
+                    widget.selectedDate,
+                  );
+                  return InkWell(
                     onLongPress: () => _editStructuralEvent(e),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -563,6 +584,17 @@ class _SintomasTabState extends State<SintomasTab> {
                                   "${e.isResolved ? ' ✓' : ''}",
                                   style: TextStyle(color: _cc, fontSize: 13),
                                 ),
+                                if (isCarriedOver)
+                                  Text(
+                                    l10n.structuralOngoingSinceTag(
+                                      DateFormat('d MMM').format(e.timestamp),
+                                    ),
+                                    style: TextStyle(
+                                      color: _cc.withValues(alpha: 0.6),
+                                      fontSize: 11,
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                                  ),
                                 if (_structuralCompactSummary(e).isNotEmpty)
                                   Text(
                                     _structuralCompactSummary(e),
@@ -574,24 +606,37 @@ class _SintomasTabState extends State<SintomasTab> {
                               ],
                             ),
                           ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.close,
-                              color: Colors.red,
-                              size: 18,
+                          if (!e.isResolved)
+                            IconButton(
+                              icon: Icon(
+                                Icons.check_circle_outline,
+                                color: _cc,
+                                size: 18,
+                              ),
+                              tooltip: l10n.structuralCheckInSame,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () => _openStructuralCheckIn(e),
                             ),
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                            onPressed: () {
-                              setState(() => _p.structuralHistory.remove(e));
-                              widget.onProfileChanged();
-                            },
-                          ),
+                          if (!isCarriedOver)
+                            IconButton(
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.red,
+                                size: 18,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () {
+                                setState(() => _p.structuralHistory.remove(e));
+                                widget.onProfileChanged();
+                              },
+                            ),
                         ],
                       ),
                     ),
-                  ),
-                ),
+                  );
+                }),
                 ...todaysBowel.map(
                   (e) => InkWell(
                     onLongPress: () => _editBowelEvent(e),
@@ -1005,6 +1050,44 @@ class _SintomasTabState extends State<SintomasTab> {
                                       ),
                                     ),
                                   ),
+                                // D.3: presyncope detail compact summary
+                                if (event.presyncopeDetail != null &&
+                                    formatPresyncopeDetailCompact(
+                                      event.presyncopeDetail!,
+                                      l10n.localeName,
+                                    ).isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      formatPresyncopeDetailCompact(
+                                        event.presyncopeDetail!,
+                                        l10n.localeName,
+                                      ),
+                                      style: TextStyle(
+                                        color: _cc.withValues(alpha: 0.6),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ),
+                                // D.4: pelvic pain detail compact summary
+                                if (event.pelvicPainDetail != null &&
+                                    formatPelvicPainDetailCompact(
+                                      event.pelvicPainDetail!,
+                                      l10n.localeName,
+                                    ).isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      formatPelvicPainDetailCompact(
+                                        event.pelvicPainDetail!,
+                                        l10n.localeName,
+                                      ),
+                                      style: TextStyle(
+                                        color: _cc.withValues(alpha: 0.6),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ),
                                 // E.D: MCAS detail compact summary
                                 if (event.mcasDetail != null &&
                                     formatMCASDetailCompact(
@@ -1194,37 +1277,110 @@ class _SintomasTabState extends State<SintomasTab> {
   /// zone-history quick-log (severity + comparedToUsual). Empty string
   /// when the event predates this sprint or came from the classic
   /// picker with nothing attached.
+  ///
+  /// 2026-07-18: a later _openStructuralCheckIn can set comparedToUsual
+  /// on an event that ALSO has a funnel/bleeding detail attached (a
+  /// check-in doesn't care how the event was originally created) — that
+  /// case is appended after the base summary instead of being
+  /// shadowed by it, so a check-in update stays visible in the timeline.
   String _structuralCompactSummary(StructuralEvent e) {
+    final l10n = context.l10n;
     final bleedingDetail = e.bleedingDetail;
-    if (bleedingDetail != null) {
-      return formatStructuralBleedingDetailCompact(
-        bleedingDetail,
-        context.l10n.localeName,
-      );
-    }
     final detail = e.structuralDetail;
-    if (detail != null) {
-      return formatStructuralDetailCompact(detail, context.l10n.localeName);
+
+    String base;
+    if (bleedingDetail != null) {
+      base = formatStructuralBleedingDetailCompact(
+        bleedingDetail,
+        l10n.localeName,
+      );
+    } else if (detail != null) {
+      base = formatStructuralDetailCompact(detail, l10n.localeName);
+    } else if (e.severity != null || e.comparedToUsual != null) {
+      // Quick-log path already combines severity + comparedToUsual.
+      return formatStructuralQuickLogCompact(e, l10n);
+    } else {
+      base = '';
     }
-    if (e.severity != null || e.comparedToUsual != null) {
-      return formatStructuralQuickLogCompact(e, context.l10n);
-    }
-    return '';
+
+    final cmp = e.comparedToUsual;
+    if (cmp == null) return base;
+    final cmpLabel = switch (cmp) {
+      StructuralComparisonToUsual.worse => l10n.structuralComparedToUsualWorse,
+      StructuralComparisonToUsual.normal =>
+        l10n.structuralComparedToUsualNormal,
+      StructuralComparisonToUsual.better =>
+        l10n.structuralComparedToUsualBetter,
+    };
+    return [
+      if (base.isNotEmpty) base,
+      cmpLabel.toLowerCase(),
+    ].join(' · ');
   }
 
   /// §12 — entry point for tapping a zone chip (or for the vault
-  /// free-text detector once it has resolved a zone). Routes to the
-  /// quick-log sheet when the zone has a saved
-  /// StructuralZoneHistoryEntry (quick-log has no kind step —
-  /// [initialKind] is ignored there, untouched by the 18-jul rework),
-  /// otherwise to the combined sheet.
+  /// free-text detector once it has resolved a zone).
+  ///
+  /// 2026-07-18: checked FIRST, ahead of both the quick-log and the
+  /// funnel — if this zone already has an unresolved StructuralEvent
+  /// (persistent pain that hasn't been marked better/resolved), route
+  /// to the check-in sheet instead of starting a whole new entry. This
+  /// is what makes structural pain "persistent" in practice: the
+  /// patient updates the existing event instead of re-logging the same
+  /// pain every day. Otherwise routes to the quick-log sheet when the
+  /// zone has a saved StructuralZoneHistoryEntry (quick-log has no kind
+  /// step — [initialKind] is ignored there, untouched by the 18-jul
+  /// rework), otherwise to the combined sheet.
   void _openStructuralEntry(String zone, {StructuralEventKind? initialKind}) {
+    final ongoing = _p.structuralHistory
+        .where((e) => e.zone == zone && !e.isResolved)
+        .toList()
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    if (ongoing.isNotEmpty) {
+      _openStructuralCheckIn(ongoing.first);
+      return;
+    }
     final known = _p.structuralZoneHistory.where((h) => h.zone == zone);
     if (known.isNotEmpty) {
       _openStructuralQuickLog(zone, known.first);
     } else {
       _openStructuralFunnel(zone, initialKind: initialKind);
     }
+  }
+
+  /// 2026-07-18 — quick status update for an unresolved (persistent)
+  /// StructuralEvent: updates the SAME event in place (comparedToUsual,
+  /// or resolvedAt) instead of creating a new one. Used both by the
+  /// zone-tap shortcut in [_openStructuralEntry] and by the check-in
+  /// icon on carried-over entries in "Registros de hoy".
+  Future<void> _openStructuralCheckIn(StructuralEvent event) async {
+    final outcome = await showStructuralCheckInSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      zoneLabel: event.zone.bodyZoneLabel(context.l10n),
+      since: event.timestamp,
+    );
+    if (outcome == null || !mounted) return;
+    final idx = _p.structuralHistory.indexOf(event);
+    if (idx == -1) return;
+    setState(() {
+      _p.structuralHistory[idx] = switch (outcome) {
+        StructuralCheckInOutcome.same => event.copyWith(
+          comparedToUsual: StructuralComparisonToUsual.normal,
+        ),
+        StructuralCheckInOutcome.better => event.copyWith(
+          comparedToUsual: StructuralComparisonToUsual.better,
+        ),
+        StructuralCheckInOutcome.worse => event.copyWith(
+          comparedToUsual: StructuralComparisonToUsual.worse,
+        ),
+        StructuralCheckInOutcome.resolved => event.copyWith(
+          resolvedAt: DateTime.now(),
+        ),
+      };
+    });
+    widget.onProfileChanged();
   }
 
   /// §12.6 — zones with a known antecedent skip straight to severity +
@@ -1330,12 +1486,14 @@ class _SintomasTabState extends State<SintomasTab> {
   /// they also benefit from zone-history quick-log routing.
   Future<void> _openCombinedSheetForVault({
     StructuralEventKind? initialKind,
+    List<String>? candidateZones,
   }) async {
     final result = await showStructuralDetailSheet(
       context: context,
       contrastColor: _cc,
       inverseContrastColor: _ic,
       initialKind: initialKind,
+      candidateZones: candidateZones,
     );
     if (result == null || !mounted) return;
     await _handleStructuralSheetResult(
@@ -1347,18 +1505,21 @@ class _SintomasTabState extends State<SintomasTab> {
   /// 18-jul-2026 rework — central dispatcher for any free-text symptom
   /// name (vault chip tap/add, trending chip tap). Checked BEFORE the
   /// structural detector, in this exact order, so existing flows keep
-  /// working unchanged: headache/fatigue/abdominal_pain (JSON alias
-  /// match) and MCAS (keyword heuristic) always win over structural
-  /// detection — e.g. "dolor de cabeza" and "dolor de guata" must never
-  /// be intercepted here. Only when none of those match does the
-  /// structural zone/kind detector get a chance; if it finds nothing
-  /// either, falls through to the original generic severity menu.
+  /// working unchanged: headache/fatigue/abdominal_pain/presyncope/
+  /// pelvic_pain (JSON alias match) and MCAS (keyword heuristic) always
+  /// win over structural detection — e.g. "dolor de cabeza" and "dolor
+  /// de guata" must never be intercepted here. Only when none of those
+  /// match does the structural zone/kind detector get a chance; if it
+  /// finds nothing either, falls through to the original generic
+  /// severity menu.
   void _dispatchSymptomInput(String symptom) {
     final svc = SymptomDefinitionsService.instance;
     final isKnownNonStructural =
         svc.matchesSymptomKey(symptom, 'headache') ||
         svc.matchesSymptomKey(symptom, 'fatigue') ||
         svc.matchesSymptomKey(symptom, 'abdominal_pain') ||
+        svc.matchesSymptomKey(symptom, 'presyncope') ||
+        svc.matchesSymptomKey(symptom, 'pelvic_pain') ||
         _isMCASSymptom(symptom);
     if (!isKnownNonStructural) {
       final match = detectStructuralTextMatch(symptom);
@@ -1366,7 +1527,10 @@ class _SintomasTabState extends State<SintomasTab> {
         if (match.zone != null) {
           _openStructuralEntry(match.zone!, initialKind: match.kind);
         } else {
-          _openCombinedSheetForVault(initialKind: match.kind);
+          _openCombinedSheetForVault(
+            initialKind: match.kind,
+            candidateZones: match.ambiguousZoneCandidates,
+          );
         }
         return;
       }
@@ -1785,6 +1949,12 @@ class _SintomasTabState extends State<SintomasTab> {
       final isAbdominal = svc.matchesSymptomKey(symptom, 'abdominal_pain');
       final abdominalLayerEnabled =
           _p.settings.optionalTrackers['abdominal_detail'] ?? false;
+      final isPresyncope = svc.matchesSymptomKey(symptom, 'presyncope');
+      final presyncopeLayerEnabled =
+          _p.settings.optionalTrackers['presyncope_detail'] ?? false;
+      final isPelvicPain = svc.matchesSymptomKey(symptom, 'pelvic_pain');
+      final pelvicPainLayerEnabled =
+          _p.settings.optionalTrackers['pelvic_pain_detail'] ?? false;
       final isMCAS = _isMCASSymptom(symptom);
       final mcasLayerEnabled =
           _p.settings.optionalTrackers['mcas_detail'] ?? false;
@@ -1792,6 +1962,8 @@ class _SintomasTabState extends State<SintomasTab> {
       HeadacheDetail? headacheDetail;
       FatigueDetail? fatigueDetail;
       AbdominalDetail? abdominalDetail;
+      PresyncopeDetail? presyncopeDetail;
+      PelvicPainDetail? pelvicPainDetail;
       MCASDetail? mcasDetail;
       if (isHeadache && headacheLayerEnabled) {
         // Close the severity sheet first so the detail sheet stacks
@@ -1819,6 +1991,24 @@ class _SintomasTabState extends State<SintomasTab> {
         abdominalDetail = await showAbdominalDetailSheet(
           context,
           symptomInput: symptom,
+          contrastColor: _cc,
+          inverseContrastColor: _ic,
+        );
+        if (!mounted) return;
+      } else if (isPresyncope && presyncopeLayerEnabled) {
+        Navigator.pop(ctx);
+        if (!mounted) return;
+        presyncopeDetail = await showPresyncopeDetailSheet(
+          context: context,
+          contrastColor: _cc,
+          inverseContrastColor: _ic,
+        );
+        if (!mounted) return;
+      } else if (isPelvicPain && pelvicPainLayerEnabled) {
+        Navigator.pop(ctx);
+        if (!mounted) return;
+        pelvicPainDetail = await showPelvicPainDetailSheet(
+          context: context,
           contrastColor: _cc,
           inverseContrastColor: _ic,
         );
@@ -1851,6 +2041,8 @@ class _SintomasTabState extends State<SintomasTab> {
         headacheDetail: headacheDetail,
         fatigueDetail: fatigueDetail,
         abdominalDetail: abdominalDetail,
+        presyncopeDetail: presyncopeDetail,
+        pelvicPainDetail: pelvicPainDetail,
         mcasDetail: mcasDetail,
       );
       setState(() => _p.symptomHistory.add(newSymptomEvent));
@@ -1884,6 +2076,29 @@ class _SintomasTabState extends State<SintomasTab> {
         await _showAbdominalUrgentFlags(flags);
         if (!mounted) return;
         await _showAbdominalAdvisoryFlags(flags);
+      }
+      // D.3: brief loss of consciousness handled IN-SHEET; exertional
+      // and no-position-change triggers surfaced here as ADVISORY.
+      if (presyncopeDetail != null) {
+        final flags = detectPresyncopeRedFlags(
+          detail: presyncopeDetail,
+          severityIndex: sev.value,
+        );
+        await _showPresyncopeAdvisoryFlags(flags);
+      }
+
+      // D.4: sudden severe onset handled IN-SHEET; abnormal bleeding
+      // and fever surfaced here as URGENT; bladder pattern and pelvic
+      // floor tension surfaced as ADVISORY.
+      if (pelvicPainDetail != null) {
+        final flags = detectPelvicPainRedFlags(
+          detail: pelvicPainDetail,
+          severityIndex: sev.value,
+          hasFeverToday: _p.getFeverForDay(ts).isNotEmpty,
+        );
+        await _showPelvicPainUrgentFlags(flags);
+        if (!mounted) return;
+        await _showPelvicPainAdvisoryFlags(flags);
       }
 
       // Sprint E.C — MCAS red flag surfacing.
@@ -2137,10 +2352,28 @@ class _SintomasTabState extends State<SintomasTab> {
                       final abdominalLayerEnabled =
                           _p.settings.optionalTrackers['abdominal_detail'] ??
                           false;
+                      final isPresyncope = svc.matchesSymptomKey(
+                        event.name,
+                        'presyncope',
+                      );
+                      final presyncopeLayerEnabled =
+                          _p.settings.optionalTrackers['presyncope_detail'] ??
+                          false;
+                      final isPelvicPain = svc.matchesSymptomKey(
+                        event.name,
+                        'pelvic_pain',
+                      );
+                      final pelvicPainLayerEnabled =
+                          _p.settings.optionalTrackers['pelvic_pain_detail'] ??
+                          false;
 
                       HeadacheDetail? headacheDetail = event.headacheDetail;
                       FatigueDetail? fatigueDetail = event.fatigueDetail;
                       AbdominalDetail? abdominalDetail = event.abdominalDetail;
+                      PresyncopeDetail? presyncopeDetail =
+                          event.presyncopeDetail;
+                      PelvicPainDetail? pelvicPainDetail =
+                          event.pelvicPainDetail;
                       if (isHeadache && headacheLayerEnabled) {
                         Navigator.pop(ctx);
                         if (!mounted) return;
@@ -2175,6 +2408,28 @@ class _SintomasTabState extends State<SintomasTab> {
                         );
                         if (!mounted) return;
                         if (result != null) abdominalDetail = result;
+                      } else if (isPresyncope && presyncopeLayerEnabled) {
+                        Navigator.pop(ctx);
+                        if (!mounted) return;
+                        final result = await showPresyncopeDetailSheet(
+                          context: context,
+                          contrastColor: _cc,
+                          inverseContrastColor: _ic,
+                          existing: event.presyncopeDetail,
+                        );
+                        if (!mounted) return;
+                        if (result != null) presyncopeDetail = result;
+                      } else if (isPelvicPain && pelvicPainLayerEnabled) {
+                        Navigator.pop(ctx);
+                        if (!mounted) return;
+                        final result = await showPelvicPainDetailSheet(
+                          context: context,
+                          contrastColor: _cc,
+                          inverseContrastColor: _ic,
+                          existing: event.pelvicPainDetail,
+                        );
+                        if (!mounted) return;
+                        if (result != null) pelvicPainDetail = result;
                       } else {
                         Navigator.pop(ctx);
                       }
@@ -2196,6 +2451,8 @@ class _SintomasTabState extends State<SintomasTab> {
                           headacheDetail: headacheDetail,
                           fatigueDetail: fatigueDetail,
                           abdominalDetail: abdominalDetail,
+                          presyncopeDetail: presyncopeDetail,
+                          pelvicPainDetail: pelvicPainDetail,
                         ),
                       );
                       widget.onProfileChanged();
@@ -2223,6 +2480,23 @@ class _SintomasTabState extends State<SintomasTab> {
                         await _showAbdominalUrgentFlags(flags);
                         if (!mounted) return;
                         await _showAbdominalAdvisoryFlags(flags);
+                      }
+                      if (presyncopeDetail != null) {
+                        final flags = detectPresyncopeRedFlags(
+                          detail: presyncopeDetail,
+                          severityIndex: sev.value,
+                        );
+                        await _showPresyncopeAdvisoryFlags(flags);
+                      }
+                      if (pelvicPainDetail != null) {
+                        final flags = detectPelvicPainRedFlags(
+                          detail: pelvicPainDetail,
+                          severityIndex: sev.value,
+                          hasFeverToday: _p.getFeverForDay(ts).isNotEmpty,
+                        );
+                        await _showPelvicPainUrgentFlags(flags);
+                        if (!mounted) return;
+                        await _showPelvicPainAdvisoryFlags(flags);
                       }
                     },
                     child: Text(
@@ -2537,6 +2811,265 @@ class _SintomasTabState extends State<SintomasTab> {
             Expanded(
               child: Text(
                 l10n.abdominalAdvisoryDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // D.3 — Presyncope detail layer: advisory red-flag presentation
+  // ---------------------------------------------------------------------------
+
+  /// Shows a dialog summarising ADVISORY flags for the presyncope
+  /// detail layer. `briefLossOfConsciousness` (URGENT) is handled
+  /// IN-SHEET by the presyncope sheet's emergency dialog — it never
+  /// reaches detectPresyncopeRedFlags callers post-save, so there is
+  /// no separate urgent-flags method here (mirrors fatigue, which also
+  /// has no URGENT tier).
+  Future<void> _showPresyncopeAdvisoryFlags(
+    List<PresyncopeRedFlag> flags,
+  ) async {
+    final advisories = flags
+        .where((f) => f.severity == RedFlagSeverity.advisory)
+        .toList();
+    if (advisories.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in advisories) {
+      switch (f) {
+        case PresyncopeRedFlag.exertionalTrigger:
+          messages.add(l10n.presyncopeRedFlagExertionalTriggerAdvisory);
+          break;
+        case PresyncopeRedFlag.noPositionChangeTrigger:
+          messages.add(l10n.presyncopeRedFlagNoPositionChangeTriggerAdvisory);
+          break;
+        case PresyncopeRedFlag.briefLossOfConsciousness:
+          break;
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _cc.withValues(alpha: 0.5), width: 1.5),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info_outline, color: _cc, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.presyncopeAdvisoryDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // D.4 — Pelvic pain detail layer: urgent + advisory red-flag presentation
+  // ---------------------------------------------------------------------------
+
+  /// Shows a prominent dialog for URGENT flags detected post-save.
+  /// EXPLICITLY SKIPS `suddenSevereOnset` because that flag was already
+  /// handled IN-SHEET by the pelvic pain sheet's emergency dialog —
+  /// surfacing it again would create alarm fatigue for someone who
+  /// just acknowledged the in-sheet warning. Mirrors
+  /// _showAbdominalUrgentFlags.
+  Future<void> _showPelvicPainUrgentFlags(List<PelvicPainRedFlag> flags) async {
+    final urgents = flags
+        .where((f) => f.severity == RedFlagSeverity.urgent)
+        .where((f) => f != PelvicPainRedFlag.suddenSevereOnset)
+        .toList();
+    if (urgents.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in urgents) {
+      switch (f) {
+        case PelvicPainRedFlag.abnormalBleedingUrgent:
+          messages.add(l10n.pelvicPainRedFlagAbnormalBleedingUrgent);
+          break;
+        case PelvicPainRedFlag.feverUrgent:
+          messages.add(l10n.pelvicPainRedFlagFeverUrgent);
+          break;
+        case PelvicPainRedFlag.suddenSevereOnset:
+        case PelvicPainRedFlag.bladderPatternAdvisory:
+        case PelvicPainRedFlag.pelvicFloorTensionAdvisory:
+          break;
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(side: BorderSide(color: _cc, width: 2)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: _cc, size: 24),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.pelvicPainUrgentDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Shows a dialog summarising ADVISORY flags for the pelvic pain
+  /// detail layer. URGENT flags are handled by
+  /// _showPelvicPainUrgentFlags (and suddenSevereOnset by the sheet).
+  Future<void> _showPelvicPainAdvisoryFlags(
+    List<PelvicPainRedFlag> flags,
+  ) async {
+    final advisories = flags
+        .where((f) => f.severity == RedFlagSeverity.advisory)
+        .toList();
+    if (advisories.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in advisories) {
+      switch (f) {
+        case PelvicPainRedFlag.bladderPatternAdvisory:
+          messages.add(l10n.pelvicPainRedFlagBladderPatternAdvisory);
+          break;
+        case PelvicPainRedFlag.pelvicFloorTensionAdvisory:
+          messages.add(l10n.pelvicPainRedFlagPelvicFloorTensionAdvisory);
+          break;
+        case PelvicPainRedFlag.suddenSevereOnset:
+        case PelvicPainRedFlag.abnormalBleedingUrgent:
+        case PelvicPainRedFlag.feverUrgent:
+          break;
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _cc.withValues(alpha: 0.5), width: 1.5),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info_outline, color: _cc, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.pelvicPainAdvisoryDialogTitle,
                 style: TextStyle(
                   color: _cc,
                   fontSize: 16,

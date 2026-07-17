@@ -23,6 +23,21 @@ import '../../models/models.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/structural_taxonomy.dart';
 
+String _weightReasonLabel(WeightChangeReason reason, AppLocalizations t) {
+  switch (reason) {
+    case WeightChangeReason.giFlare:
+      return t.weightEntryReasonGiFlare;
+    case WeightChangeReason.medicationChange:
+      return t.weightEntryReasonMedicationChange;
+    case WeightChangeReason.fluidRetention:
+      return t.weightEntryReasonFluidRetention;
+    case WeightChangeReason.appetiteChange:
+      return t.weightEntryReasonAppetiteChange;
+    case WeightChangeReason.other:
+      return t.weightEntryReasonOther;
+  }
+}
+
 class ProfileSettingsScreen extends StatefulWidget {
   final Profile profile;
   final Color contrastColor;
@@ -43,6 +58,14 @@ class ProfileSettingsScreen extends StatefulWidget {
   final Future<void> Function(StructuralZoneHistoryEntry existing)
   onEditStructuralZoneHistory;
 
+  /// Narrow clinical weight log — see docs/design_decisions/
+  /// weight_height_tracking.md. Same injected-callback contract as
+  /// onAddStructuralZoneHistory/onEditStructuralZoneHistory. Section is
+  /// only rendered when settings.optionalTrackers['weight_tracking']
+  /// is on (off by default, toggled in TrackingSettingsScreen).
+  final Future<void> Function() onAddWeightEntry;
+  final Future<void> Function(WeightEntry existing) onEditWeightEntry;
+
   const ProfileSettingsScreen({
     super.key,
     required this.profile,
@@ -57,6 +80,8 @@ class ProfileSettingsScreen extends StatefulWidget {
     required this.onEditLifeEvent,
     required this.onAddStructuralZoneHistory,
     required this.onEditStructuralZoneHistory,
+    required this.onAddWeightEntry,
+    required this.onEditWeightEntry,
   });
 
   @override
@@ -68,6 +93,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   late final TextEditingController _preferredNameCtrl;
   late final TextEditingController _diagnosisCtrl;
   late final TextEditingController _allergyCtrl;
+  late final TextEditingController _heightCtrl;
 
   @override
   void initState() {
@@ -78,6 +104,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     );
     _diagnosisCtrl = TextEditingController();
     _allergyCtrl = TextEditingController();
+    _heightCtrl = TextEditingController(
+      text: widget.profile.heightCm == null
+          ? ''
+          : _formatHeight(widget.profile.heightCm!),
+    );
   }
 
   @override
@@ -86,7 +117,13 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     _preferredNameCtrl.dispose();
     _diagnosisCtrl.dispose();
     _allergyCtrl.dispose();
+    _heightCtrl.dispose();
     super.dispose();
+  }
+
+  String _formatHeight(double cm) {
+    if (cm == cm.roundToDouble()) return cm.toInt().toString();
+    return cm.toString();
   }
 
   int _ageFrom(DateTime dob) {
@@ -224,6 +261,26 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                         ),
                       ),
                       onPressed: _pickDateOfBirth,
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    _label(cc, t.settingsHeightLabel),
+                    const SizedBox(height: 2),
+                    _helper(t.settingsHeightHint),
+                    const SizedBox(height: 4),
+                    TextField(
+                      controller: _heightCtrl,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      style: TextStyle(color: cc, fontSize: 16),
+                      onChanged: (val) {
+                        profile.heightCm = double.tryParse(
+                          val.trim().replaceAll(',', '.'),
+                        );
+                        widget.onSave();
+                      },
                     ),
 
                     const SizedBox(height: 24),
@@ -605,6 +662,124 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                         if (mounted) setState(() {});
                       },
                     ),
+
+                    if (profile.settings.optionalTrackers['weight_tracking'] ==
+                        true) ...[
+                      const SizedBox(height: 24),
+                      _label(cc, t.weightEntrySectionTitle),
+                      const SizedBox(height: 8),
+                      if (profile.weightEntries.isEmpty)
+                        Text(
+                          t.weightEntryEmptyState,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 12,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        )
+                      else
+                        Column(
+                          children:
+                              (profile.weightEntries.toList()..sort(
+                                    (a, b) =>
+                                        b.timestamp.compareTo(a.timestamp),
+                                  ))
+                                  .map((w) {
+                                    return InkWell(
+                                      onTap: () async {
+                                        await widget.onEditWeightEntry(w);
+                                        if (mounted) setState(() {});
+                                      },
+                                      child: Container(
+                                        margin: const EdgeInsets.only(
+                                          bottom: 6,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: cc.withValues(alpha: 0.3),
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    '${w.weightKg} kg · '
+                                                    '${DateFormat('d MMM yyyy').format(w.timestamp)}',
+                                                    style: TextStyle(
+                                                      color: cc,
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    _weightReasonLabel(w.reason, t),
+                                                    style: TextStyle(
+                                                      color: cc.withValues(
+                                                        alpha: 0.6,
+                                                      ),
+                                                      fontSize: 11,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.close,
+                                                color: Colors.red,
+                                                size: 18,
+                                              ),
+                                              padding: EdgeInsets.zero,
+                                              constraints:
+                                                  const BoxConstraints(),
+                                              onPressed: () {
+                                                setState(
+                                                  () => profile.weightEntries
+                                                      .remove(w),
+                                                );
+                                                widget.onSave();
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  })
+                                  .toList(),
+                        ),
+                      const SizedBox(height: 8),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: cc),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        icon: Icon(Icons.add, color: cc),
+                        label: Text(
+                          t.weightEntryAddAction,
+                          style: TextStyle(
+                            color: cc,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        onPressed: () async {
+                          await widget.onAddWeightEntry();
+                          if (mounted) setState(() {});
+                        },
+                      ),
+                    ],
 
                     const SizedBox(height: 24),
                     _label(cc, t.settingsLocationLabel),

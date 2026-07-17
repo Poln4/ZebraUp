@@ -1059,3 +1059,232 @@ Paulina compartió respuestas de una encuesta propia sobre comunicación médica
 | Red flags estructurales | Se decidió expresamente no incluirlos en esta ronda — cerrar primero el modelo de captura (lateralidad/carácter/mecánica), evitar migrar el schema dos veces. Incluye la distinción de §12.6.4 (cambio agudo sobre condición conocida). |
 | Mapeo HPO | Se agrupará con el mapeo de Dolor Pélvico (D.4) y probablemente Dolor Torácico (D.5), porque comparten vocabulario de "carácter del dolor". Pendiente confirmar si Presíncope (D.3) entra en ese lote — no comparte ese vocabulario por ser de otra naturaleza clínica. Mientras tanto, Paulina puede avanzar el mapeo de los 20 valores de dolor de `kStructuralTaxonomy` (excluyendo tejido blando, ver arriba) que ya son estables independientemente de esta capa nueva. |
 | Relación exacta con `StructuralEvent` existente | Mayormente resuelta: la capa nueva convive con `StructuralEvent`, no lo reemplaza — el atajo ("Ya sé qué es") y el historial de zona (§12.6) son las dos vías de entrada rápida al mismo picker de 20 términos + el nuevo. Falta solo decidir el mecanismo de persistencia exacto (¿nuevo campo en `StructuralEvent` o modelo aparte vinculado?) al momento de implementar. |
+
+## 13. Presíncope (D.3)
+
+**Sprint completado:** 2026-07-17. Cuarta capa de detalle en el
+roadmap (después de cefalea/C.4, fatiga/D.1, dolor abdominal/D.2).
+Deliberadamente subjetiva únicamente — sin ningún componente de
+medición activa.
+
+### 13.1 Restricción explícita de Paulina
+
+No construir `OrthostaticTest`/medición de dispositivo (NASA lean test
+simplificado) en este pase. Esa pieza queda diferida a una versión
+móvil, por seriedad clínica — una prueba de pie activa conlleva riesgo
+real de síncope y merece más cuidado del que permite este entorno de
+desarrollo. D.3 captura únicamente la experiencia subjetiva del
+episodio: desencadenante, síntomas previos, cómo terminó, y
+recuperación. Ver también `docs/design_decisions/vital_signs_panel.md`,
+donde la misma prueba ortostática quedó pausada por la misma razón de
+seguridad — este mismo argumento aplicó dos veces de forma
+independiente, lo que refuerza que no es una preocupación puntual.
+
+### 13.2 Grounding científico
+
+Verificado en esta sesión, no asumido de memoria:
+
+- **Brignole M et al. 2018** — ESC Guidelines for the diagnosis and
+  management of syncope. *Eur Heart J* 39(21):1883–1948.
+  DOI: 10.1093/eurheartj/ehy037. Es sobre síncope (pérdida de
+  consciencia), no presíncope específicamente — su valor para D.3 es
+  la taxonomía de mecanismos/triggers (reflejo-vasovagal / ortostático
+  / cardíaco) y el principio de que ciertas características (esfuerzo,
+  sin cambio postural, pérdida de consciencia real) son de mayor
+  riesgo y ameritan evaluación médica.
+- **Spahic JM et al. 2023 (MAPS, Malmö POTS Symptom Score)** — *J
+  Intern Med* 293:91–99. DOI: 10.1111/joim.13566. Considerado y
+  archivado para un futuro ítem de escala periódica en vez de usarse
+  en esta capa: es un cuestionario autoadministrado de carga de
+  síntomas con recall de 7 días (VAS 0-10), arquitectónicamente
+  distinto del patrón evento-a-evento que usan C.4/D.1/D.2/D.3. Buen
+  candidato futuro junto a PHQ-9/GAD-7/FIQR/Rand-36 (ver roadmap de
+  Fase 5, escalas clínicas periódicas). Sin validación EDS-específica
+  (solo menciona hipermovilidad de pasada) — mismo tipo de vacío ya
+  documentado para hematomas→anemia en §12.6b, se anota igual.
+
+### 13.3 Esquema final
+
+4 grupos, 19 chips totales — dentro del techo de ≤20 de Morren 2009
+(a diferencia de D.2, que lo excede deliberadamente):
+
+| Grupo      | Kind          | Chips |
+|------------|---------------|-------|
+| mechanism  | single_select | 7     |
+| prodrome   | multi_select  | 6     |
+| outcome    | single_select | 3     |
+| recovery   | single_select | 3     |
+
+Chip serialization keys (estables entre releases):
+
+- **mechanism**: `on_standing`, `prolonged_standing`, `situational`,
+  `post_exertion`, `strong_emotion_or_pain`, `no_position_change`,
+  `unidentified`
+- **prodrome**: `tunnel_vision`, `ringing_ears`, `cold_sweat`,
+  `nausea`, `paleness_noted`, `palpitations`
+- **outcome**: `sat_or_lay_down`, `near_fall_no_loc`, `brief_loc`
+- **recovery**: `fast`, `slow`, `tired_after`
+
+A diferencia de `abdominal_pain` (donde el grupo `trigger` es singular
+pero el campo Dart `triggers` es plural), los 4 grupos de presíncope
+coinciden 1:1 con los nombres de campo de `PresyncopeDetail` — no hay
+asimetría singular/plural que replicar aquí.
+
+### 13.4 Red flags — V1 vs. V2
+
+V1 se mantiene deliberadamente pequeño (1 urgent + 2 advisory), misma
+disciplina de scope que C.4/D.1/D.2:
+
+- **URGENT** (in-sheet, bloqueante pre-save, mismo patrón que la
+  calidad "desgarro" de D.2): `briefLossOfConsciousness`, gateado por
+  `outcome == briefLossOfConsciousness`. Sin gate de severidad — la
+  aserción del usuario de haber perdido el conocimiento se confía
+  igual que D.2 confía en la aserción de dolor tipo desgarro.
+- **ADVISORY** (post-save, no bloqueante): `exertionalTrigger`
+  (`mechanism == postExertion`) y `noPositionChangeTrigger`
+  (`mechanism == noPositionChange`) — ambos features de riesgo de ESC
+  2018, sin gate de severidad.
+
+Candidatas a V2, post-datos de beta: reglas basadas en
+frecuencia/recurrencia de episodios, y combinaciones de pródromo
+(ej. palpitaciones + esfuerzo físico) — no incluidas en V1 por falta
+de datos reales para calibrar los umbrales.
+
+### 13.5 Decisiones diferidas / abiertas
+
+| Ítem | Razón de diferir |
+|------|-------------------|
+| `OrthostaticTest` / medición activa | Ver §13.1 — versión móvil, razón de seguridad (riesgo de síncope durante la prueba de pie). |
+| Mapeo HPO | No comparte vocabulario de "carácter del dolor" con dolor pélvico/torácico (§12.8) — presíncope es de otra naturaleza clínica. Sin agrupar todavía. |
+| MAPS como escala periódica | Archivado como candidato, no implementado — ver §13.2. |
+| Reglas de red flag basadas en frecuencia/recurrencia | V2, post-datos de beta — ver §13.4. |
+
+## 14. D.4 — Dolor pélvico
+
+**Sprint completado:** 2026-07-17. Quinta capa de detalle en el
+roadmap (después de cefalea/C.4, fatiga/D.1, dolor abdominal/D.2,
+presíncope/D.3). Trauma-informed por diseño desde el backlog original
+(CLAUDE.md) — es el dominio de contenido más sensible capturado por la
+app hasta ahora, así que dos decisiones de contenido se confirmaron
+explícitamente con Paulina antes de escribir el schema, en vez de
+asumirlas por precedente de otras capas.
+
+### 14.1 Decisiones trauma-informed confirmadas con Paulina
+
+1. **Chip de dolor sexual (dispareunia).** ACOG lo considera un
+   diferenciador clínico clave para endometriosis/vulvodinia, pero es
+   el contenido potencialmente más sensible de toda la capa. Opciones
+   presentadas: (a) incluirlo, con wording neutro y opcional, o (b)
+   omitirlo de este v1 y diferirlo como hilo propio (mismo patrón que
+   tejido blando se difirió en el rediseño estructural). Paulina eligió
+   **incluirlo** — vive como un chip más dentro del grupo `triggers`
+   ("con la actividad sexual"), multi-select, sin preguntas de
+   seguimiento, mismo gating opt-in que el resto de la capa.
+2. **Wording del chip de ubicación externa.** Opciones presentadas:
+   registro clínico-neutro (ej. "zona genital externa", igual que
+   `AbdominalLocation` usa "hipogástrico") vs. registro suave/cotidiano
+   que evita incluso la palabra "genital". Paulina eligió el registro
+   **suave/cotidiano** — el chip final dice "Por fuera, en la zona
+   íntima", consistente con el precedente de D.1 fatiga, donde wording
+   clínico-duro también se rechazó a favor de lenguaje más gentil.
+
+### 14.2 Grounding clínico
+
+Verificado en esta sesión vía WebSearch, no asumido de memoria:
+
+- **ACOG Practice Bulletin No. 218 — Chronic Pelvic Pain.** *Obstet
+  Gynecol* 2020;135(3):e98–e109. DOI: 10.1097/AOG.0000000000003716.
+  Fundamenta: la distinción cíclico/acíclico que estructura el grupo
+  `timing`; dolor de inicio súbito y muy intenso como señal de alarma
+  (torsión anexial, rotura de embarazo ectópico) que fundamenta el
+  chip `sudden_severe_onset` y su red flag URGENT in-sheet; fiebre +
+  dolor pélvico como señal de posible infección pélvica (red flag
+  URGENT post-save).
+- **assets/zebra_wisdom.json** ("Pelvic Floor & EDS", "Pelvic Floor &
+  Dysautonomia") — no es literatura peer-reviewed nueva, pero ya vivía
+  en el repo y fundamenta el chip `pelvic_floor_tension` y su advisory
+  correspondiente (piso pélvico hipertónico en hipermovilidad /
+  espasmo involuntario por disautonomía).
+
+### 14.3 Esquema final
+
+5 grupos, 23 chips totales — excede el techo de ≤20 de Morren 2009,
+mismo tipo de desviación deliberada que D.2 abdominal (22 chips). Por
+lo indicado en §10.3, esta nota formaliza la desviación como patrón de
+dominio repetido en vez de tratar cada caso como excepción aislada: **a
+partir de D.2, un síntoma cuyo espacio clínico real requiere más
+granularidad que el techo de Morren puede excederlo, siempre que la
+capa mantenga divulgación progresiva/opcionalidad total (nada
+obligatorio) y la desviación quede documentada aquí con el número
+exacto de chips.**
+
+| Grupo          | Kind          | Chips |
+|----------------|---------------|-------|
+| location       | single_select | 5     |
+| character      | single_select | 5     |
+| timing         | single_select | 3     |
+| triggers       | multi_select  | 5     |
+| accompaniments | multi_select  | 5     |
+
+Chip serialization keys (estables entre releases):
+
+- **location**: `lower_abdomen`, `deep_central`, `external_intimate`,
+  `low_back_tailbone`, `radiating_legs_groin`
+- **character**: `cramping`, `burning`, `pressure_heaviness`,
+  `sharp_stabbing`, `sudden_severe_onset`
+- **timing**: `with_period`, `mid_cycle`, `no_cycle_pattern`
+- **triggers**: `with_bowel_movement`, `with_bladder_fullness`,
+  `prolonged_sitting`, `physical_activity`, `sexual_activity`
+- **accompaniments**: `bloating`, `urinary_urgency_frequency`,
+  `bowel_changes`, `pelvic_floor_tension`, `abnormal_bleeding`
+
+El chip `no_cycle_pattern` incluye explícitamente "o no aplica" en su
+copy para no forzar un marco menstrual a pacientes que no menstrúan
+(regla de copy neutro en género de CLAUDE.md). Los 5 grupos coinciden
+1:1 con los nombres de campo de `PelvicPainDetail` — mismo patrón sin
+asimetría singular/plural que D.3 presíncope (a diferencia de D.2
+abdominal, donde el grupo JSON `trigger` es singular pero el campo
+Dart `triggers` es plural).
+
+### 14.4 Red flags — V1 vs. V2
+
+V1 tiene 1 in-sheet urgent + 2 post-save urgent + 2 post-save advisory
+— más grande que D.3 (1+0+2) pero comparable a D.2 (1+2+2), reflejando
+que el espacio clínico de dolor pélvico agudo tiene más vías de
+emergencia reales que presíncope:
+
+- **URGENT in-sheet** (bloqueante pre-save, mismo patrón que la
+  calidad "desgarro" de D.2): `suddenSevereOnset`, gateado por
+  `character == suddenSevereOnset`. Sin gate de severidad — misma
+  lógica de "confiar en la aserción cualitativa del usuario" que D.2 y
+  D.3 ya establecieron.
+- **URGENT post-save**: `abnormalBleedingUrgent`
+  (`abnormalBleeding` + severidad ≥ 3, compound gate igual que la
+  hematoquecia masiva de D.2) y `feverUrgent` (fiebre registrada el
+  mismo día + severidad ≥ 2 — gate más bajo porque la fiebre misma es
+  la señal de alarma, no la intensidad del dolor).
+- **ADVISORY post-save**: `bladderPatternAdvisory` (trigger de vejiga
+  llena o accompaniment de urgencia/frecuencia urinaria) y
+  `pelvicFloorTensionAdvisory` (accompaniment de tensión/espasmo del
+  piso pélvico).
+
+`feverUrgent` reusa `Profile.getFeverForDay()`, ya existente para
+`FeverReading`, en vez de duplicar un chip de fiebre dentro de esta
+capa — el mismo patrón de reuso de datos ya trackeados que el proyecto
+prefiere sobre pedir la misma información dos veces.
+
+Candidatas a V2, post-datos de beta: reglas de severidad/recurrencia
+del patrón cíclico (ej. dolor severo repetido con la menstruación como
+posible indicador de endometriosis) — evaluadas para V1 y descartadas
+por ser demasiado presuntivas de diagnóstico para un solo evento; mejor
+candidato para una regla de `correlation_engine.dart` con datos
+longitudinales reales que para un red flag de evento único.
+
+### 14.5 Decisiones diferidas / abiertas
+
+| Ítem | Razón de diferir |
+|------|-------------------|
+| Integración bidireccional con tracking menstrual | El tracker de menstruación no existe todavía en el código — candidato solo cuando exista (mismo principio que `linkedBowelEventId` de D.2 se construyó porque `BowelEvent` ya existía). |
+| Mapeo HPO | Se agrupará con D.5 torácico — comparten vocabulario de "carácter del dolor" (§12.8), a diferencia de D.3 presíncope. |
+| Regla de severidad/recurrencia cíclica como red flag | Ver §14.4 — mejor candidato para `correlation_engine.dart` con datos longitudinales que para un red flag de evento único. |
+| Escala periódica validada (ej. adaptación de un instrumento de dolor pélvico crónico) | No evaluada en este pase — mismo tipo de item que MAPS quedó archivado para D.3 (§13.2), sin tiempo de research dedicado aquí. |

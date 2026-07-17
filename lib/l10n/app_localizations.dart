@@ -2189,11 +2189,65 @@ abstract class AppLocalizations {
   /// **'Cuéntanos más sobre este dolor, con tus propias palabras.'**
   String get structuralSheetSubtitle;
 
+  /// No description provided for @structuralContextZoneLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Zona de contexto (opcional)'**
+  String get structuralContextZoneLabel;
+
+  /// No description provided for @structuralContextZoneHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej: todo el lado derecho, no solo esta zona'**
+  String get structuralContextZoneHint;
+
   /// No description provided for @structuralKnownTermShortcut.
   ///
   /// In es, this message translates to:
   /// **'Ya sé qué es'**
   String get structuralKnownTermShortcut;
+
+  /// No description provided for @structuralCheckInTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo sigue: {zone}?'**
+  String structuralCheckInTitle(String zone);
+
+  /// No description provided for @structuralCheckInSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrado desde el {since}. Actualiza el estado sin agregar un registro nuevo.'**
+  String structuralCheckInSubtitle(String since);
+
+  /// No description provided for @structuralCheckInSame.
+  ///
+  /// In es, this message translates to:
+  /// **'Sigue igual'**
+  String get structuralCheckInSame;
+
+  /// No description provided for @structuralCheckInBetter.
+  ///
+  /// In es, this message translates to:
+  /// **'Mejoró, pero sigue con dolor'**
+  String get structuralCheckInBetter;
+
+  /// No description provided for @structuralCheckInWorse.
+  ///
+  /// In es, this message translates to:
+  /// **'Empeoró'**
+  String get structuralCheckInWorse;
+
+  /// No description provided for @structuralCheckInResolved.
+  ///
+  /// In es, this message translates to:
+  /// **'Se resolvió'**
+  String get structuralCheckInResolved;
+
+  /// No description provided for @structuralOngoingSinceTag.
+  ///
+  /// In es, this message translates to:
+  /// **'en curso desde el {date}'**
+  String structuralOngoingSinceTag(String date);
 
   /// No description provided for @structuralBleedingSheetTitle.
   ///
@@ -4243,6 +4297,156 @@ abstract class AppLocalizations {
   /// **'No lo sé'**
   String get abdominalIntegrationDontKnow;
 
+  /// Title of the modal sheet that captures structured presyncope detail.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de tu presíncope'**
+  String get presyncopeSheetTitle;
+
+  /// Subtitle explaining why filling the optional detail helps.
+  ///
+  /// In es, this message translates to:
+  /// **'Los detalles opcionales ayudan a identificar patrones.'**
+  String get presyncopeSheetSubtitle;
+
+  /// Save button label at the bottom of the presyncope detail sheet.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar detalle'**
+  String get presyncopeActionSaveDetail;
+
+  /// Title of the in-sheet confirmation dialog fired when outcome=briefLossOfConsciousness on save attempt.
+  ///
+  /// In es, this message translates to:
+  /// **'Pérdida de conocimiento'**
+  String get presyncopeLossOfConsciousnessDialogTitle;
+
+  /// Confirm button on the loss-of-consciousness dialog.
+  ///
+  /// In es, this message translates to:
+  /// **'Lo entiendo, continuar'**
+  String get presyncopeLossOfConsciousnessDialogConfirm;
+
+  /// Title of the advisory dialog shown after saving a presyncope log when a red flag pattern is detected.
+  ///
+  /// In es, this message translates to:
+  /// **'Patrones detectados'**
+  String get presyncopeAdvisoryDialogTitle;
+
+  /// ADVISORY for mechanism=postExertion. ESC 2018 high-risk feature.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu episodio apareció después de un esfuerzo físico, no en reposo. Vale la pena mencionárselo a tu médico, especialmente si se repite.'**
+  String get presyncopeRedFlagExertionalTriggerAdvisory;
+
+  /// ADVISORY for mechanism=noPositionChange. ESC 2018 high-risk feature.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu episodio ocurrió sin cambio de postura. Este patrón es menos típico de un origen ortostático y puede valer la pena conversarlo con tu médico.'**
+  String get presyncopeRedFlagNoPositionChangeTriggerAdvisory;
+
+  /// Label of the optional presyncope detail tracker switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de presíncope'**
+  String get settingsModulePresyncopeDetailLabel;
+
+  /// Description under the presyncope detail switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Al registrar presíncope, agrega desencadenante, síntomas previos, cómo terminó y recuperación.'**
+  String get settingsModulePresyncopeDetailDescription;
+
+  /// Title of the modal sheet that captures structured pelvic pain detail.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de tu dolor pélvico'**
+  String get pelvicPainSheetTitle;
+
+  /// Subtitle explaining why filling the optional detail helps.
+  ///
+  /// In es, this message translates to:
+  /// **'Los detalles opcionales ayudan a identificar patrones.'**
+  String get pelvicPainSheetSubtitle;
+
+  /// Save button label at the bottom of the pelvic pain detail sheet.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar detalle'**
+  String get pelvicPainActionSaveDetail;
+
+  /// Title of the in-sheet emergency dialog fired on save attempt when character=suddenSevereOnset.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor de inicio súbito'**
+  String get pelvicPainSuddenOnsetEmergencyTitle;
+
+  /// Body text of the sudden-onset in-sheet emergency dialog.
+  ///
+  /// In es, this message translates to:
+  /// **'Un dolor pélvico que empieza de golpe y muy intenso, distinto al que sueles tener, puede indicar una emergencia médica como la torsión de un ovario o la rotura de un embarazo ectópico. Vale la pena que vayas a urgencias ahora para descartarlo.\n\nSi vas, informa al equipo médico tu diagnóstico de clEDS (síndrome de Ehlers-Danlos clásico-like, por mutación de TNXB).\n\nSi el dolor mejoró significativamente y ya no lo describirías como súbito y muy intenso, puedes cambiar el carácter y guardar el registro normalmente.'**
+  String get pelvicPainSuddenOnsetEmergencyBody;
+
+  /// Button that returns to the sheet so the user can revise the character chip.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar carácter y guardar'**
+  String get pelvicPainSuddenOnsetEmergencyChangeCharacter;
+
+  /// Button that commits the save with the emergency character acknowledged.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar como está (emergencia)'**
+  String get pelvicPainSuddenOnsetEmergencySaveAsIs;
+
+  /// Title of the URGENT post-save dialog for pelvic pain red flags.
+  ///
+  /// In es, this message translates to:
+  /// **'Alerta médica'**
+  String get pelvicPainUrgentDialogTitle;
+
+  /// URGENT for abnormalBleeding accompaniment + severity >= 3.
+  ///
+  /// In es, this message translates to:
+  /// **'Este sangrado, junto con dolor intenso, puede indicar una complicación que requiere evaluación pronta. Si el sangrado es abundante o notas mucha debilidad o mareo, ve a urgencias ahora.'**
+  String get pelvicPainRedFlagAbnormalBleedingUrgent;
+
+  /// URGENT for same-day fever + severity >= 2 (ACOG: possible pelvic inflammatory disease).
+  ///
+  /// In es, this message translates to:
+  /// **'Registraste fiebre junto con este dolor pélvico. Esta combinación puede indicar una infección pélvica que requiere evaluación médica pronta. Ve a urgencias o a tu centro de salud lo antes posible.'**
+  String get pelvicPainRedFlagFeverUrgent;
+
+  /// Title of the ADVISORY post-save dialog for pelvic pain red flags.
+  ///
+  /// In es, this message translates to:
+  /// **'Patrones detectados'**
+  String get pelvicPainAdvisoryDialogTitle;
+
+  /// ADVISORY for withBladderFullness trigger or urinaryUrgencyFrequency accompaniment.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu dolor se relaciona con la vejiga llena o con orinar. Este patrón puede indicar una condición conocida como síndrome de vejiga dolorosa. Vale la pena mencionárselo a tu médico.'**
+  String get pelvicPainRedFlagBladderPatternAdvisory;
+
+  /// ADVISORY for pelvicFloorTension accompaniment.
+  ///
+  /// In es, this message translates to:
+  /// **'Notaste tensión o espasmo muscular en la zona pélvica. Este patrón es conocido en personas con hipermovilidad y puede beneficiarse de fisioterapia especializada en piso pélvico. Vale la pena mencionárselo a tu médico.'**
+  String get pelvicPainRedFlagPelvicFloorTensionAdvisory;
+
+  /// Label of the optional pelvic pain detail tracker switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de dolor pélvico'**
+  String get settingsModulePelvicPainDetailLabel;
+
+  /// Description under the pelvic pain detail switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Al registrar dolor pélvico, agrega ubicación, carácter, relación con el ciclo, contexto y síntomas acompañantes.'**
+  String get settingsModulePelvicPainDetailDescription;
+
   /// No description provided for @onboardingStepMedsUnitHint.
   ///
   /// In es, this message translates to:
@@ -4254,6 +4458,120 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'mg'**
   String get onboardingStepMedsStrengthHint;
+
+  /// Label of the optional weight tracking switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Registro de peso'**
+  String get settingsModuleWeightTrackingLabel;
+
+  /// Description under the weight tracking switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Registra tu peso con una razón clínica (brote GI, cambio de medicamento, retención de líquido, apetito). Sin gráficos ni metas — es para compartir con tu especialista, no para uso diario.'**
+  String get settingsModuleWeightTrackingDescription;
+
+  /// Label for the static height field in Profile settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Estatura'**
+  String get settingsHeightLabel;
+
+  /// Helper text under the height field in Profile settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Opcional, en centímetros. Sin uso clínico activo todavía.'**
+  String get settingsHeightHint;
+
+  /// Section header for the weight entries list in Profile settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Registros de peso'**
+  String get weightEntrySectionTitle;
+
+  /// Empty state shown when there are no weight entries yet.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin registros de peso todavía.'**
+  String get weightEntryEmptyState;
+
+  /// Button label to add a new weight entry.
+  ///
+  /// In es, this message translates to:
+  /// **'Agregar registro de peso'**
+  String get weightEntryAddAction;
+
+  /// Title of the weight entry form sheet when creating a new entry.
+  ///
+  /// In es, this message translates to:
+  /// **'Nuevo registro de peso'**
+  String get weightEntryFormTitle;
+
+  /// Title of the weight entry form sheet when editing an existing entry.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar registro de peso'**
+  String get weightEntryFormEditTitle;
+
+  /// Label for the weight input field.
+  ///
+  /// In es, this message translates to:
+  /// **'Peso (kg)'**
+  String get weightEntryWeightLabel;
+
+  /// Label for the required WeightChangeReason selector.
+  ///
+  /// In es, this message translates to:
+  /// **'Razón del registro'**
+  String get weightEntryReasonLabel;
+
+  /// WeightChangeReason.giFlare option label.
+  ///
+  /// In es, this message translates to:
+  /// **'Brote gastrointestinal'**
+  String get weightEntryReasonGiFlare;
+
+  /// WeightChangeReason.medicationChange option label.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambio de medicamento'**
+  String get weightEntryReasonMedicationChange;
+
+  /// WeightChangeReason.fluidRetention option label.
+  ///
+  /// In es, this message translates to:
+  /// **'Retención de líquido'**
+  String get weightEntryReasonFluidRetention;
+
+  /// WeightChangeReason.appetiteChange option label.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambio de apetito'**
+  String get weightEntryReasonAppetiteChange;
+
+  /// WeightChangeReason.other option label.
+  ///
+  /// In es, this message translates to:
+  /// **'Otra razón'**
+  String get weightEntryReasonOther;
+
+  /// Hint text for the optional free-text note field.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota opcional'**
+  String get weightEntryNoteHint;
+
+  /// Label/button text for the date picker in the weight entry form.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha del registro'**
+  String get weightEntryDateLabel;
+
+  /// Save button label at the bottom of the weight entry form sheet.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar registro'**
+  String get weightEntrySaveAction;
 }
 
 class _AppLocalizationsDelegate

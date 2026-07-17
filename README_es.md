@@ -2,7 +2,7 @@
 
 **ZebraUp** es una aplicación de seguimiento de salud diseñada específicamente para personas que viven con enfermedades raras — las "cebras" del mundo médico, donde los caballos comunes no aplican. La aplicación está construida para hacer que las consultas médicas cortas sean más útiles, ayudando a los pacientes a llegar con datos concretos en lugar de recuerdos borrosos.
 
-Actualmente está en fase beta, dirigida primero a pacientes hispanohablantes en Chile.
+Actualmente está en fase beta, dirigida a pacientes hispanohablantes de toda América Latina (y en general a pacientes hispanos, sin importar dónde vivan).
 
 🌐 **Versión web**: [zebraup.netlify.app](https://zebraup.netlify.app)
 
@@ -112,7 +112,7 @@ Si trabajas con pacientes que podrían beneficiarse de ZebraUp, o si tienes feed
 
 ## Beta testing y feedback
 
-ZebraUp está en fase beta. Los testers actuales son personas con enfermedades raras en Chile que viven directamente con las condiciones que la app está diseñada para soportar. Si encontraste un error, una traducción extraña, una funcionalidad que no funciona como esperabas, o tienes una idea para mejorar algo: ese feedback es **exactamente** lo que necesito en este momento.
+ZebraUp está en fase beta. Los testers actuales son personas hispanohablantes con enfermedades raras — sin limitarse a un solo país — que viven directamente con las condiciones que la app está diseñada para soportar. Si encontraste un error, una traducción extraña, una funcionalidad que no funciona como esperabas, o tienes una idea para mejorar algo: ese feedback es **exactamente** lo que necesito en este momento.
 
 ---
 

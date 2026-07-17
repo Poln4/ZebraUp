@@ -214,28 +214,42 @@ class StructuralDetail {
   final StructuralAntecedent? antecedent;
   final StructuralMechanics? mechanics;
 
+  /// Optional free-text clarification for laterality, added 2026-07-18
+  /// after Paulina pointed out a real gap: picking a side (left/right)
+  /// describes which side hurts, not necessarily which zone — "me duele
+  /// el lado derecho" doesn't always mean the precise zone chosen (e.g.
+  /// knee) is itself the whole story, it could be broader ("toda la
+  /// pierna derecha") or narrower. Deliberately free text rather than a
+  /// new taxonomy: the precise scope of "context" varies too much
+  /// per-patient to enumerate as chips without more real usage data.
+  final String? contextNote;
+
   const StructuralDetail({
     this.laterality,
     this.painCharacter,
     this.antecedent,
     this.mechanics,
+    this.contextNote,
   });
 
   bool get isEmpty =>
       laterality == null &&
       painCharacter == null &&
       antecedent == null &&
-      mechanics == null;
+      mechanics == null &&
+      (contextNote == null || contextNote!.trim().isEmpty);
 
   StructuralDetail copyWith({
     StructuralLaterality? laterality,
     StructuralPainCharacter? painCharacter,
     StructuralAntecedent? antecedent,
     StructuralMechanics? mechanics,
+    String? contextNote,
     bool clearLaterality = false,
     bool clearPainCharacter = false,
     bool clearAntecedent = false,
     bool clearMechanics = false,
+    bool clearContextNote = false,
   }) {
     return StructuralDetail(
       laterality: clearLaterality ? null : (laterality ?? this.laterality),
@@ -244,6 +258,9 @@ class StructuralDetail {
           : (painCharacter ?? this.painCharacter),
       antecedent: clearAntecedent ? null : (antecedent ?? this.antecedent),
       mechanics: clearMechanics ? null : (mechanics ?? this.mechanics),
+      contextNote: clearContextNote
+          ? null
+          : (contextNote ?? this.contextNote),
     );
   }
 
@@ -263,6 +280,9 @@ class StructuralDetail {
     if (mechanics != null) {
       map['mechanics'] = mechanics!.serializationKey;
     }
+    if (contextNote != null && contextNote!.trim().isNotEmpty) {
+      map['contextNote'] = contextNote;
+    }
     return map;
   }
 
@@ -274,6 +294,7 @@ class StructuralDetail {
       ),
       antecedent: StructuralAntecedent.fromKey(map['antecedent'] as String?),
       mechanics: StructuralMechanics.fromKey(map['mechanics'] as String?),
+      contextNote: map['contextNote'] as String?,
     );
   }
 }

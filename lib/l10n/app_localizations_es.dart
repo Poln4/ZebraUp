@@ -1244,7 +1244,41 @@ class AppLocalizationsEs extends AppLocalizations {
       'Cuéntanos más sobre este dolor, con tus propias palabras.';
 
   @override
+  String get structuralContextZoneLabel => 'Zona de contexto (opcional)';
+
+  @override
+  String get structuralContextZoneHint =>
+      'Ej: todo el lado derecho, no solo esta zona';
+
+  @override
   String get structuralKnownTermShortcut => 'Ya sé qué es';
+
+  @override
+  String structuralCheckInTitle(String zone) {
+    return '¿Cómo sigue: $zone?';
+  }
+
+  @override
+  String structuralCheckInSubtitle(String since) {
+    return 'Registrado desde el $since. Actualiza el estado sin agregar un registro nuevo.';
+  }
+
+  @override
+  String get structuralCheckInSame => 'Sigue igual';
+
+  @override
+  String get structuralCheckInBetter => 'Mejoró, pero sigue con dolor';
+
+  @override
+  String get structuralCheckInWorse => 'Empeoró';
+
+  @override
+  String get structuralCheckInResolved => 'Se resolvió';
+
+  @override
+  String structuralOngoingSinceTag(String date) {
+    return 'en curso desde el $date';
+  }
 
   @override
   String get structuralBleedingSheetTitle => 'Detalle del sangrado o moretón';
@@ -2442,8 +2476,157 @@ class AppLocalizationsEs extends AppLocalizations {
   String get abdominalIntegrationDontKnow => 'No lo sé';
 
   @override
+  String get presyncopeSheetTitle => 'Detalle de tu presíncope';
+
+  @override
+  String get presyncopeSheetSubtitle =>
+      'Los detalles opcionales ayudan a identificar patrones.';
+
+  @override
+  String get presyncopeActionSaveDetail => 'Guardar detalle';
+
+  @override
+  String get presyncopeLossOfConsciousnessDialogTitle =>
+      'Pérdida de conocimiento';
+
+  @override
+  String get presyncopeLossOfConsciousnessDialogConfirm =>
+      'Lo entiendo, continuar';
+
+  @override
+  String get presyncopeAdvisoryDialogTitle => 'Patrones detectados';
+
+  @override
+  String get presyncopeRedFlagExertionalTriggerAdvisory =>
+      'Tu episodio apareció después de un esfuerzo físico, no en reposo. Vale la pena mencionárselo a tu médico, especialmente si se repite.';
+
+  @override
+  String get presyncopeRedFlagNoPositionChangeTriggerAdvisory =>
+      'Tu episodio ocurrió sin cambio de postura. Este patrón es menos típico de un origen ortostático y puede valer la pena conversarlo con tu médico.';
+
+  @override
+  String get settingsModulePresyncopeDetailLabel => 'Detalle de presíncope';
+
+  @override
+  String get settingsModulePresyncopeDetailDescription =>
+      'Al registrar presíncope, agrega desencadenante, síntomas previos, cómo terminó y recuperación.';
+
+  @override
+  String get pelvicPainSheetTitle => 'Detalle de tu dolor pélvico';
+
+  @override
+  String get pelvicPainSheetSubtitle =>
+      'Los detalles opcionales ayudan a identificar patrones.';
+
+  @override
+  String get pelvicPainActionSaveDetail => 'Guardar detalle';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyTitle => 'Dolor de inicio súbito';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyBody =>
+      'Un dolor pélvico que empieza de golpe y muy intenso, distinto al que sueles tener, puede indicar una emergencia médica como la torsión de un ovario o la rotura de un embarazo ectópico. Vale la pena que vayas a urgencias ahora para descartarlo.\n\nSi vas, informa al equipo médico tu diagnóstico de clEDS (síndrome de Ehlers-Danlos clásico-like, por mutación de TNXB).\n\nSi el dolor mejoró significativamente y ya no lo describirías como súbito y muy intenso, puedes cambiar el carácter y guardar el registro normalmente.';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyChangeCharacter =>
+      'Cambiar carácter y guardar';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencySaveAsIs =>
+      'Guardar como está (emergencia)';
+
+  @override
+  String get pelvicPainUrgentDialogTitle => 'Alerta médica';
+
+  @override
+  String get pelvicPainRedFlagAbnormalBleedingUrgent =>
+      'Este sangrado, junto con dolor intenso, puede indicar una complicación que requiere evaluación pronta. Si el sangrado es abundante o notas mucha debilidad o mareo, ve a urgencias ahora.';
+
+  @override
+  String get pelvicPainRedFlagFeverUrgent =>
+      'Registraste fiebre junto con este dolor pélvico. Esta combinación puede indicar una infección pélvica que requiere evaluación médica pronta. Ve a urgencias o a tu centro de salud lo antes posible.';
+
+  @override
+  String get pelvicPainAdvisoryDialogTitle => 'Patrones detectados';
+
+  @override
+  String get pelvicPainRedFlagBladderPatternAdvisory =>
+      'Tu dolor se relaciona con la vejiga llena o con orinar. Este patrón puede indicar una condición conocida como síndrome de vejiga dolorosa. Vale la pena mencionárselo a tu médico.';
+
+  @override
+  String get pelvicPainRedFlagPelvicFloorTensionAdvisory =>
+      'Notaste tensión o espasmo muscular en la zona pélvica. Este patrón es conocido en personas con hipermovilidad y puede beneficiarse de fisioterapia especializada en piso pélvico. Vale la pena mencionárselo a tu médico.';
+
+  @override
+  String get settingsModulePelvicPainDetailLabel => 'Detalle de dolor pélvico';
+
+  @override
+  String get settingsModulePelvicPainDetailDescription =>
+      'Al registrar dolor pélvico, agrega ubicación, carácter, relación con el ciclo, contexto y síntomas acompañantes.';
+
+  @override
   String get onboardingStepMedsUnitHint => '1';
 
   @override
   String get onboardingStepMedsStrengthHint => 'mg';
+
+  @override
+  String get settingsModuleWeightTrackingLabel => 'Registro de peso';
+
+  @override
+  String get settingsModuleWeightTrackingDescription =>
+      'Registra tu peso con una razón clínica (brote GI, cambio de medicamento, retención de líquido, apetito). Sin gráficos ni metas — es para compartir con tu especialista, no para uso diario.';
+
+  @override
+  String get settingsHeightLabel => 'Estatura';
+
+  @override
+  String get settingsHeightHint =>
+      'Opcional, en centímetros. Sin uso clínico activo todavía.';
+
+  @override
+  String get weightEntrySectionTitle => 'Registros de peso';
+
+  @override
+  String get weightEntryEmptyState => 'Sin registros de peso todavía.';
+
+  @override
+  String get weightEntryAddAction => 'Agregar registro de peso';
+
+  @override
+  String get weightEntryFormTitle => 'Nuevo registro de peso';
+
+  @override
+  String get weightEntryFormEditTitle => 'Editar registro de peso';
+
+  @override
+  String get weightEntryWeightLabel => 'Peso (kg)';
+
+  @override
+  String get weightEntryReasonLabel => 'Razón del registro';
+
+  @override
+  String get weightEntryReasonGiFlare => 'Brote gastrointestinal';
+
+  @override
+  String get weightEntryReasonMedicationChange => 'Cambio de medicamento';
+
+  @override
+  String get weightEntryReasonFluidRetention => 'Retención de líquido';
+
+  @override
+  String get weightEntryReasonAppetiteChange => 'Cambio de apetito';
+
+  @override
+  String get weightEntryReasonOther => 'Otra razón';
+
+  @override
+  String get weightEntryNoteHint => 'Nota opcional';
+
+  @override
+  String get weightEntryDateLabel => 'Fecha del registro';
+
+  @override
+  String get weightEntrySaveAction => 'Guardar registro';
 }

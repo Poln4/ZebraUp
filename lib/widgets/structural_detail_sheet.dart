@@ -84,6 +84,7 @@ Future<StructuralDetailSheetResult?> showStructuralDetailSheet({
   required Color inverseContrastColor,
   String? initialZone,
   StructuralEventKind? initialKind,
+  List<String>? candidateZones,
 }) async {
   await SymptomDefinitionsService.instance.ensureLoaded();
   if (!context.mounted) return null;
@@ -100,6 +101,7 @@ Future<StructuralDetailSheetResult?> showStructuralDetailSheet({
       ic: inverseContrastColor,
       initialZone: initialZone,
       initialKind: initialKind,
+      candidateZones: candidateZones,
     ),
   );
 }
@@ -109,12 +111,14 @@ class _StructuralDetailSheetBody extends StatefulWidget {
   final Color ic;
   final String? initialZone;
   final StructuralEventKind? initialKind;
+  final List<String>? candidateZones;
 
   const _StructuralDetailSheetBody({
     required this.cc,
     required this.ic,
     this.initialZone,
     this.initialKind,
+    this.candidateZones,
   });
 
   @override
@@ -138,12 +142,22 @@ class _StructuralDetailSheetBodyState
   BleedingOnset? _bleedingOnset;
   BleedingSeverity? _bleedingSeverity;
 
+  // 2026-07-18 — optional free-text laterality clarification (see
+  // StructuralDetail.contextNote).
+  final _contextNoteCtrl = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     _zone = widget.initialZone;
     _kind = widget.initialKind;
     _step = _computeStep();
+  }
+
+  @override
+  void dispose() {
+    _contextNoteCtrl.dispose();
+    super.dispose();
   }
 
   _StructuralSheetStep _computeStep() {
@@ -157,6 +171,9 @@ class _StructuralDetailSheetBodyState
     painCharacter: _painCharacter,
     antecedent: _antecedent,
     mechanics: _mechanics,
+    contextNote: _contextNoteCtrl.text.trim().isEmpty
+        ? null
+        : _contextNoteCtrl.text.trim(),
   );
 
   StructuralBleedingDetail _buildBleedingDetail() => StructuralBleedingDetail(
@@ -284,6 +301,9 @@ class _StructuralDetailSheetBodyState
         const SizedBox(height: 16),
         BodyZonePickerGrid(
           contrastColor: cc,
+          candidateZones: widget.candidateZones == null
+              ? null
+              : Set.of(widget.candidateZones!),
           onZoneTap: (zone) => setState(() {
             _zone = zone;
             _step = _computeStep();
@@ -468,6 +488,32 @@ class _StructuralDetailSheetBodyState
                     );
                   }).toList(),
                 ),
+                // 2026-07-18 — optional laterality context note: picking
+                // a side doesn't always pin down which zone(s) it
+                // covers ("me duele el lado derecho" can be broader or
+                // narrower than the precise zone already chosen).
+                if (groupKey == 'laterality') ...[
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: _contextNoteCtrl,
+                    style: TextStyle(color: cc, fontSize: 13),
+                    decoration: InputDecoration(
+                      labelText: l10n.structuralContextZoneLabel,
+                      labelStyle: TextStyle(
+                        color: cc.withValues(alpha: 0.6),
+                        fontSize: 12,
+                      ),
+                      hintText: l10n.structuralContextZoneHint,
+                      hintStyle: TextStyle(
+                        color: cc.withValues(alpha: 0.4),
+                        fontSize: 12,
+                      ),
+                      enabledBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: cc.withValues(alpha: 0.3)),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           );

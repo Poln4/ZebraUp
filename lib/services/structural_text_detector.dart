@@ -27,29 +27,42 @@ class StructuralTextMatch {
   final String? zone;
   final StructuralEventKind? kind;
 
-  /// True when the text names a body region too broad to resolve to a
-  /// single zone ID (e.g. "pierna" spans front_thigh/back_thigh/knees/
-  /// calf/ankles/feet) but is still clearly a structural-pain mention.
-  /// Only set when [zone] is null. Exists so [isEmpty] correctly stays
-  /// false for this case — without it, "dolor pierna" alone would match
-  /// neither a specific zone nor a kind and silently fall through to
-  /// the generic severity menu instead of opening the combined sheet's
-  /// zone-pick step, which is the whole point of this example.
-  final bool hasAmbiguousZoneSignal;
+  /// Populated instead of [zone] when the text names a body region too
+  /// broad to resolve to a single zone ID (e.g. "pierna" spans
+  /// front_thigh/back_thigh/knees/calf/ankles/feet) but is still clearly
+  /// a structural-pain mention. The list scopes the sheet's zone-pick
+  /// step to just these candidates instead of the full body grid — see
+  /// [BodyZonePickerGrid.candidateZones]. Only set when [zone] is null.
+  /// Exists so [isEmpty] correctly stays false for this case — without
+  /// it, "dolor pierna" alone would match neither a specific zone nor a
+  /// kind and silently fall through to the generic severity menu
+  /// instead of opening the combined sheet's zone-pick step, which is
+  /// the whole point of this example.
+  final List<String>? ambiguousZoneCandidates;
 
   const StructuralTextMatch({
     this.zone,
     this.kind,
-    this.hasAmbiguousZoneSignal = false,
+    this.ambiguousZoneCandidates,
   });
 
-  bool get isEmpty => zone == null && kind == null && !hasAmbiguousZoneSignal;
+  bool get hasAmbiguousZoneSignal => ambiguousZoneCandidates != null;
+
+  bool get isEmpty =>
+      zone == null && kind == null && ambiguousZoneCandidates == null;
 }
 
 /// Broad body-region words that don't map to one specific zone ID but
-/// should still be recognized as "this is about structural pain" —
-/// see [StructuralTextMatch.hasAmbiguousZoneSignal].
-const List<String> _ambiguousZoneSignalWords = ['pierna', 'piernas', 'espalda'];
+/// should still be recognized as "this is about structural pain", each
+/// scoped to the subset of zones it plausibly refers to — see
+/// [StructuralTextMatch.ambiguousZoneCandidates]. "espalda" is scoped to
+/// the back-proper zones (not hips/glutes, which are lower_back_pelvis
+/// siblings but not "espalda" in patient language).
+const Map<String, List<String>> _ambiguousZoneSignalGroups = {
+  'pierna': ['front_thigh', 'back_thigh', 'knees', 'calf', 'ankles', 'feet'],
+  'piernas': ['front_thigh', 'back_thigh', 'knees', 'calf', 'ankles', 'feet'],
+  'espalda': ['upper_back', 'shoulder_blades', 'lumbar_pelvis'],
+};
 
 /// Zone keyword table. Deliberately excludes `chest`/`side`/`ribs`/
 /// `abdomen` (overlap with GI vocabulary already gated to
@@ -63,33 +76,47 @@ const List<String> _ambiguousZoneSignalWords = ['pierna', 'piernas', 'espalda'];
 /// ambiguous across 5-6 real zones. Not matching either is the correct
 /// outcome: it leaves `zone: null`, which routes the combined sheet to
 /// ask the zone explicitly ("preguntar solo lo que falta"). See
-/// `_ambiguousZoneSignalWords` for how these still trigger the sheet
-/// despite not resolving a specific zone.
+/// `_ambiguousZoneSignalGroups` for how these still trigger the sheet
+/// (now scoped to a candidate zone list) despite not resolving a
+/// specific zone.
 const Map<String, List<String>> _zoneKeywords = {
   'cervical': ['cervical', 'cervicales', 'cuello', 'nuca'],
-  'jaw': ['mandíbula', 'mandibula', 'quijada'],
+  'jaw': ['mandíbula', 'mandibula', 'mandíbulas', 'mandibulas', 'quijada'],
   'shoulders': ['hombro', 'hombros'],
   'shoulder_blades': [
     'omóplato',
     'omoplato',
+    'omóplatos',
+    'omoplatos',
     'escápula',
     'escapula',
+    'escápulas',
+    'escapulas',
     'paletilla',
+    'paletillas',
   ],
   'upper_back': ['espalda alta', 'espalda superior'],
-  // 'forearm' before 'upper_arm' matters only for readability here —
-  // matching itself uses longest-match-wins, not list order, so
-  // "antebrazo" resolves correctly even though it contains "brazo".
-  'forearm': ['antebrazo'],
-  'upper_arm': ['brazo', 'bíceps', 'biceps', 'tríceps', 'triceps'],
-  'elbow': ['codo'],
+  // Word-boundary matching (see _containsWord) means "antebrazo" no
+  // longer accidentally matches the "brazo" keyword below (it's
+  // preceded by "ante", not a boundary) — list order/longest-match no
+  // longer does the disambiguation work it used to.
+  'forearm': ['antebrazo', 'antebrazos'],
+  'upper_arm': [
+    'brazo',
+    'brazos',
+    'bíceps',
+    'biceps',
+    'tríceps',
+    'triceps',
+  ],
+  'elbow': ['codo', 'codos'],
   'wrists': ['muñeca', 'muñecas', 'muneca', 'munecas'],
   'hands': ['mano', 'manos', 'dedo', 'dedos'],
   'lumbar_pelvis': ['lumbar', 'espalda baja', 'zona lumbar'],
   'hips': ['cadera', 'caderas'],
   'glutes': ['glúteo', 'gluteo', 'glúteos', 'gluteos'],
-  'front_thigh': ['muslo', 'cuádriceps', 'cuadriceps'],
-  'back_thigh': ['isquiotibial'],
+  'front_thigh': ['muslo', 'muslos', 'cuádriceps', 'cuadriceps'],
+  'back_thigh': ['isquiotibial', 'isquiotibiales'],
   'knees': ['rodilla', 'rodillas'],
   'calf': ['pantorrilla', 'pantorrillas', 'gemelo', 'gemelos'],
   'ankles': ['tobillo', 'tobillos'],
@@ -105,49 +132,101 @@ const Map<String, List<String>> _zoneKeywords = {
 /// already caught by _isMCASSymptom's keyword list in sintomas_tab.dart,
 /// and MCAS is checked before this detector runs (see
 /// _dispatchSymptomInput), so including them here would be unreachable.
+///
+/// All entries are complete words — matching is word-boundary strict
+/// (see _containsWord), so inflections (plural, gender, verb forms)
+/// must be listed explicitly rather than relying on a truncated stem
+/// substring-matching into them.
 const Map<StructuralEventKind, List<String>> _kindKeywords = {
   StructuralEventKind.joint: [
     'articular',
     'articulación',
     'articulacion',
+    'articulaciones',
     'coyuntura',
+    'coyunturas',
   ],
-  StructuralEventKind.muscle: ['muscular', 'músculo', 'musculo'],
+  StructuralEventKind.muscle: [
+    'muscular',
+    'musculares',
+    'músculo',
+    'musculo',
+    'músculos',
+    'musculos',
+  ],
   StructuralEventKind.tendon: [
     'tendón',
     'tendon',
+    'tendones',
     'tendinitis',
     'tendinosis',
   ],
-  StructuralEventKind.ligament: ['ligamento', 'esguince'],
+  StructuralEventKind.ligament: [
+    'ligamento',
+    'ligamentos',
+    'esguince',
+    'esguinces',
+  ],
   StructuralEventKind.softTissue: [
     'herida',
+    'heridas',
     'corte',
+    'cortes',
     'quemadura',
+    'quemaduras',
     'abrasión',
     'abrasion',
+    'abrasiones',
   ],
   StructuralEventKind.nerve: [
     'nervio',
+    'nervios',
     'neuropático',
     'neuropatico',
     'hormigueo',
-    'entumecid',
-    'adormecid',
+    'hormigueos',
+    'entumecido',
+    'entumecida',
+    'entumecidos',
+    'entumecidas',
+    'adormecido',
+    'adormecida',
+    'adormecidos',
+    'adormecidas',
   ],
 };
 
+/// Spanish letters (incl. accented vowels + ñ) and digits — used to
+/// define word boundaries so keyword matching doesn't fire on a
+/// keyword that's merely a substring of an unrelated longer word (e.g.
+/// "pie" inside "piernas", found in production 18-jul-2026: "dolor
+/// piernas" was silently resolving to the "feet" zone).
+const _wordCharPattern = '[a-z0-9áéíóúñ]';
+
+/// True when [keyword] appears in [norm] as a whole word (or whole
+/// phrase, for multi-word keywords like "espalda alta") — not merely
+/// as a substring of a longer word. Both [norm] and [keyword] are
+/// expected already lowercased.
+bool _containsWord(String norm, String keyword) {
+  final pattern = RegExp(
+    '(?<!$_wordCharPattern)${RegExp.escape(keyword)}(?!$_wordCharPattern)',
+  );
+  return pattern.hasMatch(norm);
+}
+
 /// Finds the longest matching keyword for [norm] across all entries of
 /// [table], returning the associated key (zone ID or kind) or null.
-/// Longest-match-wins is required, not cosmetic: e.g. "antebrazo"
-/// contains the substring "brazo", so a naive first-match scan would
-/// wrongly resolve to upper_arm instead of forearm.
+/// Longest-match-wins is a tie-breaker for when a text legitimately
+/// contains more than one recognizable keyword (e.g. a multi-word
+/// phrase alongside a shorter one); it does not compensate for
+/// accidental substring collisions — those are prevented by
+/// [_containsWord]'s word-boundary check instead.
 T? _longestKeywordMatch<T>(String norm, Map<T, List<String>> table) {
   T? best;
   var bestLength = 0;
   for (final entry in table.entries) {
     for (final keyword in entry.value) {
-      if (keyword.length > bestLength && norm.contains(keyword)) {
+      if (keyword.length > bestLength && _containsWord(norm, keyword)) {
         best = entry.key;
         bestLength = keyword.length;
       }
@@ -165,11 +244,18 @@ StructuralTextMatch detectStructuralTextMatch(String userInput) {
   if (norm.isEmpty) return const StructuralTextMatch();
   final zone = _longestKeywordMatch(norm, _zoneKeywords);
   final kind = _longestKeywordMatch(norm, _kindKeywords);
-  final ambiguousZoneSignal =
-      zone == null && _ambiguousZoneSignalWords.any(norm.contains);
+  List<String>? ambiguousZoneCandidates;
+  if (zone == null) {
+    for (final entry in _ambiguousZoneSignalGroups.entries) {
+      if (_containsWord(norm, entry.key)) {
+        ambiguousZoneCandidates = entry.value;
+        break;
+      }
+    }
+  }
   return StructuralTextMatch(
     zone: zone,
     kind: kind,
-    hasAmbiguousZoneSignal: ambiguousZoneSignal,
+    ambiguousZoneCandidates: ambiguousZoneCandidates,
   );
 }

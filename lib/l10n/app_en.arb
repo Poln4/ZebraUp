@@ -728,7 +728,37 @@
   "structuralKindPickSubtitle": "Pick whichever is closest. If you're not sure, you can pick \"no clear cause\".",
   "structuralSheetTitle": "Pain detail",
   "structuralSheetSubtitle": "Tell us more about this pain, in your own words.",
+  "structuralContextZoneLabel": "Context area (optional)",
+  "structuralContextZoneHint": "E.g.: the whole right side, not just this area",
   "structuralKnownTermShortcut": "I already know what this is",
+  "structuralCheckInTitle": "How's it doing: {zone}?",
+  "@structuralCheckInTitle": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "structuralCheckInSubtitle": "Logged since {since}. Update the status without adding a new entry.",
+  "@structuralCheckInSubtitle": {
+    "placeholders": {
+      "since": {
+        "type": "String"
+      }
+    }
+  },
+  "structuralCheckInSame": "Still the same",
+  "structuralCheckInBetter": "Better, but still hurts",
+  "structuralCheckInWorse": "Got worse",
+  "structuralCheckInResolved": "It's resolved",
+  "structuralOngoingSinceTag": "ongoing since {date}",
+  "@structuralOngoingSinceTag": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "structuralBleedingSheetTitle": "Bleeding or bruise detail",
   "structuralBleedingSheetSubtitle": "Tell us the origin and how severe it was.",
   "structuralBleedingLogTitle": "How was it this time?",
@@ -1375,6 +1405,50 @@
   "abdominalIntegrationYes": "Yes",
   "abdominalIntegrationNo": "No",
   "abdominalIntegrationDontKnow": "I don't know",
+  "presyncopeSheetTitle": "Presyncope detail",
+  "presyncopeSheetSubtitle": "Optional details help identify patterns.",
+  "presyncopeActionSaveDetail": "Save detail",
+  "presyncopeLossOfConsciousnessDialogTitle": "Loss of consciousness",
+  "presyncopeLossOfConsciousnessDialogConfirm": "I understand, continue",
+  "presyncopeAdvisoryDialogTitle": "Patterns detected",
+  "presyncopeRedFlagExertionalTriggerAdvisory": "Your episode appeared after physical exertion, not at rest. Worth mentioning to your doctor, especially if it repeats.",
+  "presyncopeRedFlagNoPositionChangeTriggerAdvisory": "Your episode occurred without any change in position. This pattern is less typical of an orthostatic origin and may be worth discussing with your doctor.",
+  "settingsModulePresyncopeDetailLabel": "Presyncope detail",
+  "settingsModulePresyncopeDetailDescription": "When logging presyncope, add trigger, preceding symptoms, how it ended, and recovery.",
+  "pelvicPainSheetTitle": "Pelvic pain detail",
+  "pelvicPainSheetSubtitle": "Optional details help identify patterns.",
+  "pelvicPainActionSaveDetail": "Save detail",
+  "pelvicPainSuddenOnsetEmergencyTitle": "Sudden onset pain",
+  "pelvicPainSuddenOnsetEmergencyBody": "Pelvic pain that starts suddenly and very intensely, different from what you usually have, can indicate a medical emergency such as ovarian torsion or a ruptured ectopic pregnancy. It's worth going to urgent care now to rule this out.\n\nIf you go, let the medical team know about your clEDS diagnosis (classical-like Ehlers-Danlos syndrome, TNXB-related).\n\nIf the pain improved significantly and you would no longer describe it as sudden and very intense, you can change the character and save the entry normally.",
+  "pelvicPainSuddenOnsetEmergencyChangeCharacter": "Change character and save",
+  "pelvicPainSuddenOnsetEmergencySaveAsIs": "Save as-is (emergency)",
+  "pelvicPainUrgentDialogTitle": "Medical alert",
+  "pelvicPainRedFlagAbnormalBleedingUrgent": "This bleeding, together with intense pain, can indicate a complication that needs prompt evaluation. If the bleeding is heavy or you notice a lot of weakness or dizziness, go to urgent care now.",
+  "pelvicPainRedFlagFeverUrgent": "You logged a fever together with this pelvic pain. This combination can indicate a pelvic infection that needs prompt medical evaluation. Go to urgent care or your health center as soon as possible.",
+  "pelvicPainAdvisoryDialogTitle": "Patterns detected",
+  "pelvicPainRedFlagBladderPatternAdvisory": "Your pain is related to a full bladder or urinating. This pattern can indicate a condition known as painful bladder syndrome. Worth mentioning to your doctor.",
+  "pelvicPainRedFlagPelvicFloorTensionAdvisory": "You noted muscle tension or spasm in the pelvic area. This pattern is recognized in people with hypermobility and may benefit from pelvic floor physical therapy. Worth mentioning to your doctor.",
+  "settingsModulePelvicPainDetailLabel": "Pelvic pain detail",
+  "settingsModulePelvicPainDetailDescription": "When logging pelvic pain, add location, character, relation to your cycle, context, and accompanying symptoms.",
   "onboardingStepMedsUnitHint": "1",
-  "onboardingStepMedsStrengthHint": "mg"
+  "onboardingStepMedsStrengthHint": "mg",
+  "settingsModuleWeightTrackingLabel": "Weight log",
+  "settingsModuleWeightTrackingDescription": "Log your weight with a clinical reason (GI flare, medication change, fluid retention, appetite). No charts or goals — this is for sharing with your specialist, not daily self-monitoring.",
+  "settingsHeightLabel": "Height",
+  "settingsHeightHint": "Optional, in centimeters. No active clinical use yet.",
+  "weightEntrySectionTitle": "Weight entries",
+  "weightEntryEmptyState": "No weight entries yet.",
+  "weightEntryAddAction": "Add weight entry",
+  "weightEntryFormTitle": "New weight entry",
+  "weightEntryFormEditTitle": "Edit weight entry",
+  "weightEntryWeightLabel": "Weight (kg)",
+  "weightEntryReasonLabel": "Reason for this entry",
+  "weightEntryReasonGiFlare": "GI flare",
+  "weightEntryReasonMedicationChange": "Medication change",
+  "weightEntryReasonFluidRetention": "Fluid retention",
+  "weightEntryReasonAppetiteChange": "Appetite change",
+  "weightEntryReasonOther": "Other reason",
+  "weightEntryNoteHint": "Optional note",
+  "weightEntryDateLabel": "Entry date",
+  "weightEntrySaveAction": "Save entry"
 }

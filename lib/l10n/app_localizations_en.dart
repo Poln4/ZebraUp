@@ -1235,7 +1235,41 @@ class AppLocalizationsEn extends AppLocalizations {
       'Tell us more about this pain, in your own words.';
 
   @override
+  String get structuralContextZoneLabel => 'Context area (optional)';
+
+  @override
+  String get structuralContextZoneHint =>
+      'E.g.: the whole right side, not just this area';
+
+  @override
   String get structuralKnownTermShortcut => 'I already know what this is';
+
+  @override
+  String structuralCheckInTitle(String zone) {
+    return 'How\'s it doing: $zone?';
+  }
+
+  @override
+  String structuralCheckInSubtitle(String since) {
+    return 'Logged since $since. Update the status without adding a new entry.';
+  }
+
+  @override
+  String get structuralCheckInSame => 'Still the same';
+
+  @override
+  String get structuralCheckInBetter => 'Better, but still hurts';
+
+  @override
+  String get structuralCheckInWorse => 'Got worse';
+
+  @override
+  String get structuralCheckInResolved => 'It\'s resolved';
+
+  @override
+  String structuralOngoingSinceTag(String date) {
+    return 'ongoing since $date';
+  }
 
   @override
   String get structuralBleedingSheetTitle => 'Bleeding or bruise detail';
@@ -2427,8 +2461,156 @@ class AppLocalizationsEn extends AppLocalizations {
   String get abdominalIntegrationDontKnow => 'I don\'t know';
 
   @override
+  String get presyncopeSheetTitle => 'Presyncope detail';
+
+  @override
+  String get presyncopeSheetSubtitle =>
+      'Optional details help identify patterns.';
+
+  @override
+  String get presyncopeActionSaveDetail => 'Save detail';
+
+  @override
+  String get presyncopeLossOfConsciousnessDialogTitle =>
+      'Loss of consciousness';
+
+  @override
+  String get presyncopeLossOfConsciousnessDialogConfirm =>
+      'I understand, continue';
+
+  @override
+  String get presyncopeAdvisoryDialogTitle => 'Patterns detected';
+
+  @override
+  String get presyncopeRedFlagExertionalTriggerAdvisory =>
+      'Your episode appeared after physical exertion, not at rest. Worth mentioning to your doctor, especially if it repeats.';
+
+  @override
+  String get presyncopeRedFlagNoPositionChangeTriggerAdvisory =>
+      'Your episode occurred without any change in position. This pattern is less typical of an orthostatic origin and may be worth discussing with your doctor.';
+
+  @override
+  String get settingsModulePresyncopeDetailLabel => 'Presyncope detail';
+
+  @override
+  String get settingsModulePresyncopeDetailDescription =>
+      'When logging presyncope, add trigger, preceding symptoms, how it ended, and recovery.';
+
+  @override
+  String get pelvicPainSheetTitle => 'Pelvic pain detail';
+
+  @override
+  String get pelvicPainSheetSubtitle =>
+      'Optional details help identify patterns.';
+
+  @override
+  String get pelvicPainActionSaveDetail => 'Save detail';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyTitle => 'Sudden onset pain';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyBody =>
+      'Pelvic pain that starts suddenly and very intensely, different from what you usually have, can indicate a medical emergency such as ovarian torsion or a ruptured ectopic pregnancy. It\'s worth going to urgent care now to rule this out.\n\nIf you go, let the medical team know about your clEDS diagnosis (classical-like Ehlers-Danlos syndrome, TNXB-related).\n\nIf the pain improved significantly and you would no longer describe it as sudden and very intense, you can change the character and save the entry normally.';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyChangeCharacter =>
+      'Change character and save';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencySaveAsIs => 'Save as-is (emergency)';
+
+  @override
+  String get pelvicPainUrgentDialogTitle => 'Medical alert';
+
+  @override
+  String get pelvicPainRedFlagAbnormalBleedingUrgent =>
+      'This bleeding, together with intense pain, can indicate a complication that needs prompt evaluation. If the bleeding is heavy or you notice a lot of weakness or dizziness, go to urgent care now.';
+
+  @override
+  String get pelvicPainRedFlagFeverUrgent =>
+      'You logged a fever together with this pelvic pain. This combination can indicate a pelvic infection that needs prompt medical evaluation. Go to urgent care or your health center as soon as possible.';
+
+  @override
+  String get pelvicPainAdvisoryDialogTitle => 'Patterns detected';
+
+  @override
+  String get pelvicPainRedFlagBladderPatternAdvisory =>
+      'Your pain is related to a full bladder or urinating. This pattern can indicate a condition known as painful bladder syndrome. Worth mentioning to your doctor.';
+
+  @override
+  String get pelvicPainRedFlagPelvicFloorTensionAdvisory =>
+      'You noted muscle tension or spasm in the pelvic area. This pattern is recognized in people with hypermobility and may benefit from pelvic floor physical therapy. Worth mentioning to your doctor.';
+
+  @override
+  String get settingsModulePelvicPainDetailLabel => 'Pelvic pain detail';
+
+  @override
+  String get settingsModulePelvicPainDetailDescription =>
+      'When logging pelvic pain, add location, character, relation to your cycle, context, and accompanying symptoms.';
+
+  @override
   String get onboardingStepMedsUnitHint => '1';
 
   @override
   String get onboardingStepMedsStrengthHint => 'mg';
+
+  @override
+  String get settingsModuleWeightTrackingLabel => 'Weight log';
+
+  @override
+  String get settingsModuleWeightTrackingDescription =>
+      'Log your weight with a clinical reason (GI flare, medication change, fluid retention, appetite). No charts or goals — this is for sharing with your specialist, not daily self-monitoring.';
+
+  @override
+  String get settingsHeightLabel => 'Height';
+
+  @override
+  String get settingsHeightHint =>
+      'Optional, in centimeters. No active clinical use yet.';
+
+  @override
+  String get weightEntrySectionTitle => 'Weight entries';
+
+  @override
+  String get weightEntryEmptyState => 'No weight entries yet.';
+
+  @override
+  String get weightEntryAddAction => 'Add weight entry';
+
+  @override
+  String get weightEntryFormTitle => 'New weight entry';
+
+  @override
+  String get weightEntryFormEditTitle => 'Edit weight entry';
+
+  @override
+  String get weightEntryWeightLabel => 'Weight (kg)';
+
+  @override
+  String get weightEntryReasonLabel => 'Reason for this entry';
+
+  @override
+  String get weightEntryReasonGiFlare => 'GI flare';
+
+  @override
+  String get weightEntryReasonMedicationChange => 'Medication change';
+
+  @override
+  String get weightEntryReasonFluidRetention => 'Fluid retention';
+
+  @override
+  String get weightEntryReasonAppetiteChange => 'Appetite change';
+
+  @override
+  String get weightEntryReasonOther => 'Other reason';
+
+  @override
+  String get weightEntryNoteHint => 'Optional note';
+
+  @override
+  String get weightEntryDateLabel => 'Entry date';
+
+  @override
+  String get weightEntrySaveAction => 'Save entry';
 }

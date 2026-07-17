@@ -734,7 +734,37 @@
   "structuralKindPickSubtitle": "Elige la opción que más se acerque. Si no sabes, puedes elegir \"sin causa clara\".",
   "structuralSheetTitle": "Detalle del dolor",
   "structuralSheetSubtitle": "Cuéntanos más sobre este dolor, con tus propias palabras.",
+  "structuralContextZoneLabel": "Zona de contexto (opcional)",
+  "structuralContextZoneHint": "Ej: todo el lado derecho, no solo esta zona",
   "structuralKnownTermShortcut": "Ya sé qué es",
+  "structuralCheckInTitle": "¿Cómo sigue: {zone}?",
+  "@structuralCheckInTitle": {
+    "placeholders": {
+      "zone": {
+        "type": "String"
+      }
+    }
+  },
+  "structuralCheckInSubtitle": "Registrado desde el {since}. Actualiza el estado sin agregar un registro nuevo.",
+  "@structuralCheckInSubtitle": {
+    "placeholders": {
+      "since": {
+        "type": "String"
+      }
+    }
+  },
+  "structuralCheckInSame": "Sigue igual",
+  "structuralCheckInBetter": "Mejoró, pero sigue con dolor",
+  "structuralCheckInWorse": "Empeoró",
+  "structuralCheckInResolved": "Se resolvió",
+  "structuralOngoingSinceTag": "en curso desde el {date}",
+  "@structuralOngoingSinceTag": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "structuralBleedingSheetTitle": "Detalle del sangrado o moretón",
   "structuralBleedingSheetSubtitle": "Cuéntanos el origen y qué tan grave fue.",
   "structuralBleedingLogTitle": "¿Cómo fue esta vez?",
@@ -1501,7 +1531,183 @@
   "@abdominalIntegrationDontKnow": {
     "description": "'I don't know' button for D.2.E integration prompts. Treated the same as No but semantically distinct."
   },
+  "presyncopeSheetTitle": "Detalle de tu presíncope",
+  "@presyncopeSheetTitle": {
+    "description": "Title of the modal sheet that captures structured presyncope detail."
+  },
+  "presyncopeSheetSubtitle": "Los detalles opcionales ayudan a identificar patrones.",
+  "@presyncopeSheetSubtitle": {
+    "description": "Subtitle explaining why filling the optional detail helps."
+  },
+  "presyncopeActionSaveDetail": "Guardar detalle",
+  "@presyncopeActionSaveDetail": {
+    "description": "Save button label at the bottom of the presyncope detail sheet."
+  },
+  "presyncopeLossOfConsciousnessDialogTitle": "Pérdida de conocimiento",
+  "@presyncopeLossOfConsciousnessDialogTitle": {
+    "description": "Title of the in-sheet confirmation dialog fired when outcome=briefLossOfConsciousness on save attempt."
+  },
+  "presyncopeLossOfConsciousnessDialogConfirm": "Lo entiendo, continuar",
+  "@presyncopeLossOfConsciousnessDialogConfirm": {
+    "description": "Confirm button on the loss-of-consciousness dialog."
+  },
+  "presyncopeAdvisoryDialogTitle": "Patrones detectados",
+  "@presyncopeAdvisoryDialogTitle": {
+    "description": "Title of the advisory dialog shown after saving a presyncope log when a red flag pattern is detected."
+  },
+  "presyncopeRedFlagExertionalTriggerAdvisory": "Tu episodio apareció después de un esfuerzo físico, no en reposo. Vale la pena mencionárselo a tu médico, especialmente si se repite.",
+  "@presyncopeRedFlagExertionalTriggerAdvisory": {
+    "description": "ADVISORY for mechanism=postExertion. ESC 2018 high-risk feature."
+  },
+  "presyncopeRedFlagNoPositionChangeTriggerAdvisory": "Tu episodio ocurrió sin cambio de postura. Este patrón es menos típico de un origen ortostático y puede valer la pena conversarlo con tu médico.",
+  "@presyncopeRedFlagNoPositionChangeTriggerAdvisory": {
+    "description": "ADVISORY for mechanism=noPositionChange. ESC 2018 high-risk feature."
+  },
+  "settingsModulePresyncopeDetailLabel": "Detalle de presíncope",
+  "@settingsModulePresyncopeDetailLabel": {
+    "description": "Label of the optional presyncope detail tracker switch in settings."
+  },
+  "settingsModulePresyncopeDetailDescription": "Al registrar presíncope, agrega desencadenante, síntomas previos, cómo terminó y recuperación.",
+  "@settingsModulePresyncopeDetailDescription": {
+    "description": "Description under the presyncope detail switch in settings."
+  },
+  "pelvicPainSheetTitle": "Detalle de tu dolor pélvico",
+  "@pelvicPainSheetTitle": {
+    "description": "Title of the modal sheet that captures structured pelvic pain detail."
+  },
+  "pelvicPainSheetSubtitle": "Los detalles opcionales ayudan a identificar patrones.",
+  "@pelvicPainSheetSubtitle": {
+    "description": "Subtitle explaining why filling the optional detail helps."
+  },
+  "pelvicPainActionSaveDetail": "Guardar detalle",
+  "@pelvicPainActionSaveDetail": {
+    "description": "Save button label at the bottom of the pelvic pain detail sheet."
+  },
+  "pelvicPainSuddenOnsetEmergencyTitle": "Dolor de inicio súbito",
+  "@pelvicPainSuddenOnsetEmergencyTitle": {
+    "description": "Title of the in-sheet emergency dialog fired on save attempt when character=suddenSevereOnset."
+  },
+  "pelvicPainSuddenOnsetEmergencyBody": "Un dolor pélvico que empieza de golpe y muy intenso, distinto al que sueles tener, puede indicar una emergencia médica como la torsión de un ovario o la rotura de un embarazo ectópico. Vale la pena que vayas a urgencias ahora para descartarlo.\n\nSi vas, informa al equipo médico tu diagnóstico de clEDS (síndrome de Ehlers-Danlos clásico-like, por mutación de TNXB).\n\nSi el dolor mejoró significativamente y ya no lo describirías como súbito y muy intenso, puedes cambiar el carácter y guardar el registro normalmente.",
+  "@pelvicPainSuddenOnsetEmergencyBody": {
+    "description": "Body text of the sudden-onset in-sheet emergency dialog."
+  },
+  "pelvicPainSuddenOnsetEmergencyChangeCharacter": "Cambiar carácter y guardar",
+  "@pelvicPainSuddenOnsetEmergencyChangeCharacter": {
+    "description": "Button that returns to the sheet so the user can revise the character chip."
+  },
+  "pelvicPainSuddenOnsetEmergencySaveAsIs": "Guardar como está (emergencia)",
+  "@pelvicPainSuddenOnsetEmergencySaveAsIs": {
+    "description": "Button that commits the save with the emergency character acknowledged."
+  },
+  "pelvicPainUrgentDialogTitle": "Alerta médica",
+  "@pelvicPainUrgentDialogTitle": {
+    "description": "Title of the URGENT post-save dialog for pelvic pain red flags."
+  },
+  "pelvicPainRedFlagAbnormalBleedingUrgent": "Este sangrado, junto con dolor intenso, puede indicar una complicación que requiere evaluación pronta. Si el sangrado es abundante o notas mucha debilidad o mareo, ve a urgencias ahora.",
+  "@pelvicPainRedFlagAbnormalBleedingUrgent": {
+    "description": "URGENT for abnormalBleeding accompaniment + severity >= 3."
+  },
+  "pelvicPainRedFlagFeverUrgent": "Registraste fiebre junto con este dolor pélvico. Esta combinación puede indicar una infección pélvica que requiere evaluación médica pronta. Ve a urgencias o a tu centro de salud lo antes posible.",
+  "@pelvicPainRedFlagFeverUrgent": {
+    "description": "URGENT for same-day fever + severity >= 2 (ACOG: possible pelvic inflammatory disease)."
+  },
+  "pelvicPainAdvisoryDialogTitle": "Patrones detectados",
+  "@pelvicPainAdvisoryDialogTitle": {
+    "description": "Title of the ADVISORY post-save dialog for pelvic pain red flags."
+  },
+  "pelvicPainRedFlagBladderPatternAdvisory": "Tu dolor se relaciona con la vejiga llena o con orinar. Este patrón puede indicar una condición conocida como síndrome de vejiga dolorosa. Vale la pena mencionárselo a tu médico.",
+  "@pelvicPainRedFlagBladderPatternAdvisory": {
+    "description": "ADVISORY for withBladderFullness trigger or urinaryUrgencyFrequency accompaniment."
+  },
+  "pelvicPainRedFlagPelvicFloorTensionAdvisory": "Notaste tensión o espasmo muscular en la zona pélvica. Este patrón es conocido en personas con hipermovilidad y puede beneficiarse de fisioterapia especializada en piso pélvico. Vale la pena mencionárselo a tu médico.",
+  "@pelvicPainRedFlagPelvicFloorTensionAdvisory": {
+    "description": "ADVISORY for pelvicFloorTension accompaniment."
+  },
+  "settingsModulePelvicPainDetailLabel": "Detalle de dolor pélvico",
+  "@settingsModulePelvicPainDetailLabel": {
+    "description": "Label of the optional pelvic pain detail tracker switch in settings."
+  },
+  "settingsModulePelvicPainDetailDescription": "Al registrar dolor pélvico, agrega ubicación, carácter, relación con el ciclo, contexto y síntomas acompañantes.",
+  "@settingsModulePelvicPainDetailDescription": {
+    "description": "Description under the pelvic pain detail switch in settings."
+  },
   "onboardingStepMedsUnitHint": "1",
-  "onboardingStepMedsStrengthHint": "mg"
+  "onboardingStepMedsStrengthHint": "mg",
+  "settingsModuleWeightTrackingLabel": "Registro de peso",
+  "@settingsModuleWeightTrackingLabel": {
+    "description": "Label of the optional weight tracking switch in settings."
+  },
+  "settingsModuleWeightTrackingDescription": "Registra tu peso con una razón clínica (brote GI, cambio de medicamento, retención de líquido, apetito). Sin gráficos ni metas — es para compartir con tu especialista, no para uso diario.",
+  "@settingsModuleWeightTrackingDescription": {
+    "description": "Description under the weight tracking switch in settings."
+  },
+  "settingsHeightLabel": "Estatura",
+  "@settingsHeightLabel": {
+    "description": "Label for the static height field in Profile settings."
+  },
+  "settingsHeightHint": "Opcional, en centímetros. Sin uso clínico activo todavía.",
+  "@settingsHeightHint": {
+    "description": "Helper text under the height field in Profile settings."
+  },
+  "weightEntrySectionTitle": "Registros de peso",
+  "@weightEntrySectionTitle": {
+    "description": "Section header for the weight entries list in Profile settings."
+  },
+  "weightEntryEmptyState": "Sin registros de peso todavía.",
+  "@weightEntryEmptyState": {
+    "description": "Empty state shown when there are no weight entries yet."
+  },
+  "weightEntryAddAction": "Agregar registro de peso",
+  "@weightEntryAddAction": {
+    "description": "Button label to add a new weight entry."
+  },
+  "weightEntryFormTitle": "Nuevo registro de peso",
+  "@weightEntryFormTitle": {
+    "description": "Title of the weight entry form sheet when creating a new entry."
+  },
+  "weightEntryFormEditTitle": "Editar registro de peso",
+  "@weightEntryFormEditTitle": {
+    "description": "Title of the weight entry form sheet when editing an existing entry."
+  },
+  "weightEntryWeightLabel": "Peso (kg)",
+  "@weightEntryWeightLabel": {
+    "description": "Label for the weight input field."
+  },
+  "weightEntryReasonLabel": "Razón del registro",
+  "@weightEntryReasonLabel": {
+    "description": "Label for the required WeightChangeReason selector."
+  },
+  "weightEntryReasonGiFlare": "Brote gastrointestinal",
+  "@weightEntryReasonGiFlare": {
+    "description": "WeightChangeReason.giFlare option label."
+  },
+  "weightEntryReasonMedicationChange": "Cambio de medicamento",
+  "@weightEntryReasonMedicationChange": {
+    "description": "WeightChangeReason.medicationChange option label."
+  },
+  "weightEntryReasonFluidRetention": "Retención de líquido",
+  "@weightEntryReasonFluidRetention": {
+    "description": "WeightChangeReason.fluidRetention option label."
+  },
+  "weightEntryReasonAppetiteChange": "Cambio de apetito",
+  "@weightEntryReasonAppetiteChange": {
+    "description": "WeightChangeReason.appetiteChange option label."
+  },
+  "weightEntryReasonOther": "Otra razón",
+  "@weightEntryReasonOther": {
+    "description": "WeightChangeReason.other option label."
+  },
+  "weightEntryNoteHint": "Nota opcional",
+  "@weightEntryNoteHint": {
+    "description": "Hint text for the optional free-text note field."
+  },
+  "weightEntryDateLabel": "Fecha del registro",
+  "@weightEntryDateLabel": {
+    "description": "Label/button text for the date picker in the weight entry form."
+  },
+  "weightEntrySaveAction": "Guardar registro",
+  "@weightEntrySaveAction": {
+    "description": "Save button label at the bottom of the weight entry form sheet."
+  }
 
 }

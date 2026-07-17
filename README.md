@@ -2,7 +2,7 @@
 
 **ZebraUp** is a health tracking app built specifically for people living with rare diseases — the "zebras" of medicine, where the common horses don't apply. The app exists to make short medical consultations more useful, helping patients arrive with concrete data instead of blurred memories.
 
-It's currently in beta, targeting Spanish-speaking patients in Chile first.
+It's currently in beta, targeting Spanish-speaking patients across Latin America (and Hispanic patients more broadly, regardless of where they live).
 
 🌐 **Web version**: [zebraup-beta.netlify.app](https://zebraup-beta.netlify.app)
 
@@ -112,7 +112,7 @@ If you work with patients who might benefit from ZebraUp, or have clinical feedb
 
 ## Beta testing and feedback
 
-ZebraUp is in beta. Current testers are people with rare diseases in Chile who live directly with the conditions the app is designed to support. If you found a bug, an awkward translation, a feature that doesn't work the way you expected, or have an idea for improving something — that feedback is **exactly** what I need right now.
+ZebraUp is in beta. Current testers are Hispanic people with rare diseases — not limited to any one country — who live directly with the conditions the app is designed to support. If you found a bug, an awkward translation, a feature that doesn't work the way you expected, or have an idea for improving something — that feedback is **exactly** what I need right now.
 
 ---
 

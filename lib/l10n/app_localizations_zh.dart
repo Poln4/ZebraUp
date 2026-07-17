@@ -1164,7 +1164,40 @@ class AppLocalizationsZh extends AppLocalizations {
   String get structuralSheetSubtitle => '用你自己的話,告訴我們更多關於這個疼痛的資訊。';
 
   @override
+  String get structuralContextZoneLabel => '背景部位（選填）';
+
+  @override
+  String get structuralContextZoneHint => '例如：整個右側,不只是這個部位';
+
+  @override
   String get structuralKnownTermShortcut => '我已經知道是什麼';
+
+  @override
+  String structuralCheckInTitle(String zone) {
+    return '$zone現在怎麼樣了？';
+  }
+
+  @override
+  String structuralCheckInSubtitle(String since) {
+    return '自$since起記錄。更新狀態,不需要新增記錄。';
+  }
+
+  @override
+  String get structuralCheckInSame => '還是一樣';
+
+  @override
+  String get structuralCheckInBetter => '好一些了,但還是會痛';
+
+  @override
+  String get structuralCheckInWorse => '惡化了';
+
+  @override
+  String get structuralCheckInResolved => '已經解決了';
+
+  @override
+  String structuralOngoingSinceTag(String date) {
+    return '自$date起持續中';
+  }
 
   @override
   String get structuralBleedingSheetTitle => '出血或瘀傷詳情';
@@ -2311,10 +2344,152 @@ class AppLocalizationsZh extends AppLocalizations {
   String get abdominalIntegrationDontKnow => '我不知道';
 
   @override
+  String get presyncopeSheetTitle => '昏厥前兆細節';
+
+  @override
+  String get presyncopeSheetSubtitle => '可選的細節有助於識別模式。';
+
+  @override
+  String get presyncopeActionSaveDetail => '儲存細節';
+
+  @override
+  String get presyncopeLossOfConsciousnessDialogTitle => '失去意識';
+
+  @override
+  String get presyncopeLossOfConsciousnessDialogConfirm => '我了解,繼續';
+
+  @override
+  String get presyncopeAdvisoryDialogTitle => '偵測到的模式';
+
+  @override
+  String get presyncopeRedFlagExertionalTriggerAdvisory =>
+      '你的發作出現在體力消耗之後,而非休息時。值得告訴你的醫生,特別是如果重複發生。';
+
+  @override
+  String get presyncopeRedFlagNoPositionChangeTriggerAdvisory =>
+      '你的發作發生在沒有姿勢改變的情況下。這較不符合典型的姿勢性起因,可能值得與醫生討論。';
+
+  @override
+  String get settingsModulePresyncopeDetailLabel => '昏厥前兆細節';
+
+  @override
+  String get settingsModulePresyncopeDetailDescription =>
+      '記錄昏厥前兆時,追蹤誘因、先兆症狀、結果和恢復情況。';
+
+  @override
+  String get pelvicPainSheetTitle => '骨盆疼痛細節';
+
+  @override
+  String get pelvicPainSheetSubtitle => '可選的細節有助於識別模式。';
+
+  @override
+  String get pelvicPainActionSaveDetail => '儲存細節';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyTitle => '突然發作的疼痛';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyBody =>
+      '突然發作且非常劇烈、與你平常不同的骨盆疼痛,可能代表醫療緊急狀況,例如卵巢扭轉或子宮外孕破裂。值得現在就去急診排除這個可能性。\n\n如果你去急診,請告訴醫療團隊你的clEDS診斷(類典型埃勒斯-當洛斯症候群,與TNXB基因相關)。\n\n如果疼痛已明顯改善,不再符合突然且非常劇烈的描述,你可以更改疼痛性質後正常儲存記錄。';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencyChangeCharacter => '更改性質並儲存';
+
+  @override
+  String get pelvicPainSuddenOnsetEmergencySaveAsIs => '照原樣儲存(緊急)';
+
+  @override
+  String get pelvicPainUrgentDialogTitle => '醫療警示';
+
+  @override
+  String get pelvicPainRedFlagAbnormalBleedingUrgent =>
+      '這種出血合併劇烈疼痛,可能代表需要儘快評估的併發症。如果出血量大,或你感到明顯虛弱或暈眩,請立即就醫。';
+
+  @override
+  String get pelvicPainRedFlagFeverUrgent =>
+      '你在記錄這次骨盆疼痛的同時也記錄了發燒。這種組合可能代表骨盆感染,需要儘快就醫評估。請盡快前往急診或你的醫療機構。';
+
+  @override
+  String get pelvicPainAdvisoryDialogTitle => '偵測到的模式';
+
+  @override
+  String get pelvicPainRedFlagBladderPatternAdvisory =>
+      '你的疼痛與膀胱脹滿或排尿有關。這種模式可能代表一種稱為疼痛性膀胱症候群的狀況。值得告訴你的醫生。';
+
+  @override
+  String get pelvicPainRedFlagPelvicFloorTensionAdvisory =>
+      '你注意到骨盆區域的肌肉緊繃或痙攣。這種模式在過動性關節患者中已知,可能受益於骨盆底物理治療。值得告訴你的醫生。';
+
+  @override
+  String get settingsModulePelvicPainDetailLabel => '骨盆疼痛細節';
+
+  @override
+  String get settingsModulePelvicPainDetailDescription =>
+      '記錄骨盆疼痛時,新增位置、性質、與週期的關係、情境與伴隨症狀。';
+
+  @override
   String get onboardingStepMedsUnitHint => '1';
 
   @override
   String get onboardingStepMedsStrengthHint => 'mg';
+
+  @override
+  String get settingsModuleWeightTrackingLabel => '體重記錄';
+
+  @override
+  String get settingsModuleWeightTrackingDescription =>
+      '記錄體重並附上臨床原因(腸胃發作、藥物調整、水腫、食慾變化)。沒有圖表或目標——這是為了與你的專科醫生分享,不是日常自我監測。';
+
+  @override
+  String get settingsHeightLabel => '身高';
+
+  @override
+  String get settingsHeightHint => '選填,以公分為單位。目前尚無實際臨床用途。';
+
+  @override
+  String get weightEntrySectionTitle => '體重記錄';
+
+  @override
+  String get weightEntryEmptyState => '尚無體重記錄。';
+
+  @override
+  String get weightEntryAddAction => '新增體重記錄';
+
+  @override
+  String get weightEntryFormTitle => '新增體重記錄';
+
+  @override
+  String get weightEntryFormEditTitle => '編輯體重記錄';
+
+  @override
+  String get weightEntryWeightLabel => '體重（公斤）';
+
+  @override
+  String get weightEntryReasonLabel => '記錄原因';
+
+  @override
+  String get weightEntryReasonGiFlare => '腸胃發作';
+
+  @override
+  String get weightEntryReasonMedicationChange => '藥物調整';
+
+  @override
+  String get weightEntryReasonFluidRetention => '水腫／液體滯留';
+
+  @override
+  String get weightEntryReasonAppetiteChange => '食慾變化';
+
+  @override
+  String get weightEntryReasonOther => '其他原因';
+
+  @override
+  String get weightEntryNoteHint => '選填備註';
+
+  @override
+  String get weightEntryDateLabel => '記錄日期';
+
+  @override
+  String get weightEntrySaveAction => '儲存記錄';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

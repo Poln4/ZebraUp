@@ -14,10 +14,18 @@ class BodyZonePickerGrid extends StatelessWidget {
   final Color contrastColor;
   final ValueChanged<String> onZoneTap;
 
+  /// When provided, restricts the grid to just these zone IDs (regions
+  /// left with none are skipped entirely) — used when the vault
+  /// free-text detector recognized a broad body-region word (e.g.
+  /// "pierna") that narrows the plausible zones without resolving one
+  /// specific ID. Null shows the full grid, unchanged from before.
+  final Set<String>? candidateZones;
+
   const BodyZonePickerGrid({
     super.key,
     required this.contrastColor,
     required this.onZoneTap,
+    this.candidateZones,
   });
 
   @override
@@ -27,7 +35,11 @@ class BodyZonePickerGrid extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: BodyRegion.values.map((region) {
-        final zones = kBodyRegionZones[region]!;
+        final allZones = kBodyRegionZones[region]!;
+        final zones = candidateZones == null
+            ? allZones
+            : allZones.where(candidateZones!.contains).toList();
+        if (zones.isEmpty) return const SizedBox.shrink();
         return Padding(
           padding: const EdgeInsets.only(bottom: 14),
           child: Column(

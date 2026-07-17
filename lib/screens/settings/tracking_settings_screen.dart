@@ -20,6 +20,8 @@ class TrackingSettingsScreen extends StatefulWidget {
   final bool showHeadacheDetail;
   final bool showFatigueDetail;
   final bool showAbdominalDetail;
+  final bool showPresyncopeDetail;
+  final bool showPelvicPainDetail;
 
   const TrackingSettingsScreen({
     super.key,
@@ -30,6 +32,8 @@ class TrackingSettingsScreen extends StatefulWidget {
     required this.showHeadacheDetail,
     required this.showFatigueDetail,
     required this.showAbdominalDetail,
+    required this.showPresyncopeDetail,
+    required this.showPelvicPainDetail,
   });
 
   @override
@@ -163,11 +167,31 @@ class _TrackingSettingsScreenState extends State<TrackingSettingsScreen> {
                         subtitle: t.settingsModuleAbdominalDetailDescription,
                         key: 'abdominal_detail',
                       ),
+                    if (widget.showPresyncopeDetail)
+                      _toggle(
+                        cc: cc,
+                        title: t.settingsModulePresyncopeDetailLabel,
+                        subtitle: t.settingsModulePresyncopeDetailDescription,
+                        key: 'presyncope_detail',
+                      ),
+                    if (widget.showPelvicPainDetail)
+                      _toggle(
+                        cc: cc,
+                        title: t.settingsModulePelvicPainDetailLabel,
+                        subtitle: t.settingsModulePelvicPainDetailDescription,
+                        key: 'pelvic_pain_detail',
+                      ),
                     _toggle(
                       cc: cc,
                       title: 'Detalle MCAS / alergias',
                       subtitle: 'Registra reacciones, gatillos y señales de alerta.',
                       key: 'mcas_detail',
+                    ),
+                    _toggle(
+                      cc: cc,
+                      title: t.settingsModuleWeightTrackingLabel,
+                      subtitle: t.settingsModuleWeightTrackingDescription,
+                      key: 'weight_tracking',
                     ),
                     _toggle(
                       cc: cc,

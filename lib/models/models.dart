@@ -25,6 +25,8 @@ import 'dart:math';
 import 'headache_detail.dart';
 import 'fatigue_detail.dart';
 import 'abdominal_detail.dart';
+import 'presyncope_detail.dart';
+import 'pelvic_pain_detail.dart';
 import 'structural_detail.dart';
 import 'action_taken.dart';
 import 'mcas.dart';
@@ -194,6 +196,20 @@ class SymptomEvent {
   /// See lib/models/abdominal_detail.dart for the schema.
   final AbdominalDetail? abdominalDetail;
 
+  /// D.3: Optional structured detail when the symptom is presyncope and
+  /// the user has the presyncope_detail tracker enabled in
+  /// optionalTrackers. Null for all non-presyncope symptoms and for
+  /// presyncope logs created before D.3. See
+  /// lib/models/presyncope_detail.dart for the schema.
+  final PresyncopeDetail? presyncopeDetail;
+
+  /// D.4: Optional structured detail when the symptom is pelvic pain
+  /// and the user has the pelvic_pain_detail tracker enabled in
+  /// optionalTrackers. Null for all non-pelvic-pain symptoms and for
+  /// pelvic pain logs created before D.4. See
+  /// lib/models/pelvic_pain_detail.dart for the schema.
+  final PelvicPainDetail? pelvicPainDetail;
+
   // Sprint E.A — MCAS detail layer (additive, gated by
   // optionalTrackers['mcas_detail'] once E.E wires the toggle).
   final MCASDetail? mcasDetail;
@@ -208,6 +224,8 @@ class SymptomEvent {
     this.headacheDetail,
     this.fatigueDetail,
     this.abdominalDetail,
+    this.presyncopeDetail,
+    this.pelvicPainDetail,
     this.mcasDetail,
   }) : id = id ?? _newId();
 
@@ -219,6 +237,8 @@ class SymptomEvent {
     HeadacheDetail? headacheDetail,
     FatigueDetail? fatigueDetail,
     AbdominalDetail? abdominalDetail,
+    PresyncopeDetail? presyncopeDetail,
+    PelvicPainDetail? pelvicPainDetail,
     MCASDetail? mcasDetail,
   }) {
     return SymptomEvent(
@@ -231,6 +251,8 @@ class SymptomEvent {
       headacheDetail: headacheDetail ?? this.headacheDetail,
       fatigueDetail: fatigueDetail ?? this.fatigueDetail,
       abdominalDetail: abdominalDetail ?? this.abdominalDetail,
+      presyncopeDetail: presyncopeDetail ?? this.presyncopeDetail,
+      pelvicPainDetail: pelvicPainDetail ?? this.pelvicPainDetail,
       mcasDetail: mcasDetail ?? this.mcasDetail,
     );
   }
@@ -245,6 +267,10 @@ class SymptomEvent {
     if (headacheDetail != null) 'headacheDetail': headacheDetail!.toMap(),
     if (fatigueDetail != null) 'fatigueDetail': fatigueDetail!.toMap(),
     if (abdominalDetail != null) 'abdominalDetail': abdominalDetail!.toMap(),
+    if (presyncopeDetail != null)
+      'presyncopeDetail': presyncopeDetail!.toMap(),
+    if (pelvicPainDetail != null)
+      'pelvicPainDetail': pelvicPainDetail!.toMap(),
     if (mcasDetail != null) 'mcasDetail': mcasDetail!.toMap(),
   };
 
@@ -252,6 +278,8 @@ class SymptomEvent {
     final hdRaw = map['headacheDetail'];
     final fdRaw = map['fatigueDetail'];
     final adRaw = map['abdominalDetail'];
+    final psRaw = map['presyncopeDetail'];
+    final ppRaw = map['pelvicPainDetail'];
     final mcasRaw = map['mcasDetail'];
     return SymptomEvent(
       id: map['id'],
@@ -268,6 +296,12 @@ class SymptomEvent {
           : null,
       abdominalDetail: adRaw is Map
           ? AbdominalDetail.fromMap(Map<String, dynamic>.from(adRaw))
+          : null,
+      presyncopeDetail: psRaw is Map
+          ? PresyncopeDetail.fromMap(Map<String, dynamic>.from(psRaw))
+          : null,
+      pelvicPainDetail: ppRaw is Map
+          ? PelvicPainDetail.fromMap(Map<String, dynamic>.from(ppRaw))
           : null,
       mcasDetail: mcasRaw is Map
           ? MCASDetail.fromMap(Map<String, dynamic>.from(mcasRaw))
@@ -882,6 +916,94 @@ class StructuralZoneHistoryEntry {
             ? DateTime.parse(map['approximateDate'] as String)
             : null,
       );
+}
+
+// =============================================================================
+// WEIGHT / HEIGHT — narrow clinical log, not self-monitoring
+// =============================================================================
+//
+// See docs/design_decisions/weight_height_tracking.md for the full research
+// grounding. Short version: EDS/MCAS weight change is physiological (GI
+// dysmotility, mast-cell reactions, medication effects, activity loss from
+// joint instability), not behavioral, and this population has an elevated
+// disordered-eating comorbidity — so a bare weight number without context is
+// both clinically misleading and a documented trigger. Every WeightEntry
+// therefore requires a reason. Deliberately NO BMI getter anywhere in this
+// file — if BMI is ever needed, it lives only in the PDF export aggregator,
+// never as a property patients see day to day.
+
+/// Required context tag for every [WeightEntry]. Not exhaustive of every
+/// possible cause — `other` + free-text `note` covers the rest — but these
+/// four are the mechanisms the research grounding actually documents.
+enum WeightChangeReason {
+  giFlare('gi_flare'),
+  medicationChange('medication_change'),
+  fluidRetention('fluid_retention'),
+  appetiteChange('appetite_change'),
+  other('other');
+
+  final String serializationKey;
+  const WeightChangeReason(this.serializationKey);
+
+  static WeightChangeReason? fromKey(String? raw) {
+    if (raw == null) return null;
+    for (final v in values) {
+      if (v.serializationKey == raw) return v;
+    }
+    return null;
+  }
+}
+
+/// A single dated weight reading with mandatory clinical context. No trend
+/// or chart consumes this list by design (see design doc §3/§6) — it's
+/// documentation for a specialist, not a self-monitoring surface.
+class WeightEntry {
+  final String id;
+  final DateTime timestamp;
+  final double weightKg;
+  final WeightChangeReason reason;
+  final String? note;
+
+  WeightEntry({
+    String? id,
+    required this.timestamp,
+    required this.weightKg,
+    required this.reason,
+    this.note,
+  }) : id = id ?? _newId();
+
+  WeightEntry copyWith({
+    DateTime? timestamp,
+    double? weightKg,
+    WeightChangeReason? reason,
+    String? note,
+  }) {
+    return WeightEntry(
+      id: id,
+      timestamp: timestamp ?? this.timestamp,
+      weightKg: weightKg ?? this.weightKg,
+      reason: reason ?? this.reason,
+      note: note ?? this.note,
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'weightKg': weightKg,
+    'reason': reason.serializationKey,
+    'note': note,
+  };
+
+  factory WeightEntry.fromMap(Map<String, dynamic> map) => WeightEntry(
+    id: map['id'] as String?,
+    timestamp: DateTime.parse(map['timestamp']),
+    weightKg: (map['weightKg'] as num).toDouble(),
+    reason:
+        WeightChangeReason.fromKey(map['reason'] as String?) ??
+        WeightChangeReason.other,
+    note: map['note'] as String?,
+  );
 }
 
 class MentalEvent {
@@ -1633,6 +1755,17 @@ class Profile {
   /// crear desde la oferta post-funnel en sintomas_tab.
   List<StructuralZoneHistoryEntry> structuralZoneHistory;
 
+  /// Narrow clinical weight log — see docs/design_decisions/
+  /// weight_height_tracking.md. Gated behind
+  /// settings.optionalTrackers['weight_tracking'] (off by default) in
+  /// TrackingSettingsScreen; edit UI lives in ProfileSettingsScreen.
+  List<WeightEntry> weightEntries;
+
+  /// Static height in cm, same additive/no-dedicated-UI-yet-pattern
+  /// dateOfBirth started with in Phase4.A — first real clinical
+  /// consumer deferred (see design doc §5).
+  double? heightCm;
+
   Profile({
     required this.id,
     required this.name,
@@ -1649,6 +1782,8 @@ class Profile {
     this.emergencyContacts = const [],
     this.dateOfBirth,
     this.structuralZoneHistory = const [],
+    this.weightEntries = const [],
+    this.heightCm,
     this.therapyHistory = const [],
     this.customTherapyModalities = const [],
     this.relationship,
@@ -1781,6 +1916,31 @@ class Profile {
 
   List<StructuralEvent> getStructuralForDay(DateTime date) =>
       structuralHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  /// 2026-07-18 — structural pains logged that day, plus any earlier
+  /// still-unresolved pain (`resolvedAt == null`) that was already
+  /// ongoing before that day. Lets a persistent pain (e.g. a knee that's
+  /// hurt for a week) keep showing up in "Registros de hoy" without
+  /// being re-logged every day — the patient marks it resolved (or
+  /// checks in on it) instead of adding a fresh entry. Deliberately
+  /// separate from [getStructuralForDay]: report/frequency aggregation
+  /// (pdf_report_aggregator.dart, symptom_frequency_dashboard.dart)
+  /// should keep counting only actual log entries, not carried-over
+  /// ongoing pain, so that method's strict same-day semantics are
+  /// unchanged.
+  List<StructuralEvent> getStructuralActiveForDay(DateTime date) {
+    final day = DateTime(date.year, date.month, date.day);
+    final ongoingFromBefore = structuralHistory.where((e) {
+      if (e.isResolved || _sameDay(e.timestamp, date)) return false;
+      final eventDay = DateTime(
+        e.timestamp.year,
+        e.timestamp.month,
+        e.timestamp.day,
+      );
+      return eventDay.isBefore(day);
+    });
+    return [...getStructuralForDay(date), ...ongoingFromBefore];
+  }
 
   // PHASE 5.1 — bowel/hemorrhoidal day-query helpers
   List<BowelEvent> getBowelForDay(DateTime date) =>
@@ -2006,6 +2166,8 @@ class Profile {
     'structuralZoneHistory': structuralZoneHistory
         .map((x) => x.toMap())
         .toList(),
+    'weightEntries': weightEntries.map((x) => x.toMap()).toList(),
+    'heightCm': heightCm,
   };
 
   // ---------------------------------------------------------------------------
@@ -2118,6 +2280,12 @@ class Profile {
         ),
       ),
     ),
+    weightEntries: List<WeightEntry>.from(
+      (map['weightEntries'] ?? const []).map(
+        (x) => WeightEntry.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    heightCm: (map['heightCm'] as num?)?.toDouble(),
     bowel: List<BowelEvent>.from(
       (map['bowelHistory'] ?? const []).map(
         (x) => BowelEvent.fromMap(Map<String, dynamic>.from(x as Map)),
