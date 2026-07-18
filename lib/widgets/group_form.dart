@@ -287,8 +287,16 @@ class _GroupFormSheetState extends State<GroupFormSheet> {
                             horizontal: 10,
                             vertical: 6,
                           ),
-                          minimumSize: const Size(0, 32),
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          minimumSize:
+                              widget.profile.settings.optionalTrackers['simple_mode'] ==
+                                  true
+                              ? const Size(0, 48)
+                              : const Size(0, 32),
+                          tapTargetSize:
+                              widget.profile.settings.optionalTrackers['simple_mode'] ==
+                                  true
+                              ? MaterialTapTargetSize.padded
+                              : MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
                           _defaultTime.format(context),

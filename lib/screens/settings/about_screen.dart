@@ -8,6 +8,9 @@
 // other made it harder to find.
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../services/beta_access_service.dart';
+import '../../l10n/app_localizations.dart';
 
 class AboutScreen extends StatelessWidget {
   final Color contrastColor;
@@ -19,10 +22,28 @@ class AboutScreen extends StatelessWidget {
     required this.inverseContrastColor,
   });
 
+  Future<void> _openFollowUpQuestionnaire() async {
+    final uri = Uri.parse(BetaAccessService.followUpQuestionnaireUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  Future<void> _openBluesky() async {
+    final uri = Uri.parse(BetaAccessService.blueskyUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final cc = contrastColor;
     final ic = inverseContrastColor;
+    final l10n = AppLocalizations.of(context)!;
+    // Follow-up questionnaire is Spanish-only (Paulina, 2026-07-18) —
+    // hidden entirely outside the Spanish locale, not just untranslated.
+    final isSpanish = Localizations.localeOf(context).languageCode == 'es';
 
     return Scaffold(
       backgroundColor: ic,
@@ -130,6 +151,48 @@ class AboutScreen extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
+                    const SizedBox(height: 24),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: cc),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                      ),
+                      icon: Icon(Icons.alternate_email, color: cc),
+                      label: Text(
+                        l10n.aboutBlueskyLinkLabel,
+                        style: TextStyle(
+                          color: cc,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      onPressed: _openBluesky,
+                    ),
+                    if (isSpanish) ...[
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: cc),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                        icon: Icon(Icons.assignment_outlined, color: cc),
+                        label: Text(
+                          'Cuestionario de seguimiento',
+                          style: TextStyle(
+                            color: cc,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
+                        onPressed: _openFollowUpQuestionnaire,
+                      ),
+                    ],
                     const SizedBox(height: 28),
                     Text(
                       'zebraup.netlify.app',

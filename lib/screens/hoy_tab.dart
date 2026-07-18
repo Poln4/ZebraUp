@@ -349,6 +349,8 @@ class HoyTab extends StatelessWidget {
                 contrastColor: contrastColor,
                 inverseContrastColor: inverseContrastColor,
                 onAnswer: onAnswerOutcome,
+                simpleMode:
+                    profile.settings.optionalTrackers['simple_mode'] == true,
               ),
             ),
           ),
@@ -656,12 +658,16 @@ class _OutcomeAnswerCard extends StatefulWidget {
     OutcomeReason? reason,
   })
   onAnswer;
+  // Modo Simple — widens this card's small "add factor" toggle button
+  // (see build() below) to a full 48dp tap target when active.
+  final bool simpleMode;
 
   const _OutcomeAnswerCard({
     required this.outcome,
     required this.contrastColor,
     required this.inverseContrastColor,
     required this.onAnswer,
+    this.simpleMode = false,
   });
 
   @override
@@ -802,8 +808,12 @@ class _OutcomeAnswerCardState extends State<_OutcomeAnswerCard> {
                 ),
                 style: TextButton.styleFrom(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
-                  minimumSize: const Size(0, 32),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  minimumSize: widget.simpleMode
+                      ? const Size(0, 48)
+                      : const Size(0, 32),
+                  tapTargetSize: widget.simpleMode
+                      ? MaterialTapTargetSize.padded
+                      : MaterialTapTargetSize.shrinkWrap,
                 ),
               ),
               const Spacer(),

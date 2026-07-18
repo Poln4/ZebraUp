@@ -25,8 +25,21 @@ class BetaAccessService {
 
   /// Sprint B.C - Public URL for the weekly feedback form.
   /// TODO: replace with the actual Google Form URL.
-  static const String feedbackFormUrl = 
+  static const String feedbackFormUrl =
       'https://forms.gle/f7EivvudBmegnXj38';
+
+  /// Public URL for the follow-up questionnaire, surfaced as a quick-access
+  /// link from Ajustes → Acerca de. Spanish only (Paulina, 2026-07-18) —
+  /// gate display to the Spanish locale at the call site, don't translate
+  /// the form itself.
+  static const String followUpQuestionnaireUrl =
+      'https://forms.gle/jfwxwp4QvTq1JNEW9';
+
+  /// ZebraUp's Bluesky profile, surfaced from Ajustes → Acerca de.
+  /// Unlike followUpQuestionnaireUrl, not locale-gated — a social presence
+  /// link is relevant regardless of app language (Paulina, 2026-07-18).
+  static const String blueskyUrl =
+      'https://bsky.app/profile/zebraup.bsky.social';
 
   static Box get _box => Hive.box('betaAccessBox');
   static const String _stateKey = 'state';

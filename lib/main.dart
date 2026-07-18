@@ -10,6 +10,13 @@ import 'services/beta_access_service.dart';
 import 'screens/beta_access_screen.dart';
 import 'screens/research_consent_screen.dart';
 
+// Modo Simple — text-scale floor applied while the active profile has
+// simple_mode on. Matches the first step of the existing manual font-cycle
+// button (1.0 → 1.2 → 1.4), so Simple Mode looks like "one tap of the font
+// button" already applied by default, without overriding a user's own
+// higher manual preference (it's a floor, not a fixed value).
+const double kSimpleModeFontFloor = 1.2;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
@@ -38,6 +45,10 @@ class _ZebraUpAppState extends State<ZebraUpApp> {
   late bool isDarkMode;
   late double fontScale;
   late Locale _locale;
+  // Modo Simple — derived from the active profile's optionalTrackers, not
+  // Hive-persisted itself (the profile flag is already the source of truth;
+  // duplicating it here would be redundant state to keep in sync).
+  bool _simpleModeActive = false;
 
   @override
   void initState() {
@@ -64,11 +75,23 @@ class _ZebraUpAppState extends State<ZebraUpApp> {
     Hive.box('zebraBox').put('localeCode', locale.languageCode);
   }
 
-  ThemeData _buildTheme(Brightness brightness) {
+  void _onSimpleModeChanged(bool active) {
+    if (active == _simpleModeActive) return;
+    setState(() => _simpleModeActive = active);
+  }
+
+  ThemeData _buildTheme(Brightness brightness, {required bool simpleMode}) {
     final isDark = brightness == Brightness.dark;
     return ThemeData(
       brightness: brightness,
       scaffoldBackgroundColor: isDark ? Colors.black : Colors.white,
+      // Modo Simple — widen the default tap-target/visual density. Flutter's
+      // own ThemeData default (VisualDensity.adaptivePlatformDensity, which
+      // resolves compact on web) is left untouched when the flag is off, so
+      // non-Simple-Mode profiles see zero behavior change.
+      visualDensity: simpleMode
+          ? const VisualDensity(horizontal: 1.0, vertical: 1.0)
+          : VisualDensity.adaptivePlatformDensity,
       textTheme: TextTheme(
         bodyLarge: TextStyle(
           color: isDark ? Colors.white : Colors.black,
@@ -98,14 +121,21 @@ class _ZebraUpAppState extends State<ZebraUpApp> {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
 
-      theme: _buildTheme(Brightness.light),
-      darkTheme: _buildTheme(Brightness.dark),
+      theme: _buildTheme(Brightness.light, simpleMode: _simpleModeActive),
+      darkTheme: _buildTheme(Brightness.dark, simpleMode: _simpleModeActive),
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       builder: (context, child) {
+        // Modo Simple — apply a text-scale FLOOR (never shrinks a user's own
+        // higher manual fontScale) while the active profile has it on.
+        final effectiveScale = _simpleModeActive
+            ? (fontScale < kSimpleModeFontFloor
+                  ? kSimpleModeFontFloor
+                  : fontScale)
+            : fontScale;
         return MediaQuery(
           data: MediaQuery.of(
             context,
-          ).copyWith(textScaler: TextScaler.linear(fontScale)),
+          ).copyWith(textScaler: TextScaler.linear(effectiveScale)),
           child: child!,
         );
       },
@@ -117,6 +147,7 @@ class _ZebraUpAppState extends State<ZebraUpApp> {
           onScaleFont: _scaleFont,
           locale: _locale,
           onChangeLocale: _changeLocale,
+          onSimpleModeChanged: _onSimpleModeChanged,
         ),
       ),
     );

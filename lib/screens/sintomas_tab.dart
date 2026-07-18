@@ -6,6 +6,7 @@ import '../models/fatigue_detail.dart';
 import '../models/abdominal_detail.dart';
 import '../models/presyncope_detail.dart';
 import '../models/pelvic_pain_detail.dart';
+import '../models/chest_pain_detail.dart';
 import '../models/structural_detail.dart';
 import 'timestamp_picker.dart';
 import '../widgets/bowel_form_sheet.dart';
@@ -14,11 +15,13 @@ import '../widgets/fever_form_sheet.dart';
 import '../widgets/sleep_form_sheet.dart';
 import '../widgets/hydration_form_sheet.dart';
 import '../widgets/hrv_form_sheet.dart';
+import '../widgets/blood_pressure_form_sheet.dart';
 import '../widgets/headache_detail_sheet.dart';
 import '../widgets/fatigue_detail_sheet.dart';
 import '../widgets/abdominal_detail_sheet.dart';
 import '../widgets/presyncope_detail_sheet.dart';
 import '../widgets/pelvic_pain_detail_sheet.dart';
+import '../widgets/chest_pain_detail_sheet.dart';
 import '../widgets/structural_bleeding_sheet.dart';
 import '../widgets/structural_checkin_sheet.dart';
 import '../widgets/structural_detail_sheet.dart';
@@ -40,6 +43,8 @@ import '../services/presyncope_red_flags.dart';
 import '../services/presyncope_detail_format.dart';
 import '../services/pelvic_pain_red_flags.dart';
 import '../services/pelvic_pain_detail_format.dart';
+import '../services/chest_pain_red_flags.dart';
+import '../services/chest_pain_detail_format.dart';
 import '../services/structural_detail_format.dart';
 import '../widgets/collapsible_section.dart';
 import '../widgets/severity_picker.dart';
@@ -308,11 +313,19 @@ class _SintomasTabState extends State<SintomasTab> {
     final todaysSleep = _p.getSleepForDay(widget.selectedDate);
     final todaysHydration = _p.getHydrationForDay(widget.selectedDate);
     final todaysHrv = _p.getHrvForDay(widget.selectedDate);
+    final todaysBloodPressure = _p.getBloodPressureForDay(widget.selectedDate);
     final isSleepEnabled = _p.settings.optionalTrackers['sleep'] ?? false;
     final isHydrationEnabled =
         _p.settings.optionalTrackers['hydration'] ?? false;
     final isHrvEnabled = _p.settings.optionalTrackers['hrv'] ?? false;
-    final isCarefulMode = _p.settings.optionalTrackers['careful_mode'] ?? false;
+    final isBloodPressureEnabled =
+        _p.settings.optionalTrackers['blood_pressure'] ?? false;
+    // Modo Simple also forces sections to start collapsed (same effect as
+    // Modo Cuidadoso), combined at this single consumption point so the
+    // ValueKey re-render trick below keeps working unchanged for both flags.
+    final isCarefulMode =
+        (_p.settings.optionalTrackers['careful_mode'] ?? false) ||
+        (_p.settings.optionalTrackers['simple_mode'] ?? false);
     final trending = _p.getTrendingSymptoms();
     final l10n = context.l10n;
 
@@ -348,6 +361,11 @@ class _SintomasTabState extends State<SintomasTab> {
     );
     final hrvState = _sectionState(
       _p.hrvHistory.map((e) => e.timestamp),
+      l10n,
+      isCarefulMode,
+    );
+    final bloodPressureState = _sectionState(
+      _p.bloodPressureHistory.map((e) => e.timestamp),
       l10n,
       isCarefulMode,
     );
@@ -527,6 +545,37 @@ class _SintomasTabState extends State<SintomasTab> {
           ),
         ],
 
+        // Panel de Signos Vitales §5.1 — BLOOD PRESSURE — optional module +
+        // collapsible (F3), same pattern as HRV above.
+        if (isBloodPressureEnabled) ...[
+          const SizedBox(height: 16),
+          CollapsibleSection(
+            key: ValueKey('blood_pressure_$isCarefulMode'),
+            title: l10n.bloodPressureSectionTitle,
+            hint: bloodPressureState.hint,
+            initiallyExpanded: bloodPressureState.expanded,
+            contrastColor: _cc,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                ),
+                icon: Icon(Icons.monitor_heart_outlined, color: _cc, size: 18),
+                label: Text(
+                  l10n.bloodPressureActionAddEntry,
+                  style: TextStyle(
+                    color: _cc,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                onPressed: _openBloodPressureForm,
+              ),
+            ),
+          ),
+        ],
+
         // 2. TODAY'S COMBINED LOG
         if (todaysStructs.isNotEmpty ||
             todaysSymptoms.isNotEmpty ||
@@ -535,7 +584,8 @@ class _SintomasTabState extends State<SintomasTab> {
             todaysFever.isNotEmpty ||
             todaysSleep.isNotEmpty ||
             todaysHydration.isNotEmpty ||
-            todaysHrv.isNotEmpty) ...[
+            todaysHrv.isNotEmpty ||
+            todaysBloodPressure.isNotEmpty) ...[
           const SizedBox(height: 24),
           Text(
             l10n.symptomsSectionTodaysLogs,
@@ -959,6 +1009,60 @@ class _SintomasTabState extends State<SintomasTab> {
                     ),
                   ),
                 ),
+                ...todaysBloodPressure.map(
+                  (e) => InkWell(
+                    onLongPress: () => _editBloodPressureEvent(e),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.monitor_heart_outlined,
+                            color: _cc,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _formatBloodPressureEntry(e, l10n),
+                                  style: TextStyle(color: _cc, fontSize: 13),
+                                ),
+                                if (e.note != null && e.note!.trim().isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      e.note!,
+                                      style: const TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 11,
+                                        fontStyle: FontStyle.italic,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.close,
+                              color: Colors.red,
+                              size: 18,
+                            ),
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () {
+                              setState(() => _p.bloodPressureHistory.remove(e));
+                              widget.onProfileChanged();
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 ...todaysSymptoms.map((event) {
                   final unrated = _isUnrated(event.severity);
                   return InkWell(
@@ -1080,6 +1184,25 @@ class _SintomasTabState extends State<SintomasTab> {
                                     child: Text(
                                       formatPelvicPainDetailCompact(
                                         event.pelvicPainDetail!,
+                                        l10n.localeName,
+                                      ),
+                                      style: TextStyle(
+                                        color: _cc.withValues(alpha: 0.6),
+                                        fontSize: 11,
+                                      ),
+                                    ),
+                                  ),
+                                // D.5: chest pain detail compact summary
+                                if (event.chestPainDetail != null &&
+                                    formatChestPainDetailCompact(
+                                      event.chestPainDetail!,
+                                      l10n.localeName,
+                                    ).isNotEmpty)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2.0),
+                                    child: Text(
+                                      formatChestPainDetailCompact(
+                                        event.chestPainDetail!,
                                         l10n.localeName,
                                       ),
                                       style: TextStyle(
@@ -1506,12 +1629,12 @@ class _SintomasTabState extends State<SintomasTab> {
   /// name (vault chip tap/add, trending chip tap). Checked BEFORE the
   /// structural detector, in this exact order, so existing flows keep
   /// working unchanged: headache/fatigue/abdominal_pain/presyncope/
-  /// pelvic_pain (JSON alias match) and MCAS (keyword heuristic) always
-  /// win over structural detection — e.g. "dolor de cabeza" and "dolor
-  /// de guata" must never be intercepted here. Only when none of those
-  /// match does the structural zone/kind detector get a chance; if it
-  /// finds nothing either, falls through to the original generic
-  /// severity menu.
+  /// pelvic_pain/chest_pain (JSON alias match) and MCAS (keyword
+  /// heuristic) always win over structural detection — e.g. "dolor de
+  /// cabeza" and "dolor de guata" must never be intercepted here. Only
+  /// when none of those match does the structural zone/kind detector
+  /// get a chance; if it finds nothing either, falls through to the
+  /// original generic severity menu.
   void _dispatchSymptomInput(String symptom) {
     final svc = SymptomDefinitionsService.instance;
     final isKnownNonStructural =
@@ -1520,6 +1643,7 @@ class _SintomasTabState extends State<SintomasTab> {
         svc.matchesSymptomKey(symptom, 'abdominal_pain') ||
         svc.matchesSymptomKey(symptom, 'presyncope') ||
         svc.matchesSymptomKey(symptom, 'pelvic_pain') ||
+        svc.matchesSymptomKey(symptom, 'chest_pain') ||
         _isMCASSymptom(symptom);
     if (!isKnownNonStructural) {
       final match = detectStructuralTextMatch(symptom);
@@ -1955,6 +2079,9 @@ class _SintomasTabState extends State<SintomasTab> {
       final isPelvicPain = svc.matchesSymptomKey(symptom, 'pelvic_pain');
       final pelvicPainLayerEnabled =
           _p.settings.optionalTrackers['pelvic_pain_detail'] ?? false;
+      final isChestPain = svc.matchesSymptomKey(symptom, 'chest_pain');
+      final chestPainLayerEnabled =
+          _p.settings.optionalTrackers['chest_pain_detail'] ?? false;
       final isMCAS = _isMCASSymptom(symptom);
       final mcasLayerEnabled =
           _p.settings.optionalTrackers['mcas_detail'] ?? false;
@@ -1964,6 +2091,7 @@ class _SintomasTabState extends State<SintomasTab> {
       AbdominalDetail? abdominalDetail;
       PresyncopeDetail? presyncopeDetail;
       PelvicPainDetail? pelvicPainDetail;
+      ChestPainDetail? chestPainDetail;
       MCASDetail? mcasDetail;
       if (isHeadache && headacheLayerEnabled) {
         // Close the severity sheet first so the detail sheet stacks
@@ -2013,6 +2141,16 @@ class _SintomasTabState extends State<SintomasTab> {
           inverseContrastColor: _ic,
         );
         if (!mounted) return;
+      } else if (isChestPain && chestPainLayerEnabled) {
+        Navigator.pop(ctx);
+        if (!mounted) return;
+        chestPainDetail = await showChestPainDetailSheet(
+          context: context,
+          contrastColor: _cc,
+          inverseContrastColor: _ic,
+          profileConditions: _p.conditions,
+        );
+        if (!mounted) return;
       } else if (isMCAS && mcasLayerEnabled) {
         Navigator.pop(ctx);
         if (!mounted) return;
@@ -2043,6 +2181,7 @@ class _SintomasTabState extends State<SintomasTab> {
         abdominalDetail: abdominalDetail,
         presyncopeDetail: presyncopeDetail,
         pelvicPainDetail: pelvicPainDetail,
+        chestPainDetail: chestPainDetail,
         mcasDetail: mcasDetail,
       );
       setState(() => _p.symptomHistory.add(newSymptomEvent));
@@ -2099,6 +2238,20 @@ class _SintomasTabState extends State<SintomasTab> {
         await _showPelvicPainUrgentFlags(flags);
         if (!mounted) return;
         await _showPelvicPainAdvisoryFlags(flags);
+      }
+
+      // D.5: tearing/ripping handled IN-SHEET (vEDS-aware copy);
+      // possible cardiac pattern and exertional pattern surfaced here
+      // as URGENT; pleuritic, palpitations and reflux patterns
+      // surfaced as ADVISORY.
+      if (chestPainDetail != null) {
+        final flags = detectChestPainRedFlags(
+          detail: chestPainDetail,
+          severityIndex: sev.value,
+        );
+        await _showChestPainUrgentFlags(flags);
+        if (!mounted) return;
+        await _showChestPainAdvisoryFlags(flags);
       }
 
       // Sprint E.C — MCAS red flag surfacing.
@@ -2366,6 +2519,13 @@ class _SintomasTabState extends State<SintomasTab> {
                       final pelvicPainLayerEnabled =
                           _p.settings.optionalTrackers['pelvic_pain_detail'] ??
                           false;
+                      final isChestPain = svc.matchesSymptomKey(
+                        event.name,
+                        'chest_pain',
+                      );
+                      final chestPainLayerEnabled =
+                          _p.settings.optionalTrackers['chest_pain_detail'] ??
+                          false;
 
                       HeadacheDetail? headacheDetail = event.headacheDetail;
                       FatigueDetail? fatigueDetail = event.fatigueDetail;
@@ -2374,6 +2534,8 @@ class _SintomasTabState extends State<SintomasTab> {
                           event.presyncopeDetail;
                       PelvicPainDetail? pelvicPainDetail =
                           event.pelvicPainDetail;
+                      ChestPainDetail? chestPainDetail =
+                          event.chestPainDetail;
                       if (isHeadache && headacheLayerEnabled) {
                         Navigator.pop(ctx);
                         if (!mounted) return;
@@ -2430,6 +2592,18 @@ class _SintomasTabState extends State<SintomasTab> {
                         );
                         if (!mounted) return;
                         if (result != null) pelvicPainDetail = result;
+                      } else if (isChestPain && chestPainLayerEnabled) {
+                        Navigator.pop(ctx);
+                        if (!mounted) return;
+                        final result = await showChestPainDetailSheet(
+                          context: context,
+                          contrastColor: _cc,
+                          inverseContrastColor: _ic,
+                          profileConditions: _p.conditions,
+                          existing: event.chestPainDetail,
+                        );
+                        if (!mounted) return;
+                        if (result != null) chestPainDetail = result;
                       } else {
                         Navigator.pop(ctx);
                       }
@@ -2453,6 +2627,7 @@ class _SintomasTabState extends State<SintomasTab> {
                           abdominalDetail: abdominalDetail,
                           presyncopeDetail: presyncopeDetail,
                           pelvicPainDetail: pelvicPainDetail,
+                          chestPainDetail: chestPainDetail,
                         ),
                       );
                       widget.onProfileChanged();
@@ -2497,6 +2672,15 @@ class _SintomasTabState extends State<SintomasTab> {
                         await _showPelvicPainUrgentFlags(flags);
                         if (!mounted) return;
                         await _showPelvicPainAdvisoryFlags(flags);
+                      }
+                      if (chestPainDetail != null) {
+                        final flags = detectChestPainRedFlags(
+                          detail: chestPainDetail,
+                          severityIndex: sev.value,
+                        );
+                        await _showChestPainUrgentFlags(flags);
+                        if (!mounted) return;
+                        await _showChestPainAdvisoryFlags(flags);
                       }
                     },
                     child: Text(
@@ -3110,6 +3294,181 @@ class _SintomasTabState extends State<SintomasTab> {
   }
 
   // ---------------------------------------------------------------------------
+  // D.5 — Chest pain detail layer: urgent + advisory red-flag presentation
+  // ---------------------------------------------------------------------------
+
+  /// Shows a prominent dialog for URGENT flags detected post-save.
+  /// EXPLICITLY SKIPS `tearingOrRipping` because that flag was already
+  /// handled IN-SHEET by the chest pain sheet's vEDS-aware emergency
+  /// dialog — surfacing it again would create alarm fatigue for someone
+  /// who just acknowledged the in-sheet warning. Mirrors
+  /// _showAbdominalUrgentFlags/_showPelvicPainUrgentFlags.
+  Future<void> _showChestPainUrgentFlags(List<ChestPainRedFlag> flags) async {
+    final urgents = flags
+        .where((f) => f.severity == RedFlagSeverity.urgent)
+        .where((f) => f != ChestPainRedFlag.tearingOrRipping)
+        .toList();
+    if (urgents.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in urgents) {
+      switch (f) {
+        case ChestPainRedFlag.possibleCardiacPatternUrgent:
+          messages.add(l10n.chestPainRedFlagCardiacPatternUrgent);
+          break;
+        case ChestPainRedFlag.exertionalPatternUrgent:
+          messages.add(l10n.chestPainRedFlagExertionalPatternUrgent);
+          break;
+        case ChestPainRedFlag.tearingOrRipping:
+        case ChestPainRedFlag.pleuriticPatternAdvisory:
+        case ChestPainRedFlag.palpitationsPatternAdvisory:
+        case ChestPainRedFlag.refluxPatternAdvisory:
+          break;
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(side: BorderSide(color: _cc, width: 2)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: _cc, size: 24),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.chestPainUrgentDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Shows a dialog summarising ADVISORY flags for the chest pain
+  /// detail layer. URGENT flags are handled by
+  /// _showChestPainUrgentFlags (and tearingOrRipping by the sheet).
+  Future<void> _showChestPainAdvisoryFlags(
+    List<ChestPainRedFlag> flags,
+  ) async {
+    final advisories = flags
+        .where((f) => f.severity == RedFlagSeverity.advisory)
+        .toList();
+    if (advisories.isEmpty) return;
+    if (!mounted) return;
+    final l10n = context.l10n;
+
+    final messages = <String>[];
+    for (final f in advisories) {
+      switch (f) {
+        case ChestPainRedFlag.pleuriticPatternAdvisory:
+          messages.add(l10n.chestPainRedFlagPleuriticPatternAdvisory);
+          break;
+        case ChestPainRedFlag.palpitationsPatternAdvisory:
+          messages.add(l10n.chestPainRedFlagPalpitationsPatternAdvisory);
+          break;
+        case ChestPainRedFlag.refluxPatternAdvisory:
+          messages.add(l10n.chestPainRedFlagRefluxPatternAdvisory);
+          break;
+        case ChestPainRedFlag.tearingOrRipping:
+        case ChestPainRedFlag.possibleCardiacPatternUrgent:
+        case ChestPainRedFlag.exertionalPatternUrgent:
+          break;
+      }
+    }
+    if (messages.isEmpty) return;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        backgroundColor: _ic,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: _cc.withValues(alpha: 0.5), width: 1.5),
+        ),
+        title: Row(
+          children: [
+            Icon(Icons.info_outline, color: _cc, size: 22),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.chestPainAdvisoryDialogTitle,
+                style: TextStyle(
+                  color: _cc,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: messages
+                .map(
+                  (m) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      m,
+                      style: TextStyle(color: _cc, fontSize: 13, height: 1.5),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogCtx),
+            child: Text(
+              l10n.actionUnderstood,
+              style: TextStyle(color: _cc, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ---------------------------------------------------------------------------
   // D.2.E — Bidirectional integration BowelEvent <-> AbdominalDetail
   // ---------------------------------------------------------------------------
 
@@ -3528,7 +3887,9 @@ class _SintomasTabState extends State<SintomasTab> {
     if (e.volumeMl != null) {
       parts.add(l10n.hydrationLogLabelVolume(e.volumeMl!.round().toString()));
     }
-    if (e.beverage != null) {
+    if (e.customBeverageName != null) {
+      parts.add(e.customBeverageName!);
+    } else if (e.beverage != null) {
       parts.add(e.beverage!.label(l10n));
     }
     if (e.sodium != null) {
@@ -3537,12 +3898,20 @@ class _SintomasTabState extends State<SintomasTab> {
     return parts.join(' · ');
   }
 
+  void _addCustomBeverage(String name) {
+    if (_p.customBeverages.contains(name)) return;
+    setState(() => _p.customBeverages = [..._p.customBeverages, name]);
+    widget.onProfileChanged();
+  }
+
   Future<void> _openHydrationForm() async {
     final result = await showHydrationFormSheet(
       context: context,
       contrastColor: _cc,
       inverseContrastColor: _ic,
       defaultTimestamp: _timestampForLog(),
+      customBeverages: _p.customBeverages,
+      onAddCustomBeverage: _addCustomBeverage,
     );
     if (result == null) return;
     setState(() => _p.hydrationHistory.add(result));
@@ -3556,6 +3925,8 @@ class _SintomasTabState extends State<SintomasTab> {
       inverseContrastColor: _ic,
       defaultTimestamp: event.timestamp,
       existing: event,
+      customBeverages: _p.customBeverages,
+      onAddCustomBeverage: _addCustomBeverage,
     );
     if (result == null) return;
     final idx = _p.hydrationHistory.indexOf(event);
@@ -3605,6 +3976,54 @@ class _SintomasTabState extends State<SintomasTab> {
     final idx = _p.hrvHistory.indexOf(event);
     if (idx >= 0) {
       setState(() => _p.hrvHistory[idx] = result);
+      widget.onProfileChanged();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Panel de Signos Vitales §5.1 — Blood pressure handlers
+  // ---------------------------------------------------------------------------
+
+  /// Compact display for a BP reading. Shape:
+  ///   "[HH:mm] 118/76 mmHg · 72 ppm · sentada"
+  String _formatBloodPressureEntry(
+    BloodPressureReading e,
+    AppLocalizations l10n,
+  ) {
+    final time =
+        '[${e.timestamp.hour.toString().padLeft(2, "0")}:'
+        '${e.timestamp.minute.toString().padLeft(2, "0")}]';
+    final hr = e.heartRate != null
+        ? ' · ${e.heartRate} ${l10n.bloodPressureHeartRateUnit}'
+        : '';
+    return '$time ${e.systolic}/${e.diastolic} mmHg$hr · '
+        '${e.position.label(l10n)}';
+  }
+
+  Future<void> _openBloodPressureForm() async {
+    final result = await showBloodPressureFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      defaultTimestamp: _timestampForLog(),
+    );
+    if (result == null) return;
+    setState(() => _p.bloodPressureHistory.add(result));
+    widget.onProfileChanged();
+  }
+
+  Future<void> _editBloodPressureEvent(BloodPressureReading event) async {
+    final result = await showBloodPressureFormSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      defaultTimestamp: event.timestamp,
+      existing: event,
+    );
+    if (result == null) return;
+    final idx = _p.bloodPressureHistory.indexOf(event);
+    if (idx >= 0) {
+      setState(() => _p.bloodPressureHistory[idx] = result);
       widget.onProfileChanged();
     }
   }

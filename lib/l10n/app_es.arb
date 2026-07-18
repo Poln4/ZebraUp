@@ -258,6 +258,7 @@
   "hrvContextAfternoon": "tarde",
   "hrvContextEvening": "noche",
   "hrvContextPostExercise": "post-ejercicio",
+  "hrvContextAverage": "promedio",
   "hrvContextOther": "otro",
   "legacyIntensityLabel": "Intensidad anterior: {value}/5",
   "@legacyIntensityLabel": {
@@ -491,6 +492,10 @@
   "movementActivityPlaceholder": "+ Añadir actividad (natación, bici, baile…)",
   "movementSectionTherapyTitle": "TERAPIA",
   "movementTherapyPlaceholder": "+ Añadir modalidad (reiki, flotación…)",
+  "movementRenameDialogTitle": "Cambiar nombre",
+  "@movementRenameDialogTitle": {
+    "description": "Title of the rename dialog for a custom exercise or therapy modality (long-press on its chip)."
+  },
   "activityModalLogHeader": "REGISTRAR: {name}",
   "@activityModalLogHeader": {
     "placeholders": {
@@ -794,8 +799,28 @@
   "sleepModalLogHeader": "REGISTRAR SUEÑO",
   "sleepModalEditHeader": "EDITAR SUEÑO",
   "sleepFieldQualityLabel": "CALIDAD",
+  "sleepFieldBedWakeLabel": "¿DE CUÁNDO A CUÁNDO? (OPCIONAL)",
+  "@sleepFieldBedWakeLabel": {
+    "description": "Label for the optional bedtime/wake-time pair, above the two time-picker buttons."
+  },
+  "sleepFieldBedTimeButton": "Hora de acostarte",
+  "@sleepFieldBedTimeButton": {
+    "description": "Button label to open the bedtime picker when no bedtime is set yet."
+  },
+  "sleepFieldWakeTimeButton": "Hora de despertar",
+  "@sleepFieldWakeTimeButton": {
+    "description": "Button label to open the wake-time picker when no wake time is set yet."
+  },
   "sleepFieldDurationLabel": "DURACIÓN",
   "sleepFieldDurationHint": "horas (ej. 7.5)",
+  "sleepFieldDurationHoursLabel": "Horas",
+  "@sleepFieldDurationHoursLabel": {
+    "description": "Small label above the hours field in the duration input pair."
+  },
+  "sleepFieldDurationMinutesLabel": "Minutos",
+  "@sleepFieldDurationMinutesLabel": {
+    "description": "Small label above the minutes field in the duration input pair."
+  },
   "sleepFieldOnsetLatencyLabel": "TIEMPO EN DORMIRSE",
   "sleepFieldOnsetLatencyHint": "minutos",
   "sleepFieldWakeCountLabel": "DESPERTARES",
@@ -859,6 +884,10 @@
   "hydrationFieldVolumeLabel": "CANTIDAD",
   "hydrationFieldVolumeHint": "ml (ej. 250)",
   "hydrationFieldBeverageLabel": "BEBIDA",
+  "hydrationBeverageAddCustomHint": "+ Añadir bebida (té, jugo…)",
+  "@hydrationBeverageAddCustomHint": {
+    "description": "Hint text for the free-text field that adds a new custom beverage option to the hydration form."
+  },
   "hydrationFieldSodiumLabel": "SODIO (opcional)",
   "hydrationLogLabelVolume": "{volume} ml",
   "@hydrationLogLabelVolume": {
@@ -906,6 +935,8 @@
     }
   },
   "settingsViewPreferencesTitle": "VISUALIZACIÓN",
+  "settingsSimpleModeLabel": "Modo simple",
+  "settingsSimpleModeDescription": "Letra más grande, botones más grandes y secciones que empiezan colapsadas. Pensado para perfiles que prefieren una pantalla más fácil de leer.",
   "settingsCarefulModeLabel": "Modo cuidadoso",
   "settingsCarefulModeDescription": "Reduce el ruido visual: las secciones empiezan colapsadas. Tap el header para expandir lo que quieras ver.",
   "drugKindMedication": "Medicamento",
@@ -1631,6 +1662,74 @@
   "@settingsModulePelvicPainDetailDescription": {
     "description": "Description under the pelvic pain detail switch in settings."
   },
+  "chestPainSheetTitle": "Detalle de tu dolor de pecho",
+  "@chestPainSheetTitle": {
+    "description": "Title of the modal sheet that captures structured chest pain detail."
+  },
+  "chestPainSheetSubtitle": "Los detalles opcionales ayudan a identificar patrones.",
+  "@chestPainSheetSubtitle": {
+    "description": "Subtitle explaining why filling the optional detail helps."
+  },
+  "chestPainActionSaveDetail": "Guardar detalle",
+  "@chestPainActionSaveDetail": {
+    "description": "Save button label at the bottom of the chest pain detail sheet."
+  },
+  "chestPainTearingEmergencyTitle": "Dolor tipo desgarro",
+  "@chestPainTearingEmergencyTitle": {
+    "description": "Title of the in-sheet emergency dialog fired on save attempt when character=tearingOrRipping."
+  },
+  "chestPainTearingEmergencyBodyGeneral": "Un dolor de pecho tipo desgarro, súbito y muy intenso, puede indicar una emergencia médica. Vale la pena que vayas a urgencias ahora para descartarla, especialmente para evaluar causas cardíacas o vasculares.\n\nSi vas, informa al equipo médico tu diagnóstico de clEDS (síndrome de Ehlers-Danlos clásico-like, por mutación de TNXB) u otro subtipo de EDS que tengas.\n\nSi el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar el carácter y guardar el registro normalmente.",
+  "@chestPainTearingEmergencyBodyGeneral": {
+    "description": "Body text of the tearing-pain in-sheet emergency dialog for patients without a vEDS keyword match in Profile.conditions."
+  },
+  "chestPainTearingEmergencyBodyVEDS": "Un dolor de pecho tipo desgarro, súbito y muy intenso, puede indicar una disección o rotura arterial — una emergencia real dado tu diagnóstico de EDS vascular (vEDS). Ve a urgencias ahora.\n\nInforma al equipo médico tu diagnóstico de vEDS de inmediato. Si es posible, pide que eviten las compresiones torácicas dada la fragilidad arterial y de los órganos. Los estudios de imagen (RM o TC) son cruciales para identificar rápidamente una posible rotura arterial.\n\nSi el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar el carácter y guardar el registro normalmente.",
+  "@chestPainTearingEmergencyBodyVEDS": {
+    "description": "Body text of the tearing-pain in-sheet emergency dialog for patients with a vEDS keyword match in Profile.conditions (isLikelyVEDSFromConditions). First conditions-aware red-flag copy branch in the app."
+  },
+  "chestPainTearingEmergencyChangeCharacter": "Cambiar carácter y guardar",
+  "@chestPainTearingEmergencyChangeCharacter": {
+    "description": "Button that returns to the sheet so the user can revise the character chip."
+  },
+  "chestPainTearingEmergencySaveAsIs": "Guardar como está (emergencia)",
+  "@chestPainTearingEmergencySaveAsIs": {
+    "description": "Button that commits the save with the emergency character acknowledged."
+  },
+  "chestPainUrgentDialogTitle": "Alerta médica",
+  "@chestPainUrgentDialogTitle": {
+    "description": "Title of the URGENT post-save dialog for chest pain red flags."
+  },
+  "chestPainRedFlagCardiacPatternUrgent": "Este patrón (presión u opresión en el pecho junto con dificultad para respirar, sudoración, o dolor que se irradia al brazo, mandíbula o espalda) puede indicar una causa cardíaca. Ve a urgencias ahora para descartarla.",
+  "@chestPainRedFlagCardiacPatternUrgent": {
+    "description": "URGENT for pressureOrTightness character + (radiatesToArmJawBack OR shortnessOfBreath OR sweatingOrClamminess) + severity >= 2."
+  },
+  "chestPainRedFlagExertionalPatternUrgent": "Tu dolor apareció con el esfuerzo físico junto con dificultad para respirar o palpitaciones. Este patrón puede indicar una causa cardíaca que vale la pena evaluar pronto — si el dolor es intenso o no mejora al descansar, ve a urgencias ahora.",
+  "@chestPainRedFlagExertionalPatternUrgent": {
+    "description": "URGENT for worseWithExertion trigger + (shortnessOfBreath OR palpitationsOrRacingHeart) + severity >= 2."
+  },
+  "chestPainAdvisoryDialogTitle": "Patrones detectados",
+  "@chestPainAdvisoryDialogTitle": {
+    "description": "Title of the ADVISORY post-save dialog for chest pain red flags."
+  },
+  "chestPainRedFlagPleuriticPatternAdvisory": "Tu dolor es punzante y empeora al respirar hondo o moverte. Este patrón puede indicar irritación de las membranas que rodean el pulmón o el corazón. Vale la pena mencionárselo a tu médico.",
+  "@chestPainRedFlagPleuriticPatternAdvisory": {
+    "description": "ADVISORY for sharpOrStabbing character + worseWithBreathingOrMovement trigger + severity >= 2."
+  },
+  "chestPainRedFlagPalpitationsPatternAdvisory": "Notaste palpitaciones o el corazón acelerado junto con el dolor. Vale la pena mencionárselo a tu médico, especialmente si se repite.",
+  "@chestPainRedFlagPalpitationsPatternAdvisory": {
+    "description": "ADVISORY for palpitationsOrRacingHeart accompaniment + severity >= 2."
+  },
+  "chestPainRedFlagRefluxPatternAdvisory": "Tu dolor es de tipo ardor y aparece después de comer o al acostarte. Este patrón puede indicar reflujo gastroesofágico. Vale la pena mencionárselo a tu médico si es frecuente.",
+  "@chestPainRedFlagRefluxPatternAdvisory": {
+    "description": "ADVISORY for burning character + afterEatingOrLyingDown trigger + severity >= 2."
+  },
+  "settingsModuleChestPainDetailLabel": "Detalle de dolor de pecho",
+  "@settingsModuleChestPainDetailLabel": {
+    "description": "Label of the optional chest pain detail tracker switch in settings."
+  },
+  "settingsModuleChestPainDetailDescription": "Al registrar dolor de pecho, agrega ubicación, carácter, qué lo dispara y síntomas acompañantes.",
+  "@settingsModuleChestPainDetailDescription": {
+    "description": "Description under the chest pain detail switch in settings."
+  },
   "onboardingStepMedsUnitHint": "1",
   "onboardingStepMedsStrengthHint": "mg",
   "settingsModuleWeightTrackingLabel": "Registro de peso",
@@ -1708,6 +1807,66 @@
   "weightEntrySaveAction": "Guardar registro",
   "@weightEntrySaveAction": {
     "description": "Save button label at the bottom of the weight entry form sheet."
+  },
+  "aboutBlueskyLinkLabel": "Síguenos en Bluesky",
+  "@aboutBlueskyLinkLabel": {
+    "description": "Button label linking to ZebraUp's Bluesky profile, shown in Ajustes → Acerca de. Not locale-gated (unlike the follow-up questionnaire link)."
+  },
+  "bloodPressureSectionTitle": "Presión arterial",
+  "@bloodPressureSectionTitle": {
+    "description": "Section title for the blood pressure module in the Síntomas tab."
+  },
+  "bloodPressureActionAddEntry": "Registrar presión arterial",
+  "@bloodPressureActionAddEntry": {
+    "description": "Button label to add a new blood pressure reading."
+  },
+  "bloodPressureModalLogHeader": "Nueva lectura de presión arterial",
+  "@bloodPressureModalLogHeader": {
+    "description": "Title of the blood pressure form sheet when creating a new reading."
+  },
+  "bloodPressureModalEditHeader": "Editar lectura de presión arterial",
+  "@bloodPressureModalEditHeader": {
+    "description": "Title of the blood pressure form sheet when editing an existing reading."
+  },
+  "bloodPressureFieldSystolicLabel": "Sistólica",
+  "@bloodPressureFieldSystolicLabel": {
+    "description": "Label for the systolic BP input field."
+  },
+  "bloodPressureFieldDiastolicLabel": "Diastólica",
+  "@bloodPressureFieldDiastolicLabel": {
+    "description": "Label for the diastolic BP input field."
+  },
+  "bloodPressureFieldHeartRateLabel": "Frecuencia cardíaca (opcional)",
+  "@bloodPressureFieldHeartRateLabel": {
+    "description": "Label for the optional heart rate input field."
+  },
+  "bloodPressureHeartRateUnit": "ppm",
+  "@bloodPressureHeartRateUnit": {
+    "description": "Heart rate unit abbreviation shown next to the value."
+  },
+  "bloodPressureFieldPositionLabel": "Posición",
+  "@bloodPressureFieldPositionLabel": {
+    "description": "Label for the BloodPressurePosition selector."
+  },
+  "bloodPressurePositionSitting": "Sentada",
+  "@bloodPressurePositionSitting": {
+    "description": "BloodPressurePosition.sitting option label."
+  },
+  "bloodPressurePositionLying": "Acostada",
+  "@bloodPressurePositionLying": {
+    "description": "BloodPressurePosition.lying option label."
+  },
+  "bloodPressurePositionStanding": "De pie",
+  "@bloodPressurePositionStanding": {
+    "description": "BloodPressurePosition.standing option label."
+  },
+  "settingsModuleBloodPressureLabel": "Presión arterial",
+  "@settingsModuleBloodPressureLabel": {
+    "description": "Label of the optional blood pressure tracker switch in settings."
+  },
+  "settingsModuleBloodPressureDescription": "Registra lecturas sueltas de presión arterial (sistólica/diastólica, frecuencia cardíaca opcional, posición). Sin interpretación automática ni comparación con una prueba de pie.",
+  "@settingsModuleBloodPressureDescription": {
+    "description": "Description under the blood pressure tracker switch in settings."
   }
 
 }

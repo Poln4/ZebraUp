@@ -438,6 +438,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get hrvContextPostExercise => 'post-ejercicio';
 
   @override
+  String get hrvContextAverage => 'promedio';
+
+  @override
   String get hrvContextOther => 'otro';
 
   @override
@@ -833,6 +836,9 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get movementTherapyPlaceholder =>
       '+ Añadir modalidad (reiki, flotación…)';
+
+  @override
+  String get movementRenameDialogTitle => 'Cambiar nombre';
 
   @override
   String activityModalLogHeader(String name) {
@@ -1377,10 +1383,25 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sleepFieldQualityLabel => 'CALIDAD';
 
   @override
+  String get sleepFieldBedWakeLabel => '¿DE CUÁNDO A CUÁNDO? (OPCIONAL)';
+
+  @override
+  String get sleepFieldBedTimeButton => 'Hora de acostarte';
+
+  @override
+  String get sleepFieldWakeTimeButton => 'Hora de despertar';
+
+  @override
   String get sleepFieldDurationLabel => 'DURACIÓN';
 
   @override
   String get sleepFieldDurationHint => 'horas (ej. 7.5)';
+
+  @override
+  String get sleepFieldDurationHoursLabel => 'Horas';
+
+  @override
+  String get sleepFieldDurationMinutesLabel => 'Minutos';
 
   @override
   String get sleepFieldOnsetLatencyLabel => 'TIEMPO EN DORMIRSE';
@@ -1517,6 +1538,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get hydrationFieldBeverageLabel => 'BEBIDA';
 
   @override
+  String get hydrationBeverageAddCustomHint => '+ Añadir bebida (té, jugo…)';
+
+  @override
   String get hydrationFieldSodiumLabel => 'SODIO (opcional)';
 
   @override
@@ -1607,6 +1631,13 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get settingsViewPreferencesTitle => 'VISUALIZACIÓN';
+
+  @override
+  String get settingsSimpleModeLabel => 'Modo simple';
+
+  @override
+  String get settingsSimpleModeDescription =>
+      'Letra más grande, botones más grandes y secciones que empiezan colapsadas. Pensado para perfiles que prefieren una pantalla más fácil de leer.';
 
   @override
   String get settingsCarefulModeLabel => 'Modo cuidadoso';
@@ -2566,6 +2597,68 @@ class AppLocalizationsEs extends AppLocalizations {
       'Al registrar dolor pélvico, agrega ubicación, carácter, relación con el ciclo, contexto y síntomas acompañantes.';
 
   @override
+  String get chestPainSheetTitle => 'Detalle de tu dolor de pecho';
+
+  @override
+  String get chestPainSheetSubtitle =>
+      'Los detalles opcionales ayudan a identificar patrones.';
+
+  @override
+  String get chestPainActionSaveDetail => 'Guardar detalle';
+
+  @override
+  String get chestPainTearingEmergencyTitle => 'Dolor tipo desgarro';
+
+  @override
+  String get chestPainTearingEmergencyBodyGeneral =>
+      'Un dolor de pecho tipo desgarro, súbito y muy intenso, puede indicar una emergencia médica. Vale la pena que vayas a urgencias ahora para descartarla, especialmente para evaluar causas cardíacas o vasculares.\n\nSi vas, informa al equipo médico tu diagnóstico de clEDS (síndrome de Ehlers-Danlos clásico-like, por mutación de TNXB) u otro subtipo de EDS que tengas.\n\nSi el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar el carácter y guardar el registro normalmente.';
+
+  @override
+  String get chestPainTearingEmergencyBodyVEDS =>
+      'Un dolor de pecho tipo desgarro, súbito y muy intenso, puede indicar una disección o rotura arterial — una emergencia real dado tu diagnóstico de EDS vascular (vEDS). Ve a urgencias ahora.\n\nInforma al equipo médico tu diagnóstico de vEDS de inmediato. Si es posible, pide que eviten las compresiones torácicas dada la fragilidad arterial y de los órganos. Los estudios de imagen (RM o TC) son cruciales para identificar rápidamente una posible rotura arterial.\n\nSi el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar el carácter y guardar el registro normalmente.';
+
+  @override
+  String get chestPainTearingEmergencyChangeCharacter =>
+      'Cambiar carácter y guardar';
+
+  @override
+  String get chestPainTearingEmergencySaveAsIs =>
+      'Guardar como está (emergencia)';
+
+  @override
+  String get chestPainUrgentDialogTitle => 'Alerta médica';
+
+  @override
+  String get chestPainRedFlagCardiacPatternUrgent =>
+      'Este patrón (presión u opresión en el pecho junto con dificultad para respirar, sudoración, o dolor que se irradia al brazo, mandíbula o espalda) puede indicar una causa cardíaca. Ve a urgencias ahora para descartarla.';
+
+  @override
+  String get chestPainRedFlagExertionalPatternUrgent =>
+      'Tu dolor apareció con el esfuerzo físico junto con dificultad para respirar o palpitaciones. Este patrón puede indicar una causa cardíaca que vale la pena evaluar pronto — si el dolor es intenso o no mejora al descansar, ve a urgencias ahora.';
+
+  @override
+  String get chestPainAdvisoryDialogTitle => 'Patrones detectados';
+
+  @override
+  String get chestPainRedFlagPleuriticPatternAdvisory =>
+      'Tu dolor es punzante y empeora al respirar hondo o moverte. Este patrón puede indicar irritación de las membranas que rodean el pulmón o el corazón. Vale la pena mencionárselo a tu médico.';
+
+  @override
+  String get chestPainRedFlagPalpitationsPatternAdvisory =>
+      'Notaste palpitaciones o el corazón acelerado junto con el dolor. Vale la pena mencionárselo a tu médico, especialmente si se repite.';
+
+  @override
+  String get chestPainRedFlagRefluxPatternAdvisory =>
+      'Tu dolor es de tipo ardor y aparece después de comer o al acostarte. Este patrón puede indicar reflujo gastroesofágico. Vale la pena mencionárselo a tu médico si es frecuente.';
+
+  @override
+  String get settingsModuleChestPainDetailLabel => 'Detalle de dolor de pecho';
+
+  @override
+  String get settingsModuleChestPainDetailDescription =>
+      'Al registrar dolor de pecho, agrega ubicación, carácter, qué lo dispara y síntomas acompañantes.';
+
+  @override
   String get onboardingStepMedsUnitHint => '1';
 
   @override
@@ -2629,4 +2722,52 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get weightEntrySaveAction => 'Guardar registro';
+
+  @override
+  String get aboutBlueskyLinkLabel => 'Síguenos en Bluesky';
+
+  @override
+  String get bloodPressureSectionTitle => 'Presión arterial';
+
+  @override
+  String get bloodPressureActionAddEntry => 'Registrar presión arterial';
+
+  @override
+  String get bloodPressureModalLogHeader => 'Nueva lectura de presión arterial';
+
+  @override
+  String get bloodPressureModalEditHeader =>
+      'Editar lectura de presión arterial';
+
+  @override
+  String get bloodPressureFieldSystolicLabel => 'Sistólica';
+
+  @override
+  String get bloodPressureFieldDiastolicLabel => 'Diastólica';
+
+  @override
+  String get bloodPressureFieldHeartRateLabel =>
+      'Frecuencia cardíaca (opcional)';
+
+  @override
+  String get bloodPressureHeartRateUnit => 'ppm';
+
+  @override
+  String get bloodPressureFieldPositionLabel => 'Posición';
+
+  @override
+  String get bloodPressurePositionSitting => 'Sentada';
+
+  @override
+  String get bloodPressurePositionLying => 'Acostada';
+
+  @override
+  String get bloodPressurePositionStanding => 'De pie';
+
+  @override
+  String get settingsModuleBloodPressureLabel => 'Presión arterial';
+
+  @override
+  String get settingsModuleBloodPressureDescription =>
+      'Registra lecturas sueltas de presión arterial (sistólica/diastólica, frecuencia cardíaca opcional, posición). Sin interpretación automática ni comparación con una prueba de pie.';
 }

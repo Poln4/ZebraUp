@@ -48,6 +48,10 @@ class MainAppScreen extends StatefulWidget {
   final ValueChanged<double> onScaleFont;
   final Locale locale;
   final ValueChanged<Locale> onChangeLocale;
+  // Modo Simple — notifies the app root (ZebraUpApp) whenever the active
+  // profile's simple_mode flag differs from what was last reported, so the
+  // text-scale floor/visual density in main.dart's MaterialApp can react.
+  final ValueChanged<bool> onSimpleModeChanged;
 
   const MainAppScreen({
     super.key,
@@ -57,6 +61,7 @@ class MainAppScreen extends StatefulWidget {
     required this.onScaleFont,
     required this.locale,
     required this.onChangeLocale,
+    required this.onSimpleModeChanged,
   });
 
   @override
@@ -89,6 +94,10 @@ class _MainAppScreenState extends State<MainAppScreen> {
 
   List<Profile> _profiles = [];
   Profile? _activeProfile;
+  // Modo Simple — last simple_mode value reported to ZebraUpApp, so build()
+  // only notifies the ancestor when it actually changes (profile switch or
+  // toggling the setting), not on every rebuild.
+  bool? _lastNotifiedSimpleMode;
 
   // Variables para la Base de Datos Clínica, de Sabiduría y Emociones (EMA)
   List<WisdomQuote> _wisdomDatabase = [];
@@ -898,6 +907,25 @@ class _MainAppScreenState extends State<MainAppScreen> {
     return false;
   }
 
+  /// D.5: True iff the active profile mentions dolor torácico anywhere
+  /// — in the symptom vault or in the listed conditions. Aliases
+  /// include dolor de pecho, dolor torácico, costocondritis, and their
+  /// en / zh equivalents. Mirrors _hasHeadacheRelevance,
+  /// _hasFatigueRelevance, _hasAbdominalRelevance, _hasPresyncopeRelevance
+  /// and _hasPelvicPainRelevance.
+  bool _hasChestPainRelevance() {
+    final svc = SymptomDefinitionsService.instance;
+    final p = _activeProfile;
+    if (p == null) return false;
+    for (final s in p.symptomVault) {
+      if (svc.matchesSymptomKey(s, 'chest_pain')) return true;
+    }
+    for (final c in p.conditions) {
+      if (svc.matchesSymptomKey(c, 'chest_pain')) return true;
+    }
+    return false;
+  }
+
   // -------------------------------------------------------------------------
   // PERSISTENCE
   // -------------------------------------------------------------------------
@@ -960,6 +988,22 @@ class _MainAppScreenState extends State<MainAppScreen> {
     // render dates in the user's language without having to thread
     // l10n.localeName through every call site.
     Intl.defaultLocale = widget.locale.toString();
+
+    // Modo Simple — read the active profile's flag fresh on every build
+    // (already re-runs on profile switch and after returning from Settings,
+    // same mechanism Modo Cuidadoso's collapse behavior relies on) and only
+    // notify the app root when it actually changed. Deferred to after the
+    // frame since calling setState on the ZebraUpApp ancestor synchronously
+    // from here would trigger Flutter's "setState during build" assertion.
+    final simpleModeActive =
+        _activeProfile?.settings.optionalTrackers['simple_mode'] ?? false;
+    if (simpleModeActive != _lastNotifiedSimpleMode) {
+      _lastNotifiedSimpleMode = simpleModeActive;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) widget.onSimpleModeChanged(simpleModeActive);
+      });
+    }
+
     final contrastColor = widget.isDarkMode ? Colors.white : Colors.black;
     final inverseContrastColor = widget.isDarkMode
         ? Colors.black
@@ -1047,11 +1091,16 @@ class _MainAppScreenState extends State<MainAppScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: SizedBox(
+        height: 76,
+        child: BottomNavigationBar(
         backgroundColor: inverseContrastColor,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: contrastColor,
         unselectedItemColor: Colors.grey,
+        iconSize: 26,
+        selectedFontSize: 13,
+        unselectedFontSize: 12,
         currentIndex: _currentNavIndex,
         onTap: (i) => setState(() => _currentNavIndex = i),
         items: [
@@ -1076,6 +1125,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
             label: AppLocalizations.of(context)!.navClinica,
           ),
         ],
+        ),
       ),
     );
   }
@@ -2167,6 +2217,7 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 showAbdominalDetail: _hasAbdominalRelevance(),
                 showPresyncopeDetail: _hasPresyncopeRelevance(),
                 showPelvicPainDetail: _hasPelvicPainRelevance(),
+                showChestPainDetail: _hasChestPainRelevance(),
               ),
             ),
           ),

@@ -16,7 +16,7 @@ Si algo en `docs/` (planning) contradice el código real en `lib/`, el código m
 - **Sprint F (Acciones Transversales)** — completo (F.A–F.F).
 - **Sprint E (MCAS/Alergias)** — completo (E.A–E.E).
 - **Sprint G (Flare Mode)** — completo (G.A/G.B/G.B.2/G.C/G.E). G.D diferido a propósito, pendiente de datos de beta.
-- **Symptom Detail Layers** — 5 de 6 síntomas: Cefalea (C.4), Fatiga (D.1), Dolor Abdominal (D.2), Presíncope (D.3, sin componente de medición — ver `docs/design_decisions/symptom_detail_layers.md` §13), Dolor Pélvico (D.4, trauma-informed, wording suave para ubicación externa, chip de dispareunia opcional — ver §14). Dolor estructural (rediseño, no uno de los 6) implementado con historial de zona, flujo combinado zona+tipo, y tejido blando (sangrado/hematomas) con severidad tipo ISTH-BAT.
+- **Symptom Detail Layers** — 6 de 6 síntomas, completo: Cefalea (C.4), Fatiga (D.1), Dolor Abdominal (D.2), Presíncope (D.3, sin componente de medición — ver `docs/design_decisions/symptom_detail_layers.md` §13), Dolor Pélvico (D.4, trauma-informed, wording suave para ubicación externa, chip de dispareunia opcional — ver §14), Dolor Torácico (D.5, primera rama de red flag condicionada por `Profile.conditions` — copy vEDS-específica ante dolor tipo desgarro — ver §15). Dolor estructural (rediseño, no uno de los 6) implementado con historial de zona, flujo combinado zona+tipo, y tejido blando (sangrado/hematomas) con severidad tipo ISTH-BAT.
 - **Fase 6 (GI/sleep/hydration/HRV/movement)** — modelos, formularios y toggles ya shippeados (6.0/6.1/6.1b/6.1c, 6.6-6.7 parcial). El motor de correlación (`correlation_engine.dart`) es solo scaffold — sin reglas concretas todavía.
 - **Fase 4 (PDF Clinical Export)** — Phase4.A–D completos, confirmado que compila.
 - **Sprint P.C (Reorganización de Settings)** — completo, 5 subpantallas dedicadas.
@@ -61,9 +61,8 @@ Al mover algo de Backlog a "Ahora mismo", pasarlo por esta tabla — no hace fal
 
 ## Backlog (sin orden estricto)
 
-### Symptom Detail Layers pendientes
-- **D.5 Dolor torácico** — múltiples red flags esperadas, sin empezar.
-- **Mapeo HPO** de dolor estructural — se agrupará con D.4/D.5 (comparten vocabulario de "carácter del dolor"); D.3 (Presíncope) no comparte ese vocabulario y no entra en ese lote (confirmado, ver §13.5 de `symptom_detail_layers.md`).
+### Trabajo relacionado a Symptom Detail Layers (las 6 capas ya están completas)
+- **Mapeo HPO** — estructural, D.4 pélvico y D.5 torácico comparten vocabulario de "carácter del dolor" y ya están todos shippeados, listos para evaluarse como lote único; D.3 (Presíncope) no comparte ese vocabulario y no entra en ese lote (confirmado, ver §13.5/§15.5 de `symptom_detail_layers.md`).
 - **Red flags estructurales** (incluye el tier de riesgo vEDS por ruptura arterial) — diferidos a propósito hasta cerrar el modelo de captura.
 - **Advisory de tendencia de hematomas** — depende de la capa de tejido blando, que ya existe; el advisory en sí no se ha construido.
 

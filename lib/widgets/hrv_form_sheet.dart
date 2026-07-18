@@ -30,6 +30,7 @@ extension HrvContextLocalization on HrvContext {
     HrvContext.afternoon => l10n.hrvContextAfternoon,
     HrvContext.evening => l10n.hrvContextEvening,
     HrvContext.postExercise => l10n.hrvContextPostExercise,
+    HrvContext.average => l10n.hrvContextAverage,
     HrvContext.other => l10n.hrvContextOther,
   };
 }

@@ -851,6 +851,12 @@ abstract class AppLocalizations {
   /// **'post-ejercicio'**
   String get hrvContextPostExercise;
 
+  /// No description provided for @hrvContextAverage.
+  ///
+  /// In es, this message translates to:
+  /// **'promedio'**
+  String get hrvContextAverage;
+
   /// No description provided for @hrvContextOther.
   ///
   /// In es, this message translates to:
@@ -1486,6 +1492,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'+ Añadir modalidad (reiki, flotación…)'**
   String get movementTherapyPlaceholder;
+
+  /// Title of the rename dialog for a custom exercise or therapy modality (long-press on its chip).
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar nombre'**
+  String get movementRenameDialogTitle;
 
   /// No description provided for @activityModalLogHeader.
   ///
@@ -2423,6 +2435,24 @@ abstract class AppLocalizations {
   /// **'CALIDAD'**
   String get sleepFieldQualityLabel;
 
+  /// Label for the optional bedtime/wake-time pair, above the two time-picker buttons.
+  ///
+  /// In es, this message translates to:
+  /// **'¿DE CUÁNDO A CUÁNDO? (OPCIONAL)'**
+  String get sleepFieldBedWakeLabel;
+
+  /// Button label to open the bedtime picker when no bedtime is set yet.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de acostarte'**
+  String get sleepFieldBedTimeButton;
+
+  /// Button label to open the wake-time picker when no wake time is set yet.
+  ///
+  /// In es, this message translates to:
+  /// **'Hora de despertar'**
+  String get sleepFieldWakeTimeButton;
+
   /// No description provided for @sleepFieldDurationLabel.
   ///
   /// In es, this message translates to:
@@ -2434,6 +2464,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'horas (ej. 7.5)'**
   String get sleepFieldDurationHint;
+
+  /// Small label above the hours field in the duration input pair.
+  ///
+  /// In es, this message translates to:
+  /// **'Horas'**
+  String get sleepFieldDurationHoursLabel;
+
+  /// Small label above the minutes field in the duration input pair.
+  ///
+  /// In es, this message translates to:
+  /// **'Minutos'**
+  String get sleepFieldDurationMinutesLabel;
 
   /// No description provided for @sleepFieldOnsetLatencyLabel.
   ///
@@ -2687,6 +2729,12 @@ abstract class AppLocalizations {
   /// **'BEBIDA'**
   String get hydrationFieldBeverageLabel;
 
+  /// Hint text for the free-text field that adds a new custom beverage option to the hydration form.
+  ///
+  /// In es, this message translates to:
+  /// **'+ Añadir bebida (té, jugo…)'**
+  String get hydrationBeverageAddCustomHint;
+
   /// No description provided for @hydrationFieldSodiumLabel.
   ///
   /// In es, this message translates to:
@@ -2842,6 +2890,18 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'VISUALIZACIÓN'**
   String get settingsViewPreferencesTitle;
+
+  /// No description provided for @settingsSimpleModeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Modo simple'**
+  String get settingsSimpleModeLabel;
+
+  /// No description provided for @settingsSimpleModeDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Letra más grande, botones más grandes y secciones que empiezan colapsadas. Pensado para perfiles que prefieren una pantalla más fácil de leer.'**
+  String get settingsSimpleModeDescription;
 
   /// No description provided for @settingsCarefulModeLabel.
   ///
@@ -4447,6 +4507,108 @@ abstract class AppLocalizations {
   /// **'Al registrar dolor pélvico, agrega ubicación, carácter, relación con el ciclo, contexto y síntomas acompañantes.'**
   String get settingsModulePelvicPainDetailDescription;
 
+  /// Title of the modal sheet that captures structured chest pain detail.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de tu dolor de pecho'**
+  String get chestPainSheetTitle;
+
+  /// Subtitle explaining why filling the optional detail helps.
+  ///
+  /// In es, this message translates to:
+  /// **'Los detalles opcionales ayudan a identificar patrones.'**
+  String get chestPainSheetSubtitle;
+
+  /// Save button label at the bottom of the chest pain detail sheet.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar detalle'**
+  String get chestPainActionSaveDetail;
+
+  /// Title of the in-sheet emergency dialog fired on save attempt when character=tearingOrRipping.
+  ///
+  /// In es, this message translates to:
+  /// **'Dolor tipo desgarro'**
+  String get chestPainTearingEmergencyTitle;
+
+  /// Body text of the tearing-pain in-sheet emergency dialog for patients without a vEDS keyword match in Profile.conditions.
+  ///
+  /// In es, this message translates to:
+  /// **'Un dolor de pecho tipo desgarro, súbito y muy intenso, puede indicar una emergencia médica. Vale la pena que vayas a urgencias ahora para descartarla, especialmente para evaluar causas cardíacas o vasculares.\n\nSi vas, informa al equipo médico tu diagnóstico de clEDS (síndrome de Ehlers-Danlos clásico-like, por mutación de TNXB) u otro subtipo de EDS que tengas.\n\nSi el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar el carácter y guardar el registro normalmente.'**
+  String get chestPainTearingEmergencyBodyGeneral;
+
+  /// Body text of the tearing-pain in-sheet emergency dialog for patients with a vEDS keyword match in Profile.conditions (isLikelyVEDSFromConditions). First conditions-aware red-flag copy branch in the app.
+  ///
+  /// In es, this message translates to:
+  /// **'Un dolor de pecho tipo desgarro, súbito y muy intenso, puede indicar una disección o rotura arterial — una emergencia real dado tu diagnóstico de EDS vascular (vEDS). Ve a urgencias ahora.\n\nInforma al equipo médico tu diagnóstico de vEDS de inmediato. Si es posible, pide que eviten las compresiones torácicas dada la fragilidad arterial y de los órganos. Los estudios de imagen (RM o TC) son cruciales para identificar rápidamente una posible rotura arterial.\n\nSi el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar el carácter y guardar el registro normalmente.'**
+  String get chestPainTearingEmergencyBodyVEDS;
+
+  /// Button that returns to the sheet so the user can revise the character chip.
+  ///
+  /// In es, this message translates to:
+  /// **'Cambiar carácter y guardar'**
+  String get chestPainTearingEmergencyChangeCharacter;
+
+  /// Button that commits the save with the emergency character acknowledged.
+  ///
+  /// In es, this message translates to:
+  /// **'Guardar como está (emergencia)'**
+  String get chestPainTearingEmergencySaveAsIs;
+
+  /// Title of the URGENT post-save dialog for chest pain red flags.
+  ///
+  /// In es, this message translates to:
+  /// **'Alerta médica'**
+  String get chestPainUrgentDialogTitle;
+
+  /// URGENT for pressureOrTightness character + (radiatesToArmJawBack OR shortnessOfBreath OR sweatingOrClamminess) + severity >= 2.
+  ///
+  /// In es, this message translates to:
+  /// **'Este patrón (presión u opresión en el pecho junto con dificultad para respirar, sudoración, o dolor que se irradia al brazo, mandíbula o espalda) puede indicar una causa cardíaca. Ve a urgencias ahora para descartarla.'**
+  String get chestPainRedFlagCardiacPatternUrgent;
+
+  /// URGENT for worseWithExertion trigger + (shortnessOfBreath OR palpitationsOrRacingHeart) + severity >= 2.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu dolor apareció con el esfuerzo físico junto con dificultad para respirar o palpitaciones. Este patrón puede indicar una causa cardíaca que vale la pena evaluar pronto — si el dolor es intenso o no mejora al descansar, ve a urgencias ahora.'**
+  String get chestPainRedFlagExertionalPatternUrgent;
+
+  /// Title of the ADVISORY post-save dialog for chest pain red flags.
+  ///
+  /// In es, this message translates to:
+  /// **'Patrones detectados'**
+  String get chestPainAdvisoryDialogTitle;
+
+  /// ADVISORY for sharpOrStabbing character + worseWithBreathingOrMovement trigger + severity >= 2.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu dolor es punzante y empeora al respirar hondo o moverte. Este patrón puede indicar irritación de las membranas que rodean el pulmón o el corazón. Vale la pena mencionárselo a tu médico.'**
+  String get chestPainRedFlagPleuriticPatternAdvisory;
+
+  /// ADVISORY for palpitationsOrRacingHeart accompaniment + severity >= 2.
+  ///
+  /// In es, this message translates to:
+  /// **'Notaste palpitaciones o el corazón acelerado junto con el dolor. Vale la pena mencionárselo a tu médico, especialmente si se repite.'**
+  String get chestPainRedFlagPalpitationsPatternAdvisory;
+
+  /// ADVISORY for burning character + afterEatingOrLyingDown trigger + severity >= 2.
+  ///
+  /// In es, this message translates to:
+  /// **'Tu dolor es de tipo ardor y aparece después de comer o al acostarte. Este patrón puede indicar reflujo gastroesofágico. Vale la pena mencionárselo a tu médico si es frecuente.'**
+  String get chestPainRedFlagRefluxPatternAdvisory;
+
+  /// Label of the optional chest pain detail tracker switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Detalle de dolor de pecho'**
+  String get settingsModuleChestPainDetailLabel;
+
+  /// Description under the chest pain detail switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Al registrar dolor de pecho, agrega ubicación, carácter, qué lo dispara y síntomas acompañantes.'**
+  String get settingsModuleChestPainDetailDescription;
+
   /// No description provided for @onboardingStepMedsUnitHint.
   ///
   /// In es, this message translates to:
@@ -4572,6 +4734,96 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Guardar registro'**
   String get weightEntrySaveAction;
+
+  /// Button label linking to ZebraUp's Bluesky profile, shown in Ajustes → Acerca de. Not locale-gated (unlike the follow-up questionnaire link).
+  ///
+  /// In es, this message translates to:
+  /// **'Síguenos en Bluesky'**
+  String get aboutBlueskyLinkLabel;
+
+  /// Section title for the blood pressure module in the Síntomas tab.
+  ///
+  /// In es, this message translates to:
+  /// **'Presión arterial'**
+  String get bloodPressureSectionTitle;
+
+  /// Button label to add a new blood pressure reading.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar presión arterial'**
+  String get bloodPressureActionAddEntry;
+
+  /// Title of the blood pressure form sheet when creating a new reading.
+  ///
+  /// In es, this message translates to:
+  /// **'Nueva lectura de presión arterial'**
+  String get bloodPressureModalLogHeader;
+
+  /// Title of the blood pressure form sheet when editing an existing reading.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar lectura de presión arterial'**
+  String get bloodPressureModalEditHeader;
+
+  /// Label for the systolic BP input field.
+  ///
+  /// In es, this message translates to:
+  /// **'Sistólica'**
+  String get bloodPressureFieldSystolicLabel;
+
+  /// Label for the diastolic BP input field.
+  ///
+  /// In es, this message translates to:
+  /// **'Diastólica'**
+  String get bloodPressureFieldDiastolicLabel;
+
+  /// Label for the optional heart rate input field.
+  ///
+  /// In es, this message translates to:
+  /// **'Frecuencia cardíaca (opcional)'**
+  String get bloodPressureFieldHeartRateLabel;
+
+  /// Heart rate unit abbreviation shown next to the value.
+  ///
+  /// In es, this message translates to:
+  /// **'ppm'**
+  String get bloodPressureHeartRateUnit;
+
+  /// Label for the BloodPressurePosition selector.
+  ///
+  /// In es, this message translates to:
+  /// **'Posición'**
+  String get bloodPressureFieldPositionLabel;
+
+  /// BloodPressurePosition.sitting option label.
+  ///
+  /// In es, this message translates to:
+  /// **'Sentada'**
+  String get bloodPressurePositionSitting;
+
+  /// BloodPressurePosition.lying option label.
+  ///
+  /// In es, this message translates to:
+  /// **'Acostada'**
+  String get bloodPressurePositionLying;
+
+  /// BloodPressurePosition.standing option label.
+  ///
+  /// In es, this message translates to:
+  /// **'De pie'**
+  String get bloodPressurePositionStanding;
+
+  /// Label of the optional blood pressure tracker switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Presión arterial'**
+  String get settingsModuleBloodPressureLabel;
+
+  /// Description under the blood pressure tracker switch in settings.
+  ///
+  /// In es, this message translates to:
+  /// **'Registra lecturas sueltas de presión arterial (sistólica/diastólica, frecuencia cardíaca opcional, posición). Sin interpretación automática ni comparación con una prueba de pie.'**
+  String get settingsModuleBloodPressureDescription;
 }
 
 class _AppLocalizationsDelegate

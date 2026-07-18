@@ -1,8 +1,8 @@
 # Panel de Signos Vitales — decisiones de diseño
 
 **Sprint:** Sin asignar (diseño en curso, análogo a Multi-Observer Profiles: diseñado, aún no es sprint activo)
-**Estado:** En discusión con la usuaria (2026-07-16). Sin implementar — este documento congela las decisiones tomadas hasta ahora en la conversación. Campos exactos de los modelos nuevos son borrador, no spec cerrada (ver §8).
-**Última actualización:** 16-jul-2026
+**Estado:** Presión arterial (§5.1) implementada (2026-07-18) — ver §9. `OrthostaticTest` (§5.2) sigue sin implementar; su punto de seguridad (§7) quedó resuelto en la conversación pero el modelo/UI en sí no se construyó en este pase (alcance confirmado explícitamente con Paulina, ver §9).
+**Última actualización:** 18-jul-2026
 
 Este documento consolida la base y las decisiones de diseño para unificar el seguimiento de fiebre, HRV, presión arterial y respuesta ortostática. No es una capa de detalle por síntoma (ver `symptom_detail_laters.md` para ese patrón) — es un conjunto de modelos nuevos más una vista/servicio de agregación.
 
@@ -78,15 +78,27 @@ Copy de cualquier resultado sigue la regla de humildad epistémica ya codificada
 
 Sección dentro del tab Síntomas, junto a las demás capas de detalle (cefalea, fatiga, abdomen, y la nueva de dolor estructural) — no como tab nuevo de primer nivel, ni como extensión de Hoy.
 
-## 7. Consideración de seguridad — pendiente de confirmar con Paulina
+## 7. Consideración de seguridad — resuelto (2026-07-18)
 
-La prueba ortostática de pie conlleva riesgo real de síncope en pacientes con POTS severo. Queda pendiente que Paulina confirme si el flujo debe incluir explícitamente una advertencia previa ("siéntate de inmediato si te sientes mal") y un botón de "detener prueba" visible en todo momento durante la prueba, o si esto se da por sentado como parte del diseño trauma-informado general y no necesita tratamiento especial en este documento.
+Confirmado con Paulina vía AskUserQuestion: cuando se construya `OrthostaticTest`, el flujo debe incluir explícitamente una advertencia previa ("siéntate de inmediato si te sientes mal") y un botón de "Detener prueba" visible en todo momento durante las 4 fases, que descarta la prueba sin guardar nada parcial — tratamiento de seguridad dedicado, no delegado al diseño trauma-informado general del resto de la app. Esta decisión queda registrada para cuando `OrthostaticTest` se implemente (sigue sin construirse, ver §9); no hace falta volver a preguntarlo.
 
 ## 8. Decisiones diferidas / abiertas
 
 | Ítem | Razón de diferir |
 |------|-------------------|
-| Confirmación del punto de seguridad (§7) | Pendiente respuesta directa de Paulina. |
 | Cross-referencing entre los 4 tipos de vitals (ej. correlación fiebre+FC elevada) | Explícitamente fuera de esta ronda de diseño — el scaffold de `correlation_engine.dart` ya anticipa reglas concretas para una iteración posterior. |
 | Red flags específicos de signos vitales | No discutidos todavía; evaluar necesidad en una ronda aparte, mismo criterio que se aplicó a la capa de dolor estructural (ver `symptom_detail_laters.md` §12.6). |
-| Campos exactos finales de `BloodPressureReading`/`OrthostaticTest` | Borrador de esta conversación, no verificado contra una segunda revisión ni implementado. |
+| `OrthostaticTest` (modelo + UI) | Punto de seguridad ya resuelto (§7), pero el modelo/UI en sí quedó fuera de este pase — confirmado explícitamente con Paulina, ver §9. |
+| Servicio de agregación `VitalSignKind` / dashboard unificado | Fuera de este pase — confirmado explícitamente con Paulina, ver §9. Solo se implementó la captura de PA; la vista que junta fiebre/HRV/PA en un solo lugar sigue sin construirse. |
+
+## 9. Implementación — Presión Arterial (2026-07-18)
+
+Alcance de este pase confirmado con Paulina vía AskUserQuestion antes de codear: **solo `BloodPressureReading`** (greenfield, sin el bloqueo de seguridad de §7) — ni `OrthostaticTest` ni el dashboard unificado `VitalSignKind` entraron en este pase. Sin toolchain de Flutter local — revisado manualmente (balance de llaves/paréntesis por script, JSON de ARB validado con `python3 -c "import json"`), compilación confirmada por Paulina después.
+
+Modelo (`lib/models/models.dart`, sección nueva junto a `FeverReading`): `BloodPressurePosition` enum (`sitting`/`lying`/`standing`) + `BloodPressureReading` (systolic, diastolic, heartRate opcional, position, timestamp, note) — exactamente el shape de §5.1, sin cambios. Deliberadamente sin ningún getter de interpretación (nada de "esto se ve alto/bajo", nada de comparación con una lectura anterior) — una lectura suelta no tiene baseline contra qué compararse; esa lógica es territorio de `OrthostaticTest`, que empareja línea base + lecturas de pie. `Profile.bloodPressureHistory` + `getBloodPressureForDay(date)`, mismo patrón que `feverHistory`/`getFeverForDay`.
+
+UI: toggle `blood_pressure` (off-by-default) en `TrackingSettingsScreen`, mismo patrón que HRV — a diferencia de fiebre (que no está gateada por toggle, presente desde antes de que el patrón `optionalTrackers` se consolidara), presión arterial es un módulo nuevo y sigue el precedente de sleep/hydration/hrv. Sheet nuevo `lib/widgets/blood_pressure_form_sheet.dart` (calcado de `hrv_form_sheet.dart`): timestamp picker → steppers de sistólica/diastólica con edición directa por tap (mismo patrón que el RMSSD de HRV) → frecuencia cardíaca opcional (aparece solo si el usuario la agrega, con botón para quitarla) → chips de posición → nota → guardar. Sección colapsable en `sintomas_tab.dart` junto a fiebre/HRV (título "Presión arterial", ícono `monitor_heart_outlined`), entrada en el timeline "Registros de hoy" con resumen compacto (`"[HH:mm] 118/76 mmHg · 72 lpm · sentada"`), y handlers `_openBloodPressureForm`/`_editBloodPressureEvent` mirror exacto de `_openHrvForm`/`_editHrvEvent`.
+
+14 claves ARB nuevas (`bloodPressureSectionTitle`, `bloodPressureActionAddEntry`, `bloodPressureModalLogHeader/EditHeader`, `bloodPressureFieldSystolicLabel/DiastolicLabel/HeartRateLabel/PositionLabel`, `bloodPressureHeartRateUnit`, `bloodPressurePositionSitting/Lying/Standing`, `settingsModuleBloodPressureLabel/Description`) en `app_es.arb`/`app_en.arb`/`app_zh.arb` + getters a mano en `app_localizations.dart` + `_es`/`_en`; en `app_localizations_zh.dart` se agregaron una sola vez dentro de `AppLocalizationsZh` (no duplicadas en `AppLocalizationsZhTw`), mismo patrón confirmado correcto desde la sesión de presíncope. Unidad de frecuencia cardíaca localizada (`lpm`/`bpm`/`次/分`) — a diferencia de otras unidades del proyecto (mg, ms, °C, kg) que son iguales en cualquier idioma, la abreviatura de pulso sí varía por idioma, así que se le dio su propia clave en vez de hardcodearla.
+
+Próximo paso natural si se retoma este hilo: `OrthostaticTest` con el tratamiento de seguridad de §7 ya resuelto, o el dashboard `VitalSignKind` que junte fiebre/HRV/PA — ninguno de los dos se decidió todavía, ambos quedan en §8.

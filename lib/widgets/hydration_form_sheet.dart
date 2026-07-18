@@ -49,6 +49,8 @@ Future<HydrationEntry?> showHydrationFormSheet({
   required Color inverseContrastColor,
   required DateTime defaultTimestamp,
   HydrationEntry? existing,
+  List<String> customBeverages = const [],
+  ValueChanged<String>? onAddCustomBeverage,
 }) {
   return showModalBottomSheet<HydrationEntry>(
     context: context,
@@ -62,6 +64,8 @@ Future<HydrationEntry?> showHydrationFormSheet({
       inverseContrastColor: inverseContrastColor,
       defaultTimestamp: defaultTimestamp,
       existing: existing,
+      customBeverages: customBeverages,
+      onAddCustomBeverage: onAddCustomBeverage,
     ),
   );
 }
@@ -75,12 +79,16 @@ class _HydrationForm extends StatefulWidget {
   final Color inverseContrastColor;
   final DateTime defaultTimestamp;
   final HydrationEntry? existing;
+  final List<String> customBeverages;
+  final ValueChanged<String>? onAddCustomBeverage;
 
   const _HydrationForm({
     required this.contrastColor,
     required this.inverseContrastColor,
     required this.defaultTimestamp,
     this.existing,
+    this.customBeverages = const [],
+    this.onAddCustomBeverage,
   });
 
   @override
@@ -91,8 +99,11 @@ class _HydrationFormState extends State<_HydrationForm> {
   late DateTime _timestamp;
   late TextEditingController _volumeCtrl;
   late HydrationBeverage? _beverage;
+  late String? _customBeverage;
   late SodiumSource? _sodium;
   late TextEditingController _noteCtrl;
+  late TextEditingController _newBeverageCtrl;
+  late List<String> _customBeverages;
 
   @override
   void initState() {
@@ -102,16 +113,36 @@ class _HydrationFormState extends State<_HydrationForm> {
     _volumeCtrl = TextEditingController(
       text: e?.volumeMl != null ? e!.volumeMl!.round().toString() : '',
     );
-    _beverage = e?.beverage ?? HydrationBeverage.water;
+    _customBeverage = e?.customBeverageName;
+    _beverage = _customBeverage != null
+        ? null
+        : (e?.beverage ?? HydrationBeverage.water);
     _sodium = e?.sodium;
     _noteCtrl = TextEditingController(text: e?.note ?? '');
+    _newBeverageCtrl = TextEditingController();
+    _customBeverages = List<String>.from(widget.customBeverages);
   }
 
   @override
   void dispose() {
     _volumeCtrl.dispose();
     _noteCtrl.dispose();
+    _newBeverageCtrl.dispose();
     super.dispose();
+  }
+
+  void _addCustomBeverage() {
+    final name = _newBeverageCtrl.text.trim();
+    if (name.isEmpty) return;
+    if (!_customBeverages.contains(name)) {
+      setState(() => _customBeverages.add(name));
+      widget.onAddCustomBeverage?.call(name);
+    }
+    setState(() {
+      _customBeverage = name;
+      _beverage = null;
+    });
+    _newBeverageCtrl.clear();
   }
 
   Color get _cc => widget.contrastColor;
@@ -131,9 +162,10 @@ class _HydrationFormState extends State<_HydrationForm> {
       id: widget.existing?.id,
       timestamp: _timestamp,
       volumeMl: _parseVolume(),
-      beverage: _beverage,
+      beverage: _customBeverage == null ? _beverage : null,
       sodium: _sodium,
       note: note.isEmpty ? null : note,
+      customBeverageName: _customBeverage,
     );
     Navigator.pop(context, result);
   }
@@ -253,15 +285,50 @@ class _HydrationFormState extends State<_HydrationForm> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: HydrationBeverage.values
-                  .map(
-                    (b) => _chip(
-                      selected: _beverage == b,
-                      label: b.label(l10n),
-                      onTap: () => setState(() => _beverage = b),
+              children: [
+                ...HydrationBeverage.values.map(
+                  (b) => _chip(
+                    selected: _customBeverage == null && _beverage == b,
+                    label: b.label(l10n),
+                    onTap: () => setState(() {
+                      _beverage = b;
+                      _customBeverage = null;
+                    }),
+                  ),
+                ),
+                ..._customBeverages.map(
+                  (name) => _chip(
+                    selected: _customBeverage == name,
+                    label: name,
+                    onTap: () => setState(() {
+                      _customBeverage = name;
+                      _beverage = null;
+                    }),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _newBeverageCtrl,
+                    style: TextStyle(color: _cc, fontSize: 13),
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) => _addCustomBeverage(),
+                    decoration: InputDecoration(
+                      hintText: l10n.hydrationBeverageAddCustomHint,
+                      hintStyle: const TextStyle(color: Colors.grey),
+                      isDense: true,
                     ),
-                  )
-                  .toList(),
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(Icons.add, color: _cc),
+                  onPressed: _addCustomBeverage,
+                ),
+              ],
             ),
             const SizedBox(height: 20),
 

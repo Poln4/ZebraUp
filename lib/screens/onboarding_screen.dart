@@ -247,9 +247,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // ---------------------------------------------------------------------------
 
   Widget _welcomeStep() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(28, 40, 28, 20),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (widget.currentLocale != null &&
@@ -401,9 +402,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // ---------------------------------------------------------------------------
 
   Widget _nameStep() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(28, 40, 28, 20),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -458,9 +460,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // ---------------------------------------------------------------------------
 
   Widget _conditionsStep() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(28, 40, 28, 20),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -539,9 +542,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // ---------------------------------------------------------------------------
 
   Widget _medsStep() {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(28, 40, 28, 20),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(

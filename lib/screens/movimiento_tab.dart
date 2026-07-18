@@ -202,27 +202,31 @@ class _MovimientoTabState extends State<MovimientoTab> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children:
-              [
-                    ...kExerciseCatalog,
-                    ..._p.customExercises.map(
-                      (name) =>
-                          ExerciseDef(name, 'Custom', durationBased: true),
-                    ),
-                  ]
-                  .map(
-                    (ex) => ActionChip(
-                      backgroundColor: Colors.transparent,
-                      side: BorderSide(color: _cc),
-                      avatar: Icon(Icons.fitness_center, color: _cc, size: 14),
-                      label: Text(
-                        ex.name,
-                        style: TextStyle(color: _cc, fontSize: 12),
-                      ),
-                      onPressed: () => _openActivityMenu(ex),
-                    ),
-                  )
-                  .toList(),
+          children: [
+            ...kExerciseCatalog.map(
+              (ex) => ActionChip(
+                backgroundColor: Colors.transparent,
+                side: BorderSide(color: _cc),
+                avatar: Icon(Icons.fitness_center, color: _cc, size: 14),
+                label: Text(
+                  ex.name,
+                  style: TextStyle(color: _cc, fontSize: 12),
+                ),
+                onPressed: () => _openActivityMenu(ex),
+              ),
+            ),
+            ..._p.customExercises.map(
+              (name) => _customCatalogChip(
+                label: name,
+                icon: Icons.fitness_center,
+                onTap: () => _openActivityMenu(
+                  ExerciseDef(name, 'Custom', durationBased: true),
+                ),
+                onDelete: () => _deleteCustomExercise(name),
+                onRename: () => _renameCustomExercise(name),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         TextField(
@@ -255,17 +259,26 @@ class _MovimientoTabState extends State<MovimientoTab> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: [...kTherapyCatalog, ..._p.customTherapyModalities]
-              .map(
-                (m) => ActionChip(
-                  backgroundColor: Colors.transparent,
-                  side: BorderSide(color: _cc),
-                  avatar: Icon(Icons.healing_outlined, color: _cc, size: 14),
-                  label: Text(m, style: TextStyle(color: _cc, fontSize: 12)),
-                  onPressed: () => _logTherapy(m),
-                ),
-              )
-              .toList(),
+          children: [
+            ...kTherapyCatalog.map(
+              (m) => ActionChip(
+                backgroundColor: Colors.transparent,
+                side: BorderSide(color: _cc),
+                avatar: Icon(Icons.healing_outlined, color: _cc, size: 14),
+                label: Text(m, style: TextStyle(color: _cc, fontSize: 12)),
+                onPressed: () => _logTherapy(m),
+              ),
+            ),
+            ..._p.customTherapyModalities.map(
+              (m) => _customCatalogChip(
+                label: m,
+                icon: Icons.healing_outlined,
+                onTap: () => _logTherapy(m),
+                onDelete: () => _deleteCustomTherapyModality(m),
+                onRename: () => _renameCustomTherapyModality(m),
+              ),
+            ),
+          ],
         ),
         const SizedBox(height: 12),
         TextField(
@@ -374,6 +387,99 @@ class _MovimientoTabState extends State<MovimientoTab> {
       () => _p.customTherapyModalities = [..._p.customTherapyModalities, txt],
     );
     _newTherapyModalityCtrl.clear();
+    widget.onProfileChanged();
+  }
+
+  // ---------------------------------------------------------------------------
+  // CUSTOM CATALOG CHIP — tap logs (unchanged behavior), delete icon removes
+  // it from the catalog, long-press renames. Only for user-added entries —
+  // kExerciseCatalog/kTherapyCatalog stay as plain ActionChip (not editable).
+  // ---------------------------------------------------------------------------
+
+  Widget _customCatalogChip({
+    required String label,
+    required IconData icon,
+    required VoidCallback onTap,
+    required VoidCallback onDelete,
+    required VoidCallback onRename,
+  }) {
+    return GestureDetector(
+      onLongPress: onRename,
+      child: InputChip(
+        backgroundColor: Colors.transparent,
+        side: BorderSide(color: _cc),
+        avatar: Icon(icon, color: _cc, size: 14),
+        label: Text(label, style: TextStyle(color: _cc, fontSize: 12)),
+        deleteIconColor: _cc,
+        onPressed: onTap,
+        onDeleted: onDelete,
+      ),
+    );
+  }
+
+  void _deleteCustomExercise(String name) {
+    setState(
+      () => _p.customExercises = _p.customExercises
+          .where((e) => e != name)
+          .toList(),
+    );
+    widget.onProfileChanged();
+  }
+
+  void _deleteCustomTherapyModality(String name) {
+    setState(
+      () => _p.customTherapyModalities = _p.customTherapyModalities
+          .where((e) => e != name)
+          .toList(),
+    );
+    widget.onProfileChanged();
+  }
+
+  Future<String?> _promptRename(String currentName) {
+    final ctrl = TextEditingController(text: currentName);
+    final l10n = context.l10n;
+    return showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.movementRenameDialogTitle),
+        content: TextField(controller: ctrl, autofocus: true),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.actionCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: Text(l10n.actionSave),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _renameCustomExercise(String oldName) async {
+    final newName = await _promptRename(oldName);
+    if (newName == null || newName.isEmpty || newName == oldName) return;
+    final idx = _p.customExercises.indexOf(oldName);
+    if (idx < 0) return;
+    setState(() {
+      final updated = List<String>.from(_p.customExercises);
+      updated[idx] = newName;
+      _p.customExercises = updated;
+    });
+    widget.onProfileChanged();
+  }
+
+  Future<void> _renameCustomTherapyModality(String oldName) async {
+    final newName = await _promptRename(oldName);
+    if (newName == null || newName.isEmpty || newName == oldName) return;
+    final idx = _p.customTherapyModalities.indexOf(oldName);
+    if (idx < 0) return;
+    setState(() {
+      final updated = List<String>.from(_p.customTherapyModalities);
+      updated[idx] = newName;
+      _p.customTherapyModalities = updated;
+    });
     widget.onProfileChanged();
   }
 

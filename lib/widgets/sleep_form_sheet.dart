@@ -91,11 +91,14 @@ class _SleepForm extends StatefulWidget {
 class _SleepFormState extends State<_SleepForm> {
   late DateTime _timestamp;
   late SleepQuality _quality;
-  late TextEditingController _durationCtrl; // hours, decimal
+  late TextEditingController _durationHoursCtrl;
+  late TextEditingController _durationMinutesCtrl;
   late TextEditingController _onsetCtrl; // minutes
   late int? _wakeCount;
   late bool _nightmare;
   late TextEditingController _noteCtrl;
+  TimeOfDay? _bedTime;
+  TimeOfDay? _wakeTime;
 
   static const int _maxWakeCount = 20;
 
@@ -105,10 +108,11 @@ class _SleepFormState extends State<_SleepForm> {
     final e = widget.existing;
     _timestamp = e?.timestamp ?? widget.defaultTimestamp;
     _quality = e?.quality ?? SleepQuality.regular;
-    _durationCtrl = TextEditingController(
-      text: e?.durationMinutes != null
-          ? (e!.durationMinutes! / 60).toStringAsFixed(1)
-          : '',
+    _durationHoursCtrl = TextEditingController(
+      text: e?.durationMinutes != null ? (e!.durationMinutes! ~/ 60).toString() : '',
+    );
+    _durationMinutesCtrl = TextEditingController(
+      text: e?.durationMinutes != null ? (e!.durationMinutes! % 60).toString() : '',
     );
     _onsetCtrl = TextEditingController(
       text: e?.onsetLatencyMinutes?.toString() ?? '',
@@ -116,11 +120,18 @@ class _SleepFormState extends State<_SleepForm> {
     _wakeCount = e?.wakeCount;
     _nightmare = e?.nightmare ?? false;
     _noteCtrl = TextEditingController(text: e?.note ?? '');
+    _bedTime = e?.bedTimeMinutes != null
+        ? TimeOfDay(hour: e!.bedTimeMinutes! ~/ 60, minute: e.bedTimeMinutes! % 60)
+        : null;
+    _wakeTime = e?.wakeTimeMinutes != null
+        ? TimeOfDay(hour: e!.wakeTimeMinutes! ~/ 60, minute: e.wakeTimeMinutes! % 60)
+        : null;
   }
 
   @override
   void dispose() {
-    _durationCtrl.dispose();
+    _durationHoursCtrl.dispose();
+    _durationMinutesCtrl.dispose();
     _onsetCtrl.dispose();
     _noteCtrl.dispose();
     super.dispose();
@@ -137,11 +148,14 @@ class _SleepFormState extends State<_SleepForm> {
       "${_timestamp.day.toString().padLeft(2, '0')}";
 
   int? _parseDurationMinutes() {
-    final raw = _durationCtrl.text.replaceAll(',', '.').trim();
-    if (raw.isEmpty) return null;
-    final hours = double.tryParse(raw);
-    if (hours == null || hours <= 0 || hours > 24) return null;
-    return (hours * 60).round();
+    final h = int.tryParse(_durationHoursCtrl.text.trim());
+    final m = int.tryParse(_durationMinutesCtrl.text.trim());
+    if (h == null && m == null) return null;
+    final hours = h ?? 0;
+    final minutes = m ?? 0;
+    if (hours < 0 || hours > 24 || minutes < 0 || minutes > 59) return null;
+    final total = hours * 60 + minutes;
+    return total > 0 ? total : null;
   }
 
   int? _parseOnsetMinutes() {
@@ -150,6 +164,43 @@ class _SleepFormState extends State<_SleepForm> {
     final mins = int.tryParse(raw);
     if (mins == null || mins < 0 || mins > 600) return null;
     return mins;
+  }
+
+  int _timeOfDayToMinutes(TimeOfDay t) => t.hour * 60 + t.minute;
+
+  /// When both bed and wake time are set, compute duration from the pair
+  /// and reflect it in the hour/minute fields — modulo handles the
+  /// overnight wrap (e.g. bed 23:30 → wake 07:15 = 465min = 7h 45min),
+  /// and also works for a same-day nap (bed 14:00 → wake 15:30 = 90min).
+  void _recomputeDurationFromTimes() {
+    if (_bedTime == null || _wakeTime == null) return;
+    final bed = _timeOfDayToMinutes(_bedTime!);
+    final wake = _timeOfDayToMinutes(_wakeTime!);
+    final duration = (wake - bed) % (24 * 60);
+    setState(() {
+      _durationHoursCtrl.text = (duration ~/ 60).toString();
+      _durationMinutesCtrl.text = (duration % 60).toString();
+    });
+  }
+
+  Future<void> _pickBedTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _bedTime ?? const TimeOfDay(hour: 23, minute: 0),
+    );
+    if (picked == null) return;
+    setState(() => _bedTime = picked);
+    _recomputeDurationFromTimes();
+  }
+
+  Future<void> _pickWakeTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _wakeTime ?? const TimeOfDay(hour: 7, minute: 0),
+    );
+    if (picked == null) return;
+    setState(() => _wakeTime = picked);
+    _recomputeDurationFromTimes();
   }
 
   void _save() {
@@ -164,6 +215,10 @@ class _SleepFormState extends State<_SleepForm> {
       wakeCount: _wakeCount,
       nightmare: _nightmare ? true : null,
       note: note.isEmpty ? null : note,
+      bedTimeMinutes: _bedTime != null ? _timeOfDayToMinutes(_bedTime!) : null,
+      wakeTimeMinutes: _wakeTime != null
+          ? _timeOfDayToMinutes(_wakeTime!)
+          : null,
     );
     Navigator.pop(context, result);
   }
@@ -305,6 +360,80 @@ class _SleepFormState extends State<_SleepForm> {
             ),
             const SizedBox(height: 20),
 
+            // Bed time / wake time (optional) — "de cuándo a cuándo"
+            Text(
+              l10n.sleepFieldBedWakeLabel,
+              style: TextStyle(
+                color: _cc.withValues(alpha: 0.7),
+                fontSize: 11,
+                letterSpacing: 1,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                    ),
+                    icon: Icon(Icons.bedtime_outlined, color: _cc, size: 16),
+                    label: Text(
+                      _bedTime == null
+                          ? l10n.sleepFieldBedTimeButton
+                          : _bedTime!.format(context),
+                      style: TextStyle(color: _cc, fontSize: 12),
+                    ),
+                    onPressed: _pickBedTime,
+                  ),
+                ),
+                if (_bedTime != null)
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: _cc.withValues(alpha: 0.5),
+                      size: 16,
+                    ),
+                    onPressed: () {
+                      setState(() => _bedTime = null);
+                    },
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: _cc.withValues(alpha: 0.5)),
+                    ),
+                    icon: Icon(Icons.wb_sunny_outlined, color: _cc, size: 16),
+                    label: Text(
+                      _wakeTime == null
+                          ? l10n.sleepFieldWakeTimeButton
+                          : _wakeTime!.format(context),
+                      style: TextStyle(color: _cc, fontSize: 12),
+                    ),
+                    onPressed: _pickWakeTime,
+                  ),
+                ),
+                if (_wakeTime != null)
+                  IconButton(
+                    icon: Icon(
+                      Icons.close,
+                      color: _cc.withValues(alpha: 0.5),
+                      size: 16,
+                    ),
+                    onPressed: () {
+                      setState(() => _wakeTime = null);
+                    },
+                  ),
+              ],
+            ),
+            const SizedBox(height: 16),
+
             // Duration (optional)
             Text(
               l10n.sleepFieldDurationLabel,
@@ -316,20 +445,52 @@ class _SleepFormState extends State<_SleepForm> {
               ),
             ),
             const SizedBox(height: 4),
-            TextField(
-              controller: _durationCtrl,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]')),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.sleepFieldDurationHoursLabel,
+                        style: TextStyle(
+                          color: _cc.withValues(alpha: 0.6),
+                          fontSize: 10,
+                        ),
+                      ),
+                      TextField(
+                        controller: _durationHoursCtrl,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        style: TextStyle(color: _cc),
+                        decoration: const InputDecoration(suffixText: 'h'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.sleepFieldDurationMinutesLabel,
+                        style: TextStyle(
+                          color: _cc.withValues(alpha: 0.6),
+                          fontSize: 10,
+                        ),
+                      ),
+                      TextField(
+                        controller: _durationMinutesCtrl,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        style: TextStyle(color: _cc),
+                        decoration: const InputDecoration(suffixText: 'min'),
+                      ),
+                    ],
+                  ),
+                ),
               ],
-              style: TextStyle(color: _cc),
-              decoration: InputDecoration(
-                hintText: l10n.sleepFieldDurationHint,
-                hintStyle: const TextStyle(color: Colors.grey),
-                suffixText: 'h',
-              ),
             ),
             const SizedBox(height: 16),
 

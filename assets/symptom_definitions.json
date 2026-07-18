@@ -1475,5 +1475,235 @@
         }
       }
     }
+  },
+  "chest_pain": {
+    "aliases": [
+      "dolor de pecho",
+      "dolor torácico",
+      "dolor en el pecho",
+      "opresión en el pecho",
+      "opresión torácica",
+      "dolor precordial",
+      "costocondritis",
+      "chest pain",
+      "chest tightness",
+      "chest pressure",
+      "thoracic pain",
+      "costochondritis",
+      "胸痛",
+      "胸悶",
+      "胸部疼痛",
+      "胸壁痛"
+    ],
+    "master": {
+      "label_es": "Dolor torácico",
+      "label_en": "Chest pain",
+      "label_zh": "胸痛",
+      "definition_es": "Dolor sentido en el pecho — distinto del dolor abdominal (que tiene su propia capa de detalle) y del dolor estructural de otras zonas del cuerpo. El dolor torácico tiene un rango muy amplio de causas: desde dolor musculoesquelético común en EDS por laxitud de las articulaciones costocondrales, hasta causas que requieren evaluación médica urgente. Por eso este formulario es más cauteloso que otros — dolor de pecho nuevo o distinto a lo usual siempre vale la pena evaluarlo con un profesional de salud, incluso si terminas confirmando que es algo benigno.\n\nCada pregunta de este formulario es opcional — puedes responder solo lo que te haga sentido y omitir el resto sin ningún problema.",
+      "definition_en": "Pain felt in the chest — distinct from abdominal pain (which has its own detail layer) and from structural pain in other body zones. Chest pain has a very wide range of causes: from musculoskeletal pain common in EDS due to costochondral joint laxity, to causes that require urgent medical evaluation. That's why this form is more cautious than others — new or different-than-usual chest pain is always worth having evaluated by a health professional, even if it turns out to be something benign.\n\nEvery question in this form is optional — you can answer only what makes sense to you and skip the rest without any issue.",
+      "definition_zh": "感覺在胸部的疼痛 — 與腹痛(有自己的細節層)和身體其他部位的結構性疼痛不同。胸痛的成因範圍非常廣:從EDS常見的、因肋軟骨關節鬆弛引起的肌肉骨骼疼痛,到需要緊急就醫評估的成因都有。因此這份表單比其他表單更謹慎 — 新發生或與平常不同的胸痛,永遠值得由醫療專業人員評估,即使最後確認是良性的。\n\n此表單中的每個問題都是選填的 — 你可以只回答對你有意義的部分,其餘的可以放心跳過。"
+    },
+    "groups": {
+      "location": {
+        "kind": "single_select",
+        "header_es": "UBICACIÓN",
+        "header_en": "LOCATION",
+        "header_zh": "位置",
+        "chips": {
+          "retrosternal_central": {
+            "label_es": "Retroesternal, en el centro",
+            "label_en": "Behind the breastbone, in the center",
+            "label_zh": "胸骨後方、中間",
+            "def_es": "El dolor se siente detrás del esternón, en el centro del pecho.",
+            "def_en": "The pain is felt behind the breastbone, in the center of the chest.",
+            "def_zh": "疼痛感覺在胸骨後方,胸部中間。"
+          },
+          "left_sided": {
+            "label_es": "Lado izquierdo",
+            "label_en": "Left side",
+            "label_zh": "左側",
+            "def_es": "El dolor se siente principalmente del lado izquierdo del pecho.",
+            "def_en": "The pain is felt mainly on the left side of the chest.",
+            "def_zh": "疼痛主要感覺在胸部左側。"
+          },
+          "right_sided": {
+            "label_es": "Lado derecho",
+            "label_en": "Right side",
+            "label_zh": "右側",
+            "def_es": "El dolor se siente principalmente del lado derecho del pecho.",
+            "def_en": "The pain is felt mainly on the right side of the chest.",
+            "def_zh": "疼痛主要感覺在胸部右側。"
+          },
+          "costal_margin": {
+            "label_es": "Borde costal (parte baja de las costillas)",
+            "label_en": "Rib margin (lower ribcage)",
+            "label_zh": "肋緣(肋骨下緣)",
+            "def_es": "El dolor se siente en el borde inferior de las costillas, no en el centro del pecho.",
+            "def_en": "The pain is felt along the lower edge of the ribcage, not in the center of the chest.",
+            "def_zh": "疼痛感覺在肋骨下緣,而不是胸部中央。"
+          },
+          "upper_back_between_shoulder_blades": {
+            "label_es": "Espalda alta, entre los omóplatos",
+            "label_en": "Upper back, between the shoulder blades",
+            "label_zh": "上背部,兩肩胛骨之間",
+            "def_es": "El dolor se siente en la espalda alta, entre los omóplatos — no en la parte frontal del pecho.",
+            "def_en": "The pain is felt in the upper back, between the shoulder blades — not on the front of the chest.",
+            "def_zh": "疼痛感覺在上背部、兩肩胛骨之間 — 而不是胸部前方。"
+          }
+        }
+      },
+      "character": {
+        "kind": "single_select",
+        "header_es": "CARÁCTER DEL DOLOR",
+        "header_en": "CHARACTER OF THE PAIN",
+        "header_zh": "疼痛性質",
+        "chips": {
+          "pressure_or_tightness": {
+            "label_es": "Presión u opresión",
+            "label_en": "Pressure or tightness",
+            "label_zh": "壓迫感或緊繃感",
+            "def_es": "Una sensación de presión, opresión o peso en el pecho, como si algo lo apretara.",
+            "def_en": "A sensation of pressure, tightness, or heaviness in the chest, as if something were squeezing it.",
+            "def_zh": "胸部有壓迫、緊繃或沉重的感覺,像是有東西壓著。"
+          },
+          "sharp_or_stabbing": {
+            "label_es": "Punzante",
+            "label_en": "Sharp or stabbing",
+            "label_zh": "刺痛",
+            "def_es": "Un dolor agudo y puntual, como una punzada.",
+            "def_en": "A sharp, pinpoint pain, like a stab.",
+            "def_zh": "尖銳、局部的疼痛,像被刺到一樣。"
+          },
+          "burning": {
+            "label_es": "Ardor",
+            "label_en": "Burning",
+            "label_zh": "灼熱感",
+            "def_es": "Una sensación de ardor o quemazón, a veces subiendo desde el estómago.",
+            "def_en": "A burning or searing sensation, sometimes rising up from the stomach.",
+            "def_zh": "灼熱或燒灼的感覺,有時從胃部往上竄。"
+          },
+          "aching_worse_with_pressing": {
+            "label_es": "Dolor sordo que empeora al presionar la zona",
+            "label_en": "Dull ache that worsens when pressing on the area",
+            "label_zh": "按壓該部位時加重的悶痛",
+            "def_es": "Un dolor sordo o sensible que puedes reproducir al presionar directamente sobre la zona con el dedo. Es un patrón típico de dolor de la pared torácica (costocondritis), frecuente en EDS por la laxitud de las articulaciones costocondrales.",
+            "def_en": "A dull, tender pain you can reproduce by pressing directly on the area with your finger. This is a typical pattern of chest wall pain (costochondritis), common in EDS due to costochondral joint laxity.",
+            "def_zh": "用手指直接按壓該部位時可以重現的悶痛或壓痛。這是胸壁疼痛(肋軟骨炎)的典型模式,在EDS中因肋軟骨關節鬆弛而常見。"
+          },
+          "tearing_or_ripping": {
+            "label_es": "Desgarro, como si algo se rompiera por dentro",
+            "label_en": "Tearing or ripping, as if something were tearing inside",
+            "label_zh": "撕裂感,像是體內有東西被撕開",
+            "def_es": "Un dolor de desgarro súbito y muy intenso, distinto a cualquier dolor de pecho que hayas tenido antes. Vale la pena que vayas a urgencias ahora para descartar una emergencia vascular. Si el dolor mejoró significativamente y ya no lo describirías como desgarro, puedes cambiar el carácter y guardar el registro normalmente.",
+            "def_en": "A sudden, very intense tearing pain, unlike any chest pain you've had before. It's worth going to urgent care now to rule out a vascular emergency. If the pain improved significantly and you would no longer describe it as tearing, you can change the character and save the entry normally.",
+            "def_zh": "突然發生、非常劇烈的撕裂性疼痛,與你以前經歷過的任何胸痛都不同。值得現在就去急診排除血管方面的緊急狀況。如果疼痛已明顯改善,不再符合撕裂感的描述,你可以更改疼痛性質後正常儲存記錄。"
+          }
+        }
+      },
+      "triggers": {
+        "kind": "multi_select",
+        "header_es": "QUÉ LO EMPEORA O DISPARA",
+        "header_en": "WHAT MAKES IT WORSE OR TRIGGERS IT",
+        "header_zh": "什麼會加重或誘發",
+        "chips": {
+          "worse_with_breathing_or_movement": {
+            "label_es": "Empeora al respirar hondo o moverme",
+            "label_en": "Worsens with deep breathing or movement",
+            "label_zh": "深呼吸或活動時加重",
+            "def_es": "El dolor se intensifica al respirar profundo, toser, o moverte.",
+            "def_en": "The pain intensifies with deep breathing, coughing, or movement.",
+            "def_zh": "深呼吸、咳嗽或活動時疼痛加劇。"
+          },
+          "worse_with_pressing_on_area": {
+            "label_es": "Empeora al presionar la zona",
+            "label_en": "Worsens when pressing on the area",
+            "label_zh": "按壓該部位時加重",
+            "def_es": "Puedes reproducir o intensificar el dolor presionando directamente sobre la zona.",
+            "def_en": "You can reproduce or intensify the pain by pressing directly on the area.",
+            "def_zh": "直接按壓該部位可以重現或加劇疼痛。"
+          },
+          "worse_with_exertion": {
+            "label_es": "Empeora con el esfuerzo físico",
+            "label_en": "Worsens with physical exertion",
+            "label_zh": "體力消耗時加重",
+            "def_es": "El dolor aparece o empeora al hacer esfuerzo físico, y mejora al descansar.",
+            "def_en": "The pain appears or worsens with physical exertion, and improves with rest.",
+            "def_zh": "疼痛在體力消耗時出現或加重,休息後改善。"
+          },
+          "after_eating_or_lying_down": {
+            "label_es": "Después de comer o al acostarme",
+            "label_en": "After eating or when lying down",
+            "label_zh": "進食後或躺下時",
+            "def_es": "El dolor aparece después de comer, o al acostarte.",
+            "def_en": "The pain appears after eating, or when lying down.",
+            "def_zh": "疼痛在進食後或躺下時出現。"
+          },
+          "no_clear_trigger": {
+            "label_es": "Sin desencadenante claro",
+            "label_en": "No clear trigger",
+            "label_zh": "沒有明確誘因",
+            "def_es": "No hay un patrón claro de qué lo empeora o lo dispara. Es información igualmente válida.",
+            "def_en": "There's no clear pattern of what makes it worse or triggers it. This is equally valid information.",
+            "def_zh": "沒有明確的加重或誘發模式。這同樣是有效的資訊。"
+          }
+        }
+      },
+      "accompaniments": {
+        "kind": "multi_select",
+        "header_es": "SÍNTOMAS ACOMPAÑANTES",
+        "header_en": "ACCOMPANYING SYMPTOMS",
+        "header_zh": "伴隨症狀",
+        "chips": {
+          "shortness_of_breath": {
+            "label_es": "Dificultad para respirar",
+            "label_en": "Shortness of breath",
+            "label_zh": "呼吸困難",
+            "def_es": "Sientes que te falta el aire o te cuesta respirar bien.",
+            "def_en": "You feel short of breath or have trouble breathing well.",
+            "def_zh": "感覺喘不過氣或呼吸不順暢。"
+          },
+          "radiates_to_arm_jaw_back": {
+            "label_es": "Se irradia a brazo, mandíbula o espalda",
+            "label_en": "Radiates to arm, jaw, or back",
+            "label_zh": "放射到手臂、下巴或背部",
+            "def_es": "El dolor se extiende o se siente también en el brazo, la mandíbula, o la espalda.",
+            "def_en": "The pain extends or is also felt in the arm, jaw, or back.",
+            "def_zh": "疼痛擴散或同時感覺在手臂、下巴或背部。"
+          },
+          "sweating_or_clamminess": {
+            "label_es": "Sudoración o piel fría y húmeda",
+            "label_en": "Sweating or cold, clammy skin",
+            "label_zh": "出汗或皮膚濕冷",
+            "def_es": "Notas sudoración inusual, o la piel fría y húmeda, junto con el dolor.",
+            "def_en": "You notice unusual sweating, or cold and clammy skin, along with the pain.",
+            "def_zh": "伴隨疼痛出現異常出汗,或皮膚濕冷。"
+          },
+          "nausea_or_vomiting": {
+            "label_es": "Náusea o vómito",
+            "label_en": "Nausea or vomiting",
+            "label_zh": "噁心或嘔吐",
+            "def_es": "Sientes náusea o llegas a vomitar junto con el dolor.",
+            "def_en": "You feel nauseous or vomit along with the pain.",
+            "def_zh": "伴隨疼痛感到噁心或嘔吐。"
+          },
+          "palpitations_or_racing_heart": {
+            "label_es": "Palpitaciones o el corazón acelerado",
+            "label_en": "Palpitations or a racing heart",
+            "label_zh": "心悸或心跳加速",
+            "def_es": "Sientes el corazón latiendo fuerte, rápido, o de forma irregular.",
+            "def_en": "You feel your heart beating hard, fast, or irregularly.",
+            "def_zh": "感覺心臟跳動強烈、快速或不規則。"
+          },
+          "feeling_faint_or_dizzy": {
+            "label_es": "Sensación de desmayo o mareo",
+            "label_en": "Feeling faint or dizzy",
+            "label_zh": "感覺快要暈倒或頭暈",
+            "def_es": "Sientes mareo o como si fueras a desmayarte, junto con el dolor.",
+            "def_en": "You feel dizzy or as if you might faint, along with the pain.",
+            "def_zh": "伴隨疼痛感到頭暈或快要暈倒。"
+          }
+        }
+      }
+    }
   }
 }

@@ -1288,3 +1288,131 @@ longitudinales reales que para un red flag de evento único.
 | Mapeo HPO | Se agrupará con D.5 torácico — comparten vocabulario de "carácter del dolor" (§12.8), a diferencia de D.3 presíncope. |
 | Regla de severidad/recurrencia cíclica como red flag | Ver §14.4 — mejor candidato para `correlation_engine.dart` con datos longitudinales que para un red flag de evento único. |
 | Escala periódica validada (ej. adaptación de un instrumento de dolor pélvico crónico) | No evaluada en este pase — mismo tipo de item que MAPS quedó archivado para D.3 (§13.2), sin tiempo de research dedicado aquí. |
+
+## 15. D.5 — Dolor torácico
+
+**Sprint completado:** 2026-07-17 (misma fecha que D.4, sesión separada). Sexta y última
+Symptom Detail Layer del roadmap original — cierra la cobertura 6 de 6. El síntoma de mayor
+riesgo real que captura la app: el dolor de pecho en esta población abarca desde
+costocondritis/síndrome de Tietze benigno y muy frecuente (laxitud de las articulaciones
+costocondrales, ya documentado en `assets/condition_codes.json`) hasta dos emergencias reales
+— síndrome coronario agudo (riesgo poblacional general, no específico de EDS) y, para el
+subconjunto de pacientes con EDS vascular (vEDS), disección o rotura arterial.
+
+### 15.1 Decisión confirmada con Paulina: primera rama de red flag condicionada por `Profile.conditions`
+
+`assets/condition_codes.json` (entrada de Tietze, ya existente) advierte explícitamente: "Dolor
+torácico nuevo siempre merece descartar causas cardíacas primero... no asumas que 'es solo
+Tietze' sin evaluación." Y §12.6b de este mismo documento (diseño de tejido blando) ya había
+identificado que vEDS "necesita su propio tier de severidad, no puede tratarse con la misma
+vara" — pero lo dejó diferido.
+
+Se confirmó con Paulina, antes de diseñar los red flags: **construir esa rama ahora, para
+D.5.** Cuando el chip de carácter "desgarro" dispara el diálogo de emergencia in-sheet, el
+cuerpo del texto se selecciona según si `Profile.conditions` contiene alguna coincidencia de
+palabra clave para vEDS (`veds`, `vascular eds`, `vascular ehlers` — mismas tres substrings ya
+usadas por `domainsForUserCondition` en `lib/services/condition_labels.dart:217-239`, aplicadas
+sobre texto en minúsculas). Si hay coincidencia, el texto es específico a vEDS (evitar
+compresiones torácicas si es posible, estudios de imagen —RM o TC— cruciales); si no, texto
+general poblacional. Es la primera vez que un red flag de esta app cambia su copy según el
+perfil clínico del paciente — implementado en `isLikelyVEDSFromConditions()`
+(`lib/services/chest_pain_red_flags.dart`), reusado por el sheet
+(`lib/widgets/chest_pain_detail_sheet.dart`) sin necesidad de pasarle el `Profile` completo —
+recibe solo `profileConditions: List<String>`, manteniendo el sheet desacoplado del modelo
+igual que el resto de las capas de detalle.
+
+Limitación conocida y documentada explícitamente en el código: `Profile.conditions` es texto
+libre, no un campo de diagnóstico validado (decisión de diseño deliberada, ver Coussens 2022 —
+no forzar clasificación hEDS/HSD). Una paciente vEDS que no haya escrito "vEDS" o lo haya
+escrito de forma distinta no activará la rama específica. Es un heurístico, igual que su uso
+ya existente en `condition_labels.dart` para enrutar contenido del compendio.
+
+### 15.2 Grounding clínico (verificado vía WebSearch en esta sesión)
+
+- **Gulati M et al. 2021** — AHA/ACC/ASE/CHEST/SAEM/SCCT/SCMR Guideline for the Evaluation and
+  Diagnosis of Chest Pain. *Circulation* 2021;144:e368–e454.
+  DOI: 10.1161/CIR.0000000000001029. Es el framework ya nombrado en CLAUDE.md y en §6 de este
+  documento como "AHA/ACC 2021" para D.5. Fundamenta los rasgos de riesgo cardíaco compuestos:
+  presión/opresión, irradiación a brazo/mandíbula/espalda, disparador de esfuerzo,
+  acompañantes de disnea/sudoración/náusea.
+- **Isselbacher EM et al. 2022** — ACC/AHA Guideline for the Diagnosis and Management of
+  Aortic Disease. *Circulation* 2022. DOI: 10.1161/CIR.0000000000001106. Cubre explícitamente
+  el EDS vascular como una enfermedad aórtica torácica heredable sindrómica — fundamenta la
+  rama vEDS-específica de §15.1 y el chip `upper_back_between_shoulder_blades` (patrón de
+  irradiación interescapular, clásico de disección).
+- **`assets/zebra_wisdom.json`** (ya existente, condición "vEDS Emergency Preparedness"): dos
+  hechos reusados verbatim como base del texto vEDS-específico — evitar compresiones torácicas
+  si es posible (fuente: American Medical ID) y RM/TC cruciales ante dolor torácico o abdominal
+  súbito y severo en vEDS (fuente: The VEDS Movement).
+
+### 15.3 Esquema final
+
+4 grupos, 21 chips totales — excede el techo de ≤20 de Morren 2009, misma desviación deliberada
+ya formalizada en §10.3 (aplicada también en D.2 con 22 y D.4 con 23):
+
+| Grupo          | Kind          | Chips |
+|----------------|---------------|-------|
+| location       | single_select | 5     |
+| character      | single_select | 5     |
+| triggers       | multi_select  | 5     |
+| accompaniments | multi_select  | 6     |
+
+Chip serialization keys (estables entre releases):
+
+- **location**: `retrosternal_central`, `left_sided`, `right_sided`, `costal_margin`,
+  `upper_back_between_shoulder_blades`
+- **character**: `pressure_or_tightness`, `sharp_or_stabbing`, `burning`,
+  `aching_worse_with_pressing` (diferenciador de costocondritis — sensibilidad reproducible a
+  la palpación), `tearing_or_ripping` (gate del red flag URGENT in-sheet)
+- **triggers**: `worse_with_breathing_or_movement`, `worse_with_pressing_on_area`,
+  `worse_with_exertion`, `after_eating_or_lying_down`, `no_clear_trigger`
+- **accompaniments**: `shortness_of_breath`, `radiates_to_arm_jaw_back`,
+  `sweating_or_clamminess`, `nausea_or_vomiting`, `palpitations_or_racing_heart` (relevante por
+  la comorbilidad de POTS/disautonomía en esta población), `feeling_faint_or_dizzy`
+
+Los 4 grupos coinciden 1:1 con los nombres de campo de `ChestPainDetail` — mismo patrón sin
+asimetría singular/plural que D.3/D.4. No incluye un grupo de relación temporal con el ciclo
+(no aplica clínicamente al dolor torácico).
+
+### 15.4 Red flags — 6 condiciones, más que cualquier capa anterior
+
+Confirmando explícitamente la nota "múltiples red flags esperadas" del backlog: 1 URGENT
+in-sheet + 2 URGENT post-save + 3 ADVISORY post-save — más que D.2 y D.4 (5 cada una).
+
+- **URGENT in-sheet**: `tearingOrRipping` (`character == tearingOrRipping`), sin gate de
+  severidad — mismo "confiar en la aserción cualitativa del usuario" que D.2/D.4. Copy
+  bifurcada por `isLikelyVEDSFromConditions()` (ver §15.1).
+- **URGENT post-save**: `possibleCardiacPatternUrgent` (`pressureOrTightness` + al menos uno
+  de irradiación a brazo/mandíbula/espalda, disnea, o sudoración + severidad ≥ 2 — combinación
+  de riesgo anginal de AHA/ACC 2021) y `exertionalPatternUrgent` (disparador de esfuerzo + al
+  menos uno de disnea o palpitaciones + severidad ≥ 2).
+- **ADVISORY post-save**: `pleuriticPatternAdvisory` (punzante + empeora con respiración/
+  movimiento + severidad ≥ 2 — diferencial de pericarditis/neumotórax/embolia pulmonar, menos
+  urgente que los patrones anteriores pero igual de mención médica), `palpitationsPatternAdvisory`
+  (palpitaciones/corazón acelerado + severidad ≥ 2, independiente del gate exertional — ambos
+  pueden dispararse a la vez legítimamente), `refluxPatternAdvisory` (ardor + después de comer
+  o al acostarse + severidad ≥ 2).
+
+**Control de fatiga de alarma por taxonomía de chips, no por un sistema de historial/quick-log
+nuevo**: la presentación benigna común de costocondritis (`achingWorseWithPressing` +
+`worseWithPressingOnArea`/`worseWithBreathingOrMovement`) no satisface ningún gate urgente ni
+advisory — una paciente con costocondritis recurrente conocida no dispara ningún diálogo en
+sus registros habituales. No se replicó el patrón de historial de zona de dolor estructural
+(§12.6) porque D.5 no tiene la forma zona/tipo que motivó esa feature — es un síntoma único,
+misma categoría que headache/fatigue/abdominal/presyncope/pelvic_pain.
+
+### 15.5 Cierre del mapeo HPO diferido (§12.8)
+
+Con D.5 shippeado, las tres capas que comparten vocabulario de "carácter del dolor"
+(estructural, D.4 pélvico, D.5 torácico) están todas completas — el mapeo HPO agrupado que
+§12.8, §13.5 y §14.5 dejaban pendiente puede evaluarse como un lote único cuando se retome,
+sin bloqueos adicionales de implementación.
+
+### 15.6 Decisiones diferidas / abiertas
+
+| Ítem | Razón de diferir |
+|------|-------------------|
+| Integración bidireccional con tracking de actividad física | `MovementMetric` ya existe (Fase 6), pero no se construyó el link en este pase — mismo principio de "construir el FK solo cuando hay tiempo dedicado a diseñarlo bien", no una limitación técnica. |
+| Mapeo HPO | Ver §15.5 — las tres capas candidatas ya están completas, listo para evaluarse como lote. |
+| Regla de frecuencia/recurrencia de costocondritis vs. patrón nuevo como distinción explícita | Evaluada y descartada para v1 — la taxonomía de chips ya evita el disparo de diálogos en la presentación benigna común (§15.4), sin necesitar tracking de historial. Reconsiderar solo si datos de beta muestran que no es suficiente. |
+| Rama vEDS-consciente extendida a otros red flags (no solo `tearingOrRipping`) | Fuera de alcance de este pase — `isLikelyVEDSFromConditions()` queda como función pública reusable en `chest_pain_red_flags.dart` si se decide extenderla a otras capas o red flags en el futuro. |

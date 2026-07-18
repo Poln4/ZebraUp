@@ -439,6 +439,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hrvContextPostExercise => 'post-exercise';
 
   @override
+  String get hrvContextAverage => 'average';
+
+  @override
   String get hrvContextOther => 'other';
 
   @override
@@ -826,6 +829,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get movementTherapyPlaceholder =>
       '+ Add modality (reiki, flotation...)';
+
+  @override
+  String get movementRenameDialogTitle => 'Rename';
 
   @override
   String activityModalLogHeader(String name) {
@@ -1366,10 +1372,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sleepFieldQualityLabel => 'QUALITY';
 
   @override
+  String get sleepFieldBedWakeLabel => 'FROM WHEN TO WHEN? (OPTIONAL)';
+
+  @override
+  String get sleepFieldBedTimeButton => 'Bedtime';
+
+  @override
+  String get sleepFieldWakeTimeButton => 'Wake time';
+
+  @override
   String get sleepFieldDurationLabel => 'DURATION';
 
   @override
   String get sleepFieldDurationHint => 'hours (e.g., 7.5)';
+
+  @override
+  String get sleepFieldDurationHoursLabel => 'Hours';
+
+  @override
+  String get sleepFieldDurationMinutesLabel => 'Minutes';
 
   @override
   String get sleepFieldOnsetLatencyLabel => 'TIME TO FALL ASLEEP';
@@ -1506,6 +1527,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hydrationFieldBeverageLabel => 'BEVERAGE';
 
   @override
+  String get hydrationBeverageAddCustomHint => '+ Add beverage (tea, juice...)';
+
+  @override
   String get hydrationFieldSodiumLabel => 'SODIUM (optional)';
 
   @override
@@ -1596,6 +1620,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsViewPreferencesTitle => 'DISPLAY PREFERENCES';
+
+  @override
+  String get settingsSimpleModeLabel => 'Simple mode';
+
+  @override
+  String get settingsSimpleModeDescription =>
+      'Bigger text, bigger buttons, and sections that start collapsed. For profiles that prefer an easier-to-read screen.';
 
   @override
   String get settingsCarefulModeLabel => 'Careful mode';
@@ -2550,6 +2581,67 @@ class AppLocalizationsEn extends AppLocalizations {
       'When logging pelvic pain, add location, character, relation to your cycle, context, and accompanying symptoms.';
 
   @override
+  String get chestPainSheetTitle => 'Chest pain detail';
+
+  @override
+  String get chestPainSheetSubtitle =>
+      'Optional details help identify patterns.';
+
+  @override
+  String get chestPainActionSaveDetail => 'Save detail';
+
+  @override
+  String get chestPainTearingEmergencyTitle => 'Tearing pain';
+
+  @override
+  String get chestPainTearingEmergencyBodyGeneral =>
+      'Sudden, very intense tearing chest pain can indicate a medical emergency. It\'s worth going to urgent care now to rule it out, especially to evaluate cardiac or vascular causes.\n\nIf you go, let the medical team know about your clEDS diagnosis (classical-like Ehlers-Danlos syndrome, TNXB-related) or whichever EDS subtype you have.\n\nIf the pain improved significantly and you would no longer describe it as tearing, you can change the character and save the entry normally.';
+
+  @override
+  String get chestPainTearingEmergencyBodyVEDS =>
+      'Sudden, very intense tearing chest pain can indicate an arterial dissection or rupture — a real emergency given your vascular EDS (vEDS) diagnosis. Go to urgent care now.\n\nLet the medical team know about your vEDS diagnosis immediately. If possible, ask them to avoid chest compressions given arterial and organ fragility. Imaging studies (MRI or CT) are crucial to rapidly identify a possible arterial rupture.\n\nIf the pain improved significantly and you would no longer describe it as tearing, you can change the character and save the entry normally.';
+
+  @override
+  String get chestPainTearingEmergencyChangeCharacter =>
+      'Change character and save';
+
+  @override
+  String get chestPainTearingEmergencySaveAsIs => 'Save as-is (emergency)';
+
+  @override
+  String get chestPainUrgentDialogTitle => 'Medical alert';
+
+  @override
+  String get chestPainRedFlagCardiacPatternUrgent =>
+      'This pattern (pressure or tightness in the chest along with shortness of breath, sweating, or pain radiating to your arm, jaw, or back) can indicate a cardiac cause. Go to urgent care now to rule it out.';
+
+  @override
+  String get chestPainRedFlagExertionalPatternUrgent =>
+      'Your pain appeared with physical exertion along with shortness of breath or palpitations. This pattern can indicate a cardiac cause worth evaluating soon — if the pain is intense or doesn\'t improve with rest, go to urgent care now.';
+
+  @override
+  String get chestPainAdvisoryDialogTitle => 'Patterns detected';
+
+  @override
+  String get chestPainRedFlagPleuriticPatternAdvisory =>
+      'Your pain is sharp and worsens with deep breathing or movement. This pattern can indicate irritation of the membranes around the lung or heart. Worth mentioning to your doctor.';
+
+  @override
+  String get chestPainRedFlagPalpitationsPatternAdvisory =>
+      'You noted palpitations or a racing heart along with the pain. Worth mentioning to your doctor, especially if it repeats.';
+
+  @override
+  String get chestPainRedFlagRefluxPatternAdvisory =>
+      'Your pain is burning and appears after eating or when lying down. This pattern can indicate acid reflux. Worth mentioning to your doctor if it\'s frequent.';
+
+  @override
+  String get settingsModuleChestPainDetailLabel => 'Chest pain detail';
+
+  @override
+  String get settingsModuleChestPainDetailDescription =>
+      'When logging chest pain, add location, character, what triggers it, and accompanying symptoms.';
+
+  @override
   String get onboardingStepMedsUnitHint => '1';
 
   @override
@@ -2613,4 +2705,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get weightEntrySaveAction => 'Save entry';
+
+  @override
+  String get aboutBlueskyLinkLabel => 'Follow us on Bluesky';
+
+  @override
+  String get bloodPressureSectionTitle => 'Blood pressure';
+
+  @override
+  String get bloodPressureActionAddEntry => 'Add blood pressure reading';
+
+  @override
+  String get bloodPressureModalLogHeader => 'New blood pressure reading';
+
+  @override
+  String get bloodPressureModalEditHeader => 'Edit blood pressure reading';
+
+  @override
+  String get bloodPressureFieldSystolicLabel => 'Systolic';
+
+  @override
+  String get bloodPressureFieldDiastolicLabel => 'Diastolic';
+
+  @override
+  String get bloodPressureFieldHeartRateLabel => 'Heart rate (optional)';
+
+  @override
+  String get bloodPressureHeartRateUnit => 'bpm';
+
+  @override
+  String get bloodPressureFieldPositionLabel => 'Position';
+
+  @override
+  String get bloodPressurePositionSitting => 'Sitting';
+
+  @override
+  String get bloodPressurePositionLying => 'Lying down';
+
+  @override
+  String get bloodPressurePositionStanding => 'Standing';
+
+  @override
+  String get settingsModuleBloodPressureLabel => 'Blood pressure';
+
+  @override
+  String get settingsModuleBloodPressureDescription =>
+      'Log everyday blood pressure readings (systolic/diastolic, optional heart rate, position). No automatic interpretation or standing-test comparison.';
 }

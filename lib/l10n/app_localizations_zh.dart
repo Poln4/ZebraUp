@@ -423,6 +423,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hrvContextPostExercise => '運動後';
 
   @override
+  String get hrvContextAverage => '平均';
+
+  @override
   String get hrvContextOther => '其他';
 
   @override
@@ -776,6 +779,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get movementTherapyPlaceholder => '+ 新增項目（靈氣、漂浮舒壓...）';
+
+  @override
+  String get movementRenameDialogTitle => '重新命名';
 
   @override
   String activityModalLogHeader(String name) {
@@ -1287,10 +1293,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sleepFieldQualityLabel => '睡眠品質';
 
   @override
+  String get sleepFieldBedWakeLabel => '從幾點到幾點？（選填）';
+
+  @override
+  String get sleepFieldBedTimeButton => '上床時間';
+
+  @override
+  String get sleepFieldWakeTimeButton => '起床時間';
+
+  @override
   String get sleepFieldDurationLabel => '睡眠時長';
 
   @override
   String get sleepFieldDurationHint => '小時（例如：7.5）';
+
+  @override
+  String get sleepFieldDurationHoursLabel => '小時';
+
+  @override
+  String get sleepFieldDurationMinutesLabel => '分鐘';
 
   @override
   String get sleepFieldOnsetLatencyLabel => '入睡所需時間';
@@ -1425,6 +1446,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hydrationFieldBeverageLabel => '飲品類型';
 
   @override
+  String get hydrationBeverageAddCustomHint => '+ 新增飲品（茶、果汁...）';
+
+  @override
   String get hydrationFieldSodiumLabel => '鈉含量（選填）';
 
   @override
@@ -1512,6 +1536,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsViewPreferencesTitle => '顯示設定';
+
+  @override
+  String get settingsSimpleModeLabel => '簡易模式';
+
+  @override
+  String get settingsSimpleModeDescription =>
+      '字體更大、按鈕更大，區塊預設為摺疊狀態。適合偏好更易閱讀畫面的使用者。';
 
   @override
   String get settingsCarefulModeLabel => '精簡模式';
@@ -2428,6 +2459,65 @@ class AppLocalizationsZh extends AppLocalizations {
       '記錄骨盆疼痛時,新增位置、性質、與週期的關係、情境與伴隨症狀。';
 
   @override
+  String get chestPainSheetTitle => '胸痛細節';
+
+  @override
+  String get chestPainSheetSubtitle => '可選的細節有助於識別模式。';
+
+  @override
+  String get chestPainActionSaveDetail => '儲存細節';
+
+  @override
+  String get chestPainTearingEmergencyTitle => '撕裂性疼痛';
+
+  @override
+  String get chestPainTearingEmergencyBodyGeneral =>
+      '突然發生、非常劇烈的撕裂性胸痛可能代表醫療緊急狀況。值得現在就去急診排除這個可能性,特別是評估心臟或血管方面的成因。\n\n如果你去急診,請告訴醫療團隊你的clEDS診斷(類典型埃勒斯-當洛斯症候群,與TNXB基因相關)或你所患的EDS亞型。\n\n如果疼痛已明顯改善,不再符合撕裂感的描述,你可以更改疼痛性質後正常儲存記錄。';
+
+  @override
+  String get chestPainTearingEmergencyBodyVEDS =>
+      '突然發生、非常劇烈的撕裂性胸痛,可能代表動脈剝離或破裂 — 鑑於你患有血管型埃勒斯-當洛斯症候群(vEDS),這是真正的緊急狀況。請現在就去急診。\n\n請立即告訴醫療團隊你的vEDS診斷。如果可能,請他們避免胸部按壓,因為你有動脈和器官脆弱的風險。影像檢查(核磁共振或電腦斷層)對於快速識別可能的動脈破裂至關重要。\n\n如果疼痛已明顯改善,不再符合撕裂感的描述,你可以更改疼痛性質後正常儲存記錄。';
+
+  @override
+  String get chestPainTearingEmergencyChangeCharacter => '更改性質並儲存';
+
+  @override
+  String get chestPainTearingEmergencySaveAsIs => '照原樣儲存(緊急)';
+
+  @override
+  String get chestPainUrgentDialogTitle => '醫療警示';
+
+  @override
+  String get chestPainRedFlagCardiacPatternUrgent =>
+      '這種模式(胸部壓迫感或緊繃感,伴隨呼吸困難、出汗,或疼痛放射到手臂、下巴或背部)可能代表心臟方面的成因。請現在就去急診排除這個可能性。';
+
+  @override
+  String get chestPainRedFlagExertionalPatternUrgent =>
+      '你的疼痛在體力消耗時出現,並伴隨呼吸困難或心悸。這種模式可能代表值得儘快評估的心臟成因 — 如果疼痛劇烈或休息後沒有改善,請現在就去急診。';
+
+  @override
+  String get chestPainAdvisoryDialogTitle => '偵測到的模式';
+
+  @override
+  String get chestPainRedFlagPleuriticPatternAdvisory =>
+      '你的疼痛是刺痛,並在深呼吸或活動時加重。這種模式可能代表肺部或心臟周圍膜的刺激。值得告訴你的醫生。';
+
+  @override
+  String get chestPainRedFlagPalpitationsPatternAdvisory =>
+      '你注意到伴隨疼痛出現心悸或心跳加速。值得告訴你的醫生,特別是如果重複發生。';
+
+  @override
+  String get chestPainRedFlagRefluxPatternAdvisory =>
+      '你的疼痛是灼熱感,並在進食後或躺下時出現。這種模式可能代表胃食道逆流。如果經常發生,值得告訴你的醫生。';
+
+  @override
+  String get settingsModuleChestPainDetailLabel => '胸痛細節';
+
+  @override
+  String get settingsModuleChestPainDetailDescription =>
+      '記錄胸痛時,新增位置、性質、誘因與伴隨症狀。';
+
+  @override
   String get onboardingStepMedsUnitHint => '1';
 
   @override
@@ -2490,6 +2580,52 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get weightEntrySaveAction => '儲存記錄';
+
+  @override
+  String get aboutBlueskyLinkLabel => '在 Bluesky 上追蹤我們';
+
+  @override
+  String get bloodPressureSectionTitle => '血壓';
+
+  @override
+  String get bloodPressureActionAddEntry => '新增血壓記錄';
+
+  @override
+  String get bloodPressureModalLogHeader => '新增血壓記錄';
+
+  @override
+  String get bloodPressureModalEditHeader => '編輯血壓記錄';
+
+  @override
+  String get bloodPressureFieldSystolicLabel => '收縮壓';
+
+  @override
+  String get bloodPressureFieldDiastolicLabel => '舒張壓';
+
+  @override
+  String get bloodPressureFieldHeartRateLabel => '心率（選填）';
+
+  @override
+  String get bloodPressureHeartRateUnit => '次/分';
+
+  @override
+  String get bloodPressureFieldPositionLabel => '姿勢';
+
+  @override
+  String get bloodPressurePositionSitting => '坐姿';
+
+  @override
+  String get bloodPressurePositionLying => '躺姿';
+
+  @override
+  String get bloodPressurePositionStanding => '站姿';
+
+  @override
+  String get settingsModuleBloodPressureLabel => '血壓';
+
+  @override
+  String get settingsModuleBloodPressureDescription =>
+      '記錄日常血壓讀數（收縮壓/舒張壓、選填心率、姿勢）。沒有自動解讀,也不與站立測試比較。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

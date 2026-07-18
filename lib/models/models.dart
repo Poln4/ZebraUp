@@ -27,6 +27,7 @@ import 'fatigue_detail.dart';
 import 'abdominal_detail.dart';
 import 'presyncope_detail.dart';
 import 'pelvic_pain_detail.dart';
+import 'chest_pain_detail.dart';
 import 'structural_detail.dart';
 import 'action_taken.dart';
 import 'mcas.dart';
@@ -210,6 +211,13 @@ class SymptomEvent {
   /// lib/models/pelvic_pain_detail.dart for the schema.
   final PelvicPainDetail? pelvicPainDetail;
 
+  /// D.5: Optional structured detail when the symptom is chest pain
+  /// and the user has the chest_pain_detail tracker enabled in
+  /// optionalTrackers. Null for all non-chest-pain symptoms and for
+  /// chest pain logs created before D.5. See
+  /// lib/models/chest_pain_detail.dart for the schema.
+  final ChestPainDetail? chestPainDetail;
+
   // Sprint E.A — MCAS detail layer (additive, gated by
   // optionalTrackers['mcas_detail'] once E.E wires the toggle).
   final MCASDetail? mcasDetail;
@@ -226,6 +234,7 @@ class SymptomEvent {
     this.abdominalDetail,
     this.presyncopeDetail,
     this.pelvicPainDetail,
+    this.chestPainDetail,
     this.mcasDetail,
   }) : id = id ?? _newId();
 
@@ -239,6 +248,7 @@ class SymptomEvent {
     AbdominalDetail? abdominalDetail,
     PresyncopeDetail? presyncopeDetail,
     PelvicPainDetail? pelvicPainDetail,
+    ChestPainDetail? chestPainDetail,
     MCASDetail? mcasDetail,
   }) {
     return SymptomEvent(
@@ -253,6 +263,7 @@ class SymptomEvent {
       abdominalDetail: abdominalDetail ?? this.abdominalDetail,
       presyncopeDetail: presyncopeDetail ?? this.presyncopeDetail,
       pelvicPainDetail: pelvicPainDetail ?? this.pelvicPainDetail,
+      chestPainDetail: chestPainDetail ?? this.chestPainDetail,
       mcasDetail: mcasDetail ?? this.mcasDetail,
     );
   }
@@ -271,6 +282,8 @@ class SymptomEvent {
       'presyncopeDetail': presyncopeDetail!.toMap(),
     if (pelvicPainDetail != null)
       'pelvicPainDetail': pelvicPainDetail!.toMap(),
+    if (chestPainDetail != null)
+      'chestPainDetail': chestPainDetail!.toMap(),
     if (mcasDetail != null) 'mcasDetail': mcasDetail!.toMap(),
   };
 
@@ -280,6 +293,7 @@ class SymptomEvent {
     final adRaw = map['abdominalDetail'];
     final psRaw = map['presyncopeDetail'];
     final ppRaw = map['pelvicPainDetail'];
+    final cpRaw = map['chestPainDetail'];
     final mcasRaw = map['mcasDetail'];
     return SymptomEvent(
       id: map['id'],
@@ -302,6 +316,9 @@ class SymptomEvent {
           : null,
       pelvicPainDetail: ppRaw is Map
           ? PelvicPainDetail.fromMap(Map<String, dynamic>.from(ppRaw))
+          : null,
+      chestPainDetail: cpRaw is Map
+          ? ChestPainDetail.fromMap(Map<String, dynamic>.from(cpRaw))
           : null,
       mcasDetail: mcasRaw is Map
           ? MCASDetail.fromMap(Map<String, dynamic>.from(mcasRaw))
@@ -1671,6 +1688,11 @@ class Profile {
   /// custom exercises
   List<String> customExercises;
 
+  /// User-added hydration beverage names (e.g. "Té"), offered as extra
+  /// chips alongside the fixed HydrationBeverage enum. Same additive
+  /// pattern as customExercises/customTherapyModalities.
+  List<String> customBeverages;
+
   /// Catalog of symptoms this profile chooses to track (filters the picker).
   List<String> symptomVault;
 
@@ -1700,6 +1722,12 @@ class Profile {
   List<MovementMetric> movementHistory;
   // PHASE 5.2d — fever readings (schema v3, additive)
   List<FeverReading> feverHistory;
+
+  /// Panel de Signos Vitales §5.1 — loose everyday BP readings, gated
+  /// behind settings.optionalTrackers['blood_pressure'] (off by default),
+  /// same pattern as hrvHistory. See docs/design_decisions/
+  /// vital_signs_panel.md.
+  List<BloodPressureReading> bloodPressureHistory;
 
   // Sprint F.B+C — transversal action capture (schema v4, additive).
   // ActionTaken links polymorphically to symptom/bowel/hemorrhoidal/fever
@@ -1774,6 +1802,7 @@ class Profile {
     required this.symptomVault,
     required this.botiquin,
     this.customExercises = const [],
+    this.customBeverages = const [],
     this.moodHistory = const [],
     this.country,
     this.homeLatitude,
@@ -1804,6 +1833,7 @@ class Profile {
     List<HrvReading>? hrv,
     List<MovementMetric>? movement,
     List<FeverReading>? fever,
+    List<BloodPressureReading>? bloodPressure,
     List<ActionTaken>? actions,
     ProfileSettings? settings,
   }) : settings = settings ?? ProfileSettings(),
@@ -1824,6 +1854,7 @@ class Profile {
        hrvHistory = hrv ?? <HrvReading>[],
        movementHistory = movement ?? <MovementMetric>[],
        feverHistory = fever ?? <FeverReading>[],
+       bloodPressureHistory = bloodPressure ?? <BloodPressureReading>[],
        actionsHistory = actions ?? <ActionTaken>[];
 
   // ---------------------------------------------------------------------------
@@ -1973,6 +2004,10 @@ class Profile {
   // F6.b: HRV day-query helper. Same pattern as hydration.
   List<HrvReading> getHrvForDay(DateTime date) =>
       hrvHistory.where((e) => _sameDay(e.timestamp, date)).toList();
+
+  // Panel de Signos Vitales §5.1: BP day-query helper. Same pattern.
+  List<BloodPressureReading> getBloodPressureForDay(DateTime date) =>
+      bloodPressureHistory.where((e) => _sameDay(e.timestamp, date)).toList();
 
   /// Days since the most recent bowel event, computed from `bowelHistory`.
   ///
@@ -2134,6 +2169,7 @@ class Profile {
     'country': country,
     'symptomVault': symptomVault,
     'customExercises': customExercises,
+    'customBeverages': customBeverages,
     'savedArticlePmids': savedArticlePmids.toList(),
     'botiquin': botiquin.map((x) => x.toMap()).toList(),
     'medicationGroups': medicationGroups.map((x) => x.toMap()).toList(),
@@ -2157,6 +2193,9 @@ class Profile {
     'hrvHistory': hrvHistory.map((x) => x.toMap()).toList(),
     'movementHistory': movementHistory.map((x) => x.toMap()).toList(),
     'feverHistory': feverHistory.map((x) => x.toMap()).toList(),
+    'bloodPressureHistory': bloodPressureHistory
+        .map((x) => x.toMap())
+        .toList(),
     'actionsHistory': actionsHistory.map((x) => x.toMap()).toList(),
     'settings': settings.toMap(),
     'state': state.toMap(),
@@ -2208,6 +2247,7 @@ class Profile {
     conditions: List<String>.from(map['conditions'] ?? const []),
     country: map['country'] as String?,
     customExercises: List<String>.from(map['customExercises'] ?? []),
+    customBeverages: List<String>.from(map['customBeverages'] ?? []),
     symptomVault: List<String>.from(map['symptomVault'] ?? const []),
     state: _stateFromMap(map),
     saved: Set<String>.from(map['savedArticlePmids'] ?? const []),
@@ -2319,6 +2359,12 @@ class Profile {
     fever: List<FeverReading>.from(
       (map['feverHistory'] ?? const []).map(
         (x) => FeverReading.fromMap(Map<String, dynamic>.from(x as Map)),
+      ),
+    ),
+    bloodPressure: List<BloodPressureReading>.from(
+      (map['bloodPressureHistory'] ?? const []).map(
+        (x) =>
+            BloodPressureReading.fromMap(Map<String, dynamic>.from(x as Map)),
       ),
     ),
     settings: _settingsFromMap(map),
@@ -3058,6 +3104,15 @@ class SleepEntry {
   final bool? nightmare;
   final String? note;
 
+  /// Optional "de cuándo a cuándo" — minutes since midnight, same
+  /// no-Flutter-dependency convention as MedicationGroup.defaultTimeMinutes.
+  /// When both are set, the form computes durationMinutes from the pair
+  /// (handling the overnight wrap via modulo) instead of requiring manual
+  /// hour entry. Independent of durationMinutes so existing entries that
+  /// only ever set a duration keep working unchanged.
+  final int? bedTimeMinutes;
+  final int? wakeTimeMinutes;
+
   SleepEntry({
     String? id,
     required this.timestamp,
@@ -3068,6 +3123,8 @@ class SleepEntry {
     this.wakeCount,
     this.nightmare,
     this.note,
+    this.bedTimeMinutes,
+    this.wakeTimeMinutes,
   }) : id = id ?? _newId();
 
   SleepEntry copyWith({
@@ -3079,6 +3136,8 @@ class SleepEntry {
     int? wakeCount,
     bool? nightmare,
     String? note,
+    int? bedTimeMinutes,
+    int? wakeTimeMinutes,
   }) {
     return SleepEntry(
       id: id,
@@ -3090,6 +3149,8 @@ class SleepEntry {
       wakeCount: wakeCount ?? this.wakeCount,
       nightmare: nightmare ?? this.nightmare,
       note: note ?? this.note,
+      bedTimeMinutes: bedTimeMinutes ?? this.bedTimeMinutes,
+      wakeTimeMinutes: wakeTimeMinutes ?? this.wakeTimeMinutes,
     );
   }
 
@@ -3103,6 +3164,8 @@ class SleepEntry {
     'wakeCount': wakeCount,
     'nightmare': nightmare,
     'note': note,
+    'bedTimeMinutes': bedTimeMinutes,
+    'wakeTimeMinutes': wakeTimeMinutes,
   };
 
   factory SleepEntry.fromMap(Map<String, dynamic> map) => SleepEntry(
@@ -3116,6 +3179,8 @@ class SleepEntry {
     wakeCount: (map['wakeCount'] as num?)?.toInt(),
     nightmare: map['nightmare'] as bool?,
     note: map['note'] as String?,
+    bedTimeMinutes: (map['bedTimeMinutes'] as num?)?.toInt(),
+    wakeTimeMinutes: (map['wakeTimeMinutes'] as num?)?.toInt(),
   );
 }
 
@@ -3178,6 +3243,13 @@ class HydrationEntry {
   final SodiumSource? sodium;
   final String? note;
 
+  /// User-added beverage name (e.g. "Té") from Profile.customBeverages —
+  /// mutually exclusive with [beverage] in practice (the form only ever
+  /// sets one), kept as a separate field rather than widening the fixed
+  /// HydrationBeverage enum so custom entries don't require a schema
+  /// migration every time someone adds a new one.
+  final String? customBeverageName;
+
   HydrationEntry({
     String? id,
     required this.timestamp,
@@ -3185,6 +3257,7 @@ class HydrationEntry {
     this.beverage,
     this.sodium,
     this.note,
+    this.customBeverageName,
   }) : id = id ?? _newId();
 
   HydrationEntry copyWith({
@@ -3193,6 +3266,7 @@ class HydrationEntry {
     HydrationBeverage? beverage,
     SodiumSource? sodium,
     String? note,
+    String? customBeverageName,
   }) {
     return HydrationEntry(
       id: id,
@@ -3201,6 +3275,7 @@ class HydrationEntry {
       beverage: beverage ?? this.beverage,
       sodium: sodium ?? this.sodium,
       note: note ?? this.note,
+      customBeverageName: customBeverageName ?? this.customBeverageName,
     );
   }
 
@@ -3211,6 +3286,7 @@ class HydrationEntry {
     'beverage': beverage?.name,
     'sodium': sodium?.name,
     'note': note,
+    'customBeverageName': customBeverageName,
   };
 
   factory HydrationEntry.fromMap(Map<String, dynamic> map) => HydrationEntry(
@@ -3220,6 +3296,7 @@ class HydrationEntry {
     beverage: HydrationBeverage.parse(map['beverage'] as String?),
     sodium: SodiumSource.parse(map['sodium'] as String?),
     note: map['note'] as String?,
+    customBeverageName: map['customBeverageName'] as String?,
   );
 }
 
@@ -3232,6 +3309,7 @@ enum HrvContext {
   afternoon('tarde'),
   evening('noche'),
   postExercise('post-ejercicio'),
+  average('promedio'),
   other('otro');
 
   /// Spanish fallback. Use HrvContextLocalization.label(l10n) from
@@ -3497,4 +3575,96 @@ class FeverReading {
     antipyreticName: map['antipyreticName'] as String?,
     note: map['note'] as String?,
   );
+}
+
+// -----------------------------------------------------------------------------
+// BLOOD PRESSURE — Panel de Signos Vitales §5.1
+// (docs/design_decisions/vital_signs_panel.md)
+// -----------------------------------------------------------------------------
+
+enum BloodPressurePosition {
+  sitting('sitting'),
+  lying('lying'),
+  standing('standing');
+
+  final String serializationKey;
+  const BloodPressurePosition(this.serializationKey);
+
+  static BloodPressurePosition? fromKey(String? raw) {
+    if (raw == null) return null;
+    for (final v in values) {
+      if (v.serializationKey == raw) return v;
+    }
+    return null;
+  }
+}
+
+/// A loose, everyday BP reading — NOT tied to an orthostatic/lean test.
+/// Deliberately no computed interpretation here: a single reading has no
+/// baseline to compare against. Baseline-vs-standing delta logic belongs to
+/// OrthostaticTest (deferred — see design doc §7 for the pending safety
+/// design), which pairs multiple readings across phases.
+class BloodPressureReading {
+  final String id;
+  final DateTime timestamp;
+  final int systolic;
+  final int diastolic;
+
+  /// Optional — not every reading comes from a device that also reports HR.
+  final int? heartRate;
+
+  final BloodPressurePosition position;
+  final String? note;
+
+  BloodPressureReading({
+    String? id,
+    required this.timestamp,
+    required this.systolic,
+    required this.diastolic,
+    this.heartRate,
+    this.position = BloodPressurePosition.sitting,
+    this.note,
+  }) : id = id ?? _newId();
+
+  BloodPressureReading copyWith({
+    DateTime? timestamp,
+    int? systolic,
+    int? diastolic,
+    int? heartRate,
+    BloodPressurePosition? position,
+    String? note,
+  }) {
+    return BloodPressureReading(
+      id: id,
+      timestamp: timestamp ?? this.timestamp,
+      systolic: systolic ?? this.systolic,
+      diastolic: diastolic ?? this.diastolic,
+      heartRate: heartRate ?? this.heartRate,
+      position: position ?? this.position,
+      note: note ?? this.note,
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'timestamp': timestamp.toIso8601String(),
+    'systolic': systolic,
+    'diastolic': diastolic,
+    'heartRate': heartRate,
+    'position': position.serializationKey,
+    'note': note,
+  };
+
+  factory BloodPressureReading.fromMap(Map<String, dynamic> map) =>
+      BloodPressureReading(
+        id: map['id'] as String?,
+        timestamp: DateTime.parse(map['timestamp'] as String),
+        systolic: (map['systolic'] as num).toInt(),
+        diastolic: (map['diastolic'] as num).toInt(),
+        heartRate: (map['heartRate'] as num?)?.toInt(),
+        position:
+            BloodPressurePosition.fromKey(map['position'] as String?) ??
+            BloodPressurePosition.sitting,
+        note: map['note'] as String?,
+      );
 }

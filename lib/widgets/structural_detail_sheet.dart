@@ -427,7 +427,7 @@ class _StructuralDetailSheetBodyState
           style: OutlinedButton.styleFrom(
             side: BorderSide(color: cc, width: 1.5),
             padding: const EdgeInsets.symmetric(vertical: 12),
-            minimumSize: const Size.fromHeight(44),
+            minimumSize: const Size.fromHeight(48),
           ),
           onPressed: () => Navigator.pop(
             context,

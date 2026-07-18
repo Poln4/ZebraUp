@@ -22,6 +22,7 @@ class TrackingSettingsScreen extends StatefulWidget {
   final bool showAbdominalDetail;
   final bool showPresyncopeDetail;
   final bool showPelvicPainDetail;
+  final bool showChestPainDetail;
 
   const TrackingSettingsScreen({
     super.key,
@@ -34,6 +35,7 @@ class TrackingSettingsScreen extends StatefulWidget {
     required this.showAbdominalDetail,
     required this.showPresyncopeDetail,
     required this.showPelvicPainDetail,
+    required this.showChestPainDetail,
   });
 
   @override
@@ -146,6 +148,12 @@ class _TrackingSettingsScreenState extends State<TrackingSettingsScreen> {
                       subtitle: t.settingsModuleHrvDescription,
                       key: 'hrv',
                     ),
+                    _toggle(
+                      cc: cc,
+                      title: t.settingsModuleBloodPressureLabel,
+                      subtitle: t.settingsModuleBloodPressureDescription,
+                      key: 'blood_pressure',
+                    ),
                     if (widget.showHeadacheDetail)
                       _toggle(
                         cc: cc,
@@ -181,6 +189,13 @@ class _TrackingSettingsScreenState extends State<TrackingSettingsScreen> {
                         subtitle: t.settingsModulePelvicPainDetailDescription,
                         key: 'pelvic_pain_detail',
                       ),
+                    if (widget.showChestPainDetail)
+                      _toggle(
+                        cc: cc,
+                        title: t.settingsModuleChestPainDetailLabel,
+                        subtitle: t.settingsModuleChestPainDetailDescription,
+                        key: 'chest_pain_detail',
+                      ),
                     _toggle(
                       cc: cc,
                       title: 'Detalle MCAS / alergias',
@@ -206,6 +221,12 @@ class _TrackingSettingsScreenState extends State<TrackingSettingsScreen> {
                     const SizedBox(height: 24),
                     _sectionLabel(t.settingsViewPreferencesTitle),
                     const SizedBox(height: 8),
+                    _toggle(
+                      cc: cc,
+                      title: t.settingsSimpleModeLabel,
+                      subtitle: t.settingsSimpleModeDescription,
+                      key: 'simple_mode',
+                    ),
                     _toggle(
                       cc: cc,
                       title: t.settingsCarefulModeLabel,
