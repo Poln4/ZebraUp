@@ -1265,6 +1265,18 @@ abstract class AppLocalizations {
   /// **'+ Añadir síntoma al baúl...'**
   String get symptomsVaultPlaceholder;
 
+  /// No description provided for @symptomsVaultSearchHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Buscar síntoma...'**
+  String get symptomsVaultSearchHint;
+
+  /// No description provided for @symptomsVaultSearchNoResults.
+  ///
+  /// In es, this message translates to:
+  /// **'No se encontraron síntomas'**
+  String get symptomsVaultSearchNoResults;
+
   /// No description provided for @symptomsModalLogHeader.
   ///
   /// In es, this message translates to:
@@ -1318,6 +1330,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Este registro no tiene rating. Toca un punto para asignar uno.'**
   String get symptomsUnratedInlineWarning;
+
+  /// No description provided for @symptomsEditResolvedLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Marcar como resuelto'**
+  String get symptomsEditResolvedLabel;
 
   /// No description provided for @symptomsActionSaveChanges.
   ///
@@ -2255,6 +2273,30 @@ abstract class AppLocalizations {
   /// **'Se resolvió'**
   String get structuralCheckInResolved;
 
+  /// No description provided for @symptomCheckInTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'¿Cómo sigue: {symptom}?'**
+  String symptomCheckInTitle(String symptom);
+
+  /// No description provided for @symptomCheckInSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Ya registraste esto hoy a las {time}. Elige la nueva gravedad o marca que se resolvió — no se agrega un registro nuevo.'**
+  String symptomCheckInSubtitle(String time);
+
+  /// No description provided for @symptomCheckInResolvedButton.
+  ///
+  /// In es, this message translates to:
+  /// **'Se resolvió por completo'**
+  String get symptomCheckInResolvedButton;
+
+  /// No description provided for @symptomCheckInSkip.
+  ///
+  /// In es, this message translates to:
+  /// **'No, es otra cosa'**
+  String get symptomCheckInSkip;
+
   /// No description provided for @structuralOngoingSinceTag.
   ///
   /// In es, this message translates to:
@@ -2398,6 +2440,108 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'Agregar antecedente'**
   String get structuralZoneHistoryAddAction;
+
+  /// No description provided for @episodeFormTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Registrar cuadro'**
+  String get episodeFormTitle;
+
+  /// No description provided for @episodeFormEditTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Editar cuadro'**
+  String get episodeFormEditTitle;
+
+  /// No description provided for @episodeFormSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Un diagnóstico temporal o recurrente que no es permanente, como un resfrío o una amigdalitis. Los síntomas que registres durante este período los puedes vincular a este cuadro.'**
+  String get episodeFormSubtitle;
+
+  /// No description provided for @episodeFormTitleHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Título (ej. Resfrío, Amigdalitis)'**
+  String get episodeFormTitleHint;
+
+  /// No description provided for @episodeFormStartDateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha de inicio'**
+  String get episodeFormStartDateLabel;
+
+  /// No description provided for @episodeFormNoteHint.
+  ///
+  /// In es, this message translates to:
+  /// **'Nota (opcional)'**
+  String get episodeFormNoteHint;
+
+  /// No description provided for @episodeFormResolvedLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Resuelto'**
+  String get episodeFormResolvedLabel;
+
+  /// No description provided for @episodeFormResolvedDateLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Fecha de resolución'**
+  String get episodeFormResolvedDateLabel;
+
+  /// No description provided for @episodeActionSaveChanges.
+  ///
+  /// In es, this message translates to:
+  /// **'GUARDAR CAMBIOS'**
+  String get episodeActionSaveChanges;
+
+  /// No description provided for @episodeActionCreate.
+  ///
+  /// In es, this message translates to:
+  /// **'REGISTRAR CUADRO'**
+  String get episodeActionCreate;
+
+  /// No description provided for @symptomsEpisodeLinkLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Vincular a un cuadro (opcional)'**
+  String get symptomsEpisodeLinkLabel;
+
+  /// No description provided for @symptomsEpisodeLinkNone.
+  ///
+  /// In es, this message translates to:
+  /// **'Ninguno'**
+  String get symptomsEpisodeLinkNone;
+
+  /// No description provided for @symptomsEpisodeLinkCreateNew.
+  ///
+  /// In es, this message translates to:
+  /// **'+ Crear cuadro nuevo…'**
+  String get symptomsEpisodeLinkCreateNew;
+
+  /// No description provided for @settingsEpisodesLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuadros temporales'**
+  String get settingsEpisodesLabel;
+
+  /// No description provided for @settingsEpisodesHelper.
+  ///
+  /// In es, this message translates to:
+  /// **'Diagnósticos temporales o recurrentes que no son permanentes, como un resfrío o una amigdalitis. Los síntomas que registres puedes vincularlos a uno de estos cuadros.'**
+  String get settingsEpisodesHelper;
+
+  /// No description provided for @settingsEpisodesEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Aún no registras cuadros temporales.'**
+  String get settingsEpisodesEmpty;
+
+  /// No description provided for @settingsAddEpisodeButton.
+  ///
+  /// In es, this message translates to:
+  /// **'+ Registrar cuadro'**
+  String get settingsAddEpisodeButton;
 
   /// No description provided for @structuralZoneHistoryEmptyState.
   ///

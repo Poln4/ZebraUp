@@ -62,6 +62,7 @@ class _PdfExportBodyState extends State<_PdfExportBody> {
     PdfSection.symptomsPatterns: 'Patrones detectados',
     PdfSection.mcasEvents: 'Eventos MCAS / alergias',
     PdfSection.structuralEvents: 'Eventos estructurales',
+    PdfSection.episodes: 'Cuadros temporales',
     PdfSection.mentalState: 'Estado mental (agregado)',
     PdfSection.actionsEffectiveness: 'Acciones y efectividad',
     PdfSection.patientNotes: 'Notas para tu especialista',

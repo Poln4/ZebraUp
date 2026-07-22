@@ -423,6 +423,8 @@
   "symptomsTrendingEmpty": "No hay síntomas consistentes esta semana.",
   "symptomsSectionVault": "BAÚL DE SÍNTOMAS",
   "symptomsVaultPlaceholder": "+ Añadir síntoma al baúl...",
+  "symptomsVaultSearchHint": "Buscar síntoma...",
+  "symptomsVaultSearchNoResults": "No se encontraron síntomas",
   "symptomsModalLogHeader": "REGISTRAR EN: {zone}",
   "@symptomsModalLogHeader": {
     "placeholders": {
@@ -456,6 +458,7 @@
   "symptomsActionLogUnrated": "Registrar sin rating",
   "symptomsUnratedLabelSuffix": "sin rating",
   "symptomsUnratedInlineWarning": "Este registro no tiene rating. Toca un punto para asignar uno.",
+  "symptomsEditResolvedLabel": "Marcar como resuelto",
   "symptomsActionSaveChanges": "GUARDAR CAMBIOS",
   "symptomsActionSave": "GUARDAR",
   "zoneCervical": "Cervicales",
@@ -762,6 +765,24 @@
   "structuralCheckInBetter": "Mejoró, pero sigue con dolor",
   "structuralCheckInWorse": "Empeoró",
   "structuralCheckInResolved": "Se resolvió",
+  "symptomCheckInTitle": "¿Cómo sigue: {symptom}?",
+  "@symptomCheckInTitle": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomCheckInSubtitle": "Ya registraste esto hoy a las {time}. Elige la nueva gravedad o marca que se resolvió — no se agrega un registro nuevo.",
+  "@symptomCheckInSubtitle": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomCheckInResolvedButton": "Se resolvió por completo",
+  "symptomCheckInSkip": "No, es otra cosa",
   "structuralOngoingSinceTag": "en curso desde el {date}",
   "@structuralOngoingSinceTag": {
     "placeholders": {
@@ -793,6 +814,23 @@
   "structuralZoneHistoryOfferDecline": "Ahora no",
   "structuralZoneHistorySectionTitle": "Historial estructural por zona",
   "structuralZoneHistoryAddAction": "Agregar antecedente",
+  "episodeFormTitle": "Registrar cuadro",
+  "episodeFormEditTitle": "Editar cuadro",
+  "episodeFormSubtitle": "Un diagnóstico temporal o recurrente que no es permanente, como un resfrío o una amigdalitis. Los síntomas que registres durante este período los puedes vincular a este cuadro.",
+  "episodeFormTitleHint": "Título (ej. Resfrío, Amigdalitis)",
+  "episodeFormStartDateLabel": "Fecha de inicio",
+  "episodeFormNoteHint": "Nota (opcional)",
+  "episodeFormResolvedLabel": "Resuelto",
+  "episodeFormResolvedDateLabel": "Fecha de resolución",
+  "episodeActionSaveChanges": "GUARDAR CAMBIOS",
+  "episodeActionCreate": "REGISTRAR CUADRO",
+  "symptomsEpisodeLinkLabel": "Vincular a un cuadro (opcional)",
+  "symptomsEpisodeLinkNone": "Ninguno",
+  "symptomsEpisodeLinkCreateNew": "+ Crear cuadro nuevo…",
+  "settingsEpisodesLabel": "Cuadros temporales",
+  "settingsEpisodesHelper": "Diagnósticos temporales o recurrentes que no son permanentes, como un resfrío o una amigdalitis. Los síntomas que registres puedes vincularlos a uno de estos cuadros.",
+  "settingsEpisodesEmpty": "Aún no registras cuadros temporales.",
+  "settingsAddEpisodeButton": "+ Registrar cuadro",
   "structuralZoneHistoryEmptyState": "Sin antecedentes guardados todavía.",
   "sleepSectionTitle": "SUEÑO",
   "sleepActionAddEntry": "+ registrar sueño",

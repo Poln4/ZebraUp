@@ -708,6 +708,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get symptomsVaultPlaceholder => '+ Añadir síntoma al baúl...';
 
   @override
+  String get symptomsVaultSearchHint => 'Buscar síntoma...';
+
+  @override
+  String get symptomsVaultSearchNoResults => 'No se encontraron síntomas';
+
+  @override
   String symptomsModalLogHeader(String zone) {
     return 'REGISTRAR EN: $zone';
   }
@@ -741,6 +747,9 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get symptomsUnratedInlineWarning =>
       'Este registro no tiene rating. Toca un punto para asignar uno.';
+
+  @override
+  String get symptomsEditResolvedLabel => 'Marcar como resuelto';
 
   @override
   String get symptomsActionSaveChanges => 'GUARDAR CAMBIOS';
@@ -1282,6 +1291,22 @@ class AppLocalizationsEs extends AppLocalizations {
   String get structuralCheckInResolved => 'Se resolvió';
 
   @override
+  String symptomCheckInTitle(String symptom) {
+    return '¿Cómo sigue: $symptom?';
+  }
+
+  @override
+  String symptomCheckInSubtitle(String time) {
+    return 'Ya registraste esto hoy a las $time. Elige la nueva gravedad o marca que se resolvió — no se agrega un registro nuevo.';
+  }
+
+  @override
+  String get symptomCheckInResolvedButton => 'Se resolvió por completo';
+
+  @override
+  String get symptomCheckInSkip => 'No, es otra cosa';
+
+  @override
   String structuralOngoingSinceTag(String date) {
     return 'en curso desde el $date';
   }
@@ -1362,6 +1387,59 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get structuralZoneHistoryAddAction => 'Agregar antecedente';
+
+  @override
+  String get episodeFormTitle => 'Registrar cuadro';
+
+  @override
+  String get episodeFormEditTitle => 'Editar cuadro';
+
+  @override
+  String get episodeFormSubtitle =>
+      'Un diagnóstico temporal o recurrente que no es permanente, como un resfrío o una amigdalitis. Los síntomas que registres durante este período los puedes vincular a este cuadro.';
+
+  @override
+  String get episodeFormTitleHint => 'Título (ej. Resfrío, Amigdalitis)';
+
+  @override
+  String get episodeFormStartDateLabel => 'Fecha de inicio';
+
+  @override
+  String get episodeFormNoteHint => 'Nota (opcional)';
+
+  @override
+  String get episodeFormResolvedLabel => 'Resuelto';
+
+  @override
+  String get episodeFormResolvedDateLabel => 'Fecha de resolución';
+
+  @override
+  String get episodeActionSaveChanges => 'GUARDAR CAMBIOS';
+
+  @override
+  String get episodeActionCreate => 'REGISTRAR CUADRO';
+
+  @override
+  String get symptomsEpisodeLinkLabel => 'Vincular a un cuadro (opcional)';
+
+  @override
+  String get symptomsEpisodeLinkNone => 'Ninguno';
+
+  @override
+  String get symptomsEpisodeLinkCreateNew => '+ Crear cuadro nuevo…';
+
+  @override
+  String get settingsEpisodesLabel => 'Cuadros temporales';
+
+  @override
+  String get settingsEpisodesHelper =>
+      'Diagnósticos temporales o recurrentes que no son permanentes, como un resfrío o una amigdalitis. Los síntomas que registres puedes vincularlos a uno de estos cuadros.';
+
+  @override
+  String get settingsEpisodesEmpty => 'Aún no registras cuadros temporales.';
+
+  @override
+  String get settingsAddEpisodeButton => '+ Registrar cuadro';
 
   @override
   String get structuralZoneHistoryEmptyState =>

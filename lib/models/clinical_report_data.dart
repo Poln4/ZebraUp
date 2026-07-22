@@ -29,6 +29,7 @@ class ClinicalReportData {
   final MentalStateSection? mentalState;
   final ActionsSection? actions;
   final PatientNotesSection? patientNotes;
+  final EpisodeSection? episodes;
 
   const ClinicalReportData({
     required this.metadata,
@@ -40,6 +41,7 @@ class ClinicalReportData {
     this.mentalState,
     this.actions,
     this.patientNotes,
+    this.episodes,
   });
 
   /// True if no meaningful data exists for the report. The UI should
@@ -52,7 +54,8 @@ class ClinicalReportData {
       (structural?.isEmpty ?? true) &&
       mentalState == null &&
       (actions?.isEmpty ?? true) &&
-      (patientNotes == null || patientNotes!.text.isEmpty);
+      (patientNotes == null || patientNotes!.text.isEmpty) &&
+      (episodes?.isEmpty ?? true);
 }
 
 // ============================================================
@@ -395,6 +398,61 @@ class ActionEffectivenessEntry {
     required this.uses,
     required this.meanEffectiveness,
     this.commonLinkedTo = const [],
+  });
+}
+
+// ============================================================
+// Episodes section ("cuadros temporales" — acute-but-not-chronic
+// diagnoses, e.g. resfrío, amigdalitis — with the symptoms the patient
+// linked to each one). See Episode in lib/models/models.dart.
+// ============================================================
+
+class EpisodeSection {
+  /// One entry per Episode that has at least one linked symptom in the
+  /// report period. Episodes with zero matches in range are omitted by
+  /// the aggregator, not represented here as empty entries.
+  final List<EpisodeSummary> episodes;
+
+  const EpisodeSection({this.episodes = const []});
+
+  bool get isEmpty => episodes.isEmpty;
+}
+
+class EpisodeSummary {
+  final String title;
+  final DateTime startDate;
+
+  /// Null means still open ("en curso") at report generation time.
+  final DateTime? resolvedAt;
+
+  final String? note;
+
+  /// Linked symptom occurrences within the report period, sorted by
+  /// timestamp descending. Kept small (bounded by one episode's worth
+  /// of symptoms) — this is per-episode context, not a raw journal dump
+  /// of the whole period.
+  final List<EpisodeSymptomOccurrence> symptoms;
+
+  const EpisodeSummary({
+    required this.title,
+    required this.startDate,
+    this.resolvedAt,
+    this.note,
+    this.symptoms = const [],
+  });
+}
+
+class EpisodeSymptomOccurrence {
+  final String name;
+  final DateTime timestamp;
+
+  /// 0-4 scale, same as SymptomSeverity.value.
+  final int severity;
+
+  const EpisodeSymptomOccurrence({
+    required this.name,
+    required this.timestamp,
+    required this.severity,
   });
 }
 

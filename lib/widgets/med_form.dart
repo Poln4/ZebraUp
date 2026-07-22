@@ -96,6 +96,8 @@ class _MedFormSheetState extends State<MedFormSheet> {
     'parche',
     'jarabe',
     'spray',
+    'crema',
+    'sobre',
   ];
   static const List<int> _outcomeHourOptions = [1, 2, 3, 4, 6, 8, 12];
 

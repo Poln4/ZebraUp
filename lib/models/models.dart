@@ -222,6 +222,25 @@ class SymptomEvent {
   // optionalTrackers['mcas_detail'] once E.E wires the toggle).
   final MCASDetail? mcasDetail;
 
+  /// Optional manual link to a Profile.episodes entry ("cuadro temporal")
+  /// — e.g. tagging a sore-throat log as part of the same "Amigdalitis"
+  /// episode. Null when not linked. Never auto-set; always a deliberate
+  /// choice in the symptom sheet. See Episode in this file.
+  final String? linkedEpisodeId;
+
+  /// 2026-07-22 — same-day continuation check-in (see
+  /// lib/widgets/symptom_checkin_sheet.dart). Null means "not explicitly
+  /// resolved". Deliberately scoped to same-day gating only (unlike
+  /// StructuralEvent.resolvedAt, which also drives cross-day carry-forward
+  /// in "Registros de hoy"): most vault symptoms (fatiga, náuseas...) are
+  /// naturally daily-recurring, not a single continuous episode, so this
+  /// field is additive/safe on historical data purely because the check-in
+  /// gate only ever looks at today's (selectedDate's) events — an old
+  /// event with resolvedAt == null from a prior day never matters.
+  final DateTime? resolvedAt;
+
+  bool get isResolved => resolvedAt != null;
+
   SymptomEvent({
     String? id,
     required this.timestamp,
@@ -236,6 +255,8 @@ class SymptomEvent {
     this.pelvicPainDetail,
     this.chestPainDetail,
     this.mcasDetail,
+    this.linkedEpisodeId,
+    this.resolvedAt,
   }) : id = id ?? _newId();
 
   SymptomEvent copyWith({
@@ -250,6 +271,10 @@ class SymptomEvent {
     PelvicPainDetail? pelvicPainDetail,
     ChestPainDetail? chestPainDetail,
     MCASDetail? mcasDetail,
+    String? linkedEpisodeId,
+    bool clearLinkedEpisodeId = false,
+    DateTime? resolvedAt,
+    bool clearResolvedAt = false,
   }) {
     return SymptomEvent(
       id: id,
@@ -265,6 +290,10 @@ class SymptomEvent {
       pelvicPainDetail: pelvicPainDetail ?? this.pelvicPainDetail,
       chestPainDetail: chestPainDetail ?? this.chestPainDetail,
       mcasDetail: mcasDetail ?? this.mcasDetail,
+      linkedEpisodeId: clearLinkedEpisodeId
+          ? null
+          : (linkedEpisodeId ?? this.linkedEpisodeId),
+      resolvedAt: clearResolvedAt ? null : (resolvedAt ?? this.resolvedAt),
     );
   }
 
@@ -285,6 +314,8 @@ class SymptomEvent {
     if (chestPainDetail != null)
       'chestPainDetail': chestPainDetail!.toMap(),
     if (mcasDetail != null) 'mcasDetail': mcasDetail!.toMap(),
+    'linkedEpisodeId': linkedEpisodeId,
+    'resolvedAt': resolvedAt?.toIso8601String(),
   };
 
   factory SymptomEvent.fromMap(Map<String, dynamic> map) {
@@ -322,6 +353,10 @@ class SymptomEvent {
           : null,
       mcasDetail: mcasRaw is Map
           ? MCASDetail.fromMap(Map<String, dynamic>.from(mcasRaw))
+          : null,
+      linkedEpisodeId: map['linkedEpisodeId'] as String?,
+      resolvedAt: map['resolvedAt'] != null
+          ? DateTime.parse(map['resolvedAt'] as String)
           : null,
     );
   }
@@ -1685,6 +1720,10 @@ class Profile {
   String? country;
   List<LifeEvent> lifeEvents;
 
+  /// "Cuadros temporales" — acute-but-not-chronic diagnoses that symptom
+  /// logs can link back to via SymptomEvent.linkedEpisodeId. See Episode.
+  List<Episode> episodes;
+
   /// custom exercises
   List<String> customExercises;
 
@@ -1817,6 +1856,7 @@ class Profile {
     this.customTherapyModalities = const [],
     this.relationship,
     List<LifeEvent>? lifeEvents,
+    List<Episode>? episodes,
     List<MedicationGroup>? medicationGroups,
     List<SymptomEvent>? symptoms,
     List<DoseEvent>? doses,
@@ -1844,6 +1884,7 @@ class Profile {
        mentalHistory = mental ?? <MentalEvent>[],
        activityHistory = activity ?? <ActivityEvent>[],
        lifeEvents = lifeEvents ?? <LifeEvent>[],
+       episodes = episodes ?? <Episode>[],
        medicationOutcomes = outcomes ?? <MedicationOutcome>[],
        state = state ?? ProfileState(),
        savedArticlePmids = saved ?? <String>{},
@@ -2183,6 +2224,7 @@ class Profile {
     'therapyHistory': therapyHistory.map((t) => t.toMap()).toList(),
     'relationship': relationship,
     'lifeEvents': lifeEvents.map((e) => e.toMap()).toList(),
+    'episodes': episodes.map((e) => e.toMap()).toList(),
     'customTherapyModalities': customTherapyModalities,
     'homeLatitude': homeLatitude,
     'homeLongitude': homeLongitude,
@@ -2302,6 +2344,9 @@ class Profile {
     relationship: map['relationship'] as String?,
     lifeEvents: ((map['lifeEvents'] as List?) ?? const [])
         .map((x) => LifeEvent.fromMap(Map<String, dynamic>.from(x as Map)))
+        .toList(),
+    episodes: ((map['episodes'] as List?) ?? const [])
+        .map((x) => Episode.fromMap(Map<String, dynamic>.from(x as Map)))
         .toList(),
     customTherapyModalities: List<String>.from(
       map['customTherapyModalities'] ?? [],
@@ -2844,6 +2889,71 @@ class LifeEvent {
     startDate: startDate ?? this.startDate,
     endDate: clearEndDate ? null : (endDate ?? this.endDate),
     category: category ?? this.category,
+    note: note ?? this.note,
+  );
+}
+
+// =============================================================================
+// EPISODES ("cuadros temporales" — acute-but-not-chronic diagnoses)
+// =============================================================================
+// A temporary or recurring-but-not-permanent diagnosis (resfrío, amigdalitis,
+// gastritis…) that several symptom logs can share as context. Distinct from
+// Profile.conditions (permanent/chronic) and from LifeEvent (a single
+// timeline marker with nothing linked to it). SymptomEvent.linkedEpisodeId
+// points back to Episode.id; the link is always manual (no auto-prompt).
+// Open (resolvedAt == null) episodes are offered in the link picker;
+// resolved ones are historical only. See CLAUDE.md "cuadro temporal".
+
+class Episode {
+  final String id;
+  String title;
+  DateTime startDate;
+
+  /// Null means still open/active ("en curso"). Set when the patient marks
+  /// it resolved.
+  DateTime? resolvedAt;
+
+  String? note;
+
+  Episode({
+    String? id,
+    required this.title,
+    required this.startDate,
+    this.resolvedAt,
+    this.note,
+  }) : id = id ?? _newId();
+
+  bool get isResolved => resolvedAt != null;
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'title': title,
+    'startDate': startDate.toIso8601String(),
+    'resolvedAt': resolvedAt?.toIso8601String(),
+    'note': note,
+  };
+
+  factory Episode.fromMap(Map<String, dynamic> map) => Episode(
+    id: map['id'] as String?,
+    title: map['title'] as String,
+    startDate: DateTime.parse(map['startDate'] as String),
+    resolvedAt: map['resolvedAt'] != null
+        ? DateTime.parse(map['resolvedAt'] as String)
+        : null,
+    note: map['note'] as String?,
+  );
+
+  Episode copyWith({
+    String? title,
+    DateTime? startDate,
+    DateTime? resolvedAt,
+    bool clearResolvedAt = false,
+    String? note,
+  }) => Episode(
+    id: id,
+    title: title ?? this.title,
+    startDate: startDate ?? this.startDate,
+    resolvedAt: clearResolvedAt ? null : (resolvedAt ?? this.resolvedAt),
     note: note ?? this.note,
   );
 }

@@ -97,6 +97,9 @@ ClinicalReportData aggregateClinicalReport(
     structural: config.enabledSections.contains(PdfSection.structuralEvents)
         ? _aggregateStructural(profile, periodStart, periodEnd)
         : null,
+    episodes: config.enabledSections.contains(PdfSection.episodes)
+        ? _aggregateEpisodes(profile, periodStart, periodEnd)
+        : null,
     mentalState: config.enabledSections.contains(PdfSection.mentalState)
         ? _aggregateMentalState(profile, periodStart, periodEnd)
         : null,
@@ -414,6 +417,45 @@ StructuralSection _aggregateStructural(
     byKind: aggregations,
     totalEvents: periodEvents.length,
   );
+}
+
+/// One entry per Episode with at least one symptom linked in the report
+/// period. Episodes with zero matches are omitted — nothing to show the
+/// specialist about a cuadro that had no logged symptoms in this range.
+EpisodeSection _aggregateEpisodes(Profile profile, DateTime start, DateTime end) {
+  final summaries = <EpisodeSummary>[];
+  for (final ep in profile.episodes) {
+    final linkedSymptoms =
+        profile.symptomHistory
+            .where(
+              (s) =>
+                  s.linkedEpisodeId == ep.id &&
+                  !s.timestamp.isBefore(start) &&
+                  !s.timestamp.isAfter(end),
+            )
+            .toList()
+          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    if (linkedSymptoms.isEmpty) continue;
+    summaries.add(
+      EpisodeSummary(
+        title: ep.title,
+        startDate: ep.startDate,
+        resolvedAt: ep.resolvedAt,
+        note: ep.note,
+        symptoms: linkedSymptoms
+            .map(
+              (s) => EpisodeSymptomOccurrence(
+                name: s.name,
+                timestamp: s.timestamp,
+                severity: s.severity.value,
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+  summaries.sort((a, b) => b.startDate.compareTo(a.startDate));
+  return EpisodeSection(episodes: summaries);
 }
 
 MentalStateSection? _aggregateMentalState(

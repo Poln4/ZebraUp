@@ -417,6 +417,8 @@
   "symptomsTrendingEmpty": "No consistent symptoms this week.",
   "symptomsSectionVault": "SYMPTOM VAULT",
   "symptomsVaultPlaceholder": "+ Add symptom to vault...",
+  "symptomsVaultSearchHint": "Search symptom...",
+  "symptomsVaultSearchNoResults": "No symptoms found",
   "symptomsModalLogHeader": "LOG IN: {zone}",
   "@symptomsModalLogHeader": {
     "placeholders": {
@@ -450,6 +452,7 @@
   "symptomsActionLogUnrated": "Log without rating",
   "symptomsUnratedLabelSuffix": "unrated",
   "symptomsUnratedInlineWarning": "This log has no rating. Tap a point to assign one.",
+  "symptomsEditResolvedLabel": "Mark as resolved",
   "symptomsActionSaveChanges": "SAVE CHANGES",
   "symptomsActionSave": "SAVE",
   "zoneCervical": "Cervical",
@@ -753,6 +756,24 @@
   "structuralCheckInBetter": "Better, but still hurts",
   "structuralCheckInWorse": "Got worse",
   "structuralCheckInResolved": "It's resolved",
+  "symptomCheckInTitle": "How's it going: {symptom}?",
+  "@symptomCheckInTitle": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomCheckInSubtitle": "You already logged this today at {time}. Choose the new severity or mark it as resolved — no new entry is added.",
+  "@symptomCheckInSubtitle": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomCheckInResolvedButton": "It's fully resolved",
+  "symptomCheckInSkip": "No, this is something else",
   "structuralOngoingSinceTag": "ongoing since {date}",
   "@structuralOngoingSinceTag": {
     "placeholders": {
@@ -784,6 +805,23 @@
   "structuralZoneHistoryOfferDecline": "Not now",
   "structuralZoneHistorySectionTitle": "Structural history by zone",
   "structuralZoneHistoryAddAction": "Add history",
+  "episodeFormTitle": "Log an episode",
+  "episodeFormEditTitle": "Edit episode",
+  "episodeFormSubtitle": "A temporary or recurring diagnosis that isn't permanent, like a cold or tonsillitis. Symptoms you log during this period can be linked to this episode.",
+  "episodeFormTitleHint": "Title (e.g. Cold, Tonsillitis)",
+  "episodeFormStartDateLabel": "Start date",
+  "episodeFormNoteHint": "Note (optional)",
+  "episodeFormResolvedLabel": "Resolved",
+  "episodeFormResolvedDateLabel": "Resolved date",
+  "episodeActionSaveChanges": "SAVE CHANGES",
+  "episodeActionCreate": "LOG EPISODE",
+  "symptomsEpisodeLinkLabel": "Link to an episode (optional)",
+  "symptomsEpisodeLinkNone": "None",
+  "symptomsEpisodeLinkCreateNew": "+ Create new episode…",
+  "settingsEpisodesLabel": "Temporary episodes",
+  "settingsEpisodesHelper": "Temporary or recurring diagnoses that aren't permanent, like a cold or tonsillitis. Symptoms you log can be linked to one of these episodes.",
+  "settingsEpisodesEmpty": "You haven't logged any temporary episodes yet.",
+  "settingsAddEpisodeButton": "+ Log episode",
   "structuralZoneHistoryEmptyState": "No saved history yet.",
   "sleepSectionTitle": "SLEEP",
   "sleepActionAddEntry": "+ log sleep",

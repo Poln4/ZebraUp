@@ -51,6 +51,8 @@ Future<Uint8List> buildClinicalReportPdf(ClinicalReportData data) async {
         if (data.mcas != null) _buildMcasSection(data.mcas!),
         if (data.structural != null && !data.structural!.isEmpty)
           _buildStructuralSection(data.structural!),
+        if (data.episodes != null && !data.episodes!.isEmpty)
+          _buildEpisodesSection(data.episodes!),
         if (data.mentalState != null)
           _buildMentalStateSection(data.mentalState!),
         if (data.actions != null && !data.actions!.isEmpty)
@@ -355,6 +357,40 @@ pw.Widget _buildStructuralSection(StructuralSection s) {
           '(${agg.regionCounts.entries.map((e) => '${_pdfSafe(e.key)}: ${e.value}').join(', ')})',
           style: const pw.TextStyle(fontSize: _kBodyFontSize),
         ),
+    ],
+  );
+}
+
+pw.Widget _buildEpisodesSection(EpisodeSection s) {
+  return pw.Column(
+    crossAxisAlignment: pw.CrossAxisAlignment.start,
+    children: [
+      _sectionHeading('Cuadros temporales'),
+      for (final ep in s.episodes) ...[
+        pw.Padding(
+          padding: const pw.EdgeInsets.only(top: 4, bottom: 2),
+          child: pw.Text(
+            _pdfSafe(ep.title),
+            style: pw.TextStyle(
+              fontSize: _kBodyFontSize,
+              fontWeight: pw.FontWeight.bold,
+            ),
+          ),
+        ),
+        _kv(
+          'Periodo',
+          ep.resolvedAt != null
+              ? '${_fmtDate(ep.startDate)} - ${_fmtDate(ep.resolvedAt!)}'
+              : '${_fmtDate(ep.startDate)} - en curso',
+        ),
+        if (ep.note != null && ep.note!.isNotEmpty) _kv('Nota', ep.note!),
+        for (final occ in ep.symptoms)
+          pw.Text(
+            '- ${_fmtDate(occ.timestamp)}: ${_pdfSafe(occ.name)} '
+            '(gravedad ${occ.severity})',
+            style: const pw.TextStyle(fontSize: _kBodyFontSize),
+          ),
+      ],
     ],
   );
 }

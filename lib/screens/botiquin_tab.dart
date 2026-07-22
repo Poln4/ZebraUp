@@ -31,10 +31,11 @@ import '../widgets/dose_stepper.dart';
 import '../widgets/drug_info_sheet.dart';
 import '../widgets/group_form.dart';
 import '../widgets/med_form.dart';
+import '../widgets/search_field.dart';
 import '../widgets/severity_picker.dart';
+import '../widgets/sort_toggle_button.dart';
 import 'timestamp_picker.dart';
 import '../extensions/context_ext.dart';
-import '../l10n/app_localizations.dart';
 import 'med_detail_screen.dart';
 
 class BotiquinTab extends StatelessWidget {
@@ -106,6 +107,7 @@ class BotiquinTab extends StatelessWidget {
           inverseContrastColor: inverseContrastColor,
           medlineService: medlineService,
           onProfileChanged: onProfileChanged,
+          onCreateMed: () => _openCreateMed(context),
         ),
 
         const SizedBox(height: 12),
@@ -813,6 +815,7 @@ class _MedListSection extends StatefulWidget {
   final Color inverseContrastColor;
   final MedlinePlusService medlineService;
   final VoidCallback onProfileChanged;
+  final VoidCallback onCreateMed;
 
   const _MedListSection({
     required this.profile,
@@ -821,6 +824,7 @@ class _MedListSection extends StatefulWidget {
     required this.inverseContrastColor,
     required this.medlineService,
     required this.onProfileChanged,
+    required this.onCreateMed,
   });
 
   @override
@@ -873,7 +877,7 @@ class _MedListSectionState extends State<_MedListSection> {
               ),
             ),
             if (all.length > 1)
-              _SortToggleButton(
+              SortToggleButton(
                 active: sortAlpha,
                 contrastColor: cc,
                 onTap: () {
@@ -882,6 +886,11 @@ class _MedListSectionState extends State<_MedListSection> {
                   widget.onProfileChanged();
                 },
               ),
+            IconButton(
+              icon: Icon(Icons.add_circle_outline, color: cc),
+              tooltip: l10n.botiquinActionCreate,
+              onPressed: widget.onCreateMed,
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -889,7 +898,7 @@ class _MedListSectionState extends State<_MedListSection> {
           _EmptyMedsCard(contrastColor: cc)
         else ...[
           if (all.length > 1) ...[
-            _SearchField(
+            SearchField(
               controller: _searchCtrl,
               contrastColor: cc,
               hintText: l10n.botiquinSearchHint,
@@ -929,119 +938,6 @@ class _MedListSectionState extends State<_MedListSection> {
             ),
         ],
       ],
-    );
-  }
-}
-
-class _SearchField extends StatelessWidget {
-  final TextEditingController controller;
-  final Color contrastColor;
-  final String hintText;
-  final ValueChanged<String> onChanged;
-  final VoidCallback onClear;
-
-  const _SearchField({
-    required this.controller,
-    required this.contrastColor,
-    required this.hintText,
-    required this.onChanged,
-    required this.onClear,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cc = contrastColor;
-    final border = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: cc.withValues(alpha: 0.15)),
-    );
-    return TextField(
-      controller: controller,
-      style: TextStyle(color: cc, fontSize: 14),
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: TextStyle(color: cc.withValues(alpha: 0.4), fontSize: 13),
-        prefixIcon: Icon(
-          Icons.search,
-          size: 18,
-          color: cc.withValues(alpha: 0.5),
-        ),
-        suffixIcon: controller.text.isEmpty
-            ? null
-            : IconButton(
-                icon: Icon(
-                  Icons.close,
-                  size: 16,
-                  color: cc.withValues(alpha: 0.5),
-                ),
-                onPressed: onClear,
-                visualDensity: VisualDensity.compact,
-              ),
-        filled: true,
-        fillColor: cc.withValues(alpha: 0.04),
-        contentPadding: const EdgeInsets.symmetric(vertical: 10),
-        isDense: true,
-        border: border,
-        enabledBorder: border,
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide(color: cc, width: 1.5),
-        ),
-      ),
-    );
-  }
-}
-
-class _SortToggleButton extends StatelessWidget {
-  final bool active;
-  final Color contrastColor;
-  final VoidCallback onTap;
-
-  const _SortToggleButton({
-    required this.active,
-    required this.contrastColor,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cc = contrastColor;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: active ? cc.withValues(alpha: 0.15) : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: cc.withValues(alpha: active ? 0.4 : 0.2),
-            ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.sort_by_alpha,
-                size: 14,
-                color: cc.withValues(alpha: active ? 1.0 : 0.6),
-              ),
-              const SizedBox(width: 4),
-              Text(
-                'A-Z',
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: active ? FontWeight.bold : FontWeight.normal,
-                  color: cc.withValues(alpha: active ? 1.0 : 0.6),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

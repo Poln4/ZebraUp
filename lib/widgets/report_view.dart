@@ -107,6 +107,20 @@ class ReportView extends StatelessWidget {
     final showMental = tracked['report_show_mental'] ?? true;
     final showStructural = tracked['report_show_structural'] ?? true;
 
+    // "Cuadros temporales" (Episode) with at least one linked symptom in
+    // range. Independent of ReportTrends — trends doesn't carry per-event
+    // episode links — so this isn't gated on trends.isEmpty.
+    final episodesForRange =
+        profile.episodes.where((ep) {
+          return profile.symptomHistory.any(
+            (sym) =>
+                sym.linkedEpisodeId == ep.id &&
+                !sym.timestamp.isBefore(rangeStart) &&
+                !sym.timestamp.isAfter(rangeEnd),
+          );
+        }).toList()
+          ..sort((a, b) => b.startDate.compareTo(a.startDate));
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -164,6 +178,16 @@ class ReportView extends StatelessWidget {
             _PatternsSection(trends: trends, contrastColor: cc),
             const SizedBox(height: 4),
           ],
+        ],
+        if (!isShortRange && episodesForRange.isNotEmpty) ...[
+          _EpisodesSection(
+            episodes: episodesForRange,
+            profile: profile,
+            rangeStart: rangeStart,
+            rangeEnd: rangeEnd,
+            contrastColor: cc,
+          ),
+          const SizedBox(height: 4),
         ],
         const SizedBox(height: 4),
         // All-time, not period-scoped — shows in both short and long
@@ -294,10 +318,18 @@ class _PeriodLog extends StatelessWidget {
     }
 
     final symptomGroups = <String, SymptomSeverity>{};
+    final symptomEpisodeTitles = <String, String>{};
     for (final sym in symptoms) {
       final existing = symptomGroups[sym.name];
       if (existing == null || sym.severity.index > existing.index) {
         symptomGroups[sym.name] = sym.severity;
+      }
+      if (sym.linkedEpisodeId != null &&
+          !symptomEpisodeTitles.containsKey(sym.name)) {
+        final matches = profile.episodes.where(
+          (ep) => ep.id == sym.linkedEpisodeId,
+        );
+        if (matches.isNotEmpty) symptomEpisodeTitles[sym.name] = matches.first.title;
       }
     }
     final doseCounts = <String, int>{};
@@ -328,7 +360,9 @@ class _PeriodLog extends StatelessWidget {
           for (final entry in symptomGroups.entries)
             _row(
               cc,
-              entry.key,
+              symptomEpisodeTitles.containsKey(entry.key)
+                  ? '${entry.key} · ${symptomEpisodeTitles[entry.key]}'
+                  : entry.key,
               entry.value.severityLabel(l10n).toUpperCase(),
             ),
           for (final entry in doseCounts.entries)
@@ -932,6 +966,88 @@ class _PatternsSection extends StatelessWidget {
       ),
     );
   }
+}
+
+// =============================================================================
+// "Cuadros temporales" (Episode) — acute-but-not-chronic diagnoses with
+// the symptoms the patient linked to each one. Independent of
+// ReportTrends (which has no per-event episode link), so this section
+// only appears when at least one episode has a linked symptom in range.
+// =============================================================================
+
+class _EpisodesSection extends StatelessWidget {
+  final List<Episode> episodes;
+  final Profile profile;
+  final DateTime rangeStart;
+  final DateTime rangeEnd;
+  final Color contrastColor;
+
+  const _EpisodesSection({
+    required this.episodes,
+    required this.profile,
+    required this.rangeStart,
+    required this.rangeEnd,
+    required this.contrastColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cc = contrastColor;
+    final l10n = AppLocalizations.of(context)!;
+
+    return CollapsibleSection(
+      title: 'CUADROS TEMPORALES',
+      hint: episodes.length == 1 ? '1 cuadro' : '${episodes.length} cuadros',
+      initiallyExpanded: false,
+      contrastColor: cc,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (var i = 0; i < episodes.length; i++) ...[
+            _episodeBlock(cc, l10n, episodes[i]),
+            if (i != episodes.length - 1) const SizedBox(height: 10),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _episodeBlock(Color cc, AppLocalizations l10n, Episode ep) {
+    final linked =
+        profile.symptomHistory.where((sym) {
+          return sym.linkedEpisodeId == ep.id &&
+              !sym.timestamp.isBefore(rangeStart) &&
+              !sym.timestamp.isAfter(rangeEnd);
+        }).toList()
+          ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    final dateLabel = ep.isResolved
+        ? '${_fmtShort(ep.startDate)} → ${_fmtShort(ep.resolvedAt!)}'
+        : 'desde ${_fmtShort(ep.startDate)} · en curso';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          ep.title,
+          style: TextStyle(
+            color: cc,
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        Text(
+          dateLabel,
+          style: TextStyle(color: cc.withValues(alpha: 0.55), fontSize: 11),
+        ),
+        const SizedBox(height: 4),
+        for (final sym in linked)
+          _row(cc, sym.name, sym.severity.severityLabel(l10n).toUpperCase()),
+      ],
+    );
+  }
+
+  String _fmtShort(DateTime d) =>
+      '${d.day.toString().padLeft(2, '0')}/${d.month.toString().padLeft(2, '0')}';
 }
 
 class _EffectivenessSection extends StatelessWidget {

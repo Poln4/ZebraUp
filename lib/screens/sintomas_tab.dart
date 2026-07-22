@@ -27,6 +27,7 @@ import '../widgets/structural_checkin_sheet.dart';
 import '../widgets/structural_detail_sheet.dart';
 import '../widgets/structural_quick_log_sheet.dart';
 import '../widgets/structural_zone_history_form_sheet.dart';
+import '../widgets/episode_form_sheet.dart';
 import '../widgets/body_zone_picker_grid.dart';
 import '../services/structural_text_detector.dart';
 import '../services/clinical_localizations.dart';
@@ -58,6 +59,9 @@ import '../widgets/mcas_advisory_dialog.dart';
 import '../models/mcas.dart';
 import '../widgets/symptom_frequency_dashboard.dart';
 import '../models/profile_state.dart';
+import '../widgets/search_field.dart';
+import '../widgets/sort_toggle_button.dart';
+import '../widgets/symptom_checkin_sheet.dart';
 
 // ---------------------------------------------------------------------------
 // Sprint E.B.2 — MCAS symptom heuristic.
@@ -123,6 +127,8 @@ class SintomasTab extends StatefulWidget {
 
 class _SintomasTabState extends State<SintomasTab> {
   final _newSymptomCtrl = TextEditingController();
+  final _symptomVaultSearchCtrl = TextEditingController();
+  String _symptomVaultQuery = '';
 
   // F6.b: zones are rendered grouped by BodyRegion. The picker iterates
   // kBodyRegionZones directly — no local _zones const needed. See the
@@ -135,6 +141,7 @@ class _SintomasTabState extends State<SintomasTab> {
   @override
   void dispose() {
     _newSymptomCtrl.dispose();
+    _symptomVaultSearchCtrl.dispose();
     super.dispose();
   }
 
@@ -1086,9 +1093,10 @@ class _SintomasTabState extends State<SintomasTab> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  unrated
-                                      ? "[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} · ${l10n.symptomLogTagUnrated}"
-                                      : "[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} (${event.severity.severityLabel(l10n)})",
+                                  (unrated
+                                          ? "[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} · ${l10n.symptomLogTagUnrated}"
+                                          : "[${DateFormat('HH:mm').format(event.timestamp)}] ${event.name} (${event.severity.severityLabel(l10n)})") +
+                                      (event.isResolved ? ' ✓' : ''),
                                   style: TextStyle(
                                     color: _cc,
                                     fontSize: 13,
@@ -1248,6 +1256,17 @@ class _SintomasTabState extends State<SintomasTab> {
                               ],
                             ),
                           ),
+                          if (!event.isResolved)
+                            IconButton(
+                              icon: Icon(
+                                Icons.check_circle_outline,
+                                color: _cc,
+                                size: 18,
+                              ),
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              onPressed: () => _openSymptomCheckIn(event),
+                            ),
                           IconButton(
                             icon: const Icon(
                               Icons.close,
@@ -1331,32 +1350,100 @@ class _SintomasTabState extends State<SintomasTab> {
 
         // 4. SYMPTOM VAULT + INLINE ADD
         const SizedBox(height: 28),
-        Text(
-          l10n.symptomsSectionVault,
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1,
-            fontSize: 14,
-            color: _cc,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _p.symptomVault
-              .map(
-                (s) => ActionChip(
-                  backgroundColor: _ic,
-                  side: const BorderSide(color: Colors.grey),
-                  label: Text(
-                    s,
-                    style: const TextStyle(color: Colors.grey, fontSize: 14),
-                  ),
-                  onPressed: () => _dispatchSymptomInput(s),
+        Builder(
+          builder: (context) {
+            final vaultSortAlpha =
+                _p.settings.optionalTrackers['symptom_vault_sort_alpha'] ??
+                false;
+            final vaultQuery = _symptomVaultQuery.trim().toLowerCase();
+            final visibleVault = _p.symptomVault
+                .where((s) => s.toLowerCase().contains(vaultQuery))
+                .toList();
+            if (vaultSortAlpha) {
+              visibleVault.sort(
+                (a, b) => a.toLowerCase().compareTo(b.toLowerCase()),
+              );
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n.symptomsSectionVault,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1,
+                          fontSize: 14,
+                          color: _cc,
+                        ),
+                      ),
+                    ),
+                    if (_p.symptomVault.length > 1)
+                      SortToggleButton(
+                        active: vaultSortAlpha,
+                        contrastColor: _cc,
+                        onTap: () {
+                          setState(() {
+                            _p.settings
+                                    .optionalTrackers['symptom_vault_sort_alpha'] =
+                                !vaultSortAlpha;
+                          });
+                          widget.onProfileChanged();
+                        },
+                      ),
+                  ],
                 ),
-              )
-              .toList(),
+                const SizedBox(height: 8),
+                if (_p.symptomVault.length > 1) ...[
+                  SearchField(
+                    controller: _symptomVaultSearchCtrl,
+                    contrastColor: _cc,
+                    hintText: l10n.symptomsVaultSearchHint,
+                    onChanged: (v) => setState(() => _symptomVaultQuery = v),
+                    onClear: () => setState(() {
+                      _symptomVaultSearchCtrl.clear();
+                      _symptomVaultQuery = '';
+                    }),
+                  ),
+                  const SizedBox(height: 8),
+                ],
+                if (visibleVault.isEmpty && _p.symptomVault.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Text(
+                      l10n.symptomsVaultSearchNoResults,
+                      style: TextStyle(
+                        color: _cc.withValues(alpha: 0.55),
+                        fontSize: 13,
+                      ),
+                    ),
+                  )
+                else
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: visibleVault
+                        .map(
+                          (s) => ActionChip(
+                            backgroundColor: _ic,
+                            side: const BorderSide(color: Colors.grey),
+                            label: Text(
+                              s,
+                              style: const TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            ),
+                            onPressed: () => _dispatchSymptomInput(s),
+                          ),
+                        )
+                        .toList(),
+                  ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 12),
         TextField(
@@ -2051,9 +2138,112 @@ class _SintomasTabState extends State<SintomasTab> {
   // SYMPTOM MODALS
   // ---------------------------------------------------------------------------
 
+  /// Optional "vincular a un cuadro" (Episode) picker, shared by the add
+  /// and edit symptom sheets. Offers open (unresolved) cuadros plus,
+  /// defensively, the currently-linked one even if it's since been
+  /// resolved (so the dropdown never points at a value with no matching
+  /// item, which DropdownButton would otherwise assert on) — and falls
+  /// back to "Ninguno" if the linked cuadro was deleted entirely. A
+  /// trailing sentinel opens the create sheet inline and auto-selects
+  /// the result.
+  Widget _episodeLinkDropdown({
+    required BuildContext ctx,
+    required String? value,
+    required void Function(String? value) onChanged,
+  }) {
+    const createSentinel = '__create_episode__';
+    final l10n = context.l10n;
+    Episode? linkedButNotOpen;
+    if (value != null) {
+      final matches = _p.episodes.where((e) => e.id == value && e.isResolved);
+      linkedButNotOpen = matches.isEmpty ? null : matches.first;
+    }
+    final orphaned =
+        value != null &&
+        linkedButNotOpen == null &&
+        !_p.episodes.any((e) => e.id == value);
+    final openEpisodes = _p.episodes.where((e) => !e.isResolved).toList()
+      ..sort((a, b) => b.startDate.compareTo(a.startDate));
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: _cc.withValues(alpha: 0.4)),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: DropdownButton<String>(
+        value: orphaned ? null : value,
+        isExpanded: true,
+        underline: const SizedBox.shrink(),
+        dropdownColor: _ic,
+        style: TextStyle(color: _cc, fontSize: 13),
+        iconEnabledColor: _cc,
+        hint: Text(
+          l10n.symptomsEpisodeLinkLabel,
+          style: TextStyle(color: _cc.withValues(alpha: 0.6), fontSize: 13),
+        ),
+        items: [
+          DropdownMenuItem<String>(
+            value: null,
+            child: Text(l10n.symptomsEpisodeLinkNone),
+          ),
+          if (linkedButNotOpen != null)
+            DropdownMenuItem<String>(
+              value: linkedButNotOpen.id,
+              child: Text(
+                linkedButNotOpen.title,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ...openEpisodes.map(
+            (e) => DropdownMenuItem<String>(
+              value: e.id,
+              child: Text(e.title, overflow: TextOverflow.ellipsis),
+            ),
+          ),
+          DropdownMenuItem<String>(
+            value: createSentinel,
+            child: Text(l10n.symptomsEpisodeLinkCreateNew),
+          ),
+        ],
+        onChanged: (v) async {
+          if (v == createSentinel) {
+            final created = await showEpisodeFormSheet(
+              context: ctx,
+              contrastColor: _cc,
+              inverseContrastColor: _ic,
+            );
+            if (created == null) return;
+            setState(() => _p.episodes.add(created));
+            widget.onProfileChanged();
+            onChanged(created.id);
+            return;
+          }
+          onChanged(v);
+        },
+      ),
+    );
+  }
+
   void _openSeverityMenu(String symptom) {
+    // 2026-07-22 — same-day continuation: if this symptom was already
+    // logged today and hasn't been marked resolved, check in on that
+    // entry instead of adding a duplicate row for the same day. See
+    // SymptomEvent.resolvedAt doc in models.dart for the same-day-only
+    // scope decision.
+    final existingToday = _p
+        .getSymptomsForDay(widget.selectedDate)
+        .where((e) => e.name == symptom && !e.isResolved)
+        .toList()
+      ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    if (existingToday.isNotEmpty) {
+      _openSymptomCheckIn(existingToday.first);
+      return;
+    }
+
     final noteCtrl = TextEditingController();
     DateTime ts = _timestampForLog();
+    String? linkedEpisodeId;
 
     Future<void> saveWith(SymptomSeverity sev, BuildContext ctx) async {
       final note = noteCtrl.text.trim();
@@ -2183,6 +2373,7 @@ class _SintomasTabState extends State<SintomasTab> {
         pelvicPainDetail: pelvicPainDetail,
         chestPainDetail: chestPainDetail,
         mcasDetail: mcasDetail,
+        linkedEpisodeId: linkedEpisodeId,
       );
       setState(() => _p.symptomHistory.add(newSymptomEvent));
       widget.onProfileChanged();
@@ -2330,6 +2521,12 @@ class _SintomasTabState extends State<SintomasTab> {
                       hintStyle: TextStyle(color: Colors.grey),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  _episodeLinkDropdown(
+                    ctx: ctx,
+                    value: linkedEpisodeId,
+                    onChanged: (v) => setSheet(() => linkedEpisodeId = v),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     context.l10n.symptomsLabelSeverityGrading,
@@ -2371,10 +2568,32 @@ class _SintomasTabState extends State<SintomasTab> {
     );
   }
 
+  Future<void> _openSymptomCheckIn(SymptomEvent event) async {
+    final result = await showSymptomCheckInSheet(
+      context: context,
+      contrastColor: _cc,
+      inverseContrastColor: _ic,
+      symptomName: event.name,
+      currentSeverity: event.severity,
+      loggedAt: event.timestamp,
+    );
+    if (result == null || !mounted) return;
+    final idx = _p.symptomHistory.indexOf(event);
+    if (idx == -1) return;
+    setState(() {
+      _p.symptomHistory[idx] = result.resolved
+          ? event.copyWith(resolvedAt: DateTime.now())
+          : event.copyWith(severity: result.newSeverity);
+    });
+    widget.onProfileChanged();
+  }
+
   void _editSymptomEvent(SymptomEvent event) {
     final noteCtrl = TextEditingController(text: event.note ?? '');
     DateTime ts = event.timestamp;
     SymptomSeverity sev = event.severity;
+    String? linkedEpisodeId = event.linkedEpisodeId;
+    bool resolved = event.isResolved;
 
     showModalBottomSheet(
       context: context,
@@ -2432,6 +2651,12 @@ class _SintomasTabState extends State<SintomasTab> {
                       hintStyle: TextStyle(color: Colors.grey),
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  _episodeLinkDropdown(
+                    ctx: ctx,
+                    value: linkedEpisodeId,
+                    onChanged: (v) => setSheet(() => linkedEpisodeId = v),
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     context.l10n.symptomsLabelSeverityGrading,
@@ -2463,7 +2688,20 @@ class _SintomasTabState extends State<SintomasTab> {
                         ),
                       ),
                     ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 8),
+                  CheckboxListTile(
+                    value: resolved,
+                    onChanged: (v) => setSheet(() => resolved = v ?? false),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
+                    activeColor: _cc,
+                    title: Text(
+                      context.l10n.symptomsEditResolvedLabel,
+                      style: TextStyle(color: _cc, fontSize: 13),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _cc,
@@ -2628,6 +2866,12 @@ class _SintomasTabState extends State<SintomasTab> {
                           presyncopeDetail: presyncopeDetail,
                           pelvicPainDetail: pelvicPainDetail,
                           chestPainDetail: chestPainDetail,
+                          linkedEpisodeId: linkedEpisodeId,
+                          clearLinkedEpisodeId: linkedEpisodeId == null,
+                          resolvedAt: (resolved && !event.isResolved)
+                              ? DateTime.now()
+                              : null,
+                          clearResolvedAt: !resolved,
                         ),
                       );
                       widget.onProfileChanged();

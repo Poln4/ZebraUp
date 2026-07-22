@@ -39,6 +39,12 @@ enum PdfSection {
   /// by body region.
   structuralEvents,
 
+  /// "Cuadros temporales" (Episode): acute-but-not-chronic diagnoses
+  /// (resfrío, amigdalitis…) with the symptoms the patient linked to
+  /// each one. Only episodes with a linked symptom in the report
+  /// period are shown.
+  episodes,
+
   /// Mental state aggregated (mean valence, mean arousal, cognitive
   /// state frequencies). NEVER individual mental entries — privacy.
   mentalState,
@@ -138,6 +144,7 @@ class PdfExportConfig {
       PdfSection.symptomsPatterns,
       PdfSection.mcasEvents,
       PdfSection.structuralEvents,
+      PdfSection.episodes,
       PdfSection.mentalState,
       PdfSection.actionsEffectiveness,
       PdfSection.patientNotes,
@@ -200,6 +207,7 @@ class PdfExportPreferences {
       PdfSection.symptomsPatterns,
       PdfSection.mcasEvents,
       PdfSection.structuralEvents,
+      PdfSection.episodes,
       PdfSection.mentalState,
       PdfSection.actionsEffectiveness,
       PdfSection.patientNotes,

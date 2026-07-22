@@ -423,6 +423,8 @@
   "symptomsTrendingEmpty": "本週沒有持續出現的症狀。",
   "symptomsSectionVault": "症狀庫存",
   "symptomsVaultPlaceholder": "+ 將症狀新增至庫存...",
+  "symptomsVaultSearchHint": "搜尋症狀...",
+  "symptomsVaultSearchNoResults": "找不到症狀",
   "symptomsModalLogHeader": "紀錄於：{zone}",
   "@symptomsModalLogHeader": {
     "placeholders": {
@@ -456,6 +458,7 @@
   "symptomsActionLogUnrated": "不評分直接紀錄",
   "symptomsUnratedLabelSuffix": "未評分",
   "symptomsUnratedInlineWarning": "此紀錄尚無評分。點擊節點來指定一個級別。",
+  "symptomsEditResolvedLabel": "標記為已解決",
   "symptomsActionSaveChanges": "儲存變更",
   "symptomsActionSave": "儲存",
   "zoneCervical": "頸椎",
@@ -759,6 +762,24 @@
   "structuralCheckInBetter": "好一些了,但還是會痛",
   "structuralCheckInWorse": "惡化了",
   "structuralCheckInResolved": "已經解決了",
+  "symptomCheckInTitle": "{symptom}現在怎麼樣了?",
+  "@symptomCheckInTitle": {
+    "placeholders": {
+      "symptom": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomCheckInSubtitle": "你今天{time}已經記錄過了。選擇新的嚴重程度,或標記為已解決——不會新增一筆紀錄。",
+  "@symptomCheckInSubtitle": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "symptomCheckInResolvedButton": "已經完全解決了",
+  "symptomCheckInSkip": "不,這是另一件事",
   "structuralOngoingSinceTag": "自{date}起持續中",
   "@structuralOngoingSinceTag": {
     "placeholders": {
@@ -790,6 +811,23 @@
   "structuralZoneHistoryOfferDecline": "現在不要",
   "structuralZoneHistorySectionTitle": "各部位結構性病史",
   "structuralZoneHistoryAddAction": "新增病史",
+  "episodeFormTitle": "登記病程",
+  "episodeFormEditTitle": "編輯病程",
+  "episodeFormSubtitle": "一種暫時性或反覆發作但非永久性的診斷,例如感冒或扁桃腺炎。這段期間記錄的症狀都可以連結到這個病程。",
+  "episodeFormTitleHint": "標題(例如:感冒、扁桃腺炎)",
+  "episodeFormStartDateLabel": "開始日期",
+  "episodeFormNoteHint": "備註(選填)",
+  "episodeFormResolvedLabel": "已解決",
+  "episodeFormResolvedDateLabel": "解決日期",
+  "episodeActionSaveChanges": "儲存變更",
+  "episodeActionCreate": "登記病程",
+  "symptomsEpisodeLinkLabel": "連結到某個病程(選填)",
+  "symptomsEpisodeLinkNone": "無",
+  "symptomsEpisodeLinkCreateNew": "+ 建立新病程…",
+  "settingsEpisodesLabel": "暫時性病程",
+  "settingsEpisodesHelper": "暫時性或反覆發作但非永久性的診斷,例如感冒或扁桃腺炎。你記錄的症狀可以連結到其中一個病程。",
+  "settingsEpisodesEmpty": "你還沒有記錄任何暫時性病程。",
+  "settingsAddEpisodeButton": "+ 登記病程",
   "structuralZoneHistoryEmptyState": "尚未儲存任何病史。",
   "sleepSectionTitle": "睡眠紀錄",
   "sleepActionAddEntry": "+ 紀錄睡眠",

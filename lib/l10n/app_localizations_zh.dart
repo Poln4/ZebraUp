@@ -659,6 +659,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get symptomsVaultPlaceholder => '+ 將症狀新增至庫存...';
 
   @override
+  String get symptomsVaultSearchHint => '搜尋症狀...';
+
+  @override
+  String get symptomsVaultSearchNoResults => '找不到症狀';
+
+  @override
   String symptomsModalLogHeader(String zone) {
     return '紀錄於：$zone';
   }
@@ -690,6 +696,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get symptomsUnratedInlineWarning => '此紀錄尚無評分。點擊節點來指定一個級別。';
+
+  @override
+  String get symptomsEditResolvedLabel => '標記為已解決';
 
   @override
   String get symptomsActionSaveChanges => '儲存變更';
@@ -1201,6 +1210,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get structuralCheckInResolved => '已經解決了';
 
   @override
+  String symptomCheckInTitle(String symptom) {
+    return '$symptom現在怎麼樣了?';
+  }
+
+  @override
+  String symptomCheckInSubtitle(String time) {
+    return '你今天$time已經記錄過了。選擇新的嚴重程度,或標記為已解決——不會新增一筆紀錄。';
+  }
+
+  @override
+  String get symptomCheckInResolvedButton => '已經完全解決了';
+
+  @override
+  String get symptomCheckInSkip => '不,這是另一件事';
+
+  @override
   String structuralOngoingSinceTag(String date) {
     return '自$date起持續中';
   }
@@ -1273,6 +1298,59 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get structuralZoneHistoryAddAction => '新增病史';
+
+  @override
+  String get episodeFormTitle => '登記病程';
+
+  @override
+  String get episodeFormEditTitle => '編輯病程';
+
+  @override
+  String get episodeFormSubtitle =>
+      '一種暫時性或反覆發作但非永久性的診斷,例如感冒或扁桃腺炎。這段期間記錄的症狀都可以連結到這個病程。';
+
+  @override
+  String get episodeFormTitleHint => '標題(例如:感冒、扁桃腺炎)';
+
+  @override
+  String get episodeFormStartDateLabel => '開始日期';
+
+  @override
+  String get episodeFormNoteHint => '備註(選填)';
+
+  @override
+  String get episodeFormResolvedLabel => '已解決';
+
+  @override
+  String get episodeFormResolvedDateLabel => '解決日期';
+
+  @override
+  String get episodeActionSaveChanges => '儲存變更';
+
+  @override
+  String get episodeActionCreate => '登記病程';
+
+  @override
+  String get symptomsEpisodeLinkLabel => '連結到某個病程(選填)';
+
+  @override
+  String get symptomsEpisodeLinkNone => '無';
+
+  @override
+  String get symptomsEpisodeLinkCreateNew => '+ 建立新病程…';
+
+  @override
+  String get settingsEpisodesLabel => '暫時性病程';
+
+  @override
+  String get settingsEpisodesHelper =>
+      '暫時性或反覆發作但非永久性的診斷,例如感冒或扁桃腺炎。你記錄的症狀可以連結到其中一個病程。';
+
+  @override
+  String get settingsEpisodesEmpty => '你還沒有記錄任何暫時性病程。';
+
+  @override
+  String get settingsAddEpisodeButton => '+ 登記病程';
 
   @override
   String get structuralZoneHistoryEmptyState => '尚未儲存任何病史。';

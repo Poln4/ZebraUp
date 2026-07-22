@@ -702,6 +702,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get symptomsVaultPlaceholder => '+ Add symptom to vault...';
 
   @override
+  String get symptomsVaultSearchHint => 'Search symptom...';
+
+  @override
+  String get symptomsVaultSearchNoResults => 'No symptoms found';
+
+  @override
   String symptomsModalLogHeader(String zone) {
     return 'LOG IN: $zone';
   }
@@ -735,6 +741,9 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get symptomsUnratedInlineWarning =>
       'This log has no rating. Tap a point to assign one.';
+
+  @override
+  String get symptomsEditResolvedLabel => 'Mark as resolved';
 
   @override
   String get symptomsActionSaveChanges => 'SAVE CHANGES';
@@ -1273,6 +1282,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get structuralCheckInResolved => 'It\'s resolved';
 
   @override
+  String symptomCheckInTitle(String symptom) {
+    return 'How\'s it going: $symptom?';
+  }
+
+  @override
+  String symptomCheckInSubtitle(String time) {
+    return 'You already logged this today at $time. Choose the new severity or mark it as resolved — no new entry is added.';
+  }
+
+  @override
+  String get symptomCheckInResolvedButton => 'It\'s fully resolved';
+
+  @override
+  String get symptomCheckInSkip => 'No, this is something else';
+
+  @override
   String structuralOngoingSinceTag(String date) {
     return 'ongoing since $date';
   }
@@ -1352,6 +1377,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get structuralZoneHistoryAddAction => 'Add history';
+
+  @override
+  String get episodeFormTitle => 'Log an episode';
+
+  @override
+  String get episodeFormEditTitle => 'Edit episode';
+
+  @override
+  String get episodeFormSubtitle =>
+      'A temporary or recurring diagnosis that isn\'t permanent, like a cold or tonsillitis. Symptoms you log during this period can be linked to this episode.';
+
+  @override
+  String get episodeFormTitleHint => 'Title (e.g. Cold, Tonsillitis)';
+
+  @override
+  String get episodeFormStartDateLabel => 'Start date';
+
+  @override
+  String get episodeFormNoteHint => 'Note (optional)';
+
+  @override
+  String get episodeFormResolvedLabel => 'Resolved';
+
+  @override
+  String get episodeFormResolvedDateLabel => 'Resolved date';
+
+  @override
+  String get episodeActionSaveChanges => 'SAVE CHANGES';
+
+  @override
+  String get episodeActionCreate => 'LOG EPISODE';
+
+  @override
+  String get symptomsEpisodeLinkLabel => 'Link to an episode (optional)';
+
+  @override
+  String get symptomsEpisodeLinkNone => 'None';
+
+  @override
+  String get symptomsEpisodeLinkCreateNew => '+ Create new episode…';
+
+  @override
+  String get settingsEpisodesLabel => 'Temporary episodes';
+
+  @override
+  String get settingsEpisodesHelper =>
+      'Temporary or recurring diagnoses that aren\'t permanent, like a cold or tonsillitis. Symptoms you log can be linked to one of these episodes.';
+
+  @override
+  String get settingsEpisodesEmpty =>
+      'You haven\'t logged any temporary episodes yet.';
+
+  @override
+  String get settingsAddEpisodeButton => '+ Log episode';
 
   @override
   String get structuralZoneHistoryEmptyState => 'No saved history yet.';

@@ -16,6 +16,7 @@ import '../services/vademecum_service.dart';
 import '../services/clinical_export_service.dart';
 import '../models/pdf_export_config.dart';
 import '../widgets/condition_info_sheet.dart';
+import '../widgets/episode_form_sheet.dart';
 import '../widgets/life_event_form_sheet.dart';
 import '../widgets/structural_zone_history_form_sheet.dart';
 import '../widgets/weight_entry_form_sheet.dart';
@@ -2180,6 +2181,8 @@ class _MainAppScreenState extends State<MainAppScreen> {
                 onEditLocation: _editLocation,
                 onAddLifeEvent: () => _addLifeEvent(cc, ic),
                 onEditLifeEvent: (e) => _editLifeEvent(e, cc, ic),
+                onAddEpisode: () => _addEpisode(cc, ic),
+                onEditEpisode: (e) => _editEpisode(e, cc, ic),
                 onAddStructuralZoneHistory: () =>
                     _addStructuralZoneHistory(cc, ic),
                 onEditStructuralZoneHistory: (e) =>
@@ -2397,6 +2400,36 @@ class _MainAppScreenState extends State<MainAppScreen> {
     if (idx >= 0) {
       setState(() {
         _activeProfile!.lifeEvents[idx] = result;
+        _saveData();
+      });
+    }
+  }
+
+  Future<void> _addEpisode(Color cc, Color ic) async {
+    final result = await showEpisodeFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+    );
+    if (result == null) return;
+    setState(() {
+      _activeProfile!.episodes.add(result);
+      _saveData();
+    });
+  }
+
+  Future<void> _editEpisode(Episode existing, Color cc, Color ic) async {
+    final result = await showEpisodeFormSheet(
+      context: context,
+      contrastColor: cc,
+      inverseContrastColor: ic,
+      existing: existing,
+    );
+    if (result == null) return;
+    final idx = _activeProfile!.episodes.indexOf(existing);
+    if (idx >= 0) {
+      setState(() {
+        _activeProfile!.episodes[idx] = result;
         _saveData();
       });
     }
